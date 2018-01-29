@@ -1,0 +1,100 @@
+﻿body {
+    font-family: Mallanna,RamaneeyaWin, "Noto Sans Telugu","Hind Guntur",Gautami,"Kohinoor Telugu",sans-serif;
+}
+
+.h2 {
+    clear: both;
+}
+
+.area {
+    float: left;
+    margin: 10px;
+    padding: 10px;
+    border: 1px solid #EEEEEE;
+    width: 40%;
+}
+
+.block {
+    float: left;
+    margin: 10px;
+    padding: 10px;
+    border: 1px solid black;
+}
+
+.board {
+    float: left;
+    margin: 10px;
+    padding: 10px;
+    border: 1px solid #EEEEEE;
+    width: 40%;
+}
+
+.span {
+    font-size: 24px;
+    min-width: 32px;
+    min-height: 32px;
+    color: red;
+    border: 1px dotted green;
+    background-color: lightgoldenrodyellow;
+    display: block;
+    width: auto;
+    height: auto;
+    float: left;
+    text-align: center;
+    margin: 3px;
+    padding: 3px;
+    vertical-align: bottom;
+}
+
+.readonly {
+    color: gray;
+}
+
+.trash {
+    color: gray;
+    font-style: italic;
+    background-color: #D0CA9C;
+}
+
+.td {
+    width: auto;
+    height: auto;
+    border: 1px solid green;
+    background-color: lightyellow;
+    min-width: 36px;
+    min-height: 32px;
+    white-space: pre-wrap;
+    color: green;
+}
+
+.filled {
+    background-color: yellow;
+    color: #990099;
+}
+
+table {
+    border: 1px solid gray;
+    border-collapse: collapse;
+    font-size: 32px;
+    border: 1px solid green;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+}
+
+
+.count {
+    text-align: left;
+    vertical-align: top;
+    font-size: 8px;
+    color: gray;
+    display: inline-block;
+}
+
+.hide {
+    display: none;
+}
+
+.draggable {
+    cursor: move;
+}
