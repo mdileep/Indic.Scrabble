@@ -1,69 +1,104 @@
-﻿export interface IProps {
+﻿//---------------------------------------------------------------------------------------------
+// <copyright file="Contracts.ts" company="Chandam-ఛందం">
+//    Copyright © 2013 - 2018 'Chandam-ఛందం' : http://chandam.apphb.com
+//    Original Author : Dileep Miriyala (m.dileep@gmail.com)
+//    Last Updated    : 29-Jan-2018 21:53EST
+//    Revisions:
+//       Version    | Author                   | Email                     | Remarks
+//       1.0        | Dileep Miriyala          | m.dileep@gmail.com        | Initial Commit
+//       _._        | <TODO>                   |   <TODO>                  | <TODO>
+// </copyright>
+//---------------------------------------------------------------------------------------------
+export interface iProps {
 }
-
-export interface ITileProps {
-    id: string;
+export interface iCabinetProps {
     key: string;
-    text: string;
-    count: number;
-    index: number;
-    groupIndex: number;
+    Trays: iTrayProps[];
 }
-
-export interface ITilesProps {
-    id: string;
-    key: string;
-    className: string;
-    title: string;
-    index: number;
-    items: ITileProps[];
-    show: boolean;
-    disabled: boolean;
-}
-
-export interface IBoardProps {
-    key: string;
-    size: number;
-    Cells: ICellProps[]
-}
-
-export interface ICellProps {
+export interface iTrayProps {
     id: string;
     key: string;
     className: string;
-    title: string;
-    current: string;
-    index: number;
-    last: string;
-    weight: number;
-    waiting: string[];
-    confirmed: string[];
+    Title: string;
+    Index: number;
+    Tiles: iTileProps[];
+    Show: boolean;
+    Disabled: boolean;
 }
-
-export interface ITrashProps {
-
-}
-
-export interface ILeftProps {
+export interface iTileProps {
+    Id: string;
     key: string;
-    items: ITilesProps[];
+    Text: string;
+    Count: number;
+    Index: number;
+    TrayIndex: number;
 }
-export interface IGameState {
-    id: string;
+export interface iBoardProps {
     key: string;
-    Left: ILeftProps;
-    Center: IBoardProps;
-    Right: ITrashProps;
+    Size: number;
+    Cells: iCellProps[]
 }
-export interface IActionArgs {
-    type: string;
-    args: any;
+export interface iCellProps {
+    Id: string;
+    key: string;
+    className: string;
+    Title: string;
+    Current: string;
+    Index: number;
+    Last: string;
+    Weight: number;
+    Waiting: string[];
+    Confirmed: string[];
 }
-
-export interface IArgs {
-    index: number;
-    groupIndex: number;
-    tileIndex: number;
-    cellIndex: number;
-    src: string;
+export interface iScoreBoard {
+    key: string;
+    Messages: string[];
+    Available: number;
+    Score: number;
+}
+export interface iGameState {
+    Id: string;
+    key: string;
+    Cabinet: iCabinetProps;
+    Board: iBoardProps;
+    ScoreBoard: iScoreBoard;
+}
+export interface iActionArgs {
+    type: number;
+    args: iArgs;
+}
+export interface iArgs {
+    Index?: number;
+    TrayIndex?: number;
+    TileIndex?: number;
+    CellIndex?: number;
+    Src?: string;
+}
+export class Actions {
+    public static ToBoard: number = 1;
+    public static ToTray: number = 2;
+    public static OpenOrClose: number = 3;
+}
+//Load Schema is Differet from iGameState 
+//TODO: May use the Same Schema??
+export interface iLoadState {
+    Id: string;
+    Lanaguage: string;
+    Cabinet: iRawCabinet;
+    Board: iRawBoard;
+    ScoreBoard: iScoreBoard;
+}
+export interface iRawCabinet {
+    Trays: iRawTray[];
+}
+export interface iRawBoard {
+    Size: number;
+    Weights: number[];
+}
+export interface iRawTray {
+    Id: string;
+    Title: string;
+    Count: number;
+    Show: boolean;
+    Set: string[];
 }

@@ -1,26 +1,26 @@
-define(["require", "exports", 'Parser', "GameRules"], function (require, exports, Parser, GameRules) {
+define(["require", "exports", 'Contracts', 'Parser', "GameActions"], function (require, exports, Contracts, Parser, GameActions) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.default = function (state, action) {
-        if (state === void 0) { state = Parser.Parser.Parse(InitialState); }
+        if (state === void 0) { state = Parser.Parser.Parse(LoadState); }
         var args = action.args;
         switch (action.type) {
-            default:
-                return state;
-            case "MOVE":
+            case Contracts.Actions.ToBoard:
                 if (console)
                     console.log("Moving Tile from Tray to Board.");
-                GameRules.GameRules.ToBoard(state, args);
+                GameActions.GameActions.ToBoard(state, args);
                 return state;
-            case "TOGGLE_GRP":
-                if (console)
-                    console.log("Opening Tray");
-                GameRules.GameRules.GroupsDisplay(state, args);
-                return state;
-            case "TO_TRAY":
+            case Contracts.Actions.ToTray:
                 if (console)
                     console.log("Moving back to Tray.");
-                GameRules.GameRules.ToTray(state, args);
+                GameActions.GameActions.ToTray(state, args);
+                return state;
+            case Contracts.Actions.OpenOrClose:
+                if (console)
+                    console.log("Opening Tray");
+                GameActions.GameActions.OpenClose(state, args);
+                return state;
+            default:
                 return state;
         }
     };

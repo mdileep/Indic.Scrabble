@@ -13,26 +13,26 @@ define(["require", "exports", "react", 'Tile'], function (require, exports, Reac
         }
         Tray.prototype.render = function () {
             var tiles = [];
-            for (var i = 0; i < this.props.items.length; i++) {
-                var tileProp = this.props.items[i];
+            for (var i = 0; i < this.props.Tiles.length; i++) {
+                var tileProp = this.props.Tiles[i];
                 var id = this.props.id + "_" + (i + 1);
                 var tile = React.createElement(Tile.default, {
-                    id: id,
+                    Id: id,
                     key: id,
-                    text: tileProp.text,
-                    count: tileProp.count,
-                    index: tileProp.index,
-                    groupIndex: tileProp.groupIndex
+                    Text: tileProp.Text,
+                    Count: tileProp.Count,
+                    Index: tileProp.Index,
+                    TrayIndex: tileProp.TrayIndex
                 });
                 tiles.push(tile);
             }
-            var className = this.props.className + " block" + (this.props.show ? "" : " hide");
+            var className = this.props.className + " block" + (this.props.Show ? "" : " hide");
             var blocks = React.createElement('div', {
                 id: this.props.id,
                 key: this.props.id,
                 ref: this.props.id,
                 className: className,
-                title: this.props.title
+                title: this.props.Title
             }, tiles);
             return blocks;
         };

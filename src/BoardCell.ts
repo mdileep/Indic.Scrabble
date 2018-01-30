@@ -1,31 +1,44 @@
+//---------------------------------------------------------------------------------------------
+// <copyright file="BoardCell.ts" company="Chandam-????">
+//    Copyright © 2013 - 2018 'Chandam-????' : http://chandam.apphb.com
+//    Original Author : Dileep Miriyala (m.dileep@gmail.com)
+//    Last Updated    : 29-Jan-2018 21:53EST
+//    Revisions:
+//       Version    | Author                   | Email                     | Remarks
+//       1.0        | Dileep Miriyala          | m.dileep@gmail.com        | Initial Commit
+//       _._        | <TODO>                   |   <TODO>                  | <TODO>
+// </copyright>
+//---------------------------------------------------------------------------------------------
+
+
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as Contracts from 'Contracts';
-import * as GameEvents from 'GameEvents';
+import * as GameLoader from 'GameLoader';
 
-class BoardCell extends React.Component<Contracts.ICellProps, Contracts.ICellProps> {
-    constructor(props: Contracts.ICellProps) {
+class BoardCell extends React.Component<Contracts.iCellProps, Contracts.iCellProps> {
+    constructor(props: Contracts.iCellProps) {
         super(props);
         this.state = props;
     }
 
     render() {
-        var className: string = this.props.current.trim().length == 0 ? "td" : "td filled";
-        var draggable = (this.props.current.trim().length > 0 || (this.props.last != null && this.props.last != this.props.current));
+        var className: string = this.props.Current.trim().length == 0 ? "td" : "td filled";
+        var draggable = (this.props.Current.trim().length > 0 || (this.props.Last != null && this.props.Last != this.props.Current));
         if (draggable) { className += " draggable"; }
 
         var block = React.createElement('td',
             {
-                id: this.props.id,
-                ref: this.props.id,
+                id: this.props.Id,
+                ref: this.props.Id,
                 className: className,
-                title: this.props.current,
-                index: this.props.index,
+                title: this.props.Current,
+                index: this.props.Index,
                 draggable: draggable,
                 onDragStart: (evt: DragEvent) => { this.OnDragStart(evt); },
                 onDragOver: this.OnDragOver,
                 onDrop: (evt: DragEvent) => { this.OnDrop(evt); }
-            }, [], this.props.current);
+            }, [], this.props.Current);
         return block;
     }
 
@@ -39,22 +52,23 @@ class BoardCell extends React.Component<Contracts.ICellProps, Contracts.ICellPro
         var text = ev.dataTransfer.getData("text");
         var data = JSON.parse(text);
         //
-        GameEvents.GameEvents.store.dispatch({
-            type: 'MOVE', args: {
-                cellIndex: this.props.index,
-                tileIndex: data.tileIndex,
-                groupIndex: data.groupIndex,
-                src: data.text
+        GameLoader.GameLoader.store.dispatch({
+            type: Contracts.Actions.ToBoard,
+            args: {
+                CellIndex: this.props.Index,
+                TileIndex: data.tileIndex,
+                TrayIndex: data.trayIndex,
+                Src: data.text
             }
         });
     }
 
     public OnDragStart(ev: DragEvent) {
-        if (console) console.log("OnDragStart");
+        if (console) { console.log("Attempting to Move a Tile back to Tray"); }
         //
         var elem = ev.target as HTMLElement;
         var data: any = {
-            tileIndex: this.props.index
+            tileIndex: this.props.Index
         };
         ev.dataTransfer.setData("text", JSON.stringify(data));
     }

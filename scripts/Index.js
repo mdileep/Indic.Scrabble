@@ -1,4 +1,4 @@
-define(["require", "exports", 'GameEvents'], function (require, exports, GameEvents) {
+define(["require", "exports", 'GameLoader'], function (require, exports, GameLoader) {
     "use strict";
-    GameEvents.GameEvents.Init();
+    GameLoader.GameLoader.Init();
 });

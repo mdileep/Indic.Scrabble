@@ -1,29 +1,38 @@
+//---------------------------------------------------------------------------------------------
+// <copyright file="GameState.ts" company="Chandam-????">
+//    Copyright © 2013 - 2018 'Chandam-????' : http://chandam.apphb.com
+//    Original Author : Dileep Miriyala (m.dileep@gmail.com)
+//    Last Updated    : 29-Jan-2018 21:53EST
+//    Revisions:
+//       Version    | Author                   | Email                     | Remarks
+//       1.0        | Dileep Miriyala          | m.dileep@gmail.com        | Initial Commit
+//       _._        | <TODO>                   |   <TODO>                  | <TODO>
+// </copyright>
+//---------------------------------------------------------------------------------------------
 import * as Contracts from 'Contracts';
 import * as Parser from 'Parser';
-import * as GameRules from "GameRules";
+import * as GameActions from "GameActions";
 
-
-export default (state: Contracts.IGameState = Parser.Parser.Parse(InitialState), action: Contracts.IActionArgs) => {
+export default (state: Contracts.iGameState = Parser.Parser.Parse(LoadState), action: Contracts.iActionArgs) => {
     var args = action.args;
-
     switch (action.type) {
+        case Contracts.Actions.ToBoard:
+            if (console) console.log("Moving Tile from Tray to Board.");
+            GameActions.GameActions.ToBoard(state, args);
+            return state;
+
+        case Contracts.Actions.ToTray:
+            if (console) console.log("Moving back to Tray.");
+            GameActions.GameActions.ToTray(state, args);
+            return state;
+
+        case Contracts.Actions.OpenOrClose:
+            if (console) console.log("Opening Tray");
+            GameActions.GameActions.OpenClose(state, args);
+            return state;
+
         default:
             return state
-
-        case "MOVE":
-            if (console) console.log("Moving Tile from Tray to Board.");
-            GameRules.GameRules.ToBoard(state, args);
-            return state;
-
-        case "TOGGLE_GRP":
-            if (console) console.log("Opening Tray");
-            GameRules.GameRules.GroupsDisplay(state,args);
-            return state;
-
-        case "TO_TRAY":
-            if (console) console.log("Moving back to Tray.");
-            GameRules.GameRules.ToTray(state, args);
-            return state;
     }
 }
 

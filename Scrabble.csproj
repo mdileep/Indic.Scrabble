@@ -22,20 +22,22 @@
     <Content Include="Miriyam.ico" />
     <Content Include="Scrabble.html" />
     <TypeScriptCompile Include="src\BoardCell.ts" />
-    <TypeScriptCompile Include="src\GameRules.ts" />
-    <TypeScriptCompile Include="src\GameEvents.ts" />
+    <TypeScriptCompile Include="src\GameActions.ts" />
+    <TypeScriptCompile Include="src\GameLoader.ts" />
     <TypeScriptCompile Include="src\Index.ts" />
+    <TypeScriptCompile Include="src\Indic.ts" />
     <TypeScriptCompile Include="src\Parser.ts" />
-    <TypeScriptCompile Include="src\Selection.ts" />
-    <TypeScriptCompile Include="src\Tiles.ts" />
-    <TypeScriptCompile Include="src\InputArea.ts" />
+    <TypeScriptCompile Include="src\ScoreBoard.ts" />
+    <TypeScriptCompile Include="src\TrayRack.ts" />
+    <TypeScriptCompile Include="src\Tray.ts" />
+    <TypeScriptCompile Include="src\Cabinet.ts" />
     <TypeScriptCompile Include="src\Contracts.ts" />
-    <TypeScriptCompile Include="src\BoardArea.ts" />
+    <TypeScriptCompile Include="src\Board.ts" />
     <TypeScriptCompile Include="typings\react-dom.d.ts" />
     <TypeScriptCompile Include="typings\react.d.ts" />
     <TypeScriptCompile Include="typings\redux.d.ts" />
     <TypeScriptCompile Include="src\Tile.ts" />
-    <TypeScriptCompile Include="src\ScrabbleGame.ts" />
+    <TypeScriptCompile Include="src\GameRoom.ts" />
     <TypeScriptCompile Include="src\GameState.ts" />
     <Content Include="scrabble.css" />
     <Content Include="scripts\react-dom.js" />
@@ -48,7 +50,7 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <TypeScriptCompile Include="src\InitialState.ts" />
+    <TypeScriptCompile Include="src\LoadState.ts" />
     <Content Include="web.config" />
     <None Include="web.Debug.config">
       <DependentUpon>web.config</DependentUpon>

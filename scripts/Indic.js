@@ -1,80 +1,5 @@
 define(["require", "exports"], function (require, exports) {
     "use strict";
-    var GameRules = (function () {
-        function GameRules() {
-        }
-        GameRules.ToTray = function (state, args) {
-            var cell = state.Board.Cells[args.index];
-            if (cell.last == cell.current) {
-                return;
-            }
-            debugger;
-            if (cell.waiting.length > 0) {
-                var toRemove = cell.waiting[cell.waiting.length - 1];
-                cell.waiting.pop();
-                cell.current = Indic.Merge(cell.confirmed.concat(cell.waiting));
-                var fnd = GameRules.FindTray(state, toRemove);
-                var group = state.Cabinet.items[fnd.groupIndex];
-                var tile = group.items[fnd.index];
-                tile.count++;
-            }
-        };
-        GameRules.ToBoard = function (state, args) {
-            var group = state.Cabinet.items[args.groupIndex];
-            var tile = group.items[args.tileIndex];
-            if (tile.count == 0) {
-                return;
-            }
-            var cell = state.Board.Cells[args.cellIndex];
-            var list = cell.confirmed.concat(cell.waiting);
-            list.push(args.src);
-            var isValid = Indic.IsValid(list);
-            if (!isValid) {
-                return;
-            }
-            cell.waiting.push(args.src);
-            list = cell.confirmed.concat(cell.waiting);
-            cell.current = Indic.Merge(list);
-            tile.count--;
-        };
-        GameRules.FindTray = function (state, char) {
-            for (var i = 0; i < state.Cabinet.items.length; i++) {
-                var groups = state.Cabinet.items[i];
-                for (var j = 0; j < groups.items.length; j++) {
-                    var group = groups.items[j];
-                    if (group.text == char) {
-                        return { groupIndex: i, index: j };
-                    }
-                }
-            }
-            return null;
-        };
-        GameRules.GroupsDisplay = function (state, args) {
-            var group = state.Cabinet.items[args.groupIndex];
-            group.show = !group.show;
-            var cnt = 0;
-            var last = -1;
-            for (var i = 0; i < state.Cabinet.items.length; i++) {
-                if (cnt > 1) {
-                    break;
-                }
-                if (state.Cabinet.items[i].show) {
-                    cnt++;
-                    last = i;
-                }
-            }
-            if (cnt == 1) {
-                state.Cabinet.items[last].disabled = true;
-            }
-            else {
-                for (var i = 0; i < state.Cabinet.items.length; i++) {
-                    state.Cabinet.items[i].disabled = false;
-                }
-            }
-        };
-        return GameRules;
-    }());
-    exports.GameRules = GameRules;
     var Indic = (function () {
         function Indic() {
         }
@@ -196,7 +121,7 @@ define(["require", "exports"], function (require, exports) {
             "హ", "ళ", "ఱ",
             "క్ష"];
         Indic.Virama = "్";
-        Indic.Mapper = {
+        Indic.Synonyms = {
             "ఆ": "ా",
             "ఇ": "ి",
             "ఈ": "ీ",

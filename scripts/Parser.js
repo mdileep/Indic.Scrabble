@@ -1,79 +1,84 @@
-define(["require", "exports"], function (require, exports) {
+define(["require", "exports", "GameActions"], function (require, exports, GameActions) {
     "use strict";
     var Parser = (function () {
         function Parser() {
         }
         Parser.Parse = function (JSON) {
-            if (console)
-                console.log("Parse");
-            var left = Parser.ParseLeft(JSON.Left);
-            var center = Parser.ParseCenter(JSON.Center);
-            var right = Parser.ParseRight(JSON.Right);
+            if (console) {
+                console.log("Parsing the JSON");
+            }
+            var cabinet = Parser.ParseCabinet(JSON.Cabinet);
+            var board = Parser.ParseBoard(JSON.Board);
+            var scoreBoard = Parser.BuildScoreBoard(cabinet, board);
             var gameState = {
-                id: JSON.id,
-                key: JSON.id,
-                Left: left,
-                Right: right,
-                Center: center
+                Id: JSON.Id,
+                key: JSON.Id,
+                Cabinet: cabinet,
+                Board: board,
+                ScoreBoard: scoreBoard
             };
             return gameState;
         };
-        Parser.ParseLeft = function (JSON) {
+        Parser.ParseCabinet = function (JSON) {
             var raw = {};
-            raw.key = "Left";
-            raw.items = [];
+            raw.key = "Cabinet";
+            raw.Trays = [];
             var index = 0;
-            for (var i = 0; i < JSON.Items.length; i++) {
-                var item = JSON.Items[i];
+            for (var i = 0; i < JSON.Trays.length; i++) {
+                var item = JSON.Trays[i];
                 var props = {};
                 props.id = item.Id;
                 props.key = item.Id;
                 props.className = item.Id;
-                props.title = item.Title;
-                props.show = item.Show;
-                props.disabled = false;
-                props.index = i;
-                props.items = [];
+                props.Title = item.Title;
+                props.Show = item.Show;
+                props.Disabled = false;
+                props.Index = i;
+                props.Tiles = [];
                 for (var j = 0; j < item.Set.length; j++) {
                     var prop = {};
-                    prop.id = "T_" + (index + 1).toString();
-                    prop.key = prop.id;
-                    prop.text = item.Set[j];
-                    prop.count = item.Count;
-                    prop.index = j;
-                    prop.groupIndex = i;
-                    props.items.push(prop);
+                    prop.Id = "T_" + (index + 1).toString();
+                    prop.key = prop.Id;
+                    prop.Text = item.Set[j];
+                    prop.Count = item.Count;
+                    prop.Index = j;
+                    prop.TrayIndex = i;
+                    props.Tiles.push(prop);
                     index++;
                 }
-                raw.items.push(props);
+                raw.Trays.push(props);
             }
             return raw;
         };
-        Parser.ParseRight = function (JSON) {
+        Parser.ParseBoard = function (JSON) {
             var raw = {};
-            return raw;
-        };
-        Parser.ParseCenter = function (JSON) {
-            var raw = {};
-            raw.key = "Center";
-            raw.size = JSON.Size;
+            raw.key = "Board";
+            raw.Size = JSON.Size;
             raw.Cells = [];
             var index = 0;
             for (var i = 0; i < JSON.Size; i++) {
                 for (var j = 0; j < JSON.Size; j++) {
                     var cell = {};
-                    cell.id = "C_" + (index + 1).toString();
-                    cell.key = cell.id;
-                    cell.weight = JSON.Weights[index];
-                    cell.current = " ";
-                    cell.index = index;
-                    cell.last = "";
-                    cell.waiting = [];
-                    cell.confirmed = [];
+                    cell.Id = "C_" + (index + 1).toString();
+                    cell.key = cell.Id;
+                    cell.Weight = JSON.Weights[index];
+                    cell.Current = " ";
+                    cell.Index = index;
+                    cell.Last = "";
+                    cell.Waiting = [];
+                    cell.Confirmed = [];
                     raw.Cells.push(cell);
                     index++;
                 }
             }
+            return raw;
+        };
+        Parser.BuildScoreBoard = function (Cabinet, Board) {
+            var raw = {};
+            raw.Messages = [];
+            raw.Available = GameActions.GameActions.TilesAvailable(Cabinet);
+            raw.Score = GameActions.GameActions.GameScore(Board);
+            raw.key = "Info";
             return raw;
         };
         return Parser;

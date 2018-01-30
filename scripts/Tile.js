@@ -14,23 +14,23 @@ define(["require", "exports", "react"], function (require, exports, React) {
         Tile.prototype.render = function () {
             var _this = this;
             var childs = [];
-            if (this.props.count > 0) {
+            if (this.props.Count > 0) {
                 childs.push(this.renderCount());
             }
             childs.push(this.renderContent());
-            if (this.props.count > 0) {
+            if (this.props.Count > 0) {
                 childs.push(this.renderEmpty());
             }
-            var className = this.props.count > 0 ? "span" : "span readonly";
-            var draggable = this.props.count > 0;
+            var className = this.props.Count > 0 ? "span" : "span readonly";
+            var draggable = this.props.Count > 0;
             if (draggable) {
                 className += " draggable";
             }
             var elem = React.createElement('span', {
-                id: this.props.id,
-                ref: this.props.id,
+                id: this.props.Id,
+                ref: this.props.Id,
                 className: className,
-                title: this.props.text,
+                title: this.props.Text,
                 draggable: draggable,
                 onDragStart: function (evt) { _this.OnDragStart(evt); },
                 onClick: this.OnClick
@@ -38,25 +38,25 @@ define(["require", "exports", "react"], function (require, exports, React) {
             return elem;
         };
         Tile.prototype.renderContent = function () {
-            var contentId = "content_" + this.props.id;
+            var contentId = "content_" + this.props.Id;
             var content = React.createElement('span', {
                 id: contentId,
                 ref: contentId,
                 key: contentId,
                 className: "content",
-                title: this.props.text,
-            }, [], this.props.text);
+                title: this.props.Text,
+            }, [], this.props.Text);
             return content;
         };
         Tile.prototype.renderCount = function () {
-            var countId = "count_" + this.props.id;
+            var countId = "count_" + this.props.Id;
             var count = React.createElement('span', {
                 id: countId,
                 ref: countId,
                 key: countId,
                 className: "count",
-                title: this.props.count
-            }, [], this.props.count);
+                title: this.props.Count
+            }, [], this.props.Count);
             return count;
         };
         Tile.prototype.renderEmpty = function () {
@@ -67,13 +67,14 @@ define(["require", "exports", "react"], function (require, exports, React) {
             return blank;
         };
         Tile.prototype.OnDragStart = function (ev) {
-            if (console)
-                console.log("OnDragStart");
+            if (console) {
+                console.log("Attempting to Move a Tile back to Board");
+            }
             var elem = ev.target;
             var data = {
-                groupIndex: this.props.groupIndex,
-                tileIndex: this.props.index,
-                text: this.props.text
+                trayIndex: this.props.TrayIndex,
+                tileIndex: this.props.Index,
+                text: this.props.Text
             };
             ev.dataTransfer.setData("text", JSON.stringify(data));
         };

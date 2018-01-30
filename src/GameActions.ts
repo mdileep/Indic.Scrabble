@@ -1,0 +1,123 @@
+﻿//---------------------------------------------------------------------------------------------
+// <copyright file="GameActions.ts" company="Chandam-ఛందం">
+//    Copyright © 2013 - 2018 'Chandam-ఛందం' : http://chandam.apphb.com
+//    Original Author : Dileep Miriyala (m.dileep@gmail.com)
+//    Last Updated    : 29-Jan-2018 21:53EST
+//    Revisions:
+//       Version    | Author                   | Email                     | Remarks
+//       1.0        | Dileep Miriyala          | m.dileep@gmail.com        | Initial Commit
+//       _._        | <TODO>                   |   <TODO>                  | <TODO>
+// </copyright>
+//---------------------------------------------------------------------------------------------
+import * as Contracts from 'Contracts';
+import * as Indic from 'Indic';
+
+export class GameActions {
+    public static ToTray(state: Contracts.iGameState, args: Contracts.iArgs): void {
+        var cell: Contracts.iCellProps = state.Board.Cells[args.Index];
+        if (cell.Last == cell.Current) {
+            return;
+        }
+        if (cell.Waiting.length > 0) {
+            var toRemove = cell.Waiting[cell.Waiting.length - 1];
+            cell.Waiting.pop();
+            cell.Current = Indic.Indic.Merge(cell.Confirmed.concat(cell.Waiting));
+            var iPos = GameActions.FindTile(state, toRemove);
+            var group: Contracts.iTrayProps = state.Cabinet.Trays[iPos.TrayIndex];
+            var tile: Contracts.iTileProps = group.Tiles[iPos.TileIndex];
+            tile.Count++;
+            state.ScoreBoard.Available++;
+        }
+    }
+    public static _ToBoard(state: Contracts.iGameState, args: Contracts.iArgs, useSynonyms: boolean): void {
+        var tray: Contracts.iTrayProps = state.Cabinet.Trays[args.TrayIndex];
+        var tile: Contracts.iTileProps = tray.Tiles[args.TileIndex];
+        if (tile.Count == 0) {
+            return;
+        }
+        var src: string = args.Src;
+        var cell: Contracts.iCellProps = state.Board.Cells[args.CellIndex];
+        var list: string[] = cell.Confirmed.concat(cell.Waiting);
+        list.push(src);
+        var isValid = Indic.Indic.IsValid(list);
+        if (!isValid) {
+            state.ScoreBoard.Messages.push("[Invalid Move] " + cell.Current + " " + src);
+            if (!useSynonyms) {
+                return;
+            }
+            var synonym = Indic.Indic.Synonyms[src];
+            if (synonym == null) {
+                return;
+            }
+            state.ScoreBoard.Messages.push("[Using Synonym] " + cell.Current + " " + synonym);
+            var iPos = GameActions.FindTile(state, synonym);
+            iPos.Src = synonym;
+            iPos.CellIndex = args.CellIndex;
+            GameActions._ToBoard(state, iPos, false);
+            return;
+        }
+        cell.Waiting.push(src);
+        list = cell.Confirmed.concat(cell.Waiting);
+        cell.Current = Indic.Indic.Merge(list);
+        tile.Count--;
+        state.ScoreBoard.Available--;
+    }
+    public static ToBoard(state: Contracts.iGameState, args: Contracts.iArgs): void {
+        GameActions._ToBoard(state, args, true);
+    }
+    public static FindTile(state: Contracts.iGameState, char: string): Contracts.iArgs {
+        for (var i = 0; i < state.Cabinet.Trays.length; i++) {
+            var tray: Contracts.iTrayProps = state.Cabinet.Trays[i];
+            for (var j = 0; j < tray.Tiles.length; j++) {
+                var tile: Contracts.iTileProps = tray.Tiles[j];
+                if (tile.Text == char) { return { TrayIndex: i, TileIndex: j }; }
+            }
+        }
+        return null;
+    }
+    public static OpenClose(state: Contracts.iGameState, args: Contracts.iArgs) {
+        var tray: Contracts.iTrayProps = state.Cabinet.Trays[args.TrayIndex];
+        tray.Show = !tray.Show;
+        //To make sure atleast one group is available.
+        //Restrict from hiding all groups
+        var cnt: number = 0; var last = -1;
+        for (var i = 0; i < state.Cabinet.Trays.length; i++) {
+            if (cnt > 1) {
+                break;
+            }
+            if (state.Cabinet.Trays[i].Show) {
+                cnt++;
+                last = i;
+            }
+        }
+        if (cnt == 1) {
+            state.Cabinet.Trays[last].Disabled = true;
+        } else {
+            for (var i = 0; i < state.Cabinet.Trays.length; i++) {
+                state.Cabinet.Trays[i].Disabled = false;
+            }
+        }
+    }
+    public static GameScore(Board: Contracts.iBoardProps): number {
+        //Currently It's a single player game
+        var weight = 0;
+        for (var i = 0; i < Board.Cells.length; i++) {
+            var cell: Contracts.iCellProps = Board.Cells[i];
+            if (cell.Confirmed.length > 0) {
+                weight = weight + cell.Weight;
+            }
+        }
+        return weight;
+    }
+    public static TilesAvailable(Cabinet: Contracts.iCabinetProps): number {
+        var count = 0;
+        for (var i = 0; i < Cabinet.Trays.length; i++) {
+            var tray: Contracts.iTrayProps = Cabinet.Trays[i];
+            for (var j = 0; j < tray.Tiles.length; j++) {
+                var tile: Contracts.iTileProps = tray.Tiles[j];
+                count = count + tile.Count;
+            }
+        }
+        return count;
+    }
+}

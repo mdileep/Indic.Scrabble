@@ -3,7 +3,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", "react", 'GameEvents'], function (require, exports, React, GameEvents) {
+define(["require", "exports", "react", 'Contracts', 'GameLoader'], function (require, exports, React, Contracts, GameLoader) {
     "use strict";
     var BoardCell = (function (_super) {
         __extends(BoardCell, _super);
@@ -13,22 +13,22 @@ define(["require", "exports", "react", 'GameEvents'], function (require, exports
         }
         BoardCell.prototype.render = function () {
             var _this = this;
-            var className = this.props.current.trim().length == 0 ? "td" : "td filled";
-            var draggable = (this.props.current.trim().length > 0 || (this.props.last != null && this.props.last != this.props.current));
+            var className = this.props.Current.trim().length == 0 ? "td" : "td filled";
+            var draggable = (this.props.Current.trim().length > 0 || (this.props.Last != null && this.props.Last != this.props.Current));
             if (draggable) {
                 className += " draggable";
             }
             var block = React.createElement('td', {
-                id: this.props.id,
-                ref: this.props.id,
+                id: this.props.Id,
+                ref: this.props.Id,
                 className: className,
-                title: this.props.current,
-                index: this.props.index,
+                title: this.props.Current,
+                index: this.props.Index,
                 draggable: draggable,
                 onDragStart: function (evt) { _this.OnDragStart(evt); },
                 onDragOver: this.OnDragOver,
                 onDrop: function (evt) { _this.OnDrop(evt); }
-            }, [], this.props.current);
+            }, [], this.props.Current);
             return block;
         };
         BoardCell.prototype.OnDragOver = function (ev) {
@@ -38,21 +38,23 @@ define(["require", "exports", "react", 'GameEvents'], function (require, exports
             ev.preventDefault();
             var text = ev.dataTransfer.getData("text");
             var data = JSON.parse(text);
-            GameEvents.GameEvents.store.dispatch({
-                type: 'MOVE', args: {
-                    cellIndex: this.props.index,
-                    tileIndex: data.tileIndex,
-                    groupIndex: data.groupIndex,
-                    src: data.text
+            GameLoader.GameLoader.store.dispatch({
+                type: Contracts.Actions.ToBoard,
+                args: {
+                    CellIndex: this.props.Index,
+                    TileIndex: data.tileIndex,
+                    TrayIndex: data.trayIndex,
+                    Src: data.text
                 }
             });
         };
         BoardCell.prototype.OnDragStart = function (ev) {
-            if (console)
-                console.log("OnDragStart");
+            if (console) {
+                console.log("Attempting to Move a Tile back to Tray");
+            }
             var elem = ev.target;
             var data = {
-                tileIndex: this.props.index
+                tileIndex: this.props.Index
             };
             ev.dataTransfer.setData("text", JSON.stringify(data));
         };
