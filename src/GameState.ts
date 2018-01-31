@@ -31,6 +31,10 @@ export default (state: Contracts.iGameState = Parser.Parser.Parse(LoadState), ac
             GameActions.GameActions.OpenClose(state, args);
             return state;
 
+        case Contracts.Actions.Pass:
+            if (console) console.log("Passing the Turn");
+            GameActions.GameActions.Pass(state, args);
+            return state;
         default:
             return state
     }

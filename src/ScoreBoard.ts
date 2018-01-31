@@ -12,31 +12,66 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as Contracts from 'Contracts';
+import * as GameUser from 'GameUser';
+import * as GameLoader from 'GameLoader';
 
 class ScoreBoard extends React.Component<Contracts.iScoreBoard, Contracts.iScoreBoard> {
     constructor(props: Contracts.iScoreBoard) {
         super(props);
         this.state = props;
     }
+    componentDidUpdate() {
+        ReactDOM.findDOMNode(this.refs["ul"]).scrollTop = 10000;
+    }
     render() {
+        var childs: React.ReactElement<Contracts.iProps>[] = [];
 
-        //var items: React.ReactElement<Contracts.iProps>[] = [];
-        //var arr: string[] = this.props.Messages.slice(Math.max(this.props.Messages.length - 5, 1))
+        var pass = React.createElement('button',
+            {
+                id: "pass",
+                key: "pass",
+                ref: "pass",
+                className: "pass",
+                title: "Pass",
+                onClick: this.OnPass
+            }, [], "Pass");
+        childs.push(pass);
 
-        //for (var i = arr.length - 1; i >= 0; i--) {
-        //    var li = React.createElement("li", { key: "li" + i }, arr[i]);
-        //    items.push(li);
-        //}
-        //var ol = React.createElement("ol",
-        //    {
-        //        id: "ol",
-        //        key: "ol",
-        //        ref: "ol",
-        //        className: "ol",
-        //        title: "List",
-        //    }, items);
 
-        var available = React.createElement("span", { key: "available", className: "span" }, this.props.Available);
+
+        var users: React.ReactElement<Contracts.iUser>[] = [];
+        for (var i = 0; i < this.props.Users.length; i++) {
+            var user = React.createElement(((GameUser.default as any) as React.ComponentClass<Contracts.iUser>), this.props.Users[i], {});
+            users.push(user);
+        }
+        childs.push(users as any);
+
+
+        if (this.props.Messages.length > 0) {
+            var h2 = React.createElement("h2", { key: "h2", className: "h2" }, "Information");
+            childs.push(h2);
+
+
+            var items: React.ReactElement<Contracts.iProps>[] = [];
+            for (var i = 0; i < this.props.Messages.length; i++) {
+                var msg = this.props.Messages[i];
+                var li = React.createElement("li", { key: "li" + i }, msg);
+                items.push(li);
+            }
+
+            var ul = React.createElement("ul",
+                {
+                    id: "ul",
+                    key: "ul",
+                    ref: "ul",
+                    className: "ul",
+                    title: "List"
+                }, items);
+            childs.push(ul);
+
+        }
+
+
         var blocks = React.createElement('div',
             {
                 id: "scoreBoard",
@@ -44,8 +79,16 @@ class ScoreBoard extends React.Component<Contracts.iScoreBoard, Contracts.iScore
                 ref: "scoreBoard",
                 className: "scoreBoard",
                 title: "Information",
-            }, [available, available]);
+            }, childs);
         return blocks;
+    }
+
+    public OnPass(ev: MouseEvent) {
+        GameLoader.GameLoader.store.dispatch({
+            type: Contracts.Actions.Pass,
+            args: {
+            }
+        });
     }
 }
 

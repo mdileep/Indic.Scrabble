@@ -19,6 +19,7 @@
     <UseGlobalApplicationHostFile />
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="Scrabble.png" />
     <Content Include="Miriyam.ico" />
     <Content Include="Scrabble.html" />
     <TypeScriptCompile Include="src\BoardCell.ts" />
@@ -33,6 +34,7 @@
     <TypeScriptCompile Include="src\Cabinet.ts" />
     <TypeScriptCompile Include="src\Contracts.ts" />
     <TypeScriptCompile Include="src\Board.ts" />
+    <TypeScriptCompile Include="src\GameUser.ts" />
     <TypeScriptCompile Include="typings\react-dom.d.ts" />
     <TypeScriptCompile Include="typings\react.d.ts" />
     <TypeScriptCompile Include="typings\redux.d.ts" />

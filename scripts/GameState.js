@@ -20,6 +20,11 @@ define(["require", "exports", 'Contracts', 'Parser', "GameActions"], function (r
                     console.log("Opening Tray");
                 GameActions.GameActions.OpenClose(state, args);
                 return state;
+            case Contracts.Actions.Pass:
+                if (console)
+                    console.log("Passing the Turn");
+                GameActions.GameActions.Pass(state, args);
+                return state;
             default:
                 return state;
         }

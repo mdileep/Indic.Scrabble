@@ -24,18 +24,24 @@ class Cabinet extends React.Component<Contracts.iCabinetProps, Contracts.iCabine
     render() {
         if (console) { console.log("Rendering Cabinet"); }
         var childs: React.ReactElement<Contracts.iProps>[] = [];
+     
         for (var i = 0; i < this.props.Trays.length; i++) {
             var TilesProp: Contracts.iTrayProps = this.props.Trays[i];
             TilesProp.key = "G" + TilesProp.id;
             var Group = React.createElement(((TrayRack.default as any) as React.ComponentClass<Contracts.iTrayProps>), TilesProp);
             childs.push(Group);
         }
+
+        var remaining = React.createElement("span", { key: "remaining", className: "remaining" }, this.props.Remaining);
+        childs.push(remaining);
+
         for (var i = 0; i < this.props.Trays.length; i++) {
             var TilesProp: Contracts.iTrayProps = this.props.Trays[i];
             TilesProp.key = TilesProp.id;
             var Group = React.createElement(((Tray.default as any) as React.ComponentClass<Contracts.iTrayProps>), TilesProp);
             childs.push(Group);
         }
+
         var blocks = React.createElement('div',
             {
                 id: "inputs",

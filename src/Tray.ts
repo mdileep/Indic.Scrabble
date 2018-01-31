@@ -29,7 +29,8 @@ class Tray extends React.Component<Contracts.iTrayProps, Contracts.iTrayProps> {
                     Id: id,
                     key: id,
                     Text: tileProp.Text,
-                    Count: tileProp.Count,
+                    Remaining: tileProp.Remaining,
+                    Total: tileProp.Total,
                     Index: tileProp.Index,
                     TrayIndex: tileProp.TrayIndex
                 });

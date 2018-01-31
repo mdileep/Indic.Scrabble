@@ -14,7 +14,11 @@ define(["require", "exports", "react", 'Contracts', 'GameLoader'], function (req
         BoardCell.prototype.render = function () {
             var _this = this;
             var className = this.props.Current.trim().length == 0 ? "td" : "td filled";
-            var draggable = (this.props.Current.trim().length > 0 || (this.props.Last != null && this.props.Last != this.props.Current));
+            var confirmed = (this.props.Waiting.length == 0 && this.props.Confirmed.length != 0);
+            var draggable = this.props.Waiting.length != 0;
+            if (confirmed) {
+                className += " confirmed";
+            }
             if (draggable) {
                 className += " draggable";
             }

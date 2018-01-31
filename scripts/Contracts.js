@@ -6,6 +6,7 @@ define(["require", "exports"], function (require, exports) {
         Actions.ToBoard = 1;
         Actions.ToTray = 2;
         Actions.OpenOrClose = 3;
+        Actions.Pass = 4;
         return Actions;
     }());
     exports.Actions = Actions;

@@ -23,6 +23,8 @@ define(["require", "exports", "react", 'Contracts', 'Tray', 'TrayRack', 'GameLoa
                 var Group = React.createElement(TrayRack.default, TilesProp);
                 childs.push(Group);
             }
+            var remaining = React.createElement("span", { key: "remaining", className: "remaining" }, this.props.Remaining);
+            childs.push(remaining);
             for (var i = 0; i < this.props.Trays.length; i++) {
                 var TilesProp = this.props.Trays[i];
                 TilesProp.key = TilesProp.id;

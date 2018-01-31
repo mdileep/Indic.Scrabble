@@ -18,7 +18,7 @@ export class Parser {
         //No Error Handling assuming clean -input
         var cabinet: Contracts.iCabinetProps = Parser.ParseCabinet(JSON.Cabinet);
         var board: Contracts.iBoardProps = Parser.ParseBoard(JSON.Board);
-        var scoreBoard: Contracts.iScoreBoard = Parser.BuildScoreBoard(cabinet, board);
+        var scoreBoard: Contracts.iScoreBoard = Parser.BuildScoreBoard(cabinet, board, JSON.ScoreBoard);
         var gameState: Contracts.iGameState = {
             Id: JSON.Id,
             key: JSON.Id,
@@ -49,7 +49,8 @@ export class Parser {
                 prop.Id = "T_" + (index + 1).toString();
                 prop.key = prop.Id;
                 prop.Text = item.Set[j];
-                prop.Count = item.Count;
+                prop.Remaining = item.Count;
+                prop.Total = item.Count;
                 prop.Index = j;
                 prop.TrayIndex = i;
                 props.Tiles.push(prop);
@@ -57,6 +58,8 @@ export class Parser {
             }
             raw.Trays.push(props);
         }
+        raw.Total = GameActions.GameActions.TotalTiles(raw);
+        raw.Remaining = GameActions.GameActions.RemainingTiles(raw);
         return raw;
     }
     public static ParseBoard(JSON: Contracts.iRawBoard): Contracts.iBoardProps {
@@ -81,12 +84,20 @@ export class Parser {
         }
         return raw;
     }
-    public static BuildScoreBoard(Cabinet: Contracts.iCabinetProps, Board: Contracts.iBoardProps): Contracts.iScoreBoard {
+    public static BuildScoreBoard(Cabinet: Contracts.iCabinetProps, Board: Contracts.iBoardProps, scoreBoard: Contracts.iScoreBoard): Contracts.iScoreBoard {
         var raw: Contracts.iScoreBoard = ({} as any) as Contracts.iScoreBoard;
-        raw.Messages = [];
-        raw.Available = GameActions.GameActions.TilesAvailable(Cabinet);
-        raw.Score = GameActions.GameActions.GameScore(Board);
         raw.key = "Info";
+        raw.Messages = [];
+        raw.Users = [];
+        raw.CurrentPlayer = 0;
+        for (var i = 0; i < scoreBoard.Users.length; i++) {
+            var user: Contracts.iUser = scoreBoard.Users[i];
+            user.Playing = (i == raw.CurrentPlayer);
+            user.Score = 0;
+            user.Unconfirmed = 0;
+            user.Id = "U" + (i + 1);
+            raw.Users.push(user);
+        }
         return raw;
     }
 }

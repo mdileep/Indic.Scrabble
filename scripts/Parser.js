@@ -9,7 +9,7 @@ define(["require", "exports", "GameActions"], function (require, exports, GameAc
             }
             var cabinet = Parser.ParseCabinet(JSON.Cabinet);
             var board = Parser.ParseBoard(JSON.Board);
-            var scoreBoard = Parser.BuildScoreBoard(cabinet, board);
+            var scoreBoard = Parser.BuildScoreBoard(cabinet, board, JSON.ScoreBoard);
             var gameState = {
                 Id: JSON.Id,
                 key: JSON.Id,
@@ -40,7 +40,8 @@ define(["require", "exports", "GameActions"], function (require, exports, GameAc
                     prop.Id = "T_" + (index + 1).toString();
                     prop.key = prop.Id;
                     prop.Text = item.Set[j];
-                    prop.Count = item.Count;
+                    prop.Remaining = item.Count;
+                    prop.Total = item.Count;
                     prop.Index = j;
                     prop.TrayIndex = i;
                     props.Tiles.push(prop);
@@ -48,6 +49,8 @@ define(["require", "exports", "GameActions"], function (require, exports, GameAc
                 }
                 raw.Trays.push(props);
             }
+            raw.Total = GameActions.GameActions.TotalTiles(raw);
+            raw.Remaining = GameActions.GameActions.RemainingTiles(raw);
             return raw;
         };
         Parser.ParseBoard = function (JSON) {
@@ -73,12 +76,20 @@ define(["require", "exports", "GameActions"], function (require, exports, GameAc
             }
             return raw;
         };
-        Parser.BuildScoreBoard = function (Cabinet, Board) {
+        Parser.BuildScoreBoard = function (Cabinet, Board, scoreBoard) {
             var raw = {};
-            raw.Messages = [];
-            raw.Available = GameActions.GameActions.TilesAvailable(Cabinet);
-            raw.Score = GameActions.GameActions.GameScore(Board);
             raw.key = "Info";
+            raw.Messages = [];
+            raw.Users = [];
+            raw.CurrentPlayer = 0;
+            for (var i = 0; i < scoreBoard.Users.length; i++) {
+                var user = scoreBoard.Users[i];
+                user.Playing = (i == raw.CurrentPlayer);
+                user.Score = 0;
+                user.Unconfirmed = 0;
+                user.Id = "U" + (i + 1);
+                raw.Users.push(user);
+            }
             return raw;
         };
         return Parser;

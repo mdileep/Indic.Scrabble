@@ -20,7 +20,8 @@ define(["require", "exports", "react", 'Tile'], function (require, exports, Reac
                     Id: id,
                     key: id,
                     Text: tileProp.Text,
-                    Count: tileProp.Count,
+                    Remaining: tileProp.Remaining,
+                    Total: tileProp.Total,
                     Index: tileProp.Index,
                     TrayIndex: tileProp.TrayIndex
                 });

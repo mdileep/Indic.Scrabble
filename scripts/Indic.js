@@ -1,5 +1,21 @@
 define(["require", "exports"], function (require, exports) {
     "use strict";
+    var Messages = (function () {
+        function Messages() {
+        }
+        Messages.Format = function (s, args) {
+            var formatted = s;
+            for (var arg in args) {
+                formatted = formatted.replace("{" + arg + "}", args[arg]);
+            }
+            return formatted;
+        };
+        ;
+        Messages.InvalidMove = "'{0}' ను '{1}' తో కలపడం సాధ్యంకాదు.";
+        Messages.UseSynonym = " '{1}' కు బదులుగా '{2}' తో '{0}' ను కలపడానికి ప్రయత్నం చేస్తున్నాం.";
+        return Messages;
+    }());
+    exports.Messages = Messages;
     var Indic = (function () {
         function Indic() {
         }

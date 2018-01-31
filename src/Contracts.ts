@@ -14,6 +14,8 @@ export interface iProps {
 export interface iCabinetProps {
     key: string;
     Trays: iTrayProps[];
+    Remaining: number;
+    Total: number;
 }
 export interface iTrayProps {
     id: string;
@@ -29,14 +31,15 @@ export interface iTileProps {
     Id: string;
     key: string;
     Text: string;
-    Count: number;
+    Remaining: number;
+    Total: number;
     Index: number;
     TrayIndex: number;
 }
 export interface iBoardProps {
     key: string;
     Size: number;
-    Cells: iCellProps[]
+    Cells: iCellProps[];
 }
 export interface iCellProps {
     Id: string;
@@ -53,8 +56,15 @@ export interface iCellProps {
 export interface iScoreBoard {
     key: string;
     Messages: string[];
-    Available: number;
+    Users: iUser[];
+    CurrentPlayer: number;
+}
+export interface iUser {
     Score: number;
+    Playing: boolean;
+    Unconfirmed: number;
+    Name: string;
+    Id: string;
 }
 export interface iGameState {
     Id: string;
@@ -78,6 +88,7 @@ export class Actions {
     public static ToBoard: number = 1;
     public static ToTray: number = 2;
     public static OpenOrClose: number = 3;
+    public static Pass: number = 4;
 }
 //Load Schema is Differet from iGameState 
 //TODO: May use the Same Schema??

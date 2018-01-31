@@ -13,6 +13,54 @@ import * as Contracts from 'Contracts';
 import * as Indic from 'Indic';
 
 export class GameActions {
+    public static Pass(state: Contracts.iGameState, args: Contracts.iArgs): void {
+        debugger;
+        var isValid: boolean = GameActions.ValidateWords(state);
+        if (!isValid) {
+            return;
+        }
+        GameActions.UpdateScore(state);
+        GameActions.TogglePlayers(state);
+    }
+
+    public static ValidateWords(state: Contracts.iGameState): boolean {
+        //Actual Word Verification against Word Database
+        return true;
+    }
+    public static UpdateScore(state: Contracts.iGameState): void {
+        var score: number = 0;
+        //TODO: 
+        // Currently updating Scores only
+        // Scores should be based on the Valid Words 
+        // Currently Scores are based on No. of Cells filled.
+
+        for (var i = 0; i < state.Board.Cells.length; i++) {
+            var cell: Contracts.iCellProps = state.Board.Cells[i];
+            if (cell.Waiting.length == 0) {
+                continue;
+            }
+            score = score + cell.Weight;
+            //Move Waiting to Confirmed
+            //Set Waiting to Blank
+            for (var w = 0; w < cell.Waiting.length; w++) {
+                cell.Confirmed.push(cell.Waiting[w]);
+            }
+            cell.Waiting = [];
+
+        }
+        var curr: number = state.ScoreBoard.CurrentPlayer;
+        state.ScoreBoard.Users[curr].Score += score;
+    }
+    public static TogglePlayers(state: Contracts.iGameState): void {
+        for (var i = 0; i < state.ScoreBoard.Users.length; i++) {
+            var user: Contracts.iUser = state.ScoreBoard.Users[i];
+            user.Playing = !user.Playing;
+            if (user.Playing) {
+                state.ScoreBoard.CurrentPlayer = i;
+            }
+        }
+    }
+
     public static ToTray(state: Contracts.iGameState, args: Contracts.iArgs): void {
         var cell: Contracts.iCellProps = state.Board.Cells[args.Index];
         if (cell.Last == cell.Current) {
@@ -25,14 +73,14 @@ export class GameActions {
             var iPos = GameActions.FindTile(state, toRemove);
             var group: Contracts.iTrayProps = state.Cabinet.Trays[iPos.TrayIndex];
             var tile: Contracts.iTileProps = group.Tiles[iPos.TileIndex];
-            tile.Count++;
-            state.ScoreBoard.Available++;
+            tile.Remaining++;
+            state.Cabinet.Remaining++;
         }
     }
     public static _ToBoard(state: Contracts.iGameState, args: Contracts.iArgs, useSynonyms: boolean): void {
         var tray: Contracts.iTrayProps = state.Cabinet.Trays[args.TrayIndex];
         var tile: Contracts.iTileProps = tray.Tiles[args.TileIndex];
-        if (tile.Count == 0) {
+        if (tile.Remaining == 0) {
             return;
         }
         var src: string = args.Src;
@@ -41,7 +89,7 @@ export class GameActions {
         list.push(src);
         var isValid = Indic.Indic.IsValid(list);
         if (!isValid) {
-            state.ScoreBoard.Messages.push("[Invalid Move] " + cell.Current + " " + src);
+            state.ScoreBoard.Messages.push(Indic.Messages.Format(Indic.Messages.InvalidMove, [cell.Current, src]));
             if (!useSynonyms) {
                 return;
             }
@@ -49,7 +97,7 @@ export class GameActions {
             if (synonym == null) {
                 return;
             }
-            state.ScoreBoard.Messages.push("[Using Synonym] " + cell.Current + " " + synonym);
+            state.ScoreBoard.Messages.push(Indic.Messages.Format(Indic.Messages.UseSynonym, [cell.Current, src, synonym]));
             var iPos = GameActions.FindTile(state, synonym);
             iPos.Src = synonym;
             iPos.CellIndex = args.CellIndex;
@@ -59,8 +107,8 @@ export class GameActions {
         cell.Waiting.push(src);
         list = cell.Confirmed.concat(cell.Waiting);
         cell.Current = Indic.Indic.Merge(list);
-        tile.Count--;
-        state.ScoreBoard.Available--;
+        tile.Remaining--;
+        state.Cabinet.Remaining--;
     }
     public static ToBoard(state: Contracts.iGameState, args: Contracts.iArgs): void {
         GameActions._ToBoard(state, args, true);
@@ -98,24 +146,35 @@ export class GameActions {
             }
         }
     }
-    public static GameScore(Board: Contracts.iBoardProps): number {
+    public static UnConfirmed(Board: Contracts.iBoardProps): number {
         //Currently It's a single player game
         var weight = 0;
         for (var i = 0; i < Board.Cells.length; i++) {
             var cell: Contracts.iCellProps = Board.Cells[i];
-            if (cell.Confirmed.length > 0) {
+            if (cell.Waiting.length > 0) {
                 weight = weight + cell.Weight;
             }
         }
         return weight;
     }
-    public static TilesAvailable(Cabinet: Contracts.iCabinetProps): number {
+    public static TotalTiles(Cabinet: Contracts.iCabinetProps): number {
         var count = 0;
         for (var i = 0; i < Cabinet.Trays.length; i++) {
             var tray: Contracts.iTrayProps = Cabinet.Trays[i];
             for (var j = 0; j < tray.Tiles.length; j++) {
                 var tile: Contracts.iTileProps = tray.Tiles[j];
-                count = count + tile.Count;
+                count = count + tile.Total;
+            }
+        }
+        return count;
+    }
+    public static RemainingTiles(Cabinet: Contracts.iCabinetProps): number {
+        var count = 0;
+        for (var i = 0; i < Cabinet.Trays.length; i++) {
+            var tray: Contracts.iTrayProps = Cabinet.Trays[i];
+            for (var j = 0; j < tray.Tiles.length; j++) {
+                var tile: Contracts.iTileProps = tray.Tiles[j];
+                count = count + tile.Remaining;
             }
         }
         return count;

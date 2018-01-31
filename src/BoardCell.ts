@@ -10,7 +10,6 @@
 // </copyright>
 //---------------------------------------------------------------------------------------------
 
-
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as Contracts from 'Contracts';
@@ -24,9 +23,10 @@ class BoardCell extends React.Component<Contracts.iCellProps, Contracts.iCellPro
 
     render() {
         var className: string = this.props.Current.trim().length == 0 ? "td" : "td filled";
-        var draggable = (this.props.Current.trim().length > 0 || (this.props.Last != null && this.props.Last != this.props.Current));
+        var confirmed = (this.props.Waiting.length == 0 && this.props.Confirmed.length != 0);
+        var draggable: boolean = this.props.Waiting.length != 0;
+        if (confirmed) { className += " confirmed"; }
         if (draggable) { className += " draggable"; }
-
         var block = React.createElement('td',
             {
                 id: this.props.Id,

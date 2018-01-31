@@ -10,8 +10,23 @@
 // </copyright>
 //---------------------------------------------------------------------------------------------
 
+export class Messages {
+    public static InvalidMove: string = "'{0}' ను '{1}' తో కలపడం సాధ్యంకాదు.";
+    public static UseSynonym: string = " '{1}' కు బదులుగా '{2}' తో '{0}' ను కలపడానికి ప్రయత్నం చేస్తున్నాం.";
+    public static Format(s: string, args: any): string {
+        var formatted = s;
+        for (var arg in args) {
+            formatted = formatted.replace("{" + arg + "}", args[arg]);
+        }
+        return formatted;
+    };
+
+}
 
 export class Indic {
+
+
+
     public static IsValid(arr: string[]): boolean {
         //Tobe improved.
         if (arr.length == 1 && Indic.IsFullSpecialSet(arr[0])) {

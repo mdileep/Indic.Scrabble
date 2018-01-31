@@ -14,15 +14,15 @@ define(["require", "exports", "react"], function (require, exports, React) {
         Tile.prototype.render = function () {
             var _this = this;
             var childs = [];
-            if (this.props.Count > 0) {
+            if (this.props.Remaining > 0) {
                 childs.push(this.renderCount());
             }
             childs.push(this.renderContent());
-            if (this.props.Count > 0) {
+            if (this.props.Remaining > 0) {
                 childs.push(this.renderEmpty());
             }
-            var className = this.props.Count > 0 ? "span" : "span readonly";
-            var draggable = this.props.Count > 0;
+            var className = this.props.Remaining > 0 ? "span" : "span readonly";
+            var draggable = this.props.Remaining > 0;
             if (draggable) {
                 className += " draggable";
             }
@@ -55,8 +55,8 @@ define(["require", "exports", "react"], function (require, exports, React) {
                 ref: countId,
                 key: countId,
                 className: "count",
-                title: this.props.Count
-            }, [], this.props.Count);
+                title: this.props.Remaining
+            }, [], this.props.Remaining);
             return count;
         };
         Tile.prototype.renderEmpty = function () {

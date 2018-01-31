@@ -25,14 +25,13 @@ body {
     margin: 10px;
     padding: 10px;
     border: 1px solid #EEEEEE;
-    width: 40%;
+    width: 30%;
 }
 
 .block {
     float: left;
     margin: 10px;
     padding: 10px;
-    border: 1px solid black;
 }
 
 .board {
@@ -41,6 +40,14 @@ body {
     padding: 10px;
     border: 1px solid #EEEEEE;
     width: 40%;
+}
+
+.remaining {
+    font-size: 24px;
+    min-width: 32px;
+    min-height: 32px;
+    color: green;
+    float: right;
 }
 
 .span {
@@ -80,6 +87,11 @@ body {
     color: #990099;
 }
 
+.confirmed {
+    color: #990099;
+    background-color: yellowgreen;
+}
+
 table {
     border: 1px solid gray;
     border-collapse: collapse;
@@ -105,4 +117,59 @@ table {
 
 .draggable {
     cursor: move;
+}
+
+.scoreBoard {
+    width: 20%;
+    font-size: 14px;
+    float: right;
+    color: blue;
+}
+
+.h2 {
+    color: black;
+}
+
+.ul {
+    overflow: auto;
+    border: 1px solid #EEEEEE;
+    max-height: 150px;
+    overflow: auto;
+}
+
+.player {
+    font-weight: bold;
+    color: white;
+    background-color: yellowgreen;
+    display: block;
+    width: 100%;
+    text-align: center;
+    font-size: 24px;
+}
+
+.opponent {
+    font-weight: normal;
+    color: black;
+    display: block;
+    width: 100%;
+    font-size: 24px;
+    text-align: center;
+    background-color: lightgoldenrodyellow;
+}
+
+.userProp {
+}
+
+.user {
+    border: 1px solid #EEEEEE;
+    margin: 10px;
+}
+
+.score {
+    font-size: 24px;
+    color: rebeccapurple;
+    height: 40px;
+    text-align: center;
+    width: 100%;
+    display: block;
 }
