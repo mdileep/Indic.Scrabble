@@ -42,6 +42,19 @@
     <TypeScriptCompile Include="src\GameRoom.ts" />
     <TypeScriptCompile Include="src\GameState.ts" />
     <Content Include="scrabble.css" />
+    <Content Include="scripts\Board.js" />
+    <Content Include="scripts\BoardCell.js" />
+    <Content Include="scripts\Cabinet.js" />
+    <Content Include="scripts\Contracts.js" />
+    <Content Include="scripts\GameActions.js" />
+    <Content Include="scripts\GameLoader.js" />
+    <Content Include="scripts\GameRoom.js" />
+    <Content Include="scripts\GameState.js" />
+    <Content Include="scripts\GameUser.js" />
+    <Content Include="scripts\Index.js" />
+    <Content Include="scripts\Indic.js" />
+    <Content Include="scripts\LoadState.js" />
+    <Content Include="scripts\Parser.js" />
     <Content Include="scripts\react-dom.js" />
     <Content Include="scripts\react-dom_14.js" />
     <Content Include="scripts\react.js" />
@@ -53,6 +66,10 @@
   <ItemGroup />
   <ItemGroup>
     <TypeScriptCompile Include="src\LoadState.ts" />
+    <Content Include="scripts\ScoreBoard.js" />
+    <Content Include="scripts\Tile.js" />
+    <Content Include="scripts\Tray.js" />
+    <Content Include="scripts\TrayRack.js" />
     <Content Include="web.config" />
     <None Include="web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
