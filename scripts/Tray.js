@@ -15,10 +15,11 @@ define(["require", "exports", "react", 'Tile'], function (require, exports, Reac
             var tiles = [];
             for (var i = 0; i < this.props.Tiles.length; i++) {
                 var tileProp = this.props.Tiles[i];
-                var id = this.props.id + "_" + (i + 1);
+                var id = this.props.Id + "_" + (i + 1);
                 var tile = React.createElement(Tile.default, {
                     Id: id,
                     key: id,
+                    className: "",
                     Text: tileProp.Text,
                     Remaining: tileProp.Remaining,
                     Total: tileProp.Total,
@@ -29,9 +30,9 @@ define(["require", "exports", "react", 'Tile'], function (require, exports, Reac
             }
             var className = this.props.className + " block" + (this.props.Show ? "" : " hide");
             var blocks = React.createElement('div', {
-                id: this.props.id,
-                key: this.props.id,
-                ref: this.props.id,
+                id: this.props.Id,
+                key: this.props.Id,
+                ref: this.props.Id,
                 className: className,
                 title: this.props.Title
             }, tiles);

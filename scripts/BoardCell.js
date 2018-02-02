@@ -13,7 +13,7 @@ define(["require", "exports", "react", 'Contracts', 'GameLoader'], function (req
         }
         BoardCell.prototype.render = function () {
             var _this = this;
-            var className = this.props.Current.trim().length == 0 ? "td" : "td filled";
+            var className = (this.props.Waiting.length + this.props.Confirmed.length == 0) ? "td" : "td filled";
             var confirmed = (this.props.Waiting.length == 0 && this.props.Confirmed.length != 0);
             var draggable = this.props.Waiting.length != 0;
             if (confirmed) {
@@ -21,6 +21,10 @@ define(["require", "exports", "react", 'Contracts', 'GameLoader'], function (req
             }
             if (draggable) {
                 className += " draggable";
+            }
+            var childs = [];
+            if (this.props.Weight != 1) {
+                childs.push(this.renderWeight());
             }
             var block = React.createElement('td', {
                 id: this.props.Id,
@@ -32,8 +36,19 @@ define(["require", "exports", "react", 'Contracts', 'GameLoader'], function (req
                 onDragStart: function (evt) { _this.OnDragStart(evt); },
                 onDragOver: this.OnDragOver,
                 onDrop: function (evt) { _this.OnDrop(evt); }
-            }, [], this.props.Current);
+            }, [childs], this.props.Current);
             return block;
+        };
+        BoardCell.prototype.renderWeight = function () {
+            var weightId = "weight_" + this.props.Id;
+            var weight = React.createElement('span', {
+                id: weightId,
+                ref: weightId,
+                key: weightId,
+                className: "weight",
+                title: this.props.Weight
+            }, [], this.props.Weight);
+            return weight;
         };
         BoardCell.prototype.OnDragOver = function (ev) {
             ev.preventDefault();

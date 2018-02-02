@@ -15,7 +15,7 @@ define(["require", "exports", "react", 'Contracts', 'GameLoader'], function (req
             var _this = this;
             var TilesProp = this.props;
             var childs = [];
-            var chkId = "chk_" + TilesProp.id;
+            var chkId = "chk_" + TilesProp.Id;
             var chkBox = React.createElement('input', {
                 type: "checkbox",
                 name: "TileGroup",
@@ -27,8 +27,8 @@ define(["require", "exports", "react", 'Contracts', 'GameLoader'], function (req
                 onChange: function (evt) { _this.OpenClose(evt); }
             });
             var label = React.createElement('label', {
-                htmlFor: "chk_" + TilesProp.id,
-                key: "lbl_" + TilesProp.id
+                htmlFor: "chk_" + TilesProp.Id,
+                key: "lbl_" + TilesProp.Id
             }, TilesProp.Title);
             childs.push(chkBox);
             childs.push(label);

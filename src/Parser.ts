@@ -18,13 +18,16 @@ export class Parser {
         //No Error Handling assuming clean -input
         var cabinet: Contracts.iCabinetProps = Parser.ParseCabinet(JSON.Cabinet);
         var board: Contracts.iBoardProps = Parser.ParseBoard(JSON.Board);
-        var scoreBoard: Contracts.iScoreBoard = Parser.BuildScoreBoard(cabinet, board, JSON.ScoreBoard);
+        var players: Contracts.iPlayers = Parser.ParsePlayers(JSON.Players);
+        var infoBar: Contracts.iInfoBar = Parser.ParseInfoBar(JSON.InfoBar);
         var gameState: Contracts.iGameState = {
             Id: JSON.Id,
             key: JSON.Id,
+            className: "game",
             Cabinet: cabinet,
             Board: board,
-            ScoreBoard: scoreBoard
+            Players: players,
+            InfoBar: infoBar
         };
         return gameState;
     }
@@ -36,7 +39,7 @@ export class Parser {
         for (var i = 0; i < JSON.Trays.length; i++) {
             var item = JSON.Trays[i];
             var props: Contracts.iTrayProps = ({} as any) as Contracts.iTrayProps;
-            props.id = item.Id;
+            props.Id = item.Id;
             props.key = item.Id;
             props.className = item.Id;
             props.Title = item.Title;
@@ -84,20 +87,29 @@ export class Parser {
         }
         return raw;
     }
-    public static BuildScoreBoard(Cabinet: Contracts.iCabinetProps, Board: Contracts.iBoardProps, scoreBoard: Contracts.iScoreBoard): Contracts.iScoreBoard {
-        var raw: Contracts.iScoreBoard = ({} as any) as Contracts.iScoreBoard;
-        raw.key = "Info";
-        raw.Messages = [];
-        raw.Users = [];
+    public static ParsePlayers(players: Contracts.iPlayers): Contracts.iPlayers {
+        var raw: Contracts.iPlayers = ({} as any) as Contracts.iPlayers;
+        raw.Id = "Players";
+        raw.key = raw.Id;
+        raw.Players = [];
         raw.CurrentPlayer = 0;
-        for (var i = 0; i < scoreBoard.Users.length; i++) {
-            var user: Contracts.iUser = scoreBoard.Users[i];
-            user.Playing = (i == raw.CurrentPlayer);
-            user.Score = 0;
-            user.Unconfirmed = 0;
-            user.Id = "U" + (i + 1);
-            raw.Users.push(user);
+        for (var i = 0; i < players.Players.length; i++) {
+            var player: Contracts.iPlayer = players.Players[i];
+            player.CurrentTurn = (i == raw.CurrentPlayer);
+            player.Score = 0;
+            player.Unconfirmed = 0;
+            player.Awarded = [];
+            player.Claimed = [];
+            player.Id = "P_" + (i + 1);
+            player.key = player.Id;
+            raw.Players.push(player);
         }
+        return raw;
+    }
+    public static ParseInfoBar(infoBar: Contracts.iInfoBar): Contracts.iInfoBar {
+        var raw: Contracts.iInfoBar = ({} as any) as Contracts.iInfoBar;
+        raw.key = "InfoBar";
+        raw.Messages = [];
         return raw;
     }
 }

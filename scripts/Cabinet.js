@@ -19,7 +19,7 @@ define(["require", "exports", "react", 'Contracts', 'Tray', 'TrayRack', 'GameLoa
             var childs = [];
             for (var i = 0; i < this.props.Trays.length; i++) {
                 var TilesProp = this.props.Trays[i];
-                TilesProp.key = "G" + TilesProp.id;
+                TilesProp.key = "G" + TilesProp.Id;
                 var Group = React.createElement(TrayRack.default, TilesProp);
                 childs.push(Group);
             }
@@ -27,7 +27,7 @@ define(["require", "exports", "react", 'Contracts', 'Tray', 'TrayRack', 'GameLoa
             childs.push(remaining);
             for (var i = 0; i < this.props.Trays.length; i++) {
                 var TilesProp = this.props.Trays[i];
-                TilesProp.key = TilesProp.id;
+                TilesProp.key = TilesProp.Id;
                 var Group = React.createElement(Tray.default, TilesProp);
                 childs.push(Group);
             }

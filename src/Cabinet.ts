@@ -27,7 +27,7 @@ class Cabinet extends React.Component<Contracts.iCabinetProps, Contracts.iCabine
      
         for (var i = 0; i < this.props.Trays.length; i++) {
             var TilesProp: Contracts.iTrayProps = this.props.Trays[i];
-            TilesProp.key = "G" + TilesProp.id;
+            TilesProp.key = "G" + TilesProp.Id;
             var Group = React.createElement(((TrayRack.default as any) as React.ComponentClass<Contracts.iTrayProps>), TilesProp);
             childs.push(Group);
         }
@@ -37,7 +37,7 @@ class Cabinet extends React.Component<Contracts.iCabinetProps, Contracts.iCabine
 
         for (var i = 0; i < this.props.Trays.length; i++) {
             var TilesProp: Contracts.iTrayProps = this.props.Trays[i];
-            TilesProp.key = TilesProp.id;
+            TilesProp.key = TilesProp.Id;
             var Group = React.createElement(((Tray.default as any) as React.ComponentClass<Contracts.iTrayProps>), TilesProp);
             childs.push(Group);
         }

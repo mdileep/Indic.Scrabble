@@ -23,11 +23,12 @@ class Tray extends React.Component<Contracts.iTrayProps, Contracts.iTrayProps> {
         var tiles: React.ReactElement<Contracts.iTileProps>[] = [];
         for (var i = 0; i < this.props.Tiles.length; i++) {
             var tileProp: Contracts.iTileProps = this.props.Tiles[i];
-            var id = this.props.id + "_" + (i + 1);
+            var id = this.props.Id + "_" + (i + 1);
             var tile = React.createElement(((Tile.default as any) as React.ComponentClass<Contracts.iTileProps>),
                 {
                     Id: id,
                     key: id,
+                    className: "",
                     Text: tileProp.Text,
                     Remaining: tileProp.Remaining,
                     Total: tileProp.Total,
@@ -39,9 +40,9 @@ class Tray extends React.Component<Contracts.iTrayProps, Contracts.iTrayProps> {
         var className: string = this.props.className + " block" + (this.props.Show ? "" : " hide");
         var blocks = React.createElement('div',
             {
-                id: this.props.id,
-                key: this.props.id,
-                ref: this.props.id,
+                id: this.props.Id,
+                key: this.props.Id,
+                ref: this.props.Id,
                 className: className,
                 title: this.props.Title
             }, tiles);

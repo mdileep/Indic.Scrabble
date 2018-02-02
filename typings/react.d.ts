@@ -1082,7 +1082,7 @@ declare namespace __React {
         fontStyle?: any;
 
         /**
-         * This value specifies whether the user agent is allowed to synthesize bold or oblique font faces when a font family lacks bold or italic faces.
+         * This value specifies whether the player agent is allowed to synthesize bold or oblique font faces when a font family lacks bold or italic faces.
          */
         fontSynthesis?: any;
 
@@ -1660,7 +1660,7 @@ declare namespace __React {
         textLineThroughWidth?: any;
 
         /**
-         * The text-overflow shorthand CSS property determines how overflowed content that is not displayed is signaled to the users. It can be clipped, display an ellipsis ('…', U+2026 HORIZONTAL ELLIPSIS) or a Web author-defined string. It covers the two long-hand properties text-overflow-mode and text-overflow-ellipsis
+         * The text-overflow shorthand CSS property determines how overflowed content that is not displayed is signaled to the players. It can be clipped, display an ellipsis ('…', U+2026 HORIZONTAL ELLIPSIS) or a Web author-defined string. It covers the two long-hand properties text-overflow-mode and text-overflow-ellipsis
          */
         textOverflow?: any;
 
@@ -1727,7 +1727,7 @@ declare namespace __React {
         top?: any;
 
         /**
-         * Determines whether touch input may trigger default behavior supplied by the user agent, such as panning or zooming.
+         * Determines whether touch input may trigger default behavior supplied by the player agent, such as panning or zooming.
          */
         touchAction?: any;
 
@@ -1789,12 +1789,12 @@ declare namespace __React {
         /**
          * This is for all the high level UX stuff.
          */
-        userFocus?: any;
+        playerFocus?: any;
 
         /**
-         * For inputing user content
+         * For inputing player content
          */
-        userInput?: any;
+        playerInput?: any;
 
         /**
          * The vertical-align property controls how inline elements or text are vertically aligned compared to the baseline. If this property is used on table-cells it controls the vertical alignment of content of the table cell.

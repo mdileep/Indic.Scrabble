@@ -13,101 +13,13 @@
 export class Messages {
     public static InvalidMove: string = "'{0}' ను '{1}' తో కలపడం సాధ్యంకాదు.";
     public static UseSynonym: string = " '{1}' కు బదులుగా '{2}' తో '{0}' ను కలపడానికి ప్రయత్నం చేస్తున్నాం.";
-    public static Format(s: string, args: any): string {
-        var formatted = s;
-        for (var arg in args) {
-            formatted = formatted.replace("{" + arg + "}", args[arg]);
-        }
-        return formatted;
-    };
-
+    public static Messages: string = "సందేశాలు";
+    public static CrossCells: string = "అన్నీ ఒకే నిలువు లేదా అడ్డం గడులలో మాత్రమే ఉండాలి.";
+    public static HasIslands: string = "పదాలు వేరువేరు లంకలలో విస్తరించి ఉన్నాయి.";
+    public static HasOraphans: string = "ఏకాక్షరపదాలు అంగీకారం కావు.";
+    public static OrphanCell: string = "ఏకాక్షరము {2} అడ్డం: {0} నిలువు:{1} వద్ధ ఉన్నది ";
 }
-
-export class Indic {
-
-
-
-    public static IsValid(arr: string[]): boolean {
-        //Tobe improved.
-        if (arr.length == 1 && Indic.IsFullSpecialSet(arr[0])) {
-            return false;
-        }
-        var special: number = 0;
-        var conso: number = 0;
-        var vowel: number = 0;
-        var sunnaSet: number = 0;
-        for (var i = 0; i < arr.length; i++) {
-            if (Indic.IsFullSpecialSet(arr[i])) {
-                special++;
-                if (Indic.IsSunnaSet(arr[i])) {
-                    sunnaSet++;
-                }
-                continue;
-            }
-            if (Indic.IsConsonent(arr[i])) {
-                conso++;
-                continue;
-            }
-            if (Indic.IsVowel(arr[i])) {
-                vowel++;
-                continue;
-            }
-        }
-        if (conso > 0 && vowel > 0) {
-            return false;
-        }
-        if (vowel > 0 && special > 0 && (sunnaSet != special)) {
-            return false;
-        }
-        if (vowel > 1) {
-            return false;
-        }
-        if (special > 1) {
-            return false;
-        }
-        return true;
-    }
-    public static Merge(arr: string[]): string {
-        var res = "";
-        var pending = "";
-        var isConso: boolean = false;
-
-        for (var i = 0; i < arr.length; i++) {
-            if (Indic.IsFullSpecialSet(arr[i])) {
-                pending = arr[i];
-                continue;
-            }
-            var isCurrConso: boolean = Indic.IsConsonent(arr[i]);
-            if (isConso && isCurrConso) {
-                res = res + Indic.Virama + arr[i];
-            }
-            else {
-                res = res + arr[i];
-            }
-            isConso = isCurrConso;
-        }
-        res = res + pending;
-        return res;
-    }
-    public static Contains(arr: string[], char: string): boolean {
-        var index: number = arr.indexOf(char);
-        return index >= 0;
-    }
-    public static IsVowel(char: string): boolean {
-        return Indic.Contains(Indic.Vowels, char);
-    }
-    public static IsConsonent(char: string): boolean {
-        return Indic.Contains(Indic.Consonents, char);
-    }
-    public static IsSpecialSet(char: string): boolean {
-        return Indic.Contains(Indic.SpecialSet, char);
-    }
-    public static IsFullSpecialSet(char: string): boolean {
-        return Indic.Contains(Indic.FullSpecialSet, char);
-    }
-    public static IsSunnaSet(char: string): boolean {
-        return Indic.Contains(Indic.SunnaSet, char);
-    }
+export class AksharaSets {
     public static FullSpecialSet: string[] = [
         "ా",
         "ి", "ీ",
@@ -176,5 +88,110 @@ export class Indic {
         "ో": "ఓ",
         "ౌ": "ఔ"
     };
+}
+export class Util {
+    public static Format(s: string, args: any): string {
+        var formatted = s;
+        for (var arg in args) {
+            formatted = formatted.replace("{" + arg + "}", args[arg]);
+        }
+        return formatted;
+    }
+    public static Merge(...args: any[]): any {
+        var resObj = {} as any;
+        for (var i = 0; i < arguments.length; i += 1) {
+            var obj = arguments[i],
+                keys = Object.keys(obj);
+            for (var j = 0; j < keys.length; j += 1) {
+                resObj[keys[j]] = obj[keys[j]];
+            }
+        }
+        return resObj;
+    }
+}
+export class Indic {
+    public static IsValid(arr: string[]): boolean {
+        //Tobe improved.
+        if (arr.length == 1 && Indic.IsFullSpecialSet(arr[0])) {
+            return false;
+        }
+        var special: number = 0;
+        var conso: number = 0;
+        var vowel: number = 0;
+        var sunnaSet: number = 0;
+        for (var i = 0; i < arr.length; i++) {
+            if (Indic.IsFullSpecialSet(arr[i])) {
+                special++;
+                if (Indic.IsSunnaSet(arr[i])) {
+                    sunnaSet++;
+                }
+                continue;
+            }
+            if (Indic.IsConsonent(arr[i])) {
+                conso++;
+                continue;
+            }
+            if (Indic.IsVowel(arr[i])) {
+                vowel++;
+                continue;
+            }
+        }
+        if (conso > 0 && vowel > 0) {
+            return false;
+        }
+        if (vowel > 0 && special > 0 && (sunnaSet != special)) {
+            return false;
+        }
+        if (vowel > 1) {
+            return false;
+        }
+        if (special > 1) {
+            return false;
+        }
+        return true;
+    }
+    public static Merge(arr: string[]): string {
+        var res = "";
+        var pending = "";
+        var isConso: boolean = false;
 
+        for (var i = 0; i < arr.length; i++) {
+            if (Indic.IsFullSpecialSet(arr[i])) {
+                pending = arr[i];
+                continue;
+            }
+            var isCurrConso: boolean = Indic.IsConsonent(arr[i]);
+            if (isConso && isCurrConso) {
+                res = res + AksharaSets.Virama + arr[i];
+            }
+            else {
+                res = res + arr[i];
+            }
+            isConso = isCurrConso;
+        }
+        res = res + pending;
+        return res;
+    }
+    public static Contains(arr: string[], char: string): boolean {
+        var index: number = arr.indexOf(char);
+        return index >= 0;
+    }
+    public static IsVowel(char: string): boolean {
+        return Indic.Contains(AksharaSets.Vowels, char);
+    }
+    public static IsConsonent(char: string): boolean {
+        return Indic.Contains(AksharaSets.Consonents, char);
+    }
+    public static IsSpecialSet(char: string): boolean {
+        return Indic.Contains(AksharaSets.SpecialSet, char);
+    }
+    public static IsFullSpecialSet(char: string): boolean {
+        return Indic.Contains(AksharaSets.FullSpecialSet, char);
+    }
+    public static IsSunnaSet(char: string): boolean {
+        return Indic.Contains(AksharaSets.SunnaSet, char);
+    }
+    public static GetSynonym(akshara: string): string {
+        return AksharaSets.Synonyms[akshara];
+    }
 }

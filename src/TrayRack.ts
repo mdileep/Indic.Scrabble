@@ -23,7 +23,7 @@ class TrayRack extends React.Component<Contracts.iTrayProps, Contracts.iTrayProp
     render() {
         var TilesProp: Contracts.iTrayProps = this.props;
         var childs: React.ReactElement<Contracts.iProps>[] = [];
-        var chkId = "chk_" + TilesProp.id;
+        var chkId = "chk_" + TilesProp.Id;
         var chkBox = React.createElement('input',
             {
                 type: "checkbox",
@@ -37,8 +37,8 @@ class TrayRack extends React.Component<Contracts.iTrayProps, Contracts.iTrayProp
             });
         var label = React.createElement('label',
             {
-                htmlFor: "chk_" + TilesProp.id,
-                key: "lbl_" + TilesProp.id
+                htmlFor: "chk_" + TilesProp.Id,
+                key: "lbl_" + TilesProp.Id
             }, TilesProp.Title);
         childs.push(chkBox);
         childs.push(label);

@@ -135,7 +135,7 @@ declare namespace Redux {
          * actions using this method.
          *
          * @param action A plain object representing “what changed”. It is a good
-         *   idea to keep actions serializable so you can record and replay user
+         *   idea to keep actions serializable so you can record and replay player
          *   sessions, or use the time travelling `redux-devtools`. An action must
          *   have a `type` property which may not be `undefined`. It is a good idea
          *   to use string constants for action types.
@@ -243,7 +243,7 @@ declare namespace Redux {
      *
      * @param [preloadedState] The initial state. You may optionally specify it to
      *   hydrate the state from the server in universal apps, or to restore a
-     *   previously serialized user session. If you use `combineReducers` to
+     *   previously serialized player session. If you use `combineReducers` to
      *   produce the root reducer function, this must be an object with the same
      *   shape as `combineReducers` keys.
      *

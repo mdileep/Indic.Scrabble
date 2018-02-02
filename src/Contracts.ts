@@ -11,40 +11,36 @@
 //---------------------------------------------------------------------------------------------
 export interface iProps {
 }
-export interface iCabinetProps {
+export interface iComponent {
+    Id: string;
     key: string;
+    className: string;
+}
+export interface iCabinetProps extends iComponent {
     Trays: iTrayProps[];
     Remaining: number;
     Total: number;
 }
-export interface iTrayProps {
-    id: string;
-    key: string;
-    className: string;
+export interface iTrayProps extends iComponent {
     Title: string;
     Index: number;
     Tiles: iTileProps[];
     Show: boolean;
     Disabled: boolean;
 }
-export interface iTileProps {
-    Id: string;
-    key: string;
+export interface iTileProps extends iComponent {
     Text: string;
     Remaining: number;
     Total: number;
     Index: number;
     TrayIndex: number;
 }
-export interface iBoardProps {
-    key: string;
+export interface iBoardProps extends iComponent {
+
     Size: number;
     Cells: iCellProps[];
 }
-export interface iCellProps {
-    Id: string;
-    key: string;
-    className: string;
+export interface iCellProps extends iComponent {
     Title: string;
     Current: string;
     Index: number;
@@ -53,25 +49,26 @@ export interface iCellProps {
     Waiting: string[];
     Confirmed: string[];
 }
-export interface iScoreBoard {
-    key: string;
-    Messages: string[];
-    Users: iUser[];
+export interface iPlayers extends iComponent {
+    Players: iPlayer[];
     CurrentPlayer: number;
 }
-export interface iUser {
-    Score: number;
-    Playing: boolean;
-    Unconfirmed: number;
-    Name: string;
-    Id: string;
+export interface iInfoBar extends iComponent {
+    Messages: string[];
 }
-export interface iGameState {
-    Id: string;
-    key: string;
+export interface iPlayer extends iComponent {
+    Name: string;
+    Score: number;
+    Unconfirmed: number;
+    CurrentTurn: boolean;
+    Awarded: iWord[];
+    Claimed: iWord[];
+}
+export interface iGameState extends iComponent {
     Cabinet: iCabinetProps;
     Board: iBoardProps;
-    ScoreBoard: iScoreBoard;
+    Players: iPlayers;
+    InfoBar: iInfoBar;
 }
 export interface iActionArgs {
     type: number;
@@ -97,7 +94,8 @@ export interface iLoadState {
     Lanaguage: string;
     Cabinet: iRawCabinet;
     Board: iRawBoard;
-    ScoreBoard: iScoreBoard;
+    Players: iPlayers;
+    InfoBar: iInfoBar;
 }
 export interface iRawCabinet {
     Trays: iRawTray[];
@@ -112,4 +110,24 @@ export interface iRawTray {
     Count: number;
     Show: boolean;
     Set: string[];
+}
+//
+export interface iPosition {
+    X: number;
+    Y: number;
+}
+export interface iWord {
+    Text: string;
+    Waiting: boolean;
+    Score: number;
+}
+
+
+export interface iPlayerView extends iPlayer {
+    showScore: boolean;
+    showWords: boolean;
+}
+export interface iPlayersView extends iPlayers {
+    showScores: boolean;
+    showWordsList: boolean;
 }

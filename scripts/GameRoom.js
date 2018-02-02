@@ -3,7 +3,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", "react", 'Cabinet', 'Board', 'ScoreBoard'], function (require, exports, React, Cabinet, Board, ScoreBoard) {
+define(["require", "exports", "react", 'Cabinet', 'Board', 'InfoBar', 'GamePlayers', 'RaiseHand', 'Indic'], function (require, exports, React, Cabinet, Board, InfoBar, GamePlayers, RaiseHand, Indic) {
     "use strict";
     var GameRoom = (function (_super) {
         __extends(GameRoom, _super);
@@ -12,15 +12,18 @@ define(["require", "exports", "react", 'Cabinet', 'Board', 'ScoreBoard'], functi
             this.state = props;
         }
         GameRoom.prototype.render = function () {
+            var scores = React.createElement(GamePlayers.default, Indic.Util.Merge(this.props.Players, { key: "scores", showScores: true, showWordsList: false }));
+            var words = React.createElement(GamePlayers.default, Indic.Util.Merge(this.props.Players, { key: "words", Id: "WordBoard", showScores: false, showWordsList: true }));
+            var raiseHand = React.createElement(RaiseHand.default, { key: "raiseHand" });
             var cabinet = React.createElement(Cabinet.default, this.props.Cabinet);
             var board = React.createElement(Board.default, this.props.Board);
-            var info = React.createElement(ScoreBoard.default, this.props.ScoreBoard);
+            var info = React.createElement(InfoBar.default, this.props.InfoBar);
             var block = React.createElement('div', {
                 id: this.props.Id,
                 ref: this.props.Id,
                 className: "game",
                 title: "Scrabble",
-            }, [cabinet, board, info]);
+            }, [raiseHand, board, cabinet, scores, words, info]);
             return block;
         };
         return GameRoom;

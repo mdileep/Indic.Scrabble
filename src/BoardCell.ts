@@ -20,13 +20,18 @@ class BoardCell extends React.Component<Contracts.iCellProps, Contracts.iCellPro
         super(props);
         this.state = props;
     }
-
     render() {
-        var className: string = this.props.Current.trim().length == 0 ? "td" : "td filled";
+        var className: string = (this.props.Waiting.length + this.props.Confirmed.length == 0) ? "td" : "td filled";
         var confirmed = (this.props.Waiting.length == 0 && this.props.Confirmed.length != 0);
         var draggable: boolean = this.props.Waiting.length != 0;
         if (confirmed) { className += " confirmed"; }
         if (draggable) { className += " draggable"; }
+
+        var childs: React.ReactElement<Contracts.iProps>[] = [];
+        if (this.props.Weight != 1) {
+            childs.push(this.renderWeight());
+        }
+
         var block = React.createElement('td',
             {
                 id: this.props.Id,
@@ -38,14 +43,24 @@ class BoardCell extends React.Component<Contracts.iCellProps, Contracts.iCellPro
                 onDragStart: (evt: DragEvent) => { this.OnDragStart(evt); },
                 onDragOver: this.OnDragOver,
                 onDrop: (evt: DragEvent) => { this.OnDrop(evt); }
-            }, [], this.props.Current);
+            }, [childs], this.props.Current);
         return block;
     }
-
+    public renderWeight(): React.ReactElement<Contracts.iProps> {
+        var weightId = "weight_" + this.props.Id;
+        var weight = React.createElement('span',
+            {
+                id: weightId,
+                ref: weightId,
+                key: weightId,
+                className: "weight",
+                title: this.props.Weight
+            }, [], this.props.Weight);
+        return weight;
+    }
     public OnDragOver(ev: Event) {
         ev.preventDefault();
     }
-
     public OnDrop(ev: DragEvent) {
         ev.preventDefault();
         //

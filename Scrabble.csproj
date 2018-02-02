@@ -19,22 +19,24 @@
     <UseGlobalApplicationHostFile />
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="Index.html" />
     <Content Include="Scrabble.png" />
     <Content Include="Miriyam.ico" />
-    <Content Include="Scrabble.html" />
     <TypeScriptCompile Include="src\BoardCell.ts" />
+    <TypeScriptCompile Include="src\RaiseHand.ts" />
     <TypeScriptCompile Include="src\GameActions.ts" />
     <TypeScriptCompile Include="src\GameLoader.ts" />
     <TypeScriptCompile Include="src\Index.ts" />
     <TypeScriptCompile Include="src\Indic.ts" />
+    <TypeScriptCompile Include="src\GamePlayers.ts" />
     <TypeScriptCompile Include="src\Parser.ts" />
-    <TypeScriptCompile Include="src\ScoreBoard.ts" />
+    <TypeScriptCompile Include="src\InfoBar.ts" />
     <TypeScriptCompile Include="src\TrayRack.ts" />
     <TypeScriptCompile Include="src\Tray.ts" />
     <TypeScriptCompile Include="src\Cabinet.ts" />
     <TypeScriptCompile Include="src\Contracts.ts" />
     <TypeScriptCompile Include="src\Board.ts" />
-    <TypeScriptCompile Include="src\GameUser.ts" />
+    <TypeScriptCompile Include="src\GamePlayer.ts" />
     <TypeScriptCompile Include="typings\react-dom.d.ts" />
     <TypeScriptCompile Include="typings\react.d.ts" />
     <TypeScriptCompile Include="typings\redux.d.ts" />
@@ -48,13 +50,16 @@
     <Content Include="scripts\Contracts.js" />
     <Content Include="scripts\GameActions.js" />
     <Content Include="scripts\GameLoader.js" />
+    <Content Include="scripts\GamePlayer.js" />
+    <Content Include="scripts\GamePlayers.js" />
     <Content Include="scripts\GameRoom.js" />
     <Content Include="scripts\GameState.js" />
-    <Content Include="scripts\GameUser.js" />
     <Content Include="scripts\Index.js" />
     <Content Include="scripts\Indic.js" />
+    <Content Include="scripts\InfoBar.js" />
     <Content Include="scripts\LoadState.js" />
     <Content Include="scripts\Parser.js" />
+    <Content Include="scripts\RaiseHand.js" />
     <Content Include="scripts\react-dom.js" />
     <Content Include="scripts\react-dom_14.js" />
     <Content Include="scripts\react.js" />
@@ -66,7 +71,6 @@
   <ItemGroup />
   <ItemGroup>
     <TypeScriptCompile Include="src\LoadState.ts" />
-    <Content Include="scripts\ScoreBoard.js" />
     <Content Include="scripts\Tile.js" />
     <Content Include="scripts\Tray.js" />
     <Content Include="scripts\TrayRack.js" />
