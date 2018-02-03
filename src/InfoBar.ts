@@ -15,8 +15,9 @@ import * as Contracts from 'Contracts';
 import * as GamePlayer from 'GamePlayer';
 import * as GameLoader from 'GameLoader';
 import * as Indic from "Indic"
+import * as Messages from "Messages"
 
-class MessageBar extends React.Component<Contracts.iInfoBar, Contracts.iInfoBar> {
+class InfoBar extends React.Component<Contracts.iInfoBar, Contracts.iInfoBar> {
     constructor(props: Contracts.iInfoBar) {
         super(props);
         this.state = props;
@@ -36,7 +37,7 @@ class MessageBar extends React.Component<Contracts.iInfoBar, Contracts.iInfoBar>
             return blocks;
         }
 
-        var h2 = React.createElement("h2", { key: "h2", className: "h2" }, Indic.Messages.Messages);
+        var h2 = React.createElement("h2", { key: "h2", className: "h2" }, Messages.Messages.Messages);
         childs.push(h2);
         var items: React.ReactElement<Contracts.iProps>[] = [];
         for (var i = 0; i < this.props.Messages.length; i++) {
@@ -65,4 +66,4 @@ class MessageBar extends React.Component<Contracts.iInfoBar, Contracts.iInfoBar>
         return blocks;
     }
 }
-export default MessageBar;
+export default InfoBar;

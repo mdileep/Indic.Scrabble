@@ -13,7 +13,7 @@ import * as Contracts from 'Contracts';
 import * as Parser from 'Parser';
 import * as GameActions from "GameActions";
 
-export default (state: Contracts.iGameState = Parser.Parser.Parse(LoadState), action: Contracts.iActionArgs) => {
+export default (state: Contracts.iGameState = Parser.Parser.Parse(InitState), action: Contracts.iActionArgs) => {
     var args = action.args;
     switch (action.type) {
         case Contracts.Actions.ToBoard:

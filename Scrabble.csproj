@@ -22,7 +22,9 @@
     <Content Include="Index.html" />
     <Content Include="Scrabble.png" />
     <Content Include="Miriyam.ico" />
+    <TypeScriptCompile Include="src\AksharaSets.ts" />
     <TypeScriptCompile Include="src\BoardCell.ts" />
+    <TypeScriptCompile Include="src\Messages.ts" />
     <TypeScriptCompile Include="src\RaiseHand.ts" />
     <TypeScriptCompile Include="src\GameActions.ts" />
     <TypeScriptCompile Include="src\GameLoader.ts" />
@@ -37,6 +39,7 @@
     <TypeScriptCompile Include="src\Contracts.ts" />
     <TypeScriptCompile Include="src\Board.ts" />
     <TypeScriptCompile Include="src\GamePlayer.ts" />
+    <TypeScriptCompile Include="src\Util.ts" />
     <TypeScriptCompile Include="typings\react-dom.d.ts" />
     <TypeScriptCompile Include="typings\react.d.ts" />
     <TypeScriptCompile Include="typings\redux.d.ts" />
@@ -44,6 +47,7 @@
     <TypeScriptCompile Include="src\GameRoom.ts" />
     <TypeScriptCompile Include="src\GameState.ts" />
     <Content Include="scrabble.css" />
+    <Content Include="scripts\AksharaSets.js" />
     <Content Include="scripts\Board.js" />
     <Content Include="scripts\BoardCell.js" />
     <Content Include="scripts\Cabinet.js" />
@@ -57,7 +61,7 @@
     <Content Include="scripts\Index.js" />
     <Content Include="scripts\Indic.js" />
     <Content Include="scripts\InfoBar.js" />
-    <Content Include="scripts\LoadState.js" />
+    <Content Include="scripts\Messages.js" />
     <Content Include="scripts\Parser.js" />
     <Content Include="scripts\RaiseHand.js" />
     <Content Include="scripts\react-dom.js" />
@@ -70,10 +74,12 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <TypeScriptCompile Include="src\LoadState.ts" />
+    <TypeScriptCompile Include="src\te.config.ts" />
+    <Content Include="scripts\te.config.js" />
     <Content Include="scripts\Tile.js" />
     <Content Include="scripts\Tray.js" />
     <Content Include="scripts\TrayRack.js" />
+    <Content Include="scripts\Util.js" />
     <Content Include="web.config" />
     <None Include="web.Debug.config">
       <DependentUpon>web.config</DependentUpon>

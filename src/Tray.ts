@@ -37,6 +37,8 @@ class Tray extends React.Component<Contracts.iTrayProps, Contracts.iTrayProps> {
                 });
             tiles.push(tile);
         }
+        var label = React.createElement("span", { key: "label", className: "label" }, this.props.Title);
+
         var className: string = this.props.className + " block" + (this.props.Show ? "" : " hide");
         var blocks = React.createElement('div',
             {
@@ -45,7 +47,7 @@ class Tray extends React.Component<Contracts.iTrayProps, Contracts.iTrayProps> {
                 ref: this.props.Id,
                 className: className,
                 title: this.props.Title
-            }, tiles);
+            }, [label, tiles]);
         return blocks;
     }
 }

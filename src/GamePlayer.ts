@@ -1,5 +1,5 @@
 ﻿//---------------------------------------------------------------------------------------------
-// <copyright file="player.ts" company="Chandam-ఛందం">
+// <copyright file="GamePlayer.ts" company="Chandam-ఛందం">
 //    Copyright © 2013 - 2018 'Chandam-ఛందం' : http://chandam.apphb.com
 //    Original Author : Dileep Miriyala (m.dileep@gmail.com)
 //    Last Updated    : 30-Jan-2018 19:32EST

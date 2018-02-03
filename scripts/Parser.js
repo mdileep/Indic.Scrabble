@@ -4,9 +4,6 @@ define(["require", "exports", "GameActions", "Indic"], function (require, export
         function Parser() {
         }
         Parser.Parse = function (JSON) {
-            if (console) {
-                console.log("Parsing the JSON");
-            }
             var cabinet = Parser.ParseCabinet(JSON.Cabinet);
             var board = Parser.ParseBoard(JSON.Board);
             var players = Parser.ParsePlayers(JSON.Players);
@@ -22,18 +19,12 @@ define(["require", "exports", "GameActions", "Indic"], function (require, export
             };
             return gameState;
         };
-        Parser.InitSynonyms = function (cabinet) {
-            var dict = Indic.Indic.GetSynonyms();
-            for (var key in dict) {
-                var synonym = dict[key];
-                GameActions.GameActions.SyncSynonym(cabinet, key, synonym);
-            }
-        };
         Parser.ParseCabinet = function (JSON) {
             var raw = {};
             raw.key = "Cabinet";
             raw.Trays = [];
             var index = 0;
+            var tilesDict = {};
             for (var i = 0; i < JSON.Trays.length; i++) {
                 var item = JSON.Trays[i];
                 var props = {};
@@ -55,13 +46,13 @@ define(["require", "exports", "GameActions", "Indic"], function (require, export
                     prop.Index = j;
                     prop.TrayIndex = i;
                     props.Tiles.push(prop);
+                    Parser.RefreshCache(tilesDict, { Text: prop.Text, Remaining: prop.Remaining, Total: prop.Total });
                     index++;
                 }
                 raw.Trays.push(props);
             }
-            raw.Total = GameActions.GameActions.TotalTiles(raw);
-            Parser.InitSynonyms(raw);
-            raw.Remaining = GameActions.GameActions.RemainingTiles(raw);
+            raw.Cache = tilesDict;
+            GameActions.GameActions.RefreshTiles(raw);
             return raw;
         };
         Parser.ParseBoard = function (JSON) {
@@ -110,6 +101,30 @@ define(["require", "exports", "GameActions", "Indic"], function (require, export
             raw.key = "InfoBar";
             raw.Messages = [];
             return raw;
+        };
+        Parser.RefreshCache = function (cache, prop) {
+            var text = prop.Text;
+            if (cache[text] != null) {
+                if (cache[text].Total < prop.Total) {
+                    cache[text].Remaining = prop.Remaining;
+                    cache[text].Total = prop.Total;
+                }
+                return;
+            }
+            var sym = Indic.Indic.GetSynonym(text);
+            if (sym != null && cache[sym] != null) {
+                if (cache[sym].Total < prop.Total) {
+                    cache[sym].Remaining = prop.Remaining;
+                    cache[sym].Total = prop.Total;
+                }
+                return;
+            }
+            cache[text] =
+                {
+                    Remaining: prop.Remaining,
+                    Total: prop.Total
+                };
+            return;
         };
         return Parser;
     }());

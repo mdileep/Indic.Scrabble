@@ -2,7 +2,7 @@ define(["require", "exports", 'Contracts', 'Parser', "GameActions"], function (r
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.default = function (state, action) {
-        if (state === void 0) { state = Parser.Parser.Parse(LoadState); }
+        if (state === void 0) { state = Parser.Parser.Parse(InitState); }
         var args = action.args;
         switch (action.type) {
             case Contracts.Actions.ToBoard:

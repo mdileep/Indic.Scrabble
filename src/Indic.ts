@@ -9,106 +9,8 @@
 //       _._        | <TODO>                   |   <TODO>                  | <TODO>
 // </copyright>
 //---------------------------------------------------------------------------------------------
+import * as AS from 'AksharaSets';
 
-export class Messages {
-    public static InvalidMove: string = "'{0}' ను '{1}' తో కలపడం సాధ్యంకాదు.";
-    public static UseSynonym: string = " '{1}' కు బదులుగా '{2}' తో '{0}' ను కలపడానికి ప్రయత్నం చేస్తున్నాం.";
-    public static Messages: string = "సందేశాలు";
-    public static CrossCells: string = "అన్నీ ఒకే నిలువు లేదా అడ్డం గడులలో మాత్రమే ఉండాలి.";
-    public static HasIslands: string = "పదాలు వేరువేరు లంకలలో విస్తరించి ఉన్నాయి.";
-    public static HasOraphans: string = "ఏకాక్షరపదాలు అంగీకారం కావు.";
-    public static OrphanCell: string = "ఏకాక్షరము {2} అడ్డం: {0} నిలువు:{1} వద్ధ ఉన్నది ";
-}
-export class AksharaSets {
-    public static FullSpecialSet: string[] = [
-        "ా",
-        "ి", "ీ",
-        "ు", "ూ",
-        "ృ", "ౄ",
-        "ె", "ే",
-        "ై",
-        "ొ", "ో",
-        "ౌ", "్",// Including Virama
-    ];
-    public static SpecialSet: string[] = [
-        "ా",
-        "ి", "ీ",
-        "ు", "ూ",
-        "ృ", "ౄ",
-        "ె", "ే",
-        "ై",
-        "ొ", "ో",
-        "ౌ" // Excluding Virama
-    ];
-    public static SunnaSet: string[] = ["ం", "ః"];
-    public static Vowels: string[] = [
-        "అ", "ఆ",
-        "ఇ", "ఈ",
-        "ఉ", "ఊ",
-        "ఎ", "ఏ", "ఐ",
-        "ఒ", "ఓ", "ఔ",
-        "ఋ", "ౠ"];
-    public static Consonents = [
-        "క", "ఖ", "గ", "ఘ", "ఙ",
-        "చ", "ఛ", "జ", "ఝ", "ఞ",
-        "ట", "ఠ", "డ", "ఢ", "ణ",
-        "త", "థ", "ద", "ధ", "న",
-        "ప", "ఫ", "బ", "భ", "మ",
-        "య", "ర", "ల", "వ",
-        "శ", "ష", "స",
-        "హ", "ళ", "ఱ",
-        "క్ష"];
-    public static Virama: string = "్";
-    public static Synonyms: any =
-    {
-        "ఆ": "ా",
-        "ఇ": "ి",
-        "ఈ": "ీ",
-        "ఉ": "ు",
-        "ఊ": "ూ",
-        "ఋ": "ృ",
-        "ౠ": "ౄ",
-        "ఎ": "ె",
-        "ఏ": "ే",
-        "ఐ": "ై",
-        "ఒ": "ొ",
-        "ఓ": "ో",
-        "ఔ": "ౌ",
-        "ా": "ఆ",
-        "ి": "ఇ",
-        "ీ": "ఈ",
-        "ు": "ఉ",
-        "ూ": "ఊ",
-        "ృ": "ఋ",
-        "ౄ": "ౠ",
-        "ె": "ఎ",
-        "ే": "ఏ",
-        "ై": "ఐ",
-        "ొ": "ఒ",
-        "ో": "ఓ",
-        "ౌ": "ఔ"
-    };
-}
-export class Util {
-    public static Format(s: string, args: any): string {
-        var formatted = s;
-        for (var arg in args) {
-            formatted = formatted.replace("{" + arg + "}", args[arg]);
-        }
-        return formatted;
-    }
-    public static Merge(...args: any[]): any {
-        var resObj = {} as any;
-        for (var i = 0; i < arguments.length; i += 1) {
-            var obj = arguments[i],
-                keys = Object.keys(obj);
-            for (var j = 0; j < keys.length; j += 1) {
-                resObj[keys[j]] = obj[keys[j]];
-            }
-        }
-        return resObj;
-    }
-}
 export class Indic {
     public static IsValid(arr: string[]): boolean {
         //Tobe improved for sure..
@@ -172,7 +74,7 @@ export class Indic {
             }
             var isCurrConso: boolean = Indic.IsConsonent(arr[i]);
             if (isConso && isCurrConso) {
-                res = res + AksharaSets.Virama + arr[i];
+                res = res + AS.AksharaSets.Virama + arr[i];
             }
             else {
                 res = res + arr[i];
@@ -187,24 +89,24 @@ export class Indic {
         return index >= 0;
     }
     public static IsVowel(char: string): boolean {
-        return Indic.Contains(AksharaSets.Vowels, char);
+        return Indic.Contains(AS.AksharaSets.Vowels, char);
     }
     public static IsConsonent(char: string): boolean {
-        return Indic.Contains(AksharaSets.Consonents, char);
+        return Indic.Contains(AS.AksharaSets.Consonents, char);
     }
     public static IsSpecialSet(char: string): boolean {
-        return Indic.Contains(AksharaSets.SpecialSet, char);
+        return Indic.Contains(AS.AksharaSets.SpecialSet, char);
     }
     public static IsFullSpecialSet(char: string): boolean {
-        return Indic.Contains(AksharaSets.FullSpecialSet, char);
+        return Indic.Contains(AS.AksharaSets.FullSpecialSet, char);
     }
     public static IsSunnaSet(char: string): boolean {
-        return Indic.Contains(AksharaSets.SunnaSet, char);
+        return Indic.Contains(AS.AksharaSets.SunnaSet, char);
     }
     public static GetSynonym(akshara: string): string {
-        return AksharaSets.Synonyms[akshara];
+        return AS.AksharaSets.Synonyms[akshara];
     }
     public static GetSynonyms(): any {
-        return AksharaSets.Synonyms;
+        return AS.AksharaSets.Synonyms;
     }
 }

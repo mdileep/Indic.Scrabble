@@ -28,6 +28,7 @@ define(["require", "exports", "react", 'Tile'], function (require, exports, Reac
                 });
                 tiles.push(tile);
             }
+            var label = React.createElement("span", { key: "label", className: "label" }, this.props.Title);
             var className = this.props.className + " block" + (this.props.Show ? "" : " hide");
             var blocks = React.createElement('div', {
                 id: this.props.Id,
@@ -35,7 +36,7 @@ define(["require", "exports", "react", 'Tile'], function (require, exports, Reac
                 ref: this.props.Id,
                 className: className,
                 title: this.props.Title
-            }, tiles);
+            }, [label, tiles]);
             return blocks;
         };
         return Tray;

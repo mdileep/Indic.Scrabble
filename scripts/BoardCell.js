@@ -13,15 +13,7 @@ define(["require", "exports", "react", 'Contracts', 'GameLoader'], function (req
         }
         BoardCell.prototype.render = function () {
             var _this = this;
-            var className = (this.props.Waiting.length + this.props.Confirmed.length == 0) ? "td" : "td filled";
-            var confirmed = (this.props.Waiting.length == 0 && this.props.Confirmed.length != 0);
-            var draggable = this.props.Waiting.length != 0;
-            if (confirmed) {
-                className += " confirmed";
-            }
-            if (draggable) {
-                className += " draggable";
-            }
+            var className = this.getClass();
             var childs = [];
             if (this.props.Weight != 1) {
                 childs.push(this.renderWeight());
@@ -33,12 +25,46 @@ define(["require", "exports", "react", 'Contracts', 'GameLoader'], function (req
                 className: className,
                 title: this.props.Current,
                 index: this.props.Index,
-                draggable: draggable,
+                draggable: this.isDragable(),
                 onDragStart: function (evt) { _this.OnDragStart(evt); },
                 onDragOver: this.OnDragOver,
                 onDrop: function (evt) { _this.OnDrop(evt); }
             }, [childs], text);
             return block;
+        };
+        BoardCell.prototype.isDragable = function () {
+            return this.props.Waiting.length != 0;
+        };
+        BoardCell.prototype.getClass = function () {
+            var className = (this.props.Waiting.length + this.props.Confirmed.length == 0) ? "td" : "td filled";
+            var confirmed = (this.props.Waiting.length == 0 && this.props.Confirmed.length != 0);
+            var draggable = this.isDragable();
+            if (confirmed) {
+                className += " confirmed";
+            }
+            if (draggable) {
+                className += " draggable";
+            }
+            if (confirmed || this.props.Waiting.length != 0) {
+                return className;
+            }
+            switch (this.props.Weight) {
+                case 3:
+                    className += " w3";
+                    break;
+                case 4:
+                    className += " w4";
+                    break;
+                case 6:
+                    className += " w6";
+                    break;
+                case 8:
+                    className += " w8";
+                    break;
+                default:
+                    break;
+            }
+            return className;
         };
         BoardCell.prototype.renderWeight = function () {
             var weightId = "weight_" + this.props.Id;

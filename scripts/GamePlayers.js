@@ -3,7 +3,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", "react", 'GamePlayer', 'Indic'], function (require, exports, React, GamePlayer, Indic) {
+define(["require", "exports", "react", 'GamePlayer', 'Util'], function (require, exports, React, GamePlayer, Util) {
     "use strict";
     var GamePlayers = (function (_super) {
         __extends(GamePlayers, _super);
@@ -14,7 +14,7 @@ define(["require", "exports", "react", 'GamePlayer', 'Indic'], function (require
         GamePlayers.prototype.render = function () {
             var players = [];
             for (var i = 0; i < this.props.Players.length; i++) {
-                var player = React.createElement(GamePlayer.default, Indic.Util.Merge(this.props.Players[i], { showScore: this.props.showScores, showWords: this.props.showWordsList }));
+                var player = React.createElement(GamePlayer.default, Util.Util.Merge(this.props.Players[i], { showScore: this.props.showScores, showWords: this.props.showWordsList }));
                 players.push(player);
             }
             var blocks = React.createElement('div', {

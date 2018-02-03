@@ -21,12 +21,7 @@ class BoardCell extends React.Component<Contracts.iCellProps, Contracts.iCellPro
         this.state = props;
     }
     render() {
-        var className: string = (this.props.Waiting.length + this.props.Confirmed.length == 0) ? "td" : "td filled";
-        var confirmed = (this.props.Waiting.length == 0 && this.props.Confirmed.length != 0);
-        var draggable: boolean = this.props.Waiting.length != 0;
-        if (confirmed) { className += " confirmed"; }
-        if (draggable) { className += " draggable"; }
-
+        var className: string = this.getClass();
         var childs: React.ReactElement<Contracts.iProps>[] = [];
         if (this.props.Weight != 1) {
             childs.push(this.renderWeight());
@@ -39,12 +34,44 @@ class BoardCell extends React.Component<Contracts.iCellProps, Contracts.iCellPro
                 className: className,
                 title: this.props.Current,
                 index: this.props.Index,
-                draggable: draggable,
+                draggable: this.isDragable(),
                 onDragStart: (evt: DragEvent) => { this.OnDragStart(evt); },
                 onDragOver: this.OnDragOver,
                 onDrop: (evt: DragEvent) => { this.OnDrop(evt); }
             }, [childs], text);
         return block;
+    }
+    isDragable(): boolean {
+        return this.props.Waiting.length != 0;
+    }
+    getClass(): string {
+        var className: string = (this.props.Waiting.length + this.props.Confirmed.length == 0) ? "td" : "td filled";
+        var confirmed = (this.props.Waiting.length == 0 && this.props.Confirmed.length != 0);
+        var draggable: boolean = this.isDragable();
+        if (confirmed) { className += " confirmed"; }
+        if (draggable) { className += " draggable"; }
+
+        if (confirmed || this.props.Waiting.length != 0) {
+            return className;
+        }
+
+        switch (this.props.Weight) {
+            case 3:
+                className += " w3";
+                break;
+            case 4:
+                className += " w4";
+                break;
+            case 6:
+                className += " w6";
+                break;
+            case 8:
+                className += " w8";
+                break;
+            default:
+                break;
+        }
+        return className;
     }
     public renderWeight(): React.ReactElement<Contracts.iProps> {
         var weightId = "weight_" + this.props.Id;

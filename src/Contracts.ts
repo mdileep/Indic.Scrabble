@@ -20,6 +20,7 @@ export interface iCabinetProps extends iComponent {
     Trays: iTrayProps[];
     Remaining: number;
     Total: number;
+    Cache: iCachedTile;
 }
 export interface iTrayProps extends iComponent {
     Title: string;
@@ -121,7 +122,11 @@ export interface iWord {
     Waiting: boolean;
     Score: number;
 }
-
+export interface iCachedTile {
+    [key: string]: any;
+    Remaining: number;
+    Total: number;
+}
 
 export interface iPlayerView extends iPlayer {
     showScore: boolean;

@@ -103,7 +103,7 @@ table {
     text-align: center;
 }
 
-.count, .weight {
+.count {
     text-align: left;
     vertical-align: top;
     font-size: 10px;
@@ -141,7 +141,7 @@ table {
     font-size: 24px;
     font-weight: bold;
     color: white;
-    background-color: yellowgreen;
+    background-color: brown;
     display: block;
     width: 100%;
     text-align: center;
@@ -149,12 +149,12 @@ table {
 
 .noTurn {
     font-weight: normal;
-    color: black;
+    color: white;
     display: block;
     width: 100%;
     font-size: 24px;
     text-align: center;
-    background-color: lightgoldenrodyellow;
+    background-color: black;
 }
 
 .playerProp {
@@ -221,4 +221,40 @@ table {
     color: blue;
     text-align: right;
     width: 100%;
+}
+
+.label {
+    color: blue;
+    font-size: 12px;
+    clear: both;
+    font-weight: bold;
+    display: block;
+}
+
+.weight {
+    text-align: left;
+    vertical-align: top;
+    font-size: 10px;
+    display: inline-block;
+    float: left;
+}
+
+.w3 {
+    background-color: burlywood;
+    color: white;
+}
+
+.w4 {
+    background-color: coral;
+    color: white;
+}
+
+.w6 {
+    background-color: darkred;
+    color: white;
+}
+
+.w8 {
+    background-color: yellowgreen;
+    color: white;
 }

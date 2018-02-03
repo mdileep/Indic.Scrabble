@@ -10,23 +10,25 @@
 // </copyright>
 //---------------------------------------------------------------------------------------------
 import * as Contracts from 'Contracts';
+import * as Messages from 'Messages';
 import * as Indic from 'Indic';
+import * as Util from 'Util';
 
 export class GameActions {
-    public static Pass(state: Contracts.iGameState, args: Contracts.iArgs): void {
+    static Pass(state: Contracts.iGameState, args: Contracts.iArgs): void {
         var isValidMove: boolean = GameActions.ValidateMove(state.Board);
         if (!isValidMove) {
-            state.InfoBar.Messages.push(Indic.Messages.CrossCells);
+            state.InfoBar.Messages.push(Messages.Messages.CrossCells);
             return;
         }
         var hasOrphans: boolean = GameActions.HasOrphans(state);
         if (hasOrphans) {
-            state.InfoBar.Messages.push(Indic.Messages.HasOraphans);
+            state.InfoBar.Messages.push(Messages.Messages.HasOraphans);
             return;
         }
         var hasClusters: boolean = GameActions.HasClusters(state);
         if (hasClusters) {
-            state.InfoBar.Messages.push(Indic.Messages.HasIslands);
+            state.InfoBar.Messages.push(Messages.Messages.HasIslands);
             return;
         }
         var isValid: boolean = GameActions.ValidateWords(state);
@@ -38,34 +40,93 @@ export class GameActions {
         GameActions.SwitchTurn(state);
         GameActions.SaveBoard(state);
     }
-    public static SaveBoard(state: Contracts.iGameState): void {
+    static SaveBoard(state: Contracts.iGameState): void {
         for (var i = 0; i < state.Board.Cells.length; i++) {
             var Cell: Contracts.iCellProps = state.Board.Cells[i];
             Cell.Confirmed = Cell.Confirmed.concat(Cell.Waiting);
             Cell.Waiting = [];
         }
     }
-    public static RefreshClaims(state: Contracts.iGameState): void {
+    static Refresh(state: Contracts.iGameState) {
+        GameActions.RefreshTiles(state.Cabinet);
+        GameActions.RefreshClaims(state);
+    }
+    static RefreshClaims(state: Contracts.iGameState): void {
         var Claims: Contracts.iWord[] = GameActions.WordsOnBoard(state.Board, true);
         var playerId: number = state.Players.CurrentPlayer;
         var player: Contracts.iPlayer = state.Players.Players[playerId];
         player.Claimed = Claims;
     }
-    public static AwardClaims(state: Contracts.iGameState): void {
+    static RefreshTiles(cabinet: Contracts.iCabinetProps) {
+        var cache: Contracts.iCachedTile = cabinet.Cache;
+        for (var i = 0; i < cabinet.Trays.length; i++) {
+            var tray: Contracts.iTrayProps = cabinet.Trays[i];
+            for (var j = 0; j < tray.Tiles.length; j++) {
+                var tile: Contracts.iTileProps = tray.Tiles[j];
+                var text = tile.Text;
+                if (cache[text] == null) {
+                    var synm = Indic.Indic.GetSynonym(text);
+                    tile.Remaining = cache[synm].Remaining;
+                    tile.Total = cache[synm].Remaining;
+                    continue;
+                }
+                {
+                    tile.Remaining = cache[text].Remaining;
+                    tile.Total = cache[text].Remaining;
+                }
+            }
+        }
+
+        var remaining = 0;
+        var total = 0;
+        for (var key in cache) {
+            remaining = remaining + cache[key].Remaining;
+            total = total + cache[key].Total;
+        }
+        cabinet.Cache = cache;
+        cabinet.Remaining = remaining;
+        cabinet.Total = total;
+    }
+    static AwardClaims(state: Contracts.iGameState): void {
         var Claims: Contracts.iWord[] = GameActions.WordsOnBoard(state.Board, true);
         var playerId: number = state.Players.CurrentPlayer;
         var player: Contracts.iPlayer = state.Players.Players[playerId];
         player.Awarded = player.Awarded.concat(Claims);
         player.Claimed = [];
     }
-    public static ValidateWords(state: Contracts.iGameState): boolean {
-        var Words: Contracts.iWord[] = GameActions.WordsOnBoard(state.Board, true);
+    static ValidateWords(state: Contracts.iGameState): boolean {
+        var ClaimedWords: Contracts.iWord[] = GameActions.WordsOnBoard(state.Board, true);
+        var AllAwarded: Contracts.iWord[] = GameActions.AwardedWords(state);
         var player: number = state.Players.CurrentPlayer;
-        state.Players.Players[player].Claimed = Words;
+        state.Players.Players[player].Claimed = ClaimedWords;
+        var hasDuplciates: boolean = GameActions.HasDuplicates(state, AllAwarded, ClaimedWords);
+        if (hasDuplciates) {
+            return false;
+        }
         //Actual Word Verification against Word Database
         return true;
     }
-    public static SetScores(state: Contracts.iGameState): void {
+    static HasDuplicates(state: Contracts.iGameState, Src: Contracts.iWord[], Compare: Contracts.iWord[]): boolean {
+        var res: boolean = false;
+        for (var key in Compare) {
+            var word: Contracts.iWord = Compare[key];
+            var exists: boolean = Util.Util.Contains(word, Src);
+            if (exists) {
+                state.InfoBar.Messages.push(Util.Util.Format(Messages.Messages.HasDupliates, [word.Text]));
+                return true;
+            }
+        }
+        return false;
+    }
+    static AwardedWords(state: Contracts.iGameState) {
+        var Words: Contracts.iWord[] = [];
+        for (var i = 0; i < state.Players.Players.length; i++) {
+            var player: Contracts.iPlayer = state.Players.Players[i];
+            Words = Words.concat(player.Awarded);
+        }
+        return Words;
+    }
+    static SetScores(state: Contracts.iGameState): void {
         for (var i = 0; i < state.Players.Players.length; i++) {
             var player: Contracts.iPlayer = state.Players.Players[i];
             var score: number = 0;
@@ -75,7 +136,7 @@ export class GameActions {
             player.Score = score;
         }
     }
-    public static SwitchTurn(state: Contracts.iGameState): void {
+    static SwitchTurn(state: Contracts.iGameState): void {
         for (var i = 0; i < state.Players.Players.length; i++) {
             var player: Contracts.iPlayer = state.Players.Players[i];
             player.CurrentTurn = !player.CurrentTurn;
@@ -84,33 +145,31 @@ export class GameActions {
             }
         }
     }
-    public static ToTray(state: Contracts.iGameState, args: Contracts.iArgs): void {
+    static ToTray(state: Contracts.iGameState, args: Contracts.iArgs): void {
+        if (args.SrcCell == null) {
+            //May be Tile dropped on Tile.
+            return;
+        }
         var cell: Contracts.iCellProps = state.Board.Cells[args.SrcCell];
         if (cell.Waiting.length == 0) {
             return;
         }
         if (cell.Waiting.length > 0) {
-            var toRemove = cell.Waiting[cell.Waiting.length - 1];
+            var toRemove: string = cell.Waiting[cell.Waiting.length - 1];
             cell.Waiting.pop();
             cell.Current = Indic.Indic.ToString(cell.Confirmed.concat(cell.Waiting));
-            var tile = GameActions.FindTile(state.Cabinet, toRemove);
-            tile.Remaining++;
-            var synonymTile: Contracts.iTileProps = GameActions.FindSynonymTile(state.Cabinet, tile.Text);
-            if (synonymTile != null) {
-                synonymTile.Remaining++;
-            }
-            state.Cabinet.Remaining++;
+            GameActions.SetRemaining(state.Cabinet, toRemove, 1);
         }
-        GameActions.RefreshClaims(state);
+        GameActions.Refresh(state);
     }
-    public static ToBoardInternal(state: Contracts.iGameState, args: Contracts.iArgs, useSynonyms: boolean): void {
+    static ToBoardInternal(state: Contracts.iGameState, args: Contracts.iArgs, useSynonyms: boolean): void {
         var src: string = args.Src;
         var tray: Contracts.iTrayProps;
         var tile: Contracts.iTileProps;
 
         if (args.Origin == "Tile") {
-            var tile = GameActions.FindTile(state.Cabinet, src);
-            if (tile.Remaining == 0) {
+            var remaining = GameActions.GetRemaining(state.Cabinet, src);
+            if (remaining == 0) {
                 return;
             }
         }
@@ -121,7 +180,7 @@ export class GameActions {
 
         var isValid = Indic.Indic.IsValid(list);
         if (!isValid) {
-            state.InfoBar.Messages.push(Indic.Util.Format(Indic.Messages.InvalidMove, [cell.Current, src]));
+            state.InfoBar.Messages.push(Util.Util.Format(Messages.Messages.InvalidMove, [cell.Current, src]));
             if (!useSynonyms) {
                 return;
             }
@@ -129,9 +188,8 @@ export class GameActions {
             if (synonym == null) {
                 return;
             }
-            state.InfoBar.Messages.push(Indic.Util.Format(Indic.Messages.UseSynonym, [cell.Current, src, synonym]));
+            state.InfoBar.Messages.push(Util.Util.Format(Messages.Messages.UseSynonym, [cell.Current, src, synonym]));
 
-            var tile = GameActions.FindTile(state.Cabinet, synonym);
             var iPos: Contracts.iArgs = {} as Contracts.iArgs;
             iPos.Src = synonym;
             iPos.TargetCell = args.TargetCell;
@@ -146,12 +204,7 @@ export class GameActions {
         cell.Current = Indic.Indic.ToString(list);
 
         if (args.Origin == "Tile") {
-            tile.Remaining--;
-            var synonymTile: Contracts.iTileProps = GameActions.FindSynonymTile(state.Cabinet, tile.Text);
-            if (synonymTile != null) {
-                synonymTile.Remaining--;
-            }
-            state.Cabinet.Remaining--;
+            GameActions.SetRemaining(state.Cabinet, src, -1);
         }
         if (args.Origin == "Cell") {
             var srcCell: Contracts.iCellProps = state.Board.Cells[args.SrcCell];
@@ -159,26 +212,20 @@ export class GameActions {
             list = srcCell.Confirmed.concat(srcCell.Waiting);
             srcCell.Current = Indic.Indic.ToString(list);
         }
-        GameActions.RefreshClaims(state);
+        GameActions.Refresh(state);
     }
-    public static ToBoard(state: Contracts.iGameState, args: Contracts.iArgs): void {
+    static ToBoard(state: Contracts.iGameState, args: Contracts.iArgs): void {
         GameActions.ToBoardInternal(state, args, true);
     }
-    public static FindTile(cabinet: Contracts.iCabinetProps, char: string): Contracts.iTileProps {
-        for (var i = 0; i < cabinet.Trays.length; i++) {
-            var tray: Contracts.iTrayProps = cabinet.Trays[i];
-            for (var j = 0; j < tray.Tiles.length; j++) {
-                var tile: Contracts.iTileProps = tray.Tiles[j];
-                if (tile.Text == char) { return tile; }
-            }
+    static GetRemaining(cabinet: Contracts.iCabinetProps, char: string): number {
+        var cache = cabinet.Cache;
+        if (cache[char] == null) {
+            var synonym: string = Indic.Indic.GetSynonym(char);
+            return cache[synonym].Remaining;
         }
-        return null;
+        return cache[char].Remaining;
     }
-    public static FindSynonymTile(cabinet: Contracts.iCabinetProps, char: string): Contracts.iTileProps {
-        var synonym: string = Indic.Indic.GetSynonym(char);
-        return GameActions.FindTile(cabinet, synonym);
-    }
-    public static OpenClose(state: Contracts.iGameState, args: Contracts.iArgs) {
+    static OpenClose(state: Contracts.iGameState, args: Contracts.iArgs) {
         var tray: Contracts.iTrayProps = state.Cabinet.Trays[args.TrayIndex];
         tray.Show = !tray.Show;
         //To make sure atleast one group is available.
@@ -201,7 +248,7 @@ export class GameActions {
             }
         }
     }
-    public static UnConfirmed(Board: Contracts.iBoardProps): number {
+    static UnConfirmed(Board: Contracts.iBoardProps): number {
         //Currently It's a single player game
         var weight = 0;
         for (var i = 0; i < Board.Cells.length; i++) {
@@ -212,32 +259,14 @@ export class GameActions {
         }
         return weight;
     }
-    public static TotalTiles(Cabinet: Contracts.iCabinetProps): number {
-        var count = 0;
-        for (var i = 0; i < Cabinet.Trays.length; i++) {
-            var tray: Contracts.iTrayProps = Cabinet.Trays[i];
-            for (var j = 0; j < tray.Tiles.length; j++) {
-                var tile: Contracts.iTileProps = tray.Tiles[j];
-                count = count + tile.Total;
-            }
+    static SetRemaining(Cabinet: Contracts.iCabinetProps, text: string, incBy: number) {
+        var cache = Cabinet.Cache;
+        if (cache[text] != null) {
+            cache[text].Remaining = cache[text].Remaining + incBy;
+            return;
         }
-        return count;
-    }
-    public static RemainingTiles(Cabinet: Contracts.iCabinetProps): number {
-        var total = 0;
-        var s = 0;
-        for (var i = 0; i < Cabinet.Trays.length; i++) {
-            var tray: Contracts.iTrayProps = Cabinet.Trays[i];
-            for (var j = 0; j < tray.Tiles.length; j++) {
-                var tile: Contracts.iTileProps = tray.Tiles[j];
-                var sym: string = Indic.Indic.GetSynonym(tile.Text)
-                if (sym != null) {
-                    s = s + tile.Remaining;
-                }
-                total = total + tile.Remaining;
-            }
-        }
-        return total - (s / 2);
+        var synonym: string = Indic.Indic.GetSynonym(text);
+        cache[synonym].Remaining = cache[synonym].Remaining + incBy;
     }
     static FirstNonEmpty(Cells: Contracts.iCellProps[], Clustered: number[], size: number): number {
         var first: number = -1;
@@ -257,7 +286,7 @@ export class GameActions {
         var List: number[] = [];
         List.push(first);
         {
-            var P: Contracts.iPosition = BoardUtil.Position(first, size);
+            var P: Contracts.iPosition = Util.Util.Position(first, size);
             var C: Contracts.iCellProps = Cells[first];
         }
         var curr = 0;
@@ -267,7 +296,7 @@ export class GameActions {
                 break;
             }
             found = false;
-            var neighors = BoardUtil.FindNeighbors(List[curr], size);
+            var neighors = Util.Util.FindNeighbors(List[curr], size);
             for (var i = 0; i < neighors.length; i++) {
                 var neighbor = neighors[i];
                 if (List.indexOf(neighbor) >= 0) {
@@ -278,7 +307,7 @@ export class GameActions {
                 if (C.Confirmed.length + C.Waiting.length == 0) {
                     continue;
                 }
-                var P = BoardUtil.Position(neighbor, size);
+                var P = Util.Util.Position(neighbor, size);
                 List.push(neighbor);
             }
             curr++;
@@ -305,9 +334,9 @@ export class GameActions {
         var orphans: number[] = GameActions.OrphanCells(state.Board);
         for (var i = 0; i < orphans.length; i++) {
             var orphan: number = orphans[i];
-            var P: Contracts.iPosition = BoardUtil.Position(orphan, state.Board.Size);
+            var P: Contracts.iPosition = Util.Util.Position(orphan, state.Board.Size);
             var N: Contracts.iCellProps = state.Board.Cells[orphan];
-            state.InfoBar.Messages.push(Indic.Util.Format(Indic.Messages.OrphanCell, [(P.X + 1), (P.Y + 1), N.Current]));
+            state.InfoBar.Messages.push(Util.Util.Format(Messages.Messages.OrphanCell, [(P.X + 1), (P.Y + 1), N.Current]));
         }
         return orphans.length > 0;
     }
@@ -318,7 +347,7 @@ export class GameActions {
             if (Cell.Waiting.length + Cell.Confirmed.length == 0) {
                 continue;
             }
-            var neighors: number[] = BoardUtil.FindNeighbors(i, Board.Size);
+            var neighors: number[] = Util.Util.FindNeighbors(i, Board.Size);
             var valid: boolean = false;
             for (var j = 0; j < neighors.length; j++) {
                 var neighbor: number = neighors[j];
@@ -352,10 +381,10 @@ export class GameActions {
             var index = -1;
             switch (option) {
                 case 'R':
-                    index = BoardUtil.Abs(r, i, Board.Size);
+                    index = Util.Util.Abs(r, i, Board.Size);
                     break;
                 case 'C':
-                    index = BoardUtil.Abs(i, r, Board.Size);
+                    index = Util.Util.Abs(i, r, Board.Size);
                     break;
             }
             var cell = Board.Cells[index];
@@ -412,11 +441,11 @@ export class GameActions {
                 continue;
             }
             if (cnt == 0) {
-                First = BoardUtil.Position(i, size);
+                First = Util.Util.Position(i, size);
                 cnt++;
                 continue;
             }
-            var Current = BoardUtil.Position(i, size);
+            var Current = Util.Util.Position(i, size);
             if (Current.X != First.X) {
                 rows++;
             }
@@ -440,51 +469,4 @@ export class GameActions {
         }
         return Words;
     }
-    static SyncSynonym(cabinet: Contracts.iCabinetProps, key: string, synonym: string) {
-        var iKeyTile: Contracts.iTileProps = GameActions.FindTile(cabinet, key);
-        var iSynonymTile: Contracts.iTileProps = GameActions.FindTile(cabinet, synonym);
-        if (iKeyTile.Total == iSynonymTile.Total) {
-            return;
-        }
-        if (iKeyTile.Total > iSynonymTile.Total) {
-            iSynonymTile.Total = iKeyTile.Total;
-            iSynonymTile.Remaining = iKeyTile.Remaining;
-        } else {
-            iKeyTile.Total = iSynonymTile.Total;
-            iKeyTile.Remaining = iSynonymTile.Remaining;
-        }
-        cabinet.Remaining = cabinet.Remaining - iKeyTile.Remaining;
-    }
-}
-export class BoardUtil {
-    public static Abs(X: number, Y: number, size: number): number {
-        const min = 0;
-        var max: number = size - 1;
-
-        if ((X < min || X > max) || (Y < min || Y > max)) {
-            return -1;
-        }
-        return (size * (X + 1)) + Y - size;
-    }
-    public static Position(N: number, size: number): Contracts.iPosition {
-        var X: number = Math.floor(N / size);
-        var Y: number = (N % size);
-        return { X: X, Y: Y };
-    }
-    static FindNeighbors(index: number, size: number): number[] {
-        var arr: number[] = [];
-        var pos: Contracts.iPosition = BoardUtil.Position(index, size);
-        var bottom: number = BoardUtil.Abs(pos.X + 1, pos.Y, size);
-        var top: number = BoardUtil.Abs(pos.X - 1, pos.Y, size);
-        var left: number = BoardUtil.Abs(pos.X, pos.Y - 1, size);
-        var right: number = BoardUtil.Abs(pos.X, pos.Y + 1, size);
-        var a = [right, left, top, bottom];
-        for (var i = 0; i < a.length; i++) {
-            if (a[i] != -1) {
-                arr.push(a[i]);
-            }
-        }
-        return arr;
-    }
-
 }
