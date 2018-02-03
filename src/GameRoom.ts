@@ -39,7 +39,7 @@ class GameRoom extends React.Component<Contracts.iGameState, Contracts.iGameStat
                 ref: this.props.Id,
                 className: "game",
                 title: "Scrabble",
-            }, [raiseHand, board, cabinet, scores, words, info]);
+            }, [raiseHand, cabinet, board, scores, words, info]);
         return block;
     }
 }

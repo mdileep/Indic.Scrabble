@@ -29,7 +29,7 @@ export class AksharaSets {
         "ై",
         "ొ", "ో",
         "ౌ", "్",// Including Virama
-        "ం", "ః"];
+    ];
     public static SpecialSet: string[] = [
         "ా",
         "ి", "ీ",
@@ -38,8 +38,8 @@ export class AksharaSets {
         "ె", "ే",
         "ై",
         "ొ", "ో",
-        "ౌ", // Excluding Virama
-        "ం", "ః"];
+        "ౌ" // Excluding Virama
+    ];
     public static SunnaSet: string[] = ["ం", "ః"];
     public static Vowels: string[] = [
         "అ", "ఆ",
@@ -111,7 +111,7 @@ export class Util {
 }
 export class Indic {
     public static IsValid(arr: string[]): boolean {
-        //Tobe improved.
+        //Tobe improved for sure..
         if (arr.length == 1 && Indic.IsFullSpecialSet(arr[0])) {
             return false;
         }
@@ -120,11 +120,14 @@ export class Indic {
         var vowel: number = 0;
         var sunnaSet: number = 0;
         for (var i = 0; i < arr.length; i++) {
+
             if (Indic.IsFullSpecialSet(arr[i])) {
                 special++;
-                if (Indic.IsSunnaSet(arr[i])) {
-                    sunnaSet++;
-                }
+                continue;
+            }
+
+            if (Indic.IsSunnaSet(arr[i])) {
+                sunnaSet++;
                 continue;
             }
             if (Indic.IsConsonent(arr[i])) {
@@ -139,7 +142,10 @@ export class Indic {
         if (conso > 0 && vowel > 0) {
             return false;
         }
-        if (vowel > 0 && special > 0 && (sunnaSet != special)) {
+        if (vowel > 0 && special > 0) {
+            return false;
+        }
+        if (sunnaSet > 1) {
             return false;
         }
         if (vowel > 1) {
@@ -150,14 +156,18 @@ export class Indic {
         }
         return true;
     }
-    public static Merge(arr: string[]): string {
+    public static ToString(arr: string[]): string {
         var res = "";
         var pending = "";
+        var sunna = "";
         var isConso: boolean = false;
-
         for (var i = 0; i < arr.length; i++) {
             if (Indic.IsFullSpecialSet(arr[i])) {
                 pending = arr[i];
+                continue;
+            }
+            if (Indic.IsSunnaSet(arr[i])) {
+                sunna = arr[i];
                 continue;
             }
             var isCurrConso: boolean = Indic.IsConsonent(arr[i]);
@@ -169,7 +179,7 @@ export class Indic {
             }
             isConso = isCurrConso;
         }
-        res = res + pending;
+        res = res + pending + sunna;
         return res;
     }
     public static Contains(arr: string[], char: string): boolean {
@@ -193,5 +203,8 @@ export class Indic {
     }
     public static GetSynonym(akshara: string): string {
         return AksharaSets.Synonyms[akshara];
+    }
+    public static GetSynonyms(): any {
+        return AksharaSets.Synonyms;
     }
 }

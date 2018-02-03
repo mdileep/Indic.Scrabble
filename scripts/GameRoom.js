@@ -23,7 +23,7 @@ define(["require", "exports", "react", 'Cabinet', 'Board', 'InfoBar', 'GamePlaye
                 ref: this.props.Id,
                 className: "game",
                 title: "Scrabble",
-            }, [raiseHand, board, cabinet, scores, words, info]);
+            }, [raiseHand, cabinet, board, scores, words, info]);
             return block;
         };
         return GameRoom;

@@ -70,9 +70,8 @@ class Tile extends React.Component<Contracts.iTileProps, Contracts.iTileProps> {
     public renderEmpty(): React.ReactElement<Contracts.iProps> {
         var blank = React.createElement('span',
             {
-                key: "",
+                key: "blank",
                 className: "count",
-
             }, [], " ");
         return blank;
     }
@@ -80,10 +79,9 @@ class Tile extends React.Component<Contracts.iTileProps, Contracts.iTileProps> {
         if (console) { console.log("Attempting to Move a Tile back to Board"); }
         //
         var elem = ev.target as HTMLElement;
-        var data: any = {
-            trayIndex: this.props.TrayIndex,
-            tileIndex: this.props.Index,
-            text: this.props.Text
+        var data: Contracts.iArgs = {
+            Src: this.props.Text,
+            Origin:"Tile"
         };
         ev.dataTransfer.setData("text", JSON.stringify(data));
     }

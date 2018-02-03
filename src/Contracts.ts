@@ -44,7 +44,6 @@ export interface iCellProps extends iComponent {
     Title: string;
     Current: string;
     Index: number;
-    Last: string;
     Weight: number;
     Waiting: string[];
     Confirmed: string[];
@@ -75,11 +74,12 @@ export interface iActionArgs {
     args: iArgs;
 }
 export interface iArgs {
-    Index?: number;
     TrayIndex?: number;
     TileIndex?: number;
-    CellIndex?: number;
+    TargetCell?: number;
     Src?: string;
+    Origin?: string;
+    SrcCell?: number;
 }
 export class Actions {
     public static ToBoard: number = 1;

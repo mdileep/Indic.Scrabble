@@ -51,7 +51,7 @@ define(["require", "exports", "react", 'Contracts', 'Tray', 'TrayRack', 'GameLoa
             var data = JSON.parse(text);
             GameLoader.GameLoader.store.dispatch({
                 type: Contracts.Actions.ToTray,
-                args: { Index: data.tileIndex }
+                args: { Origin: data.Origin, Src: data.Src, SrcCell: data.SrcCell }
             });
         };
         return Cabinet;

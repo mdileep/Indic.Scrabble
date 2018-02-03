@@ -31,7 +31,7 @@ class BoardCell extends React.Component<Contracts.iCellProps, Contracts.iCellPro
         if (this.props.Weight != 1) {
             childs.push(this.renderWeight());
         }
-
+        var text = this.props.Current.length == 0 ? " " : this.props.Current;
         var block = React.createElement('td',
             {
                 id: this.props.Id,
@@ -43,7 +43,7 @@ class BoardCell extends React.Component<Contracts.iCellProps, Contracts.iCellPro
                 onDragStart: (evt: DragEvent) => { this.OnDragStart(evt); },
                 onDragOver: this.OnDragOver,
                 onDrop: (evt: DragEvent) => { this.OnDrop(evt); }
-            }, [childs], this.props.Current);
+            }, [childs], text);
         return block;
     }
     public renderWeight(): React.ReactElement<Contracts.iProps> {
@@ -58,22 +58,24 @@ class BoardCell extends React.Component<Contracts.iCellProps, Contracts.iCellPro
             }, [], this.props.Weight);
         return weight;
     }
+
     public OnDragOver(ev: Event) {
         ev.preventDefault();
     }
+
     public OnDrop(ev: DragEvent) {
         ev.preventDefault();
         //
         var text = ev.dataTransfer.getData("text");
-        var data = JSON.parse(text);
+        var data = JSON.parse(text) as Contracts.iArgs;
         //
         GameLoader.GameLoader.store.dispatch({
             type: Contracts.Actions.ToBoard,
             args: {
-                CellIndex: this.props.Index,
-                TileIndex: data.tileIndex,
-                TrayIndex: data.trayIndex,
-                Src: data.text
+                TargetCell: this.props.Index,
+                Src: data.Src,
+                SrcCell: data.SrcCell,
+                Origin: data.Origin
             }
         });
     }
@@ -81,10 +83,14 @@ class BoardCell extends React.Component<Contracts.iCellProps, Contracts.iCellPro
     public OnDragStart(ev: DragEvent) {
         if (console) { console.log("Attempting to Move a Tile back to Tray"); }
         //
+        var last = this.props.Waiting[this.props.Waiting.length - 1];
         var elem = ev.target as HTMLElement;
-        var data: any = {
-            tileIndex: this.props.Index
-        };
+        var data: Contracts.iArgs =
+            {
+                Src: last,
+                Origin: "Cell",
+                SrcCell: this.props.Index
+            };
         ev.dataTransfer.setData("text", JSON.stringify(data));
     }
 }

@@ -11,6 +11,7 @@
 //---------------------------------------------------------------------------------------------
 import * as Contracts from 'Contracts';
 import * as GameActions from "GameActions";
+import * as Indic from "Indic";
 
 export class Parser {
     public static Parse(JSON: Contracts.iLoadState): Contracts.iGameState {
@@ -30,6 +31,13 @@ export class Parser {
             InfoBar: infoBar
         };
         return gameState;
+    }
+    public static InitSynonyms(cabinet: Contracts.iCabinetProps) {
+        var dict = Indic.Indic.GetSynonyms();
+        for (var key in dict) {
+            var synonym: string = dict[key];
+            GameActions.GameActions.SyncSynonym(cabinet, key, synonym);
+        }
     }
     public static ParseCabinet(JSON: Contracts.iRawCabinet): Contracts.iCabinetProps {
         var raw: Contracts.iCabinetProps = ({} as any) as Contracts.iCabinetProps;
@@ -62,6 +70,7 @@ export class Parser {
             raw.Trays.push(props);
         }
         raw.Total = GameActions.GameActions.TotalTiles(raw);
+        Parser.InitSynonyms(raw);
         raw.Remaining = GameActions.GameActions.RemainingTiles(raw);
         return raw;
     }
@@ -79,7 +88,6 @@ export class Parser {
                 cell.Weight = JSON.Weights[index];
                 cell.Current = " ";
                 cell.Index = index;
-                cell.Last = "";
                 cell.Waiting = [];
                 cell.Confirmed = [];
                 raw.Cells.push(cell); index++;

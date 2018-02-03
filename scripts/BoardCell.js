@@ -26,6 +26,7 @@ define(["require", "exports", "react", 'Contracts', 'GameLoader'], function (req
             if (this.props.Weight != 1) {
                 childs.push(this.renderWeight());
             }
+            var text = this.props.Current.length == 0 ? " " : this.props.Current;
             var block = React.createElement('td', {
                 id: this.props.Id,
                 ref: this.props.Id,
@@ -36,7 +37,7 @@ define(["require", "exports", "react", 'Contracts', 'GameLoader'], function (req
                 onDragStart: function (evt) { _this.OnDragStart(evt); },
                 onDragOver: this.OnDragOver,
                 onDrop: function (evt) { _this.OnDrop(evt); }
-            }, [childs], this.props.Current);
+            }, [childs], text);
             return block;
         };
         BoardCell.prototype.renderWeight = function () {
@@ -60,10 +61,10 @@ define(["require", "exports", "react", 'Contracts', 'GameLoader'], function (req
             GameLoader.GameLoader.store.dispatch({
                 type: Contracts.Actions.ToBoard,
                 args: {
-                    CellIndex: this.props.Index,
-                    TileIndex: data.tileIndex,
-                    TrayIndex: data.trayIndex,
-                    Src: data.text
+                    TargetCell: this.props.Index,
+                    Src: data.Src,
+                    SrcCell: data.SrcCell,
+                    Origin: data.Origin
                 }
             });
         };
@@ -71,9 +72,12 @@ define(["require", "exports", "react", 'Contracts', 'GameLoader'], function (req
             if (console) {
                 console.log("Attempting to Move a Tile back to Tray");
             }
+            var last = this.props.Waiting[this.props.Waiting.length - 1];
             var elem = ev.target;
             var data = {
-                tileIndex: this.props.Index
+                Src: last,
+                Origin: "Cell",
+                SrcCell: this.props.Index
             };
             ev.dataTransfer.setData("text", JSON.stringify(data));
         };

@@ -26,6 +26,7 @@ body {
     padding: 10px;
     border: 1px solid #EEEEEE;
     width: 25%;
+    clear: both;
 }
 
 .block {
@@ -40,7 +41,6 @@ body {
     padding: 10px;
     border: 1px solid #EEEEEE;
     width: 40%;
-    clear: both;
 }
 
 .remaining {
@@ -214,4 +214,11 @@ table {
 .infoBar {
     float: left;
     width: 25%;
+}
+
+.right {
+    clear: both;
+    color: blue;
+    text-align: right;
+    width: 100%;
 }

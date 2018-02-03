@@ -25,7 +25,7 @@ define(["require", "exports"], function (require, exports) {
             "ై",
             "ొ", "ో",
             "ౌ", "్",
-            "ం", "ః"];
+        ];
         AksharaSets.SpecialSet = [
             "ా",
             "ి", "ీ",
@@ -34,8 +34,8 @@ define(["require", "exports"], function (require, exports) {
             "ె", "ే",
             "ై",
             "ొ", "ో",
-            "ౌ",
-            "ం", "ః"];
+            "ౌ"
+        ];
         AksharaSets.SunnaSet = ["ం", "ః"];
         AksharaSets.Vowels = [
             "అ", "ఆ",
@@ -127,9 +127,10 @@ define(["require", "exports"], function (require, exports) {
             for (var i = 0; i < arr.length; i++) {
                 if (Indic.IsFullSpecialSet(arr[i])) {
                     special++;
-                    if (Indic.IsSunnaSet(arr[i])) {
-                        sunnaSet++;
-                    }
+                    continue;
+                }
+                if (Indic.IsSunnaSet(arr[i])) {
+                    sunnaSet++;
                     continue;
                 }
                 if (Indic.IsConsonent(arr[i])) {
@@ -144,7 +145,10 @@ define(["require", "exports"], function (require, exports) {
             if (conso > 0 && vowel > 0) {
                 return false;
             }
-            if (vowel > 0 && special > 0 && (sunnaSet != special)) {
+            if (vowel > 0 && special > 0) {
+                return false;
+            }
+            if (sunnaSet > 1) {
                 return false;
             }
             if (vowel > 1) {
@@ -155,13 +159,18 @@ define(["require", "exports"], function (require, exports) {
             }
             return true;
         };
-        Indic.Merge = function (arr) {
+        Indic.ToString = function (arr) {
             var res = "";
             var pending = "";
+            var sunna = "";
             var isConso = false;
             for (var i = 0; i < arr.length; i++) {
                 if (Indic.IsFullSpecialSet(arr[i])) {
                     pending = arr[i];
+                    continue;
+                }
+                if (Indic.IsSunnaSet(arr[i])) {
+                    sunna = arr[i];
                     continue;
                 }
                 var isCurrConso = Indic.IsConsonent(arr[i]);
@@ -173,7 +182,7 @@ define(["require", "exports"], function (require, exports) {
                 }
                 isConso = isCurrConso;
             }
-            res = res + pending;
+            res = res + pending + sunna;
             return res;
         };
         Indic.Contains = function (arr, char) {
@@ -197,6 +206,9 @@ define(["require", "exports"], function (require, exports) {
         };
         Indic.GetSynonym = function (akshara) {
             return AksharaSets.Synonyms[akshara];
+        };
+        Indic.GetSynonyms = function () {
+            return AksharaSets.Synonyms;
         };
         return Indic;
     }());

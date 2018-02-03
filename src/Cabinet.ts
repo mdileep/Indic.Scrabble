@@ -24,7 +24,7 @@ class Cabinet extends React.Component<Contracts.iCabinetProps, Contracts.iCabine
     render() {
         if (console) { console.log("Rendering Cabinet"); }
         var childs: React.ReactElement<Contracts.iProps>[] = [];
-     
+
         for (var i = 0; i < this.props.Trays.length; i++) {
             var TilesProp: Contracts.iTrayProps = this.props.Trays[i];
             TilesProp.key = "G" + TilesProp.Id;
@@ -63,11 +63,11 @@ class Cabinet extends React.Component<Contracts.iCabinetProps, Contracts.iCabine
         ev.preventDefault();
         //
         var text = ev.dataTransfer.getData("text");
-        var data = JSON.parse(text);
+        var data: Contracts.iArgs = JSON.parse(text);
         //
         GameLoader.GameLoader.store.dispatch({
             type: Contracts.Actions.ToTray,
-            args: { Index: data.tileIndex }
+            args: { Origin: data.Origin, Src: data.Src, SrcCell: data.SrcCell }
         });
     }
 }

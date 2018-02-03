@@ -49,7 +49,6 @@ export class GameActions {
         var Claims: Contracts.iWord[] = GameActions.WordsOnBoard(state.Board, true);
         var playerId: number = state.Players.CurrentPlayer;
         var player: Contracts.iPlayer = state.Players.Players[playerId];
-        debugger;
         player.Claimed = Claims;
     }
     public static AwardClaims(state: Contracts.iGameState): void {
@@ -86,32 +85,40 @@ export class GameActions {
         }
     }
     public static ToTray(state: Contracts.iGameState, args: Contracts.iArgs): void {
-        var cell: Contracts.iCellProps = state.Board.Cells[args.Index];
-        if (cell.Last == cell.Current) {
+        var cell: Contracts.iCellProps = state.Board.Cells[args.SrcCell];
+        if (cell.Waiting.length == 0) {
             return;
         }
         if (cell.Waiting.length > 0) {
             var toRemove = cell.Waiting[cell.Waiting.length - 1];
             cell.Waiting.pop();
-            cell.Current = Indic.Indic.Merge(cell.Confirmed.concat(cell.Waiting));
-            var iPos = GameActions.FindTile(state, toRemove);
-            var group: Contracts.iTrayProps = state.Cabinet.Trays[iPos.TrayIndex];
-            var tile: Contracts.iTileProps = group.Tiles[iPos.TileIndex];
+            cell.Current = Indic.Indic.ToString(cell.Confirmed.concat(cell.Waiting));
+            var tile = GameActions.FindTile(state.Cabinet, toRemove);
             tile.Remaining++;
+            var synonymTile: Contracts.iTileProps = GameActions.FindSynonymTile(state.Cabinet, tile.Text);
+            if (synonymTile != null) {
+                synonymTile.Remaining++;
+            }
             state.Cabinet.Remaining++;
         }
         GameActions.RefreshClaims(state);
     }
     public static ToBoardInternal(state: Contracts.iGameState, args: Contracts.iArgs, useSynonyms: boolean): void {
-        var tray: Contracts.iTrayProps = state.Cabinet.Trays[args.TrayIndex];
-        var tile: Contracts.iTileProps = tray.Tiles[args.TileIndex];
-        if (tile.Remaining == 0) {
-            return;
-        }
         var src: string = args.Src;
-        var cell: Contracts.iCellProps = state.Board.Cells[args.CellIndex];
+        var tray: Contracts.iTrayProps;
+        var tile: Contracts.iTileProps;
+
+        if (args.Origin == "Tile") {
+            var tile = GameActions.FindTile(state.Cabinet, src);
+            if (tile.Remaining == 0) {
+                return;
+            }
+        }
+
+        var cell: Contracts.iCellProps = state.Board.Cells[args.TargetCell];
         var list: string[] = cell.Confirmed.concat(cell.Waiting);
         list.push(src);
+
         var isValid = Indic.Indic.IsValid(list);
         if (!isValid) {
             state.InfoBar.Messages.push(Indic.Util.Format(Indic.Messages.InvalidMove, [cell.Current, src]));
@@ -123,31 +130,53 @@ export class GameActions {
                 return;
             }
             state.InfoBar.Messages.push(Indic.Util.Format(Indic.Messages.UseSynonym, [cell.Current, src, synonym]));
-            var iPos = GameActions.FindTile(state, synonym);
+
+            var tile = GameActions.FindTile(state.Cabinet, synonym);
+            var iPos: Contracts.iArgs = {} as Contracts.iArgs;
             iPos.Src = synonym;
-            iPos.CellIndex = args.CellIndex;
+            iPos.TargetCell = args.TargetCell;
+            iPos.Origin = args.Origin;
+            iPos.SrcCell = args.SrcCell;
             GameActions.ToBoardInternal(state, iPos, false);
             return;
         }
+
         cell.Waiting.push(src);
         list = cell.Confirmed.concat(cell.Waiting);
-        cell.Current = Indic.Indic.Merge(list);
-        tile.Remaining--;
-        state.Cabinet.Remaining--;
+        cell.Current = Indic.Indic.ToString(list);
+
+        if (args.Origin == "Tile") {
+            tile.Remaining--;
+            var synonymTile: Contracts.iTileProps = GameActions.FindSynonymTile(state.Cabinet, tile.Text);
+            if (synonymTile != null) {
+                synonymTile.Remaining--;
+            }
+            state.Cabinet.Remaining--;
+        }
+        if (args.Origin == "Cell") {
+            var srcCell: Contracts.iCellProps = state.Board.Cells[args.SrcCell];
+            srcCell.Waiting.pop();
+            list = srcCell.Confirmed.concat(srcCell.Waiting);
+            srcCell.Current = Indic.Indic.ToString(list);
+        }
         GameActions.RefreshClaims(state);
     }
     public static ToBoard(state: Contracts.iGameState, args: Contracts.iArgs): void {
         GameActions.ToBoardInternal(state, args, true);
     }
-    public static FindTile(state: Contracts.iGameState, char: string): Contracts.iArgs {
-        for (var i = 0; i < state.Cabinet.Trays.length; i++) {
-            var tray: Contracts.iTrayProps = state.Cabinet.Trays[i];
+    public static FindTile(cabinet: Contracts.iCabinetProps, char: string): Contracts.iTileProps {
+        for (var i = 0; i < cabinet.Trays.length; i++) {
+            var tray: Contracts.iTrayProps = cabinet.Trays[i];
             for (var j = 0; j < tray.Tiles.length; j++) {
                 var tile: Contracts.iTileProps = tray.Tiles[j];
-                if (tile.Text == char) { return { TrayIndex: i, TileIndex: j }; }
+                if (tile.Text == char) { return tile; }
             }
         }
         return null;
+    }
+    public static FindSynonymTile(cabinet: Contracts.iCabinetProps, char: string): Contracts.iTileProps {
+        var synonym: string = Indic.Indic.GetSynonym(char);
+        return GameActions.FindTile(cabinet, synonym);
     }
     public static OpenClose(state: Contracts.iGameState, args: Contracts.iArgs) {
         var tray: Contracts.iTrayProps = state.Cabinet.Trays[args.TrayIndex];
@@ -195,15 +224,20 @@ export class GameActions {
         return count;
     }
     public static RemainingTiles(Cabinet: Contracts.iCabinetProps): number {
-        var count = 0;
+        var total = 0;
+        var s = 0;
         for (var i = 0; i < Cabinet.Trays.length; i++) {
             var tray: Contracts.iTrayProps = Cabinet.Trays[i];
             for (var j = 0; j < tray.Tiles.length; j++) {
                 var tile: Contracts.iTileProps = tray.Tiles[j];
-                count = count + tile.Remaining;
+                var sym: string = Indic.Indic.GetSynonym(tile.Text)
+                if (sym != null) {
+                    s = s + tile.Remaining;
+                }
+                total = total + tile.Remaining;
             }
         }
-        return count;
+        return total - (s / 2);
     }
     static FirstNonEmpty(Cells: Contracts.iCellProps[], Clustered: number[], size: number): number {
         var first: number = -1;
@@ -405,6 +439,21 @@ export class GameActions {
             Words = Words.concat(C);
         }
         return Words;
+    }
+    static SyncSynonym(cabinet: Contracts.iCabinetProps, key: string, synonym: string) {
+        var iKeyTile: Contracts.iTileProps = GameActions.FindTile(cabinet, key);
+        var iSynonymTile: Contracts.iTileProps = GameActions.FindTile(cabinet, synonym);
+        if (iKeyTile.Total == iSynonymTile.Total) {
+            return;
+        }
+        if (iKeyTile.Total > iSynonymTile.Total) {
+            iSynonymTile.Total = iKeyTile.Total;
+            iSynonymTile.Remaining = iKeyTile.Remaining;
+        } else {
+            iKeyTile.Total = iSynonymTile.Total;
+            iKeyTile.Remaining = iSynonymTile.Remaining;
+        }
+        cabinet.Remaining = cabinet.Remaining - iKeyTile.Remaining;
     }
 }
 export class BoardUtil {

@@ -61,7 +61,7 @@ define(["require", "exports", "react"], function (require, exports, React) {
         };
         Tile.prototype.renderEmpty = function () {
             var blank = React.createElement('span', {
-                key: "",
+                key: "blank",
                 className: "count",
             }, [], " ");
             return blank;
@@ -72,9 +72,8 @@ define(["require", "exports", "react"], function (require, exports, React) {
             }
             var elem = ev.target;
             var data = {
-                trayIndex: this.props.TrayIndex,
-                tileIndex: this.props.Index,
-                text: this.props.Text
+                Src: this.props.Text,
+                Origin: "Tile"
             };
             ev.dataTransfer.setData("text", JSON.stringify(data));
         };

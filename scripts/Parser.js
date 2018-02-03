@@ -1,4 +1,4 @@
-define(["require", "exports", "GameActions"], function (require, exports, GameActions) {
+define(["require", "exports", "GameActions", "Indic"], function (require, exports, GameActions, Indic) {
     "use strict";
     var Parser = (function () {
         function Parser() {
@@ -21,6 +21,13 @@ define(["require", "exports", "GameActions"], function (require, exports, GameAc
                 InfoBar: infoBar
             };
             return gameState;
+        };
+        Parser.InitSynonyms = function (cabinet) {
+            var dict = Indic.Indic.GetSynonyms();
+            for (var key in dict) {
+                var synonym = dict[key];
+                GameActions.GameActions.SyncSynonym(cabinet, key, synonym);
+            }
         };
         Parser.ParseCabinet = function (JSON) {
             var raw = {};
@@ -53,6 +60,7 @@ define(["require", "exports", "GameActions"], function (require, exports, GameAc
                 raw.Trays.push(props);
             }
             raw.Total = GameActions.GameActions.TotalTiles(raw);
+            Parser.InitSynonyms(raw);
             raw.Remaining = GameActions.GameActions.RemainingTiles(raw);
             return raw;
         };
@@ -70,7 +78,6 @@ define(["require", "exports", "GameActions"], function (require, exports, GameAc
                     cell.Weight = JSON.Weights[index];
                     cell.Current = " ";
                     cell.Index = index;
-                    cell.Last = "";
                     cell.Waiting = [];
                     cell.Confirmed = [];
                     raw.Cells.push(cell);
