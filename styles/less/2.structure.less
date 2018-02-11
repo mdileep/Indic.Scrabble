@@ -1,4 +1,8 @@
-﻿.gameTable {
+﻿.h2 {
+    width: 100%;
+}
+
+.gameTable {
     clear: both;
     float: left;
     width: 100%;
@@ -15,6 +19,8 @@
     .remaining {
         float: right;
         display: none;
+        min-width: 32px;
+        min-height: 32px;
     }
 
     .hide {
@@ -36,6 +42,8 @@
     .tile {
         display: block;
         float: left;
+        min-width: 24px;
+        min-height: 24px;
     }
 
     .count {
@@ -51,6 +59,11 @@
     .table {
         width: 100%;
         height: 100%;
+    }
+
+    .cell {
+        min-width: 24px;
+        min-height: 24px;
     }
 
     .weight {

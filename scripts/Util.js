@@ -71,6 +71,7 @@ define(["require", "exports"], function (require, exports) {
                 var indx = Math.round(Math.random() * (available.length - 1));
                 ret.push(available[indx]);
             }
+            ret.sort();
             return ret;
         };
         return Util;

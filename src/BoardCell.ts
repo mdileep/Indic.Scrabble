@@ -27,7 +27,8 @@ class BoardCell extends React.Component<Contracts.iCellProps, Contracts.iCellPro
             childs.push(this.renderWeight());
         }
         var text = this.props.Current.length == 0 ? " " : this.props.Current;
-        var block = React.createElement('td',
+
+        var elem = React.createElement('td',
             {
                 id: this.props.Id,
                 ref: this.props.Id,
@@ -39,7 +40,7 @@ class BoardCell extends React.Component<Contracts.iCellProps, Contracts.iCellPro
                 onDragOver: this.OnDragOver,
                 onDrop: (evt: DragEvent) => { this.OnDrop(evt); }
             }, [childs], text);
-        return block;
+        return elem;
     }
     isDragable(): boolean {
         return this.props.Waiting.length != 0;

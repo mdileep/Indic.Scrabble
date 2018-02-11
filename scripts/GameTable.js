@@ -14,12 +14,12 @@ define(["require", "exports", "react", 'Contracts', 'GameLoader', 'Tray', 'Util'
         GameTable.prototype.render = function () {
             var _this = this;
             var childs = [];
-            var tray = React.createElement(Tray.default, Util.Util.Merge(this.props.Tray, { ShowLabel: false }));
-            childs.push(tray);
-            if (this.props.EmptyPass == this.props.MaxEmptyPass) {
-                var reDraw = this.renderReDraw();
-                childs.push(reDraw);
-            }
+            var vowelTray = React.createElement(Tray.default, Util.Util.Merge(this.props.VowelTray, { ShowLabel: false }));
+            childs.push(vowelTray);
+            var consoTray = React.createElement(Tray.default, Util.Util.Merge(this.props.ConsoTray, { ShowLabel: false }));
+            childs.push(consoTray);
+            var reDraw = this.renderReDraw();
+            childs.push(reDraw);
             var pass = this.renderPass();
             childs.push(pass);
             var elem = React.createElement('div', {
@@ -41,6 +41,7 @@ define(["require", "exports", "react", 'Contracts', 'GameLoader', 'Tray', 'Util'
                 ref: id,
                 className: "redraw",
                 title: "Re-Draw",
+                disabled: !this.props.CanReDraw,
                 onClick: this.OnReDraw,
             }, [], "Re-Draw");
             return pass;

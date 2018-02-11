@@ -65,12 +65,13 @@ export interface iPlayer extends iComponent {
     Claimed: iWord[];
 }
 export interface iGameTable extends iComponent {
-    Tray: iTrayProps;
-    EmptyPass: number;
-
-    MaxOnTray: number;
+    VowelTray: iTrayProps;
+    ConsoTray: iTrayProps;
+    CanReDraw: boolean;
+    MaxOnTable: number;
     MaxVowels: number;
-    MaxEmptyPass: number;
+    //EmptyPass: number;
+    //MaxEmptyPass: number;
 }
 export interface iGameState extends iComponent {
     Cabinet: iCabinetProps;
@@ -113,9 +114,9 @@ export interface iLoadState {
     InfoBar: iInfoBar;
 }
 export interface iRawGameTable {
-    MaxOnTray: number;
+    MaxOnTable: number;
     MaxVowels: number;
-    MaxEmptyPass: number;
+    //MaxEmptyPass: number;
 }
 export interface iRawCabinet {
     Trays: iRawTray[];

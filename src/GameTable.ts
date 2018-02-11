@@ -25,13 +25,16 @@ class GameTable extends React.Component<Contracts.iGameTable, Contracts.iGameTab
         var childs: React.ReactElement<Contracts.iProps>[] = [];
 
 
-        var tray = React.createElement(((Tray.default as any) as React.ComponentClass<Contracts.iTrayProps>), Util.Util.Merge(this.props.Tray, { ShowLabel: false }));
-        childs.push(tray);
+        var vowelTray = React.createElement(((Tray.default as any) as React.ComponentClass<Contracts.iTrayProps>), Util.Util.Merge(this.props.VowelTray, { ShowLabel: false }));
+        childs.push(vowelTray);
 
-        if (this.props.EmptyPass == this.props.MaxEmptyPass) {
-            var reDraw = this.renderReDraw();
-            childs.push(reDraw);
-        }
+        var consoTray = React.createElement(((Tray.default as any) as React.ComponentClass<Contracts.iTrayProps>), Util.Util.Merge(this.props.ConsoTray, { ShowLabel: false }));
+        childs.push(consoTray);
+
+
+        var reDraw = this.renderReDraw();
+        childs.push(reDraw);
+
 
         var pass = this.renderPass();
         childs.push(pass);
@@ -58,6 +61,7 @@ class GameTable extends React.Component<Contracts.iGameTable, Contracts.iGameTab
                 ref: id,
                 className: "redraw",
                 title: "Re-Draw",
+                disabled: !this.props.CanReDraw,
                 onClick: this.OnReDraw,
             }, [], "Re-Draw");
         return pass;

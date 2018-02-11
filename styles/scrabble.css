@@ -2,27 +2,29 @@
 @import url('https://fonts.googleapis.com/css?family=Mallanna');
 body {
   font-family: 'Mallanna', sans-serif, 'Suranna', cursive, Gautami;
+  font-size: 1.4em;
 }
 .h2,
 .currentTurn,
 .noTurn,
 .label {
   font-family: 'Suranna', cursive;
-  font-size: 1.4em;
 }
 .count,
 .weight {
-  font-size: 0.5em;
-}
-.content,
-.score {
-  font-size: 1.6em;
+  font-size: 0.6em;
 }
 .conditions {
   font-size: 0.8em;
 }
+.footer {
+  font-size: 0.8em;
+}
 
 /* */
+.h2 {
+  width: 100%;
+}
 .gameTable {
   clear: both;
   float: left;
@@ -36,6 +38,8 @@ body {
 .cabinet .remaining {
   float: right;
   display: none;
+  min-width: 32px;
+  min-height: 32px;
 }
 .cabinet .hide {
   display: none;
@@ -53,6 +57,8 @@ body {
 .tray .tile {
   display: block;
   float: left;
+  min-width: 24px;
+  min-height: 24px;
 }
 .tray .count {
   display: inline-block;
@@ -65,6 +71,10 @@ body {
 .board .table {
   width: 100%;
   height: 100%;
+}
+.board .cell {
+  min-width: 24px;
+  min-height: 24px;
 }
 .board .weight {
   display: inline-block;
@@ -126,23 +136,13 @@ body {
   margin: 3px;
   padding: 3px;
 }
-.cabinet .remaining {
-  min-width: 32px;
-  min-height: 32px;
-}
 .tray .tile {
   margin: 3px;
   padding: 3px;
-  min-width: 32px;
-  min-height: 32px;
 }
 .board {
   margin: 3px;
   padding: 3px;
-}
-.board .cell {
-  min-width: 36px;
-  min-height: 32px;
 }
 .players .player {
   margin: 2%;
@@ -259,6 +259,9 @@ body {
 }
 
 /* */
+.h2 {
+  text-align: center;
+}
 .gameTable {
   text-align: right;
 }

@@ -19,7 +19,7 @@ define(["require", "exports", "react", 'Contracts', 'GameLoader'], function (req
                 childs.push(this.renderWeight());
             }
             var text = this.props.Current.length == 0 ? " " : this.props.Current;
-            var block = React.createElement('td', {
+            var elem = React.createElement('td', {
                 id: this.props.Id,
                 ref: this.props.Id,
                 className: className,
@@ -30,7 +30,7 @@ define(["require", "exports", "react", 'Contracts', 'GameLoader'], function (req
                 onDragOver: this.OnDragOver,
                 onDrop: function (evt) { _this.OnDrop(evt); }
             }, [childs], text);
-            return block;
+            return elem;
         };
         BoardCell.prototype.isDragable = function () {
             return this.props.Waiting.length != 0;

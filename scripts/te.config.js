@@ -1,8 +1,8 @@
 var InitState = {
     Id: "Telugu",
     GameTable: {
-        MaxOnTray: 16,
-        MaxVowels: 4,
+        MaxOnTable: 16,
+        MaxVowels: 5,
         MaxEmptyPass: 2,
     },
     Cabinet: {
