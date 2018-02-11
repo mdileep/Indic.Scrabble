@@ -17,24 +17,53 @@ export class Parser {
     public static Parse(JSON: Contracts.iLoadState): Contracts.iGameState {
         //No Error Handling assuming clean -input
         var cabinet: Contracts.iCabinetProps = Parser.ParseCabinet(JSON.Cabinet);
+        var cache: Contracts.iCachedTile = Parser.BuildCache(cabinet);
         var board: Contracts.iBoardProps = Parser.ParseBoard(JSON.Board);
         var players: Contracts.iPlayers = Parser.ParsePlayers(JSON.Players);
         var infoBar: Contracts.iInfoBar = Parser.ParseInfoBar(JSON.InfoBar);
+        var gameTable: Contracts.iGameTable = Parser.BuildGameTable(JSON.GameTable, cache);
+
+        GameActions.GameActions.RefreshTrays(cabinet.Trays, cache);
+        GameActions.GameActions.RefreshCabinet(cabinet, cache);
+
         var gameState: Contracts.iGameState = {
             Id: JSON.Id,
             key: JSON.Id,
             className: "game",
+            Cache: cache,
             Cabinet: cabinet,
             Board: board,
             Players: players,
-            InfoBar: infoBar
+            InfoBar: infoBar,
+            ReadOnly: false,
+            Show: true,
+            GameTable: gameTable
         };
         return gameState;
     }
+
+    public static BuildGameTable(JSON: Contracts.iRawGameTable, cache: Contracts.iCachedTile): Contracts.iGameTable {
+        var available = GameActions.GameActions.DrawTiles(cache, JSON.MaxVowels, JSON.MaxOnTray);
+        var tray = GameActions.GameActions.SetTableTray(available);
+
+        var raw: Contracts.iGameTable = ({} as any) as Contracts.iGameTable;
+        raw.key = "gameTable";
+        raw.Id = raw.key;
+        raw.className = "gameTable";
+        raw.EmptyPass = 0;
+        raw.MaxOnTray = JSON.MaxOnTray;
+        raw.MaxVowels = JSON.MaxVowels;
+        raw.MaxEmptyPass = JSON.MaxEmptyPass;
+        raw.Tray = tray;
+        return raw;
+    }
+
     public static ParseCabinet(JSON: Contracts.iRawCabinet): Contracts.iCabinetProps {
         var raw: Contracts.iCabinetProps = ({} as any) as Contracts.iCabinetProps;
         raw.key = "Cabinet";
         raw.Trays = [];
+        raw.ReadOnly = true;
+        raw.Show = false;
         var index = 0;
         var tilesDict: Contracts.iCachedTile = {} as any;
         for (var i = 0; i < JSON.Trays.length; i++) {
@@ -46,6 +75,7 @@ export class Parser {
             props.Title = item.Title;
             props.Show = item.Show;
             props.Disabled = false;
+            props.ReadOnly = raw.ReadOnly;
             props.Index = i;
             props.Tiles = [];
             for (var j = 0; j < item.Set.length; j++) {
@@ -57,16 +87,26 @@ export class Parser {
                 prop.Total = item.Count;
                 prop.Index = j;
                 prop.TrayIndex = i;
+                prop.ReadOnly = raw.ReadOnly;
                 props.Tiles.push(prop);
-                Parser.RefreshCache(tilesDict, { Text: prop.Text, Remaining: prop.Remaining, Total: prop.Total });
                 index++;
             }
             raw.Trays.push(props);
         }
-        raw.Cache = tilesDict;
-        GameActions.GameActions.RefreshTiles(raw);
         return raw;
     }
+    public static BuildCache(JSON: Contracts.iCabinetProps): Contracts.iCachedTile {
+        var tilesDict: Contracts.iCachedTile = {} as any;
+        for (var i = 0; i < JSON.Trays.length; i++) {
+            var item = JSON.Trays[i];
+            for (var j = 0; j < item.Tiles.length; j++) {
+                var prop: Contracts.iTileProps = item.Tiles[j];
+                Parser.RefreshCache(tilesDict, { Text: prop.Text, Remaining: prop.Remaining, Total: prop.Total });
+            }
+        }
+        return tilesDict;
+    }
+
     public static ParseBoard(JSON: Contracts.iRawBoard): Contracts.iBoardProps {
         var raw: Contracts.iBoardProps = ({} as any) as Contracts.iBoardProps;
         raw.key = "Board";
@@ -94,6 +134,7 @@ export class Parser {
         raw.key = raw.Id;
         raw.Players = [];
         raw.CurrentPlayer = 0;
+        raw.HasClaims = false;
         for (var i = 0; i < players.Players.length; i++) {
             var player: Contracts.iPlayer = players.Players[i];
             player.CurrentTurn = (i == raw.CurrentPlayer);

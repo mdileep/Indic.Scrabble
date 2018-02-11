@@ -67,4 +67,18 @@ export class Util {
         }
         return res;
     }
+
+    public static Draw(available: string[], max: number): string[] {
+        var size = max;
+        if (available.length < max) {
+            size = available.length;
+        }
+
+        var ret: string[] = [];
+        for (var i = 0; i < size; i++) {
+            var indx = Math.round(Math.random() * (available.length - 1));
+            ret.push(available[indx]);
+        }
+        return ret;
+    }
 }

@@ -32,8 +32,8 @@ define(["require", "exports", "react", 'Contracts', 'GameLoader'], function (req
             }, TilesProp.Title);
             childs.push(chkBox);
             childs.push(label);
-            var blocks = React.createElement('span', null, childs);
-            return blocks;
+            var elem = React.createElement('span', null, childs);
+            return elem;
         };
         TrayRack.prototype.OpenClose = function (evt) {
             GameLoader.GameLoader.store.dispatch({

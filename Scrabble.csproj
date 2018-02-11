@@ -20,12 +20,15 @@
   </PropertyGroup>
   <ItemGroup>
     <Content Include="Index.html" />
-    <Content Include="Scrabble.png" />
-    <Content Include="Miriyam.ico" />
+    <Content Include="scripts\GameTable.js" />
+    <Content Include="styles\scrabble.css" />
+    <Content Include="styles\scrabble.min.css" />
+  </ItemGroup>
+  <ItemGroup>
     <TypeScriptCompile Include="src\AksharaSets.ts" />
     <TypeScriptCompile Include="src\BoardCell.ts" />
     <TypeScriptCompile Include="src\Messages.ts" />
-    <TypeScriptCompile Include="src\RaiseHand.ts" />
+    <TypeScriptCompile Include="src\GameTable.ts" />
     <TypeScriptCompile Include="src\GameActions.ts" />
     <TypeScriptCompile Include="src\GameLoader.ts" />
     <TypeScriptCompile Include="src\Index.ts" />
@@ -40,13 +43,18 @@
     <TypeScriptCompile Include="src\Board.ts" />
     <TypeScriptCompile Include="src\GamePlayer.ts" />
     <TypeScriptCompile Include="src\Util.ts" />
-    <TypeScriptCompile Include="typings\react-dom.d.ts" />
-    <TypeScriptCompile Include="typings\react.d.ts" />
-    <TypeScriptCompile Include="typings\redux.d.ts" />
     <TypeScriptCompile Include="src\Tile.ts" />
     <TypeScriptCompile Include="src\GameRoom.ts" />
     <TypeScriptCompile Include="src\GameState.ts" />
-    <Content Include="scrabble.css" />
+    <TypeScriptCompile Include="src\te.config.ts" />
+  </ItemGroup>
+  <ItemGroup>
+    <TypeScriptCompile Include="typings\react-dom.d.ts" />
+    <TypeScriptCompile Include="typings\react.d.ts" />
+    <TypeScriptCompile Include="typings\redux.d.ts" />
+    <TypeScriptCompile Include="typings\require.d.ts" />
+  </ItemGroup>
+  <ItemGroup>
     <Content Include="scripts\AksharaSets.js" />
     <Content Include="scripts\Board.js" />
     <Content Include="scripts\BoardCell.js" />
@@ -61,6 +69,8 @@
     <Content Include="scripts\Index.js" />
     <Content Include="scripts\Indic.js" />
     <Content Include="scripts\InfoBar.js" />
+    <Content Include="scripts\less-1.5.1.js" />
+    <Content Include="scripts\less-1.5.1.min.js" />
     <Content Include="scripts\Messages.js" />
     <Content Include="scripts\Parser.js" />
     <Content Include="scripts\RaiseHand.js" />
@@ -69,24 +79,25 @@
     <Content Include="scripts\react.js" />
     <Content Include="scripts\react_14.js" />
     <Content Include="scripts\redux.js" />
+    <Content Include="scripts\Referee.js" />
     <Content Include="scripts\require.js" />
-    <TypeScriptCompile Include="typings\require.d.ts" />
-  </ItemGroup>
-  <ItemGroup />
-  <ItemGroup>
-    <TypeScriptCompile Include="src\te.config.ts" />
     <Content Include="scripts\te.config.js" />
     <Content Include="scripts\Tile.js" />
     <Content Include="scripts\Tray.js" />
     <Content Include="scripts\TrayRack.js" />
     <Content Include="scripts\Util.js" />
-    <Content Include="web.config" />
-    <None Include="web.Debug.config">
-      <DependentUpon>web.config</DependentUpon>
-    </None>
-    <None Include="web.Release.config">
-      <DependentUpon>web.config</DependentUpon>
-    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Scrabble.png" />
+    <Content Include="Miriyam.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <LessFiles Include="styles\less\1.fonts.less" />
+    <LessFiles Include="styles\less\2.structure.less" />
+    <LessFiles Include="styles\less\3.margins.less" />
+    <LessFiles Include="styles\less\4.colors.less" />
+    <LessFiles Include="styles\less\5.misc.less" />
+    <LessFiles Include="styles\less\scrabble.less" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">12.0</VisualStudioVersion>
@@ -100,7 +111,7 @@
     <VisualStudio>
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
         <WebProjectProperties>
-          <UseIIS>True</UseIIS>
+          <UseIIS>False</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>57770</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
@@ -134,5 +145,6 @@
     <TypeScriptRemoveComments>true</TypeScriptRemoveComments>
     <TypeScriptSourceMap>false</TypeScriptSourceMap>
   </PropertyGroup>
+  <Import Project="Less.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
 </Project>

@@ -1,0 +1,300 @@
+@import url('https://fonts.googleapis.com/css?family=Suranna');
+@import url('https://fonts.googleapis.com/css?family=Mallanna');
+body {
+  font-family: 'Mallanna', sans-serif, 'Suranna', cursive, Gautami;
+}
+.h2,
+.currentTurn,
+.noTurn,
+.label {
+  font-family: 'Suranna', cursive;
+  font-size: 1.4em;
+}
+.count,
+.weight {
+  font-size: 0.5em;
+}
+.content,
+.score {
+  font-size: 1.6em;
+}
+.conditions {
+  font-size: 0.8em;
+}
+
+/* */
+.gameTable {
+  clear: both;
+  float: left;
+  width: 100%;
+}
+.cabinet {
+  clear: both;
+  float: left;
+  width: 100%;
+}
+.cabinet .remaining {
+  float: right;
+  display: none;
+}
+.cabinet .hide {
+  display: none;
+}
+.tray {
+  clear: both;
+  float: left;
+  display: block;
+  width: 100%;
+}
+.tray .label {
+  clear: both;
+  display: block;
+}
+.tray .tile {
+  display: block;
+  float: left;
+}
+.tray .count {
+  display: inline-block;
+  float: left;
+}
+.board {
+  float: left;
+  width: 100%;
+}
+.board .table {
+  width: 100%;
+  height: 100%;
+}
+.board .weight {
+  display: inline-block;
+  float: left;
+}
+.players {
+  float: left;
+  width: 100%;
+}
+.players .currentTurn {
+  width: 100%;
+  display: block;
+}
+.players .noTurn {
+  width: 100%;
+  display: block;
+}
+.players .player {
+  float: left;
+  width: 42%;
+}
+.players .player .score {
+  display: block;
+  width: 100%;
+  height: 40px;
+}
+.players .conditions {
+  clear: both;
+  display: block;
+  width: 100%;
+}
+.players .hide {
+  display: none;
+}
+.infoBar {
+  float: left;
+  width: 100%;
+}
+.infoBar .h2 {
+  clear: both;
+}
+.footer {
+  clear: both;
+}
+.hide {
+  display: none;
+}
+
+/* */
+.gameTable {
+  margin: 3px;
+  padding: 3px;
+}
+.gameTable button {
+  margin: 3px;
+  padding: 3px;
+}
+.cabinet {
+  margin: 3px;
+  padding: 3px;
+}
+.cabinet .remaining {
+  min-width: 32px;
+  min-height: 32px;
+}
+.tray .tile {
+  margin: 3px;
+  padding: 3px;
+  min-width: 32px;
+  min-height: 32px;
+}
+.board {
+  margin: 3px;
+  padding: 3px;
+}
+.board .cell {
+  min-width: 36px;
+  min-height: 32px;
+}
+.players .player {
+  margin: 2%;
+}
+.infoBar {
+  margin: 2px;
+  padding: 2px;
+}
+.infoBar .ul {
+  max-height: 150px;
+  overflow: auto;
+}
+.footer {
+  margin: 3px;
+}
+
+/* */
+.cabinet {
+  border: 1px solid #EEEEEE;
+}
+.cabinet .remaining {
+  color: green;
+}
+.tray .label {
+  color: blue;
+}
+.tray .count {
+  color: black;
+}
+.tray .tile {
+  color: red;
+  background-color: lightgoldenrodyellow;
+  border: 1px dotted green;
+}
+.tray .readonly {
+  color: gray;
+}
+.board {
+  border: 1px solid #EEEEEE;
+}
+.board .table {
+  border: 1px solid gray;
+  border-collapse: collapse;
+  text-align: center;
+}
+.board .cell {
+  background-color: lightyellow;
+  color: green;
+  border: 1px solid green;
+}
+.board .filled {
+  background-color: yellow;
+  color: #990099;
+}
+.board .w3 {
+  background-color: burlywood;
+  color: white;
+}
+.board .w4 {
+  background-color: coral;
+  color: white;
+}
+.board .w6 {
+  background-color: darkred;
+  color: white;
+}
+.board .w8 {
+  background-color: yellowgreen;
+  color: white;
+}
+.board .confirmed {
+  background-color: yellowgreen;
+  color: #990099;
+}
+.players {
+  color: blue;
+}
+.players .currentTurn {
+  background-color: brown;
+  color: white;
+}
+.players .noTurn {
+  background-color: black;
+  color: white;
+}
+.players .player {
+  border: 1px solid #EEEEEE;
+}
+.players .player .score {
+  color: rebeccapurple;
+}
+.players .player .wordsList {
+  border: 1px solid #EEEEEE;
+}
+.players .player .wordsList .cWord {
+  color: green;
+}
+.players .player .wordsList .wWord {
+  color: orangered;
+  font-style: italic;
+}
+.players .conditions {
+  color: orangered;
+  font-style: italic;
+}
+.infoBar {
+  border: 1px solid #EEEEEE;
+}
+.infoBar .ul {
+  border: 1px solid #EEEEEE;
+}
+.footer {
+  color: blue;
+}
+
+/* */
+.gameTable {
+  text-align: right;
+}
+.tray .tile {
+  text-align: center;
+  vertical-align: bottom;
+}
+.tray .count {
+  text-align: left;
+  vertical-align: top;
+}
+.board .weight {
+  text-align: left;
+  vertical-align: top;
+}
+.board .cell {
+  white-space: pre-wrap;
+}
+.players .player {
+  text-align: center;
+}
+.players .player .score {
+  text-align: center;
+}
+.players .player .wordsList {
+  text-align: left;
+  list-style-type: decimal;
+}
+.infoBar .h2 {
+  color: black;
+}
+.footer {
+  text-align: right;
+}
+.draggable {
+  cursor: move;
+}
+
+/* */

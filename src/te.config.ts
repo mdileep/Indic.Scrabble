@@ -11,16 +11,13 @@
 //---------------------------------------------------------------------------------------------
 var InitState: any = {
     Id: "Telugu",
+    GameTable: {
+        MaxOnTray: 16,
+        MaxVowels: 4,
+        MaxEmptyPass: 2,
+    },
     Cabinet: {
         Trays: [
-            {
-                Id: "Favourites",
-                Title: "తరచూవాడేవి",
-                Count: 10,
-                Show: false,
-                Set:
-                ["క", "గ"]
-            },
             {
                 Id: "Vowels",
                 Title: "అచ్చులు",
@@ -173,5 +170,6 @@ var Configuration: any = {
         HasOraphans: "ఏకాక్షరపదాలు అంగీకారం కావు.",
         OrphanCell: "ఏకాక్షరము {2} అడ్డం: {0} నిలువు:{1} వద్ధ ఉన్నది ",
         HasDupliates: "ఇదే పదం ('{0}') ఇప్పటికే పటంపై ఉంది.",
+        Claimed: "* దావాలో ఉన్నది"
     }
 };

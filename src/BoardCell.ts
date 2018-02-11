@@ -45,7 +45,7 @@ class BoardCell extends React.Component<Contracts.iCellProps, Contracts.iCellPro
         return this.props.Waiting.length != 0;
     }
     getClass(): string {
-        var className: string = (this.props.Waiting.length + this.props.Confirmed.length == 0) ? "td" : "td filled";
+        var className: string = (this.props.Waiting.length + this.props.Confirmed.length == 0) ? "cell" : "cell filled";
         var confirmed = (this.props.Waiting.length == 0 && this.props.Confirmed.length != 0);
         var draggable: boolean = this.isDragable();
         if (confirmed) { className += " confirmed"; }

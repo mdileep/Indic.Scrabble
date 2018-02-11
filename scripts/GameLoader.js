@@ -19,6 +19,7 @@ define(["require", "exports", "react", "react-dom", 'redux', 'GameState', 'GameR
             M.Messages.HasOraphans = Configuration.Messages.HasOraphans;
             M.Messages.OrphanCell = Configuration.Messages.OrphanCell;
             M.Messages.HasDupliates = Configuration.Messages.HasDupliates;
+            M.Messages.Claimed = Configuration.Messages.Claimed;
         };
         GameLoader.OnDragOver = function (ev) {
             ev.preventDefault();

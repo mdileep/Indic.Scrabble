@@ -61,6 +61,18 @@ define(["require", "exports"], function (require, exports) {
             }
             return res;
         };
+        Util.Draw = function (available, max) {
+            var size = max;
+            if (available.length < max) {
+                size = available.length;
+            }
+            var ret = [];
+            for (var i = 0; i < size; i++) {
+                var indx = Math.round(Math.random() * (available.length - 1));
+                ret.push(available[indx]);
+            }
+            return ret;
+        };
         return Util;
     }());
     exports.Util = Util;

@@ -39,14 +39,14 @@ define(["require", "exports", "react", 'BoardCell'], function (require, exports,
                 className: "table",
                 title: "Table",
             }, tbody);
-            var blocks = React.createElement('div', {
+            var elem = React.createElement('div', {
                 id: "board",
                 key: "board",
                 ref: "board",
                 className: "board",
-                title: "Board Area",
+                title: "Board",
             }, [table]);
-            return blocks;
+            return elem;
         };
         return Board;
     }(React.Component));

@@ -15,18 +15,18 @@ export interface iComponent {
     Id: string;
     key: string;
     className: string;
+    ReadOnly: boolean;
+    Show: boolean;
 }
 export interface iCabinetProps extends iComponent {
     Trays: iTrayProps[];
     Remaining: number;
     Total: number;
-    Cache: iCachedTile;
 }
 export interface iTrayProps extends iComponent {
     Title: string;
     Index: number;
     Tiles: iTileProps[];
-    Show: boolean;
     Disabled: boolean;
 }
 export interface iTileProps extends iComponent {
@@ -37,7 +37,6 @@ export interface iTileProps extends iComponent {
     TrayIndex: number;
 }
 export interface iBoardProps extends iComponent {
-
     Size: number;
     Cells: iCellProps[];
 }
@@ -52,6 +51,7 @@ export interface iCellProps extends iComponent {
 export interface iPlayers extends iComponent {
     Players: iPlayer[];
     CurrentPlayer: number;
+    HasClaims: boolean;
 }
 export interface iInfoBar extends iComponent {
     Messages: string[];
@@ -64,11 +64,21 @@ export interface iPlayer extends iComponent {
     Awarded: iWord[];
     Claimed: iWord[];
 }
+export interface iGameTable extends iComponent {
+    Tray: iTrayProps;
+    EmptyPass: number;
+
+    MaxOnTray: number;
+    MaxVowels: number;
+    MaxEmptyPass: number;
+}
 export interface iGameState extends iComponent {
     Cabinet: iCabinetProps;
     Board: iBoardProps;
     Players: iPlayers;
     InfoBar: iInfoBar;
+    GameTable: iGameTable;
+    Cache: iCachedTile;
 }
 export interface iActionArgs {
     type: number;
@@ -87,16 +97,25 @@ export class Actions {
     public static ToTray: number = 2;
     public static OpenOrClose: number = 3;
     public static Pass: number = 4;
+    public static ReDraw: number = 5;
+    public static Approve: number = 6;
 }
+
 //Load Schema is Differet from iGameState 
 //TODO: May use the Same Schema??
 export interface iLoadState {
     Id: string;
     Lanaguage: string;
+    GameTable: iRawGameTable;
     Cabinet: iRawCabinet;
     Board: iRawBoard;
     Players: iPlayers;
     InfoBar: iInfoBar;
+}
+export interface iRawGameTable {
+    MaxOnTray: number;
+    MaxVowels: number;
+    MaxEmptyPass: number;
 }
 export interface iRawCabinet {
     Trays: iRawTray[];
@@ -127,7 +146,10 @@ export interface iCachedTile {
     Remaining: number;
     Total: number;
 }
-
+// Views
+export interface iTrayView extends iTrayProps {
+    ShowLabel: boolean;
+}
 export interface iPlayerView extends iPlayer {
     showScore: boolean;
     showWords: boolean;

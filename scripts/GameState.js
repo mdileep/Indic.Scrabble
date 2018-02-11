@@ -25,6 +25,11 @@ define(["require", "exports", 'Contracts', 'Parser', "GameActions"], function (r
                     console.log("Passing the Turn");
                 GameActions.GameActions.Pass(state, args);
                 return state;
+            case Contracts.Actions.ReDraw:
+                if (console)
+                    console.log("ReDraw Tiles");
+                GameActions.GameActions.ReDraw(state, args);
+                return state;
             default:
                 return state;
         }

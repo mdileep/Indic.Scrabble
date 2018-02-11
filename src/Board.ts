@@ -51,15 +51,15 @@ class Board extends React.Component<Contracts.iBoardProps, Contracts.iBoardProps
                 className: "table",
                 title: "Table",
             }, tbody);
-        var blocks = React.createElement('div',
+       var elem = React.createElement('div',
             {
                 id: "board",
                 key: "board",
                 ref: "board",
                 className: "board",
-                title: "Board Area",
+                title: "Board",
             }, [table]);
-        return blocks;
+        return elem;
     }
 }
 export default Board;

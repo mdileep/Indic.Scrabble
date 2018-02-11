@@ -19,14 +19,80 @@ define(["require", "exports", 'Messages', 'Indic', 'Util'], function (require, e
                 state.InfoBar.Messages.push(Messages.Messages.HasIslands);
                 return;
             }
+            var ClaimedWords = GameActions.WordsOnBoard(state.Board, true);
+            var AllAwarded = GameActions.AwardedWords(state);
+            var hasDuplciates = GameActions.HasDuplicates(state, AllAwarded, ClaimedWords);
+            if (hasDuplciates) {
+                return;
+            }
             var isValid = GameActions.ValidateWords(state);
             if (!isValid) {
                 return;
             }
+            GameActions.ResetTable(state);
             GameActions.AwardClaims(state);
             GameActions.SetScores(state);
             GameActions.SwitchTurn(state);
             GameActions.SaveBoard(state);
+            GameActions.Refresh(state);
+        };
+        GameActions.ResetTable = function (state) {
+            var gameTable = state.GameTable;
+            var tray = state.GameTable.Tray;
+            var unMoved = GameActions.UnMovedTiles(tray);
+            var vCount = 0;
+            for (var i = 0; i < unMoved.length; i++) {
+                var prop = unMoved[i];
+                if (Indic.Indic.IsVowel(prop) || Indic.Indic.IsSunnaSet(prop)) {
+                    vCount++;
+                }
+            }
+            var fresh = GameActions.DrawTiles(state.Cache, gameTable.MaxVowels - vCount, gameTable.MaxOnTray - unMoved.length);
+            var available = unMoved.concat(fresh);
+            state.GameTable.Tray = GameActions.SetTableTray(available);
+            state.GameTable.EmptyPass = state.GameTable.EmptyPass + 1;
+        };
+        GameActions.UnMovedTiles = function (tray) {
+            var old = [];
+            for (var i = 0; i < tray.Tiles.length; i++) {
+                if (tray.Tiles[i].Remaining != 0) {
+                    old.push(tray.Tiles[i].Text);
+                }
+            }
+            return old;
+        };
+        GameActions.ReDraw = function (state, args) {
+            var available = GameActions.DrawTiles(state.Cache, state.GameTable.MaxVowels, state.GameTable.MaxOnTray);
+            var tray = GameActions.SetTableTray(available);
+            state.GameTable.Tray = tray;
+            state.GameTable.EmptyPass = 0;
+        };
+        GameActions.SetTableTray = function (picked) {
+            var tray = {};
+            tray.Id = "Select";
+            tray.key = tray.Id;
+            tray.className = "tray";
+            tray.Title = "Select";
+            tray.Show = true;
+            tray.Disabled = false;
+            tray.ReadOnly = false;
+            tray.Index = -1;
+            tray.Tiles = [];
+            var index = 0;
+            for (var j = 0; j < picked.length; j++) {
+                var prop = {};
+                prop.Id = "S_" + (index + 1).toString();
+                prop.key = prop.Id;
+                prop.Text = picked[j];
+                prop.Remaining = 1;
+                prop.Total = 1;
+                prop.Index = j;
+                prop.TrayIndex = -1;
+                prop.ReadOnly = false;
+                tray.Tiles.push(prop);
+                index++;
+            }
+            return tray;
         };
         GameActions.SaveBoard = function (state) {
             for (var i = 0; i < state.Board.Cells.length; i++) {
@@ -36,7 +102,8 @@ define(["require", "exports", 'Messages', 'Indic', 'Util'], function (require, e
             }
         };
         GameActions.Refresh = function (state) {
-            GameActions.RefreshTiles(state.Cabinet);
+            GameActions.RefreshTrays(state.Cabinet.Trays, state.Cache);
+            GameActions.RefreshCabinet(state.Cabinet, state.Cache);
             GameActions.RefreshClaims(state);
         };
         GameActions.RefreshClaims = function (state) {
@@ -44,35 +111,39 @@ define(["require", "exports", 'Messages', 'Indic', 'Util'], function (require, e
             var playerId = state.Players.CurrentPlayer;
             var player = state.Players.Players[playerId];
             player.Claimed = Claims;
+            state.Players.HasClaims = Claims.length > 0;
         };
-        GameActions.RefreshTiles = function (cabinet) {
-            var cache = cabinet.Cache;
-            for (var i = 0; i < cabinet.Trays.length; i++) {
-                var tray = cabinet.Trays[i];
-                for (var j = 0; j < tray.Tiles.length; j++) {
-                    var tile = tray.Tiles[j];
-                    var text = tile.Text;
-                    if (cache[text] == null) {
-                        var synm = Indic.Indic.GetSynonym(text);
-                        tile.Remaining = cache[synm].Remaining;
-                        tile.Total = cache[synm].Remaining;
-                        continue;
-                    }
-                    {
-                        tile.Remaining = cache[text].Remaining;
-                        tile.Total = cache[text].Remaining;
-                    }
-                }
-            }
+        GameActions.RefreshCabinet = function (cabinet, cache) {
             var remaining = 0;
             var total = 0;
             for (var key in cache) {
                 remaining = remaining + cache[key].Remaining;
                 total = total + cache[key].Total;
             }
-            cabinet.Cache = cache;
             cabinet.Remaining = remaining;
             cabinet.Total = total;
+        };
+        GameActions.RefreshTrays = function (trays, cache) {
+            for (var i = 0; i < trays.length; i++) {
+                var tray = trays[i];
+                GameActions.RefreshTray(tray, cache);
+            }
+        };
+        GameActions.RefreshTray = function (tray, cache) {
+            for (var j = 0; j < tray.Tiles.length; j++) {
+                var tile = tray.Tiles[j];
+                var text = tile.Text;
+                if (cache[text] == null) {
+                    var synm = Indic.Indic.GetSynonym(text);
+                    tile.Remaining = cache[synm].Remaining;
+                    tile.Total = cache[synm].Remaining;
+                    continue;
+                }
+                {
+                    tile.Remaining = cache[text].Remaining;
+                    tile.Total = cache[text].Remaining;
+                }
+            }
         };
         GameActions.AwardClaims = function (state) {
             var Claims = GameActions.WordsOnBoard(state.Board, true);
@@ -82,14 +153,6 @@ define(["require", "exports", 'Messages', 'Indic', 'Util'], function (require, e
             player.Claimed = [];
         };
         GameActions.ValidateWords = function (state) {
-            var ClaimedWords = GameActions.WordsOnBoard(state.Board, true);
-            var AllAwarded = GameActions.AwardedWords(state);
-            var player = state.Players.CurrentPlayer;
-            state.Players.Players[player].Claimed = ClaimedWords;
-            var hasDuplciates = GameActions.HasDuplicates(state, AllAwarded, ClaimedWords);
-            if (hasDuplciates) {
-                return false;
-            }
             return true;
         };
         GameActions.HasDuplicates = function (state, Src, Compare) {
@@ -143,7 +206,8 @@ define(["require", "exports", 'Messages', 'Indic', 'Util'], function (require, e
                 var toRemove = cell.Waiting[cell.Waiting.length - 1];
                 cell.Waiting.pop();
                 cell.Current = Indic.Indic.ToString(cell.Confirmed.concat(cell.Waiting));
-                GameActions.SetRemaining(state.Cabinet, toRemove, 1);
+                GameActions.Play(state.GameTable.Tray, toRemove, 1);
+                GameActions.SetRemaining(state.Cache, toRemove, 1);
             }
             GameActions.Refresh(state);
         };
@@ -152,7 +216,7 @@ define(["require", "exports", 'Messages', 'Indic', 'Util'], function (require, e
             var tray;
             var tile;
             if (args.Origin == "Tile") {
-                var remaining = GameActions.GetRemaining(state.Cabinet, src);
+                var remaining = GameActions.GetRemaining(state, src);
                 if (remaining == 0) {
                     return;
                 }
@@ -183,7 +247,8 @@ define(["require", "exports", 'Messages', 'Indic', 'Util'], function (require, e
             list = cell.Confirmed.concat(cell.Waiting);
             cell.Current = Indic.Indic.ToString(list);
             if (args.Origin == "Tile") {
-                GameActions.SetRemaining(state.Cabinet, src, -1);
+                GameActions.Play(state.GameTable.Tray, src, 0);
+                GameActions.SetRemaining(state.Cache, src, -1);
             }
             if (args.Origin == "Cell") {
                 var srcCell = state.Board.Cells[args.SrcCell];
@@ -193,11 +258,28 @@ define(["require", "exports", 'Messages', 'Indic', 'Util'], function (require, e
             }
             GameActions.Refresh(state);
         };
+        GameActions.Play = function (tray, src, val) {
+            var indx = 0;
+            for (var i = 0; i < tray.Tiles.length; i++) {
+                var tile = tray.Tiles[i];
+                if (tile.Text != src) {
+                    continue;
+                }
+                if (tile.Remaining == val || tile.Total == val) {
+                    continue;
+                }
+                tile.Remaining = val;
+                tile.Total = val;
+                indx = i;
+                break;
+            }
+        };
         GameActions.ToBoard = function (state, args) {
             GameActions.ToBoardInternal(state, args, true);
         };
-        GameActions.GetRemaining = function (cabinet, char) {
-            var cache = cabinet.Cache;
+        GameActions.GetRemaining = function (state, char) {
+            var cabinet = state.Cabinet;
+            var cache = state.Cache;
             if (cache[char] == null) {
                 var synonym = Indic.Indic.GetSynonym(char);
                 return cache[synonym].Remaining;
@@ -237,8 +319,7 @@ define(["require", "exports", 'Messages', 'Indic', 'Util'], function (require, e
             }
             return weight;
         };
-        GameActions.SetRemaining = function (Cabinet, text, incBy) {
-            var cache = Cabinet.Cache;
+        GameActions.SetRemaining = function (cache, text, incBy) {
             if (cache[text] != null) {
                 cache[text].Remaining = cache[text].Remaining + incBy;
                 return;
@@ -443,6 +524,33 @@ define(["require", "exports", 'Messages', 'Indic', 'Util'], function (require, e
                 Words = Words.concat(C);
             }
             return Words;
+        };
+        GameActions.AvailableVowels = function (cache) {
+            var available = [];
+            for (var prop in cache) {
+                if ((Indic.Indic.IsVowel(prop) || Indic.Indic.IsSunnaSet(prop))
+                    && cache[prop].Remaining > 0) {
+                    available.push(prop);
+                }
+            }
+            return available;
+        };
+        GameActions.AvailableConso = function (cache) {
+            var available = [];
+            for (var prop in cache) {
+                if (Indic.Indic.IsConsonent(prop) && cache[prop].Remaining > 0) {
+                    available.push(prop);
+                }
+            }
+            return available;
+        };
+        GameActions.DrawTiles = function (cache, maxVowels, max) {
+            var vowels = GameActions.AvailableVowels(cache);
+            var conso = GameActions.AvailableConso(cache);
+            var pickedVowels = Util.Util.Draw(vowels, max < maxVowels ? max : maxVowels);
+            var pickedConso = Util.Util.Draw(conso, max - pickedVowels.length);
+            var ret = pickedVowels.concat(pickedConso);
+            return ret;
         };
         return GameActions;
     }());

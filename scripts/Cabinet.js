@@ -3,7 +3,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", "react", 'Contracts', 'Tray', 'TrayRack', 'GameLoader'], function (require, exports, React, Contracts, Tray, TrayRack, GameLoader) {
+define(["require", "exports", "react", 'Contracts', 'Tray', 'TrayRack', 'GameLoader', 'Util'], function (require, exports, React, Contracts, Tray, TrayRack, GameLoader, Util) {
     "use strict";
     var Cabinet = (function (_super) {
         __extends(Cabinet, _super);
@@ -17,30 +17,49 @@ define(["require", "exports", "react", 'Contracts', 'Tray', 'TrayRack', 'GameLoa
                 console.log("Rendering Cabinet");
             }
             var childs = [];
-            for (var i = 0; i < this.props.Trays.length; i++) {
-                var TilesProp = this.props.Trays[i];
-                TilesProp.key = "G" + TilesProp.Id;
-                var Group = React.createElement(TrayRack.default, TilesProp);
-                childs.push(Group);
-            }
-            var remaining = React.createElement("span", { key: "remaining", className: "remaining" }, this.props.Remaining);
-            childs.push(remaining);
+            var groupContainer = this.renderContainer();
+            childs.push(groupContainer);
             for (var i = 0; i < this.props.Trays.length; i++) {
                 var TilesProp = this.props.Trays[i];
                 TilesProp.key = TilesProp.Id;
-                var Group = React.createElement(Tray.default, TilesProp);
-                childs.push(Group);
+                var tray = React.createElement(Tray.default, Util.Util.Merge(TilesProp, { ShowLabel: true }));
+                childs.push(tray);
             }
-            var blocks = React.createElement('div', {
-                id: "inputs",
-                key: "inputs",
-                ref: "inputs",
-                className: "area",
-                title: "Input Area",
+            var id = "cabinet";
+            var className = "cabinet";
+            if (!this.props.Show) {
+                className += " hide";
+            }
+            var elem = React.createElement('div', {
+                id: id,
+                key: id,
+                ref: id,
+                className: className,
+                title: "Cabinet",
                 onDragOver: this.OnDragOver,
                 onDrop: function (evt) { _this.OnDrop(evt); },
             }, childs);
-            return blocks;
+            return elem;
+        };
+        Cabinet.prototype.renderContainer = function () {
+            var childs = [];
+            for (var i = 0; i < this.props.Trays.length; i++) {
+                var TilesProp = this.props.Trays[i];
+                TilesProp.key = "G" + TilesProp.Id;
+                var trayRack = React.createElement(TrayRack.default, TilesProp);
+                childs.push(trayRack);
+            }
+            var remaining = React.createElement("span", { key: "remaining", className: "remaining" }, this.props.Remaining);
+            childs.push(remaining);
+            var id = "trayLabels";
+            var groupContainer = React.createElement('div', {
+                id: id,
+                key: id,
+                ref: id,
+                className: "trayLabels",
+                title: "Tray Labels"
+            }, childs);
+            return groupContainer;
         };
         Cabinet.prototype.OnDragOver = function (ev) {
             ev.preventDefault();

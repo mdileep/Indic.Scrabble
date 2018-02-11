@@ -35,6 +35,12 @@ export default (state: Contracts.iGameState = Parser.Parser.Parse(InitState), ac
             if (console) console.log("Passing the Turn");
             GameActions.GameActions.Pass(state, args);
             return state;
+
+        case Contracts.Actions.ReDraw:
+            if (console) console.log("ReDraw Tiles");
+            GameActions.GameActions.ReDraw(state, args);
+            return state;
+
         default:
             return state
     }

@@ -20,10 +20,10 @@ define(["require", "exports", "react", "react-dom", "Messages"], function (requi
         InfoBar.prototype.render = function () {
             var childs = [];
             if (this.props.Messages.length == 0) {
-                var blocks = React.createElement('div', {});
-                return blocks;
+                var elem = React.createElement('div', {});
+                return elem;
             }
-            var h2 = React.createElement("h2", { key: "h2", className: "h2" }, Messages.Messages.Messages);
+            var h2 = React.createElement("span", { key: "h2", className: "h2" }, Messages.Messages.Messages);
             childs.push(h2);
             var items = [];
             for (var i = 0; i < this.props.Messages.length; i++) {
@@ -31,22 +31,23 @@ define(["require", "exports", "react", "react-dom", "Messages"], function (requi
                 var li = React.createElement("li", { key: "li" + i }, msg);
                 items.push(li);
             }
+            var id = "ul";
             var ul = React.createElement("ul", {
-                id: "ul",
-                key: "ul",
-                ref: "ul",
+                id: id,
+                key: id,
+                ref: id,
                 className: "ul",
                 title: "List"
             }, items);
             childs.push(ul);
-            var blocks = React.createElement('div', {
+            var elem = React.createElement('div', {
                 id: "infoBar",
                 key: "infoBar",
                 ref: "infoBar",
                 className: "infoBar",
                 title: "Messages",
             }, childs);
-            return blocks;
+            return elem;
         };
         return InfoBar;
     }(React.Component));

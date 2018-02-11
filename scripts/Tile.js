@@ -14,15 +14,18 @@ define(["require", "exports", "react"], function (require, exports, React) {
         Tile.prototype.render = function () {
             var _this = this;
             var childs = [];
-            if (this.props.Remaining > 0) {
+            if (this.props.Remaining > 1) {
                 childs.push(this.renderCount());
             }
             childs.push(this.renderContent());
-            if (this.props.Remaining > 0) {
+            if (this.props.Remaining > 1) {
                 childs.push(this.renderEmpty());
             }
-            var className = this.props.Remaining > 0 ? "span" : "span readonly";
+            var className = this.props.Remaining > 0 ? "tile" : "tile readonly";
             var draggable = this.props.Remaining > 0;
+            if (this.props.ReadOnly) {
+                draggable = false;
+            }
             if (draggable) {
                 className += " draggable";
             }

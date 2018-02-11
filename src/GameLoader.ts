@@ -39,6 +39,7 @@ export class GameLoader {
         M.Messages.HasOraphans = Configuration.Messages.HasOraphans;
         M.Messages.OrphanCell = Configuration.Messages.OrphanCell;
         M.Messages.HasDupliates = Configuration.Messages.HasDupliates;
+        M.Messages.Claimed = Configuration.Messages.Claimed;
     }
     public static OnDragOver(ev: Event) {
         ev.preventDefault();

@@ -16,6 +16,7 @@ import * as GamePlayer from 'GamePlayer';
 import * as GameLoader from 'GameLoader';
 import * as Indic from 'Indic';
 import * as Util from 'Util';
+import * as Messages from 'Messages';
 
 class GamePlayers extends React.Component<Contracts.iPlayersView, Contracts.iPlayersView> {
     constructor(props: Contracts.iPlayersView) {
@@ -23,20 +24,37 @@ class GamePlayers extends React.Component<Contracts.iPlayersView, Contracts.iPla
         this.state = props;
     }
     render() {
-        var players: React.ReactElement<Contracts.iPlayer>[] = [];
+        var childs: React.ReactElement<Contracts.iProps>[] = [];
         for (var i = 0; i < this.props.Players.length; i++) {
-            var player = React.createElement(((GamePlayer.default as any) as React.ComponentClass<Contracts.iPlayerView>), Util.Util.Merge(this.props.Players[i], { showScore: this.props.showScores, showWords: this.props.showWordsList }));
-            players.push(player);
+            var player = React.createElement(((GamePlayer.default as any) as React.ComponentClass<Contracts.iPlayerView>),
+                Util.Util.Merge(this.props.Players[i],
+                    {
+                        showScore: this.props.showScores,
+                        showWords: this.props.showWordsList
+                    }));
+            childs.push(player);
         }
-        var blocks = React.createElement('div',
+
+        if (this.props.showWordsList && this.props.HasClaims) {
+            var label = React.createElement('span',
+                {
+                    key: "lbl",
+                    className:"conditions",
+                    title: Messages.Messages.Claimed
+                }, Messages.Messages.Claimed);
+            childs.push(label);
+        }
+
+        var className: string = "players";
+        var elem = React.createElement('div',
             {
                 id: this.props.Id,
                 key: this.props.Id,
                 ref: this.props.Id,
-                className: "scoreBoard",
-                title: "Information",
-            }, players);
-        return blocks;
+                className: className,
+                title: "Players",
+            }, childs);
+        return elem;
     }
 }
 export default GamePlayers;

@@ -36,7 +36,7 @@ define(["require", "exports", "react", 'Contracts', 'GameLoader'], function (req
             return this.props.Waiting.length != 0;
         };
         BoardCell.prototype.getClass = function () {
-            var className = (this.props.Waiting.length + this.props.Confirmed.length == 0) ? "td" : "td filled";
+            var className = (this.props.Waiting.length + this.props.Confirmed.length == 0) ? "cell" : "cell filled";
             var confirmed = (this.props.Waiting.length == 0 && this.props.Confirmed.length != 0);
             var draggable = this.isDragable();
             if (confirmed) {

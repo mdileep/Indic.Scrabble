@@ -1,2 +1,4 @@
 bin/
 obj/
+external/
+styles/less/*.css

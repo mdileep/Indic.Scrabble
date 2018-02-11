@@ -31,14 +31,93 @@ export class GameActions {
             state.InfoBar.Messages.push(Messages.Messages.HasIslands);
             return;
         }
-        var isValid: boolean = GameActions.ValidateWords(state);
-        if (!isValid) {
+
+        var ClaimedWords: Contracts.iWord[] = GameActions.WordsOnBoard(state.Board, true);
+        var AllAwarded: Contracts.iWord[] = GameActions.AwardedWords(state);
+
+        var hasDuplciates: boolean = GameActions.HasDuplicates(state, AllAwarded, ClaimedWords);
+        if (hasDuplciates) {
             return;
         }
+
+        var isValid: boolean = GameActions.ValidateWords(state);
+        if (!isValid) {
+            //for (var key in ClaimedWords) {
+            //    state.GameTable.Claims.push(ClaimedWords[key].Text);
+            //}
+            return;
+        }
+        GameActions.ResetTable(state);
         GameActions.AwardClaims(state);
         GameActions.SetScores(state);
         GameActions.SwitchTurn(state);
         GameActions.SaveBoard(state);
+        GameActions.Refresh(state);
+    }
+
+    static ResetTable(state: Contracts.iGameState): void {
+        var gameTable: Contracts.iGameTable = state.GameTable;
+        var tray: Contracts.iTrayProps = state.GameTable.Tray;
+        var unMoved: string[] = GameActions.UnMovedTiles(tray);
+
+        var vCount = 0;
+        for (var i = 0; i < unMoved.length; i++) {
+            var prop = unMoved[i];
+            if (Indic.Indic.IsVowel(prop) || Indic.Indic.IsSunnaSet(prop)) {
+                vCount++;
+            }
+        }
+
+        var fresh = GameActions.DrawTiles(state.Cache,gameTable.MaxVowels - vCount, gameTable.MaxOnTray - unMoved.length);
+        var available = unMoved.concat(fresh);
+        state.GameTable.Tray = GameActions.SetTableTray(available);
+        state.GameTable.EmptyPass = state.GameTable.EmptyPass + 1;
+    }
+
+    static UnMovedTiles(tray: Contracts.iTrayProps): string[] {
+        var old: string[] = [];
+        for (var i = 0; i < tray.Tiles.length; i++) {
+            if (tray.Tiles[i].Remaining != 0) {
+                old.push(tray.Tiles[i].Text);
+            }
+        }
+        return old;
+    }
+
+    static ReDraw(state: Contracts.iGameState, args: Contracts.iArgs): void {
+        var available = GameActions.DrawTiles(state.Cache, state.GameTable.MaxVowels, state.GameTable.MaxOnTray);
+        var tray = GameActions.SetTableTray(available);
+        state.GameTable.Tray = tray;
+        state.GameTable.EmptyPass = 0;
+    }
+
+    public static SetTableTray(picked: string[]): Contracts.iTrayProps {
+        var tray: Contracts.iTrayProps = ({} as any) as Contracts.iTrayProps;
+        tray.Id = "Select";
+        tray.key = tray.Id;
+        tray.className = "tray";
+        tray.Title = "Select";
+        tray.Show = true;
+        tray.Disabled = false;
+        tray.ReadOnly = false;
+        tray.Index = -1;
+        tray.Tiles = [];
+
+        var index = 0;
+        for (var j = 0; j < picked.length; j++) {
+            var prop: Contracts.iTileProps = ({} as any) as Contracts.iTileProps;
+            prop.Id = "S_" + (index + 1).toString();
+            prop.key = prop.Id;
+            prop.Text = picked[j];
+            prop.Remaining = 1;
+            prop.Total = 1;
+            prop.Index = j;
+            prop.TrayIndex = -1;
+            prop.ReadOnly = false;
+            tray.Tiles.push(prop);
+            index++;
+        }
+        return tray;
     }
     static SaveBoard(state: Contracts.iGameState): void {
         for (var i = 0; i < state.Board.Cells.length; i++) {
@@ -48,7 +127,8 @@ export class GameActions {
         }
     }
     static Refresh(state: Contracts.iGameState) {
-        GameActions.RefreshTiles(state.Cabinet);
+        GameActions.RefreshTrays(state.Cabinet.Trays, state.Cache);
+        GameActions.RefreshCabinet(state.Cabinet, state.Cache);
         GameActions.RefreshClaims(state);
     }
     static RefreshClaims(state: Contracts.iGameState): void {
@@ -56,36 +136,39 @@ export class GameActions {
         var playerId: number = state.Players.CurrentPlayer;
         var player: Contracts.iPlayer = state.Players.Players[playerId];
         player.Claimed = Claims;
+        state.Players.HasClaims = Claims.length > 0;
     }
-    static RefreshTiles(cabinet: Contracts.iCabinetProps) {
-        var cache: Contracts.iCachedTile = cabinet.Cache;
-        for (var i = 0; i < cabinet.Trays.length; i++) {
-            var tray: Contracts.iTrayProps = cabinet.Trays[i];
-            for (var j = 0; j < tray.Tiles.length; j++) {
-                var tile: Contracts.iTileProps = tray.Tiles[j];
-                var text = tile.Text;
-                if (cache[text] == null) {
-                    var synm = Indic.Indic.GetSynonym(text);
-                    tile.Remaining = cache[synm].Remaining;
-                    tile.Total = cache[synm].Remaining;
-                    continue;
-                }
-                {
-                    tile.Remaining = cache[text].Remaining;
-                    tile.Total = cache[text].Remaining;
-                }
-            }
-        }
-
+    static RefreshCabinet(cabinet: Contracts.iCabinetProps, cache: Contracts.iCachedTile): void {
         var remaining = 0;
         var total = 0;
         for (var key in cache) {
             remaining = remaining + cache[key].Remaining;
             total = total + cache[key].Total;
         }
-        cabinet.Cache = cache;
         cabinet.Remaining = remaining;
         cabinet.Total = total;
+    }
+    static RefreshTrays(trays: Contracts.iTrayProps[], cache: Contracts.iCachedTile): void {
+        for (var i = 0; i < trays.length; i++) {
+            var tray: Contracts.iTrayProps = trays[i];
+            GameActions.RefreshTray(tray, cache);
+        }
+    }
+    static RefreshTray(tray: Contracts.iTrayProps, cache: Contracts.iCachedTile): void {
+        for (var j = 0; j < tray.Tiles.length; j++) {
+            var tile: Contracts.iTileProps = tray.Tiles[j];
+            var text = tile.Text;
+            if (cache[text] == null) {
+                var synm = Indic.Indic.GetSynonym(text);
+                tile.Remaining = cache[synm].Remaining;
+                tile.Total = cache[synm].Remaining;
+                continue;
+            }
+            {
+                tile.Remaining = cache[text].Remaining;
+                tile.Total = cache[text].Remaining;
+            }
+        }
     }
     static AwardClaims(state: Contracts.iGameState): void {
         var Claims: Contracts.iWord[] = GameActions.WordsOnBoard(state.Board, true);
@@ -95,14 +178,6 @@ export class GameActions {
         player.Claimed = [];
     }
     static ValidateWords(state: Contracts.iGameState): boolean {
-        var ClaimedWords: Contracts.iWord[] = GameActions.WordsOnBoard(state.Board, true);
-        var AllAwarded: Contracts.iWord[] = GameActions.AwardedWords(state);
-        var player: number = state.Players.CurrentPlayer;
-        state.Players.Players[player].Claimed = ClaimedWords;
-        var hasDuplciates: boolean = GameActions.HasDuplicates(state, AllAwarded, ClaimedWords);
-        if (hasDuplciates) {
-            return false;
-        }
         //Actual Word Verification against Word Database
         return true;
     }
@@ -158,7 +233,8 @@ export class GameActions {
             var toRemove: string = cell.Waiting[cell.Waiting.length - 1];
             cell.Waiting.pop();
             cell.Current = Indic.Indic.ToString(cell.Confirmed.concat(cell.Waiting));
-            GameActions.SetRemaining(state.Cabinet, toRemove, 1);
+            GameActions.Play(state.GameTable.Tray, toRemove, 1);
+            GameActions.SetRemaining(state.Cache, toRemove, 1);
         }
         GameActions.Refresh(state);
     }
@@ -168,7 +244,7 @@ export class GameActions {
         var tile: Contracts.iTileProps;
 
         if (args.Origin == "Tile") {
-            var remaining = GameActions.GetRemaining(state.Cabinet, src);
+            var remaining = GameActions.GetRemaining(state, src);
             if (remaining == 0) {
                 return;
             }
@@ -204,7 +280,8 @@ export class GameActions {
         cell.Current = Indic.Indic.ToString(list);
 
         if (args.Origin == "Tile") {
-            GameActions.SetRemaining(state.Cabinet, src, -1);
+            GameActions.Play(state.GameTable.Tray, src, 0);
+            GameActions.SetRemaining(state.Cache, src, -1);
         }
         if (args.Origin == "Cell") {
             var srcCell: Contracts.iCellProps = state.Board.Cells[args.SrcCell];
@@ -214,11 +291,29 @@ export class GameActions {
         }
         GameActions.Refresh(state);
     }
+    static Play(tray: Contracts.iTrayProps, src: string, val: number): void {
+        var indx: number = 0;
+        for (var i = 0; i < tray.Tiles.length; i++) {
+            var tile: Contracts.iTileProps = tray.Tiles[i];
+            if (tile.Text != src) {
+                continue;
+            }
+            if (tile.Remaining == val || tile.Total == val) {
+                //Ideally both should be equal 0 or 1
+                continue;
+            }
+            tile.Remaining = val;
+            tile.Total = val;
+            indx = i;
+            break; //There could be multiple Tiles with Same Text
+        }
+    }
     static ToBoard(state: Contracts.iGameState, args: Contracts.iArgs): void {
         GameActions.ToBoardInternal(state, args, true);
     }
-    static GetRemaining(cabinet: Contracts.iCabinetProps, char: string): number {
-        var cache = cabinet.Cache;
+    static GetRemaining(state: Contracts.iGameState, char: string): number {
+        var cabinet: Contracts.iCabinetProps = state.Cabinet;
+        var cache: Contracts.iCachedTile = state.Cache;
         if (cache[char] == null) {
             var synonym: string = Indic.Indic.GetSynonym(char);
             return cache[synonym].Remaining;
@@ -259,8 +354,7 @@ export class GameActions {
         }
         return weight;
     }
-    static SetRemaining(Cabinet: Contracts.iCabinetProps, text: string, incBy: number) {
-        var cache = Cabinet.Cache;
+    static SetRemaining(cache: Contracts.iCachedTile, text: string, incBy: number) {
         if (cache[text] != null) {
             cache[text].Remaining = cache[text].Remaining + incBy;
             return;
@@ -468,5 +562,32 @@ export class GameActions {
             Words = Words.concat(C);
         }
         return Words;
+    }
+    public static AvailableVowels(cache: Contracts.iCachedTile): string[] {
+        var available: string[] = [];
+        for (var prop in cache) {
+            if ((Indic.Indic.IsVowel(prop) || Indic.Indic.IsSunnaSet(prop))
+                && cache[prop].Remaining > 0) {
+                available.push(prop)
+            }
+        }
+        return available;
+    }
+    public static AvailableConso(cache: Contracts.iCachedTile): string[] {
+        var available: string[] = [];
+        for (var prop in cache) {
+            if (Indic.Indic.IsConsonent(prop) && cache[prop].Remaining > 0) {
+                available.push(prop)
+            }
+        }
+        return available;
+    }
+    public static DrawTiles(cache: Contracts.iCachedTile, maxVowels: number, max: number): string[] {
+        var vowels = GameActions.AvailableVowels(cache);
+        var conso = GameActions.AvailableConso(cache);
+        var pickedVowels = Util.Util.Draw(vowels, max < maxVowels ? max : maxVowels);
+        var pickedConso = Util.Util.Draw(conso, max - pickedVowels.length);
+        var ret: string[] = pickedVowels.concat(pickedConso);
+        return ret;
     }
 }

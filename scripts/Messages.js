@@ -11,6 +11,7 @@ define(["require", "exports"], function (require, exports) {
         Messages.HasOraphans = "";
         Messages.OrphanCell = "";
         Messages.HasDupliates = "";
+        Messages.Claimed = "";
         return Messages;
     }());
     exports.Messages = Messages;

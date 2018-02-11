@@ -62,12 +62,22 @@ define(["require", "exports", "react"], function (require, exports, React) {
             var items = [];
             for (var j = 0; j < this.props.Awarded.length; j++) {
                 var word = this.props.Awarded[j];
-                var li = React.createElement("li", { key: "wa" + j, className: "cWord" }, word.Text + "(" + word.Score + ")");
+                var text = word.Text + "(" + word.Score + ")";
+                var li = React.createElement("li", {
+                    key: "wa" + j,
+                    className: "cWord",
+                    title: text
+                }, text);
                 items.push(li);
             }
             for (var j = 0; j < this.props.Claimed.length; j++) {
                 var word = this.props.Claimed[j];
-                var li = React.createElement("li", { key: "wc" + j, className: "wWord" }, word.Text + "(" + word.Score + ") [దావా]");
+                var text = word.Text + "(" + word.Score + ") *";
+                var li = React.createElement("li", {
+                    key: "wc" + j,
+                    className: "wWord",
+                    title: text
+                }, text);
                 items.push(li);
             }
             var id = "ul_" + (this.props.Id + 1);

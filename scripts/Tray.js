@@ -12,32 +12,40 @@ define(["require", "exports", "react", 'Tile'], function (require, exports, Reac
             this.state = props;
         }
         Tray.prototype.render = function () {
-            var tiles = [];
-            for (var i = 0; i < this.props.Tiles.length; i++) {
-                var tileProp = this.props.Tiles[i];
-                var id = this.props.Id + "_" + (i + 1);
-                var tile = React.createElement(Tile.default, {
-                    Id: id,
-                    key: id,
-                    className: "",
-                    Text: tileProp.Text,
-                    Remaining: tileProp.Remaining,
-                    Total: tileProp.Total,
-                    Index: tileProp.Index,
-                    TrayIndex: tileProp.TrayIndex
-                });
-                tiles.push(tile);
+            var childs = [];
+            if (this.props.ShowLabel) {
+                var label = React.createElement("span", { key: "label", className: "label" }, this.props.Title);
+                childs.push(label);
             }
-            var label = React.createElement("span", { key: "label", className: "label" }, this.props.Title);
-            var className = this.props.className + " block" + (this.props.Show ? "" : " hide");
-            var blocks = React.createElement('div', {
+            for (var i = 0; i < this.props.Tiles.length; i++) {
+                var tile = this.renderTile(this.props.Tiles[i], i + 1);
+                childs.push(tile);
+            }
+            var className = this.props.className + " tray" + (this.props.Show ? "" : " hide");
+            var elem = React.createElement('div', {
                 id: this.props.Id,
                 key: this.props.Id,
                 ref: this.props.Id,
                 className: className,
                 title: this.props.Title
-            }, [label, tiles]);
-            return blocks;
+            }, childs);
+            return elem;
+        };
+        Tray.prototype.renderTile = function (tileProp, index) {
+            var id = this.props.Id + "_" + (index);
+            var tile = React.createElement(Tile.default, {
+                Id: id,
+                key: id,
+                className: "",
+                ReadOnly: tileProp.ReadOnly,
+                Show: true,
+                Text: tileProp.Text,
+                Remaining: tileProp.Remaining,
+                Total: tileProp.Total,
+                Index: tileProp.Index,
+                TrayIndex: tileProp.TrayIndex
+            });
+            return tile;
         };
         return Tray;
     }(React.Component));

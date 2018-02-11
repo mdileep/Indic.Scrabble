@@ -31,31 +31,33 @@ class InfoBar extends React.Component<Contracts.iInfoBar, Contracts.iInfoBar> {
     render() {
         var childs: React.ReactElement<Contracts.iProps>[] = [];
         if (this.props.Messages.length == 0) {
-            var blocks = React.createElement('div',
+            var elem = React.createElement('div',
                 {
                 });
-            return blocks;
+            return elem;
         }
 
-        var h2 = React.createElement("h2", { key: "h2", className: "h2" }, Messages.Messages.Messages);
+        var h2 = React.createElement("span", { key: "h2", className: "h2" }, Messages.Messages.Messages);
         childs.push(h2);
+
         var items: React.ReactElement<Contracts.iProps>[] = [];
         for (var i = 0; i < this.props.Messages.length; i++) {
             var msg = this.props.Messages[i];
             var li = React.createElement("li", { key: "li" + i }, msg);
             items.push(li);
         }
+        var id = "ul";
         var ul = React.createElement("ul",
             {
-                id: "ul",
-                key: "ul",
-                ref: "ul",
+                id: id,
+                key: id,
+                ref: id,
                 className: "ul",
                 title: "List"
             }, items);
         childs.push(ul);
 
-        var blocks = React.createElement('div',
+        var elem = React.createElement('div',
             {
                 id: "infoBar",
                 key: "infoBar",
@@ -63,7 +65,7 @@ class InfoBar extends React.Component<Contracts.iInfoBar, Contracts.iInfoBar> {
                 className: "infoBar",
                 title: "Messages",
             }, childs);
-        return blocks;
+        return elem;
     }
 }
 export default InfoBar;

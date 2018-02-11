@@ -19,4 +19,5 @@ export class Messages {
     public static HasOraphans: string = "";
     public static OrphanCell: string = "";
     public static HasDupliates: string = "";
+    public static Claimed: string = "";
 }

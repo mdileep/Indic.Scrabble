@@ -5,24 +5,48 @@ define(["require", "exports", "GameActions", "Indic"], function (require, export
         }
         Parser.Parse = function (JSON) {
             var cabinet = Parser.ParseCabinet(JSON.Cabinet);
+            var cache = Parser.BuildCache(cabinet);
             var board = Parser.ParseBoard(JSON.Board);
             var players = Parser.ParsePlayers(JSON.Players);
             var infoBar = Parser.ParseInfoBar(JSON.InfoBar);
+            var gameTable = Parser.BuildGameTable(JSON.GameTable, cache);
+            GameActions.GameActions.RefreshTrays(cabinet.Trays, cache);
+            GameActions.GameActions.RefreshCabinet(cabinet, cache);
             var gameState = {
                 Id: JSON.Id,
                 key: JSON.Id,
                 className: "game",
+                Cache: cache,
                 Cabinet: cabinet,
                 Board: board,
                 Players: players,
-                InfoBar: infoBar
+                InfoBar: infoBar,
+                ReadOnly: false,
+                Show: true,
+                GameTable: gameTable
             };
             return gameState;
+        };
+        Parser.BuildGameTable = function (JSON, cache) {
+            var available = GameActions.GameActions.DrawTiles(cache, JSON.MaxVowels, JSON.MaxOnTray);
+            var tray = GameActions.GameActions.SetTableTray(available);
+            var raw = {};
+            raw.key = "gameTable";
+            raw.Id = raw.key;
+            raw.className = "gameTable";
+            raw.EmptyPass = 0;
+            raw.MaxOnTray = JSON.MaxOnTray;
+            raw.MaxVowels = JSON.MaxVowels;
+            raw.MaxEmptyPass = JSON.MaxEmptyPass;
+            raw.Tray = tray;
+            return raw;
         };
         Parser.ParseCabinet = function (JSON) {
             var raw = {};
             raw.key = "Cabinet";
             raw.Trays = [];
+            raw.ReadOnly = true;
+            raw.Show = false;
             var index = 0;
             var tilesDict = {};
             for (var i = 0; i < JSON.Trays.length; i++) {
@@ -34,6 +58,7 @@ define(["require", "exports", "GameActions", "Indic"], function (require, export
                 props.Title = item.Title;
                 props.Show = item.Show;
                 props.Disabled = false;
+                props.ReadOnly = raw.ReadOnly;
                 props.Index = i;
                 props.Tiles = [];
                 for (var j = 0; j < item.Set.length; j++) {
@@ -45,15 +70,24 @@ define(["require", "exports", "GameActions", "Indic"], function (require, export
                     prop.Total = item.Count;
                     prop.Index = j;
                     prop.TrayIndex = i;
+                    prop.ReadOnly = raw.ReadOnly;
                     props.Tiles.push(prop);
-                    Parser.RefreshCache(tilesDict, { Text: prop.Text, Remaining: prop.Remaining, Total: prop.Total });
                     index++;
                 }
                 raw.Trays.push(props);
             }
-            raw.Cache = tilesDict;
-            GameActions.GameActions.RefreshTiles(raw);
             return raw;
+        };
+        Parser.BuildCache = function (JSON) {
+            var tilesDict = {};
+            for (var i = 0; i < JSON.Trays.length; i++) {
+                var item = JSON.Trays[i];
+                for (var j = 0; j < item.Tiles.length; j++) {
+                    var prop = item.Tiles[j];
+                    Parser.RefreshCache(tilesDict, { Text: prop.Text, Remaining: prop.Remaining, Total: prop.Total });
+                }
+            }
+            return tilesDict;
         };
         Parser.ParseBoard = function (JSON) {
             var raw = {};
@@ -83,6 +117,7 @@ define(["require", "exports", "GameActions", "Indic"], function (require, export
             raw.key = raw.Id;
             raw.Players = [];
             raw.CurrentPlayer = 0;
+            raw.HasClaims = false;
             for (var i = 0; i < players.Players.length; i++) {
                 var player = players.Players[i];
                 player.CurrentTurn = (i == raw.CurrentPlayer);

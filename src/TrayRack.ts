@@ -42,8 +42,8 @@ class TrayRack extends React.Component<Contracts.iTrayProps, Contracts.iTrayProp
             }, TilesProp.Title);
         childs.push(chkBox);
         childs.push(label);
-        var blocks = React.createElement('span', null, childs);
-        return blocks;
+       var elem = React.createElement('span', null, childs);
+        return elem;
     }
 
     public OpenClose(evt: MouseEvent) {
