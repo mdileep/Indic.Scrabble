@@ -14,18 +14,26 @@ define(["require", "exports", "react", 'Contracts', 'GameLoader', 'Tray', 'Util'
         GameTable.prototype.render = function () {
             var _this = this;
             var childs = [];
+            var reDraw = this.renderReDraw();
+            var pass = this.renderPass();
+            var id = "actions";
+            var actions = React.createElement('div', {
+                id: id,
+                key: id,
+                ref: id,
+                className: "actions",
+                title: "Actions",
+            }, [reDraw, pass]);
+            childs.push(actions);
             var vowelTray = React.createElement(Tray.default, Util.Util.Merge(this.props.VowelTray, { ShowLabel: false }));
             childs.push(vowelTray);
             var consoTray = React.createElement(Tray.default, Util.Util.Merge(this.props.ConsoTray, { ShowLabel: false }));
             childs.push(consoTray);
-            var reDraw = this.renderReDraw();
-            childs.push(reDraw);
-            var pass = this.renderPass();
-            childs.push(pass);
+            var id = "GameTable";
             var elem = React.createElement('div', {
-                id: "GameTable",
-                key: "GameTable",
-                ref: "GameTable",
+                id: id,
+                key: id,
+                ref: id,
                 className: "gameTable",
                 title: "GameTable",
                 onDragOver: this.OnDragOver,

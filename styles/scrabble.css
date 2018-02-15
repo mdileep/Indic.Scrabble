@@ -22,18 +22,44 @@ body {
 }
 
 /* */
-.h2 {
+html,
+body {
+  height: 100%;
   width: 100%;
+  margin: 0;
+  padding: 0;
+}
+.title {
+  width: 100%;
+  min-width: 60px;
+  position: fixed;
+  top: 0px;
+  left: 0px;
+}
+.title .h2 {
+  display: inline;
+}
+.game {
+  width: 98%;
+  margin-top: 60px;
 }
 .gameTable {
   clear: both;
   float: left;
   width: 100%;
+  height: 156px;
+  position: fixed;
+  bottom: 0px;
+  left: 0px;
+}
+.footer {
+  clear: both;
+  margin-bottom: 156px;
 }
 .cabinet {
   clear: both;
   float: left;
-  width: 100%;
+  width: 98%;
 }
 .cabinet .remaining {
   float: right;
@@ -66,10 +92,10 @@ body {
 }
 .board {
   float: left;
-  width: 100%;
+  width: 98%;
 }
 .board .table {
-  width: 100%;
+  width: 98%;
   height: 100%;
 }
 .board .cell {
@@ -82,7 +108,7 @@ body {
 }
 .players {
   float: left;
-  width: 100%;
+  width: 98%;
 }
 .players .currentTurn {
   width: 100%;
@@ -104,45 +130,51 @@ body {
 .players .conditions {
   clear: both;
   display: block;
-  width: 100%;
+  width: 98%;
 }
 .players .hide {
   display: none;
 }
 .infoBar {
   float: left;
-  width: 100%;
+  width: 98%;
 }
 .infoBar .h2 {
-  clear: both;
-}
-.footer {
   clear: both;
 }
 .hide {
   display: none;
 }
+.h2 {
+  width: 98%;
+}
 
 /* */
-.gameTable {
-  margin: 3px;
-  padding: 3px;
+.gameTable .actions {
+  text-align: right;
 }
 .gameTable button {
   margin: 3px;
-  padding: 3px;
 }
 .cabinet {
   margin: 3px;
   padding: 3px;
 }
+.game {
+  padding: 1%;
+}
+.tray {
+  margin: 2px;
+}
 .tray .tile {
-  margin: 3px;
-  padding: 3px;
+  margin: 2px;
+  padding: 2px;
 }
 .board {
-  margin: 3px;
-  padding: 3px;
+  margin: 1%;
+}
+.board .table {
+  margin: 1%;
 }
 .players .player {
   margin: 2%;
@@ -155,11 +187,11 @@ body {
   max-height: 150px;
   overflow: auto;
 }
-.footer {
-  margin: 3px;
-}
 
 /* */
+.title {
+  background-color: navajowhite;
+}
 .cabinet {
   border: 1px solid #EEEEEE;
 }
@@ -254,12 +286,16 @@ body {
 .infoBar .ul {
   border: 1px solid #EEEEEE;
 }
+.gameTable {
+  background-color: navajowhite;
+}
 .footer {
   color: blue;
 }
 
 /* */
-.h2 {
+.h2,
+.title {
   text-align: center;
 }
 .gameTable {

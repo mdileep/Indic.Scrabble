@@ -36,85 +36,6 @@ define(["require", "exports", 'Messages', 'Indic', 'Util'], function (require, e
             GameActions.SaveBoard(state);
             GameActions.Refresh(state);
         };
-        GameActions.ResetTable = function (state) {
-            var gameTable = state.GameTable;
-            {
-                var vtray = state.GameTable.VowelTray;
-                var unMoved = GameActions.UnMovedTiles(vtray);
-                var vCount = 0;
-                for (var i = 0; i < unMoved.length; i++) {
-                    var prop = unMoved[i];
-                    if (Indic.Indic.IsVowel(prop) || Indic.Indic.IsSunnaSet(prop)) {
-                        vCount++;
-                    }
-                }
-                var fresh = GameActions.DrawVowelTiles(state.Cache, gameTable.MaxVowels - vCount);
-                var available = unMoved.concat(fresh);
-                state.GameTable.VowelTray = GameActions.SetTableTray(available, "Vowels");
-            }
-            {
-                var ctray = state.GameTable.ConsoTray;
-                var unMoved = GameActions.UnMovedTiles(ctray);
-                var vCount = 0;
-                for (var i = 0; i < unMoved.length; i++) {
-                    var prop = unMoved[i];
-                    if (Indic.Indic.IsConsonent(prop)) {
-                        vCount++;
-                    }
-                }
-                var fresh = GameActions.DrawConsoTiles(state.Cache, (gameTable.MaxOnTable - gameTable.MaxVowels) - vCount);
-                var available = unMoved.concat(fresh);
-                state.GameTable.ConsoTray = GameActions.SetTableTray(available, "Conso");
-            }
-        };
-        GameActions.UnMovedTiles = function (tray) {
-            var old = [];
-            for (var i = 0; i < tray.Tiles.length; i++) {
-                if (tray.Tiles[i].Remaining != 0) {
-                    old.push(tray.Tiles[i].Text);
-                }
-            }
-            return old;
-        };
-        GameActions.ReDraw = function (state, args) {
-            {
-                var available = GameActions.DrawVowelTiles(state.Cache, state.GameTable.MaxVowels);
-                var tray = GameActions.SetTableTray(available, "Vowels");
-                state.GameTable.VowelTray = tray;
-            }
-            {
-                var available = GameActions.DrawConsoTiles(state.Cache, state.GameTable.MaxOnTable - state.GameTable.MaxVowels);
-                var tray = GameActions.SetTableTray(available, "Conso");
-                state.GameTable.ConsoTray = tray;
-            }
-        };
-        GameActions.SetTableTray = function (picked, id) {
-            var tray = {};
-            tray.Id = id;
-            tray.key = tray.Id;
-            tray.className = "tray";
-            tray.Title = "Select";
-            tray.Show = true;
-            tray.Disabled = false;
-            tray.ReadOnly = false;
-            tray.Index = -1;
-            tray.Tiles = [];
-            var index = 0;
-            for (var j = 0; j < picked.length; j++) {
-                var prop = {};
-                prop.Id = "S_" + (index + 1).toString();
-                prop.key = prop.Id;
-                prop.Text = picked[j];
-                prop.Remaining = 1;
-                prop.Total = 1;
-                prop.Index = j;
-                prop.TrayIndex = -1;
-                prop.ReadOnly = false;
-                tray.Tiles.push(prop);
-                index++;
-            }
-            return tray;
-        };
         GameActions.SaveBoard = function (state) {
             for (var i = 0; i < state.Board.Cells.length; i++) {
                 var Cell = state.Board.Cells[i];
@@ -239,8 +160,7 @@ define(["require", "exports", 'Messages', 'Indic', 'Util'], function (require, e
                 var toRemove = cell.Waiting[cell.Waiting.length - 1];
                 cell.Waiting.pop();
                 cell.Current = Indic.Indic.ToString(cell.Confirmed.concat(cell.Waiting));
-                GameActions.Play(state.GameTable.VowelTray, toRemove, 1);
-                GameActions.Play(state.GameTable.ConsoTray, toRemove, 1);
+                GameActions.Play(state.GameTable, toRemove, 1, true);
                 GameActions.SetRemaining(state.Cache, toRemove, 1);
             }
             GameActions.Refresh(state);
@@ -281,8 +201,7 @@ define(["require", "exports", 'Messages', 'Indic', 'Util'], function (require, e
             list = cell.Confirmed.concat(cell.Waiting);
             cell.Current = Indic.Indic.ToString(list);
             if (args.Origin == "Tile") {
-                GameActions.Play(state.GameTable.VowelTray, src, 0);
-                GameActions.Play(state.GameTable.ConsoTray, src, 0);
+                GameActions.Play(state.GameTable, src, 0, true);
                 GameActions.SetRemaining(state.Cache, src, -1);
             }
             if (args.Origin == "Cell") {
@@ -293,7 +212,11 @@ define(["require", "exports", 'Messages', 'Indic', 'Util'], function (require, e
             }
             GameActions.Refresh(state);
         };
-        GameActions.Play = function (tray, src, val) {
+        GameActions.Play = function (gameTable, src, val, useSynonym) {
+            GameActions.PlayInternal(gameTable.VowelTray, src, val, true);
+            GameActions.PlayInternal(gameTable.ConsoTray, src, val, true);
+        };
+        GameActions.PlayInternal = function (tray, src, val, useSynonym) {
             var indx = -1;
             for (var i = 0; i < tray.Tiles.length; i++) {
                 var tile = tray.Tiles[i];
@@ -308,12 +231,12 @@ define(["require", "exports", 'Messages', 'Indic', 'Util'], function (require, e
                 indx = i;
                 break;
             }
-            if (indx == -1) {
+            if (indx == -1 && useSynonym) {
                 var synonym = Indic.Indic.GetSynonym(src);
                 if (synonym == null) {
                     return;
                 }
-                GameActions.Play(tray, synonym, val);
+                GameActions.PlayInternal(tray, synonym, val, false);
             }
         };
         GameActions.ToBoard = function (state, args) {
@@ -566,6 +489,88 @@ define(["require", "exports", 'Messages', 'Indic', 'Util'], function (require, e
                 Words = Words.concat(C);
             }
             return Words;
+        };
+        GameActions.ReDraw = function (state, args) {
+            {
+                var available = GameActions.DrawVowelTiles(state.Cache, state.GameTable.MaxVowels);
+                var tray = GameActions.SetTableTray(available, "Vowels");
+                state.GameTable.VowelTray = tray;
+            }
+            {
+                var available = GameActions.DrawConsoTiles(state.Cache, state.GameTable.MaxOnTable - state.GameTable.MaxVowels);
+                var tray = GameActions.SetTableTray(available, "Conso");
+                state.GameTable.ConsoTray = tray;
+            }
+        };
+        GameActions.ResetVowelsTray = function (state) {
+            var gameTable = state.GameTable;
+            var vtray = state.GameTable.VowelTray;
+            var unMoved = GameActions.UnMovedTiles(vtray);
+            var vCount = 0;
+            for (var i = 0; i < unMoved.length; i++) {
+                var prop = unMoved[i];
+                if (Indic.Indic.IsVowel(prop) || Indic.Indic.IsSunnaSet(prop)) {
+                    vCount++;
+                }
+            }
+            var fresh = GameActions.DrawVowelTiles(state.Cache, gameTable.MaxVowels - vCount);
+            var available = unMoved.concat(fresh);
+            state.GameTable.VowelTray = GameActions.SetTableTray(available, "Vowels");
+        };
+        GameActions.ResetConsoTray = function (state) {
+            var gameTable = state.GameTable;
+            var ctray = state.GameTable.ConsoTray;
+            var unMoved = GameActions.UnMovedTiles(ctray);
+            var vCount = 0;
+            for (var i = 0; i < unMoved.length; i++) {
+                var prop = unMoved[i];
+                if (Indic.Indic.IsConsonent(prop)) {
+                    vCount++;
+                }
+            }
+            var fresh = GameActions.DrawConsoTiles(state.Cache, (gameTable.MaxOnTable - gameTable.MaxVowels) - vCount);
+            var available = unMoved.concat(fresh);
+            state.GameTable.ConsoTray = GameActions.SetTableTray(available, "Conso");
+        };
+        GameActions.ResetTable = function (state) {
+            GameActions.ResetVowelsTray(state);
+            GameActions.ResetConsoTray(state);
+        };
+        GameActions.UnMovedTiles = function (tray) {
+            var old = [];
+            for (var i = 0; i < tray.Tiles.length; i++) {
+                if (tray.Tiles[i].Remaining != 0) {
+                    old.push(tray.Tiles[i].Text);
+                }
+            }
+            return old;
+        };
+        GameActions.SetTableTray = function (picked, id) {
+            var tray = {};
+            tray.Id = id;
+            tray.key = tray.Id;
+            tray.className = "tray";
+            tray.Title = "Game Table";
+            tray.Show = true;
+            tray.Disabled = false;
+            tray.ReadOnly = false;
+            tray.Index = -1;
+            tray.Tiles = [];
+            var index = 0;
+            for (var j = 0; j < picked.length; j++) {
+                var prop = {};
+                prop.Id = "S_" + (index + 1).toString();
+                prop.key = prop.Id;
+                prop.Text = picked[j];
+                prop.Remaining = 1;
+                prop.Total = 1;
+                prop.Index = j;
+                prop.TrayIndex = -1;
+                prop.ReadOnly = false;
+                tray.Tiles.push(prop);
+                index++;
+            }
+            return tray;
         };
         GameActions.AvailableVowels = function (cache) {
             var available = [];
