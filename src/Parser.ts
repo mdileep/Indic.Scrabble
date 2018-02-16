@@ -45,7 +45,7 @@ export class Parser {
     public static BuildGameTable(JSON: Contracts.iRawGameTable, cache: Contracts.iCachedTile): Contracts.iGameTable {
         var vAvailable = GameActions.GameActions.DrawVowelTiles(cache, JSON.MaxVowels);
         var vTray = GameActions.GameActions.SetTableTray(vAvailable, "Vowels");
-       
+
         var cAvailable = GameActions.GameActions.DrawConsoTiles(cache, JSON.MaxOnTable - JSON.MaxVowels);
         var cTray = GameActions.GameActions.SetTableTray(cAvailable, "Conso");
 
@@ -57,8 +57,6 @@ export class Parser {
         raw.CanReDraw = true;
         raw.MaxOnTable = JSON.MaxOnTable;
         raw.MaxVowels = JSON.MaxVowels;
-        //raw.EmptyPass = 0;
-        //raw.MaxEmptyPass = JSON.MaxEmptyPass;
         raw.VowelTray = vTray;
         raw.ConsoTray = cTray;
         return raw;
@@ -88,9 +86,12 @@ export class Parser {
                 var prop: Contracts.iTileProps = ({} as any) as Contracts.iTileProps;
                 prop.Id = "T_" + (index + 1).toString();
                 prop.key = prop.Id;
-                prop.Text = item.Set[j];
-                prop.Remaining = item.Count;
-                prop.Total = item.Count;
+                var KVP = item.Set[j];
+                for (var key in KVP) {
+                    prop.Text = key;
+                    prop.Remaining = KVP[key];
+                    prop.Total = KVP[key];
+                }
                 prop.Index = j;
                 prop.TrayIndex = i;
                 prop.ReadOnly = raw.ReadOnly;

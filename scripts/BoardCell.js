@@ -15,10 +15,19 @@ define(["require", "exports", "react", 'Contracts', 'GameLoader'], function (req
             var _this = this;
             var className = this.getClass();
             var childs = [];
+            var textId = "text_" + this.props.Id;
+            var text = this.props.Current.length == 0 ? " " : this.props.Current;
+            var textElem = React.createElement('span', {
+                id: textId,
+                ref: textId,
+                key: textId,
+                className: "",
+                title: this.props.Weight
+            }, [], text);
+            childs.push(textElem);
             if (this.props.Weight != 1) {
                 childs.push(this.renderWeight());
             }
-            var text = this.props.Current.length == 0 ? " " : this.props.Current;
             var elem = React.createElement('td', {
                 id: this.props.Id,
                 ref: this.props.Id,
@@ -29,7 +38,7 @@ define(["require", "exports", "react", 'Contracts', 'GameLoader'], function (req
                 onDragStart: function (evt) { _this.OnDragStart(evt); },
                 onDragOver: this.OnDragOver,
                 onDrop: function (evt) { _this.OnDrop(evt); }
-            }, [childs], text);
+            }, [childs]);
             return elem;
         };
         BoardCell.prototype.isDragable = function () {

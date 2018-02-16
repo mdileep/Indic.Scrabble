@@ -70,8 +70,6 @@ export interface iGameTable extends iComponent {
     CanReDraw: boolean;
     MaxOnTable: number;
     MaxVowels: number;
-    //EmptyPass: number;
-    //MaxEmptyPass: number;
 }
 export interface iGameState extends iComponent {
     Cabinet: iCabinetProps;
@@ -116,7 +114,6 @@ export interface iLoadState {
 export interface iRawGameTable {
     MaxOnTable: number;
     MaxVowels: number;
-    //MaxEmptyPass: number;
 }
 export interface iRawCabinet {
     Trays: iRawTray[];
@@ -130,7 +127,7 @@ export interface iRawTray {
     Title: string;
     Count: number;
     Show: boolean;
-    Set: string[];
+    Set: any[];
 }
 //
 export interface iPosition {

@@ -67,9 +67,12 @@ define(["require", "exports", "GameActions", "Indic"], function (require, export
                     var prop = {};
                     prop.Id = "T_" + (index + 1).toString();
                     prop.key = prop.Id;
-                    prop.Text = item.Set[j];
-                    prop.Remaining = item.Count;
-                    prop.Total = item.Count;
+                    var KVP = item.Set[j];
+                    for (var key in KVP) {
+                        prop.Text = key;
+                        prop.Remaining = KVP[key];
+                        prop.Total = KVP[key];
+                    }
                     prop.Index = j;
                     prop.TrayIndex = i;
                     prop.ReadOnly = raw.ReadOnly;

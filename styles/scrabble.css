@@ -104,7 +104,7 @@ body {
 }
 .board .weight {
   display: inline-block;
-  float: left;
+  float: right;
 }
 .players {
   float: left;
@@ -176,6 +176,9 @@ body {
 .board .table {
   margin: 1%;
 }
+.board .weight {
+  margin-right: 2px;
+}
 .players .player {
   margin: 2%;
 }
@@ -191,6 +194,7 @@ body {
 /* */
 .title {
   background-color: navajowhite;
+  opacity: 0.9;
 }
 .cabinet {
   border: 1px solid #EEEEEE;
@@ -288,6 +292,7 @@ body {
 }
 .gameTable {
   background-color: navajowhite;
+  opacity: 0.9;
 }
 .footer {
   color: blue;

@@ -23,10 +23,23 @@ class BoardCell extends React.Component<Contracts.iCellProps, Contracts.iCellPro
     render() {
         var className: string = this.getClass();
         var childs: React.ReactElement<Contracts.iProps>[] = [];
+
+
+        var textId = "text_" + this.props.Id;
+        var text = this.props.Current.length == 0 ? " " : this.props.Current;
+        var textElem = React.createElement('span',
+            {
+                id: textId,
+                ref: textId,
+                key: textId,
+                className: "",
+                title: this.props.Weight
+            }, [], text);
+        childs.push(textElem);
+
         if (this.props.Weight != 1) {
             childs.push(this.renderWeight());
         }
-        var text = this.props.Current.length == 0 ? " " : this.props.Current;
 
         var elem = React.createElement('td',
             {
@@ -39,7 +52,7 @@ class BoardCell extends React.Component<Contracts.iCellProps, Contracts.iCellPro
                 onDragStart: (evt: DragEvent) => { this.OnDragStart(evt); },
                 onDragOver: this.OnDragOver,
                 onDrop: (evt: DragEvent) => { this.OnDrop(evt); }
-            }, [childs], text);
+            }, [childs]);
         return elem;
     }
     isDragable(): boolean {
