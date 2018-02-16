@@ -24,7 +24,6 @@ class BoardCell extends React.Component<Contracts.iCellProps, Contracts.iCellPro
         var className: string = this.getClass();
         var childs: React.ReactElement<Contracts.iProps>[] = [];
 
-
         var textId = "text_" + this.props.Id;
         var text = this.props.Current.length == 0 ? " " : this.props.Current;
         var textElem = React.createElement('span',

@@ -105,6 +105,7 @@ body {
 .board .weight {
   display: inline-block;
   float: right;
+  clear: both;
 }
 .players {
   float: left;
