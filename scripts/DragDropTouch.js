@@ -1,3 +1,13 @@
+////////////////////////////////////////////////////////////////////////
+//
+// The DragDropTouch.ts and DragDropTouchNoWijmo.ts files provide the 
+// same functionality, you can pick one or the other.
+//
+// The difference between them is only that DragDropTouchNoWijmo.ts does 
+// not reference or need Wijmo.It is a little bit more verbose, but has no 
+// dependencies.
+//
+////////////////////////////////////////////////////////////////////////
 var DragDropTouch;
 (function (DragDropTouch_1) {
     'use strict';
@@ -11,7 +21,7 @@ var DragDropTouch;
      * This object is created automatically by the @see:DragDropTouch singleton and is
      * accessible through the @see:dataTransfer property of all drag events.
      */
-    var DataTransfer = (function () {
+    var DataTransfer = /** @class */ (function () {
         function DataTransfer() {
             this._dropEffect = 'move';
             this._effectAllowed = 'all';
@@ -107,7 +117,7 @@ var DragDropTouch;
             ddt._imgOffset = { x: offsetX, y: offsetY };
         };
         return DataTransfer;
-    })();
+    }());
     DragDropTouch_1.DataTransfer = DataTransfer;
     /**
      * Defines a class that adds support for touch-based HTML5 drag/drop operations.
@@ -127,7 +137,7 @@ var DragDropTouch;
      * For details and examples on HTML drag and drop, see
      * https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/Drag_operations.
      */
-    var DragDropTouch = (function () {
+    var DragDropTouch = /** @class */ (function () {
         /**
          * Initializes the single instance of the @see:DragDropTouch class.
          */
@@ -137,11 +147,20 @@ var DragDropTouch;
             if (DragDropTouch._instance) {
                 throw 'DragDropTouch instance already created.';
             }
+            // detect passive event support
+            // https://github.com/Modernizr/Modernizr/issues/1894
+            var supportsPassive = false;
+            document.addEventListener('test', function (_) { }, {
+                get passive() {
+                    supportsPassive = true;
+                    return true;
+                }
+            });
             // listen to touch events
             if ('ontouchstart' in document) {
-                var d = document, ts = this._touchstart.bind(this), tm = this._touchmove.bind(this), te = this._touchend.bind(this);
-                d.addEventListener('touchstart', ts);
-                d.addEventListener('touchmove', tm);
+                var d = document, ts = this._touchstart.bind(this), tm = this._touchmove.bind(this), te = this._touchend.bind(this), opt = supportsPassive ? { passive: false, capture: false } : false;
+                d.addEventListener('touchstart', ts, opt);
+                d.addEventListener('touchmove', tm, opt);
                 d.addEventListener('touchend', te);
                 d.addEventListener('touchcancel', te);
             }
@@ -314,12 +333,14 @@ var DragDropTouch;
         DragDropTouch.prototype._moveImage = function (e) {
             var _this = this;
             requestAnimationFrame(function () {
-                var pt = _this._getPoint(e, true), s = _this._img.style;
-                s.position = 'absolute';
-                s.pointerEvents = 'none';
-                s.zIndex = '999999';
-                s.left = Math.round(pt.x - _this._imgOffset.x) + 'px';
-                s.top = Math.round(pt.y - _this._imgOffset.y) + 'px';
+                if (_this._img) {
+                    var pt = _this._getPoint(e, true), s = _this._img.style;
+                    s.position = 'absolute';
+                    s.pointerEvents = 'none';
+                    s.zIndex = '999999';
+                    s.left = Math.round(pt.x - _this._imgOffset.x) + 'px';
+                    s.top = Math.round(pt.y - _this._imgOffset.y) + 'px';
+                }
             });
         };
         // copy properties from an object to another
@@ -341,11 +362,13 @@ var DragDropTouch;
                 cDst.height = cSrc.height;
                 cDst.getContext('2d').drawImage(cSrc, 0, 0);
             }
-            // copy style
+            // copy style (without transitions)
             var cs = getComputedStyle(src);
             for (var i = 0; i < cs.length; i++) {
                 var key = cs[i];
-                dst.style[key] = cs[key];
+                if (key.indexOf('transition') < 0) {
+                    dst.style[key] = cs[key];
+                }
             }
             dst.style.pointerEvents = 'none';
             // and repeat for all children
@@ -370,7 +393,7 @@ var DragDropTouch;
         // gets an element's closest draggable ancestor
         DragDropTouch.prototype._closestDraggable = function (e) {
             for (; e; e = e.parentElement) {
-                if (e.hasAttribute('draggable')) {
+                if (e.hasAttribute('draggable') && e.draggable) {
                     return e;
                 }
             }
@@ -389,7 +412,7 @@ var DragDropTouch;
         DragDropTouch._kbdProps = 'altKey,ctrlKey,metaKey,shiftKey'.split(',');
         DragDropTouch._ptProps = 'pageX,pageY,clientX,clientY,screenX,screenY'.split(',');
         return DragDropTouch;
-    })();
+    }());
     DragDropTouch_1.DragDropTouch = DragDropTouch;
 })(DragDropTouch || (DragDropTouch = {}));
 //# sourceMappingURL=DragDropTouchNoWijmo.js.map
