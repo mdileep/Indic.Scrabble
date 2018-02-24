@@ -97,7 +97,6 @@ class GameTable extends React.Component<Contracts.iGameTable, Contracts.iGameTab
     }
 
     public OnReDraw(ev: MouseEvent) {
-        debugger;
         GameLoader.GameLoader.store.dispatch({
             type: Contracts.Actions.ReDraw,
             args: {

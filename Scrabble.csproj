@@ -20,6 +20,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Content Include="Index.html" />
+    <Content Include="scripts\DragDropTouch.js" />
     <Content Include="scripts\GameTable.js" />
     <Content Include="styles\scrabble.css" />
     <Content Include="styles\scrabble.min.css" />

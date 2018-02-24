@@ -73,7 +73,6 @@ define(["require", "exports", "react", 'Contracts', 'GameLoader', 'Tray', 'Util'
             });
         };
         GameTable.prototype.OnReDraw = function (ev) {
-            debugger;
             GameLoader.GameLoader.store.dispatch({
                 type: Contracts.Actions.ReDraw,
                 args: {}
