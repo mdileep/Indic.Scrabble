@@ -1,5 +1,7 @@
 bin/*.pdb
-obj/
+bin/Scrabble.dll
+bin/Scrabble.dll.config
+obj/Debug/*.*
 external/
 styles/less/*.css
 .vs/
