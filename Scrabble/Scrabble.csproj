@@ -19,6 +19,7 @@
     <UseGlobalApplicationHostFile />
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="bin\Scrabble.Server.dll" />
     <Content Include="scrabble.aspx" />
     <Content Include="Index.html" />
     <Content Include="scripts\bn.config.js" />
