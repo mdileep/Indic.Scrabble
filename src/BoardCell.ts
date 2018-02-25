@@ -23,7 +23,6 @@ class BoardCell extends React.Component<Contracts.iCellProps, Contracts.iCellPro
     render() {
         var className: string = this.getClass();
         var childs: React.ReactElement<Contracts.iProps>[] = [];
-
         var textId = "text_" + this.props.Id;
         var text = this.props.Current.length == 0 ? " " : this.props.Current;
         var textElem = React.createElement('span',
@@ -31,14 +30,21 @@ class BoardCell extends React.Component<Contracts.iCellProps, Contracts.iCellPro
                 id: textId,
                 ref: textId,
                 key: textId,
-                className: "",
-                title: this.props.Weight
+                className: "text",
+                title: text
             }, [], text);
+        childs.push(this.renderWeight());
         childs.push(textElem);
 
-        if (this.props.Weight != 1) {
-            childs.push(this.renderWeight());
-        }
+        var cellId = "cell_" + this.props.Id;
+        var container = React.createElement('div',
+            {
+                id: cellId,
+                ref: cellId,
+                key: cellId,
+                className: "cellContainer",
+                title: text
+            }, childs);
 
         var elem = React.createElement('td',
             {
@@ -46,12 +52,12 @@ class BoardCell extends React.Component<Contracts.iCellProps, Contracts.iCellPro
                 ref: this.props.Id,
                 className: className,
                 title: this.props.Current,
-                index: this.props.Index,
+                index: text,
                 draggable: this.isDragable(),
                 onDragStart: (evt: DragEvent) => { this.OnDragStart(evt); },
                 onDragOver: this.OnDragOver,
                 onDrop: (evt: DragEvent) => { this.OnDrop(evt); }
-            }, [childs]);
+            }, [container]);
         return elem;
     }
     isDragable(): boolean {
@@ -86,16 +92,19 @@ class BoardCell extends React.Component<Contracts.iCellProps, Contracts.iCellPro
         }
         return className;
     }
+
     public renderWeight(): React.ReactElement<Contracts.iProps> {
         var weightId = "weight_" + this.props.Id;
+        var className = "weight";
+        var text = this.props.Weight == 1 ? " " : this.props.Weight;
         var weight = React.createElement('span',
             {
                 id: weightId,
                 ref: weightId,
                 key: weightId,
-                className: "weight",
+                className: className,
                 title: this.props.Weight
-            }, [], this.props.Weight);
+            }, [], text);
         return weight;
     }
 

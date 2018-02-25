@@ -73,6 +73,7 @@
         float: left;
         min-width: 24px;
         min-height: 24px;
+        width: 10%;
     }
 
     .count {
@@ -95,10 +96,23 @@
         min-height: 24px;
     }
 
-    .weight {
-        display: inline-block;
-        float: right;
+    .cellContainer {
+        position: relative;
+    }
+
+    .text {
+        display: block;
         clear: both;
+        border: 1px dotted white;
+        position: relative;
+    }
+
+    .weight {
+        display: block;
+        clear: both;
+        position: absolute;
+        right: 0px;
+        bottom: 0px;
     }
 }
 

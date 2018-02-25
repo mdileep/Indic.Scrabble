@@ -21,24 +21,30 @@ define(["require", "exports", "react", 'Contracts', 'GameLoader'], function (req
                 id: textId,
                 ref: textId,
                 key: textId,
-                className: "",
-                title: this.props.Weight
+                className: "text",
+                title: text
             }, [], text);
+            childs.push(this.renderWeight());
             childs.push(textElem);
-            if (this.props.Weight != 1) {
-                childs.push(this.renderWeight());
-            }
+            var cellId = "cell_" + this.props.Id;
+            var container = React.createElement('div', {
+                id: cellId,
+                ref: cellId,
+                key: cellId,
+                className: "cellContainer",
+                title: text
+            }, childs);
             var elem = React.createElement('td', {
                 id: this.props.Id,
                 ref: this.props.Id,
                 className: className,
                 title: this.props.Current,
-                index: this.props.Index,
+                index: text,
                 draggable: this.isDragable(),
                 onDragStart: function (evt) { _this.OnDragStart(evt); },
                 onDragOver: this.OnDragOver,
                 onDrop: function (evt) { _this.OnDrop(evt); }
-            }, [childs]);
+            }, [container]);
             return elem;
         };
         BoardCell.prototype.isDragable = function () {
@@ -77,13 +83,15 @@ define(["require", "exports", "react", 'Contracts', 'GameLoader'], function (req
         };
         BoardCell.prototype.renderWeight = function () {
             var weightId = "weight_" + this.props.Id;
+            var className = "weight";
+            var text = this.props.Weight == 1 ? " " : this.props.Weight;
             var weight = React.createElement('span', {
                 id: weightId,
                 ref: weightId,
                 key: weightId,
-                className: "weight",
+                className: className,
                 title: this.props.Weight
-            }, [], this.props.Weight);
+            }, [], text);
             return weight;
         };
         BoardCell.prototype.OnDragOver = function (ev) {
