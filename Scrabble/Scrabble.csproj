@@ -1,0 +1,195 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <ProjectGuid>{7E7047E6-51CB-4D07-BA22-EA6B4193FA89}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <OutputPath>bin</OutputPath>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <TypeScriptToolsVersion>1.8</TypeScriptToolsVersion>
+    <UseIISExpress>true</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <UseGlobalApplicationHostFile />
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="scrabble.aspx" />
+    <Content Include="Index.html" />
+    <Content Include="scripts\bn.config.js" />
+    <Content Include="scripts\gu.config.js" />
+    <Content Include="scripts\hi.config.js" />
+    <Content Include="scripts\kn.config.js" />
+    <Content Include="scripts\ml.config.js" />
+    <Content Include="scripts\or.config.js" />
+    <Content Include="scripts\pa.config.js" />
+    <Content Include="scripts\ta.config.js" />
+    <Content Include="styles\bn.css" />
+    <Content Include="styles\gu.css" />
+    <Content Include="styles\hi.css" />
+    <Content Include="styles\kn.css" />
+    <Content Include="styles\ml.css" />
+    <Content Include="styles\or.css" />
+    <Content Include="styles\pa.css" />
+    <Content Include="styles\ta.css" />
+    <Content Include="styles\te.css" />
+    <None Include="scripts\DragDropTouch.js.exclude" />
+    <Content Include="scripts\DragDropTouch.js" />
+    <Content Include="scripts\GameTable.js" />
+    <Content Include="styles\scrabble.css" />
+    <Content Include="styles\scrabble.min.css" />
+    <Content Include="web.config" />
+    <None Include="web.Debug.config">
+      <DependentUpon>web.config</DependentUpon>
+    </None>
+    <None Include="web.Release.config">
+      <DependentUpon>web.config</DependentUpon>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <TypeScriptCompile Include="src\AksharaSets.ts" />
+    <TypeScriptCompile Include="src\bn.config.ts" />
+    <TypeScriptCompile Include="src\BoardCell.ts" />
+    <TypeScriptCompile Include="src\DragDropTouch.ts" />
+    <TypeScriptCompile Include="src\gu.config.ts" />
+    <TypeScriptCompile Include="src\hi.config.ts" />
+    <TypeScriptCompile Include="src\kn.config.ts" />
+    <TypeScriptCompile Include="src\Messages.ts" />
+    <TypeScriptCompile Include="src\GameTable.ts" />
+    <TypeScriptCompile Include="src\GameActions.ts" />
+    <TypeScriptCompile Include="src\GameLoader.ts" />
+    <TypeScriptCompile Include="src\Index.ts" />
+    <TypeScriptCompile Include="src\Indic.ts" />
+    <TypeScriptCompile Include="src\GamePlayers.ts" />
+    <TypeScriptCompile Include="src\ml.config.ts" />
+    <TypeScriptCompile Include="src\or.config.ts" />
+    <TypeScriptCompile Include="src\pa.config.ts" />
+    <TypeScriptCompile Include="src\Parser.ts" />
+    <TypeScriptCompile Include="src\InfoBar.ts" />
+    <TypeScriptCompile Include="src\ta.config.ts" />
+    <TypeScriptCompile Include="src\TrayRack.ts" />
+    <TypeScriptCompile Include="src\Tray.ts" />
+    <TypeScriptCompile Include="src\Cabinet.ts" />
+    <TypeScriptCompile Include="src\Contracts.ts" />
+    <TypeScriptCompile Include="src\Board.ts" />
+    <TypeScriptCompile Include="src\GamePlayer.ts" />
+    <TypeScriptCompile Include="src\Util.ts" />
+    <TypeScriptCompile Include="src\Tile.ts" />
+    <TypeScriptCompile Include="src\GameRoom.ts" />
+    <TypeScriptCompile Include="src\GameState.ts" />
+    <TypeScriptCompile Include="src\te.config.ts" />
+  </ItemGroup>
+  <ItemGroup>
+    <TypeScriptCompile Include="typings\Custom.d.ts" />
+    <TypeScriptCompile Include="typings\react-dom.d.ts" />
+    <TypeScriptCompile Include="typings\react.d.ts" />
+    <TypeScriptCompile Include="typings\redux.d.ts" />
+    <TypeScriptCompile Include="typings\require.d.ts" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="scripts\AksharaSets.js" />
+    <Content Include="scripts\Board.js" />
+    <Content Include="scripts\BoardCell.js" />
+    <Content Include="scripts\Cabinet.js" />
+    <Content Include="scripts\Contracts.js" />
+    <Content Include="scripts\GameActions.js" />
+    <Content Include="scripts\GameLoader.js" />
+    <Content Include="scripts\GamePlayer.js" />
+    <Content Include="scripts\GamePlayers.js" />
+    <Content Include="scripts\GameRoom.js" />
+    <Content Include="scripts\GameState.js" />
+    <Content Include="scripts\Index.js" />
+    <Content Include="scripts\Indic.js" />
+    <Content Include="scripts\InfoBar.js" />
+    <Content Include="scripts\Messages.js" />
+    <Content Include="scripts\Parser.js" />
+    <Content Include="scripts\RaiseHand.js" />
+    <Content Include="scripts\react-dom.js" />
+    <Content Include="scripts\react-dom_14.js" />
+    <Content Include="scripts\react.js" />
+    <Content Include="scripts\react_14.js" />
+    <Content Include="scripts\redux.js" />
+    <Content Include="scripts\Referee.js" />
+    <Content Include="scripts\require.js" />
+    <Content Include="scripts\te.config.js" />
+    <Content Include="scripts\Tile.js" />
+    <Content Include="scripts\Tray.js" />
+    <Content Include="scripts\TrayRack.js" />
+    <Content Include="scripts\Util.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Scrabble.png" />
+    <Content Include="Miriyam.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <LessFiles Include="styles\less\1.fonts.less" />
+    <LessFiles Include="styles\less\2.structure.less" />
+    <LessFiles Include="styles\less\3.margins.less" />
+    <LessFiles Include="styles\less\4.colors.less" />
+    <LessFiles Include="styles\less\5.misc.less" />
+    <LessFiles Include="styles\less\scrabble.less" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Scrabble.Server\Scrabble.Server.csproj">
+      <Project>{e3e5c9f0-0fb2-4e30-be88-50b98c65d709}</Project>
+      <Name>Scrabble.Server</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">12.0</VisualStudioVersion>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\WebApplications\Microsoft.WebApplication.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\WebApplications\Microsoft.WebApplication.targets')" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>False</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>57770</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:57770/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <TypeScriptRemoveComments>True</TypeScriptRemoveComments>
+    <TypeScriptSourceMap>False</TypeScriptSourceMap>
+    <TypeScriptJsxEmit>None</TypeScriptJsxEmit>
+    <TypeScriptModuleKind>AMD</TypeScriptModuleKind>
+    <TypeScriptOutDir>scripts</TypeScriptOutDir>
+    <TypeScriptGeneratesDeclarations>False</TypeScriptGeneratesDeclarations>
+    <TypeScriptCompileOnSaveEnabled>False</TypeScriptCompileOnSaveEnabled>
+    <TypeScriptOutFile>
+    </TypeScriptOutFile>
+    <TypeScriptNoImplicitAny>True</TypeScriptNoImplicitAny>
+    <TypeScriptTarget>ES5</TypeScriptTarget>
+    <TypeScriptNoEmitOnError>True</TypeScriptNoEmitOnError>
+    <TypeScriptMapRoot />
+    <TypeScriptSourceRoot />
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <TypeScriptRemoveComments>true</TypeScriptRemoveComments>
+    <TypeScriptSourceMap>false</TypeScriptSourceMap>
+  </PropertyGroup>
+  <Import Project="Less.targets" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
+</Project>

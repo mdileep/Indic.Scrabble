@@ -1,0 +1,10 @@
+bin/*.pdb
+obj/
+external/
+styles/less/*.css
+.vs/
+Backup/
+Less.targets
+*.csproj.user
+packages.config
+upgradelog.htm

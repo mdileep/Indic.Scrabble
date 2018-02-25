@@ -1,0 +1,9 @@
+C:\Dileep\Work\Experiments\Scrabble.Server\bin\Debug\Scrabble.Server.dll
+C:\Dileep\Work\Experiments\Scrabble.Server\bin\Debug\Scrabble.Server.pdb
+C:\Dileep\Work\Experiments\Scrabble.Server\obj\Debug\Scrabble.Server.dll
+C:\Dileep\Work\Experiments\Scrabble.Server\obj\Debug\Scrabble.Server.pdb
+C:\Dileep\Work\Indic.Scrabble\Scrabble.Server\bin\Debug\Scrabble.Server.dll
+C:\Dileep\Work\Indic.Scrabble\Scrabble.Server\bin\Debug\Scrabble.Server.pdb
+C:\Dileep\Work\Indic.Scrabble\Scrabble.Server\obj\Debug\Scrabble.Server.csprojResolveAssemblyReference.cache
+C:\Dileep\Work\Indic.Scrabble\Scrabble.Server\obj\Debug\Scrabble.Server.dll
+C:\Dileep\Work\Indic.Scrabble\Scrabble.Server\obj\Debug\Scrabble.Server.pdb
