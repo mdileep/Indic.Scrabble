@@ -1,0 +1,9 @@
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Target Name="BeforeBuild">
+    <Message Importance="High" Text="Before Building $(TargetName) $(OutputType)" />
+  </Target>
+  <Target Name="AfterBuild">
+    <Message Importance="High" Text="Merge: $(ProjectDir)\..\External\Worker.exe Copy $(ProjectDir)\CopyRules.ini" />
+    <Exec IgnoreExitCode="false" Command="$(ProjectDir)\..\External\Worker.exe Copy $(ProjectDir)\CopyRules.ini" />
+  </Target>
+</Project>
