@@ -42,7 +42,6 @@
     <Content Include="styles\ta.css" />
     <Content Include="styles\te.css" />
     <Content Include="API.ashx" />
-    <Content Include="bin\Scrabble.dll.config" />
     <None Include="scripts\DragDropTouch.js.exclude" />
     <Content Include="scripts\DragDropTouch.js" />
     <Content Include="scripts\GameTable.js" />
