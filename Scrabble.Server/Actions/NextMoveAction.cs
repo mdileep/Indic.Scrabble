@@ -18,7 +18,7 @@ namespace Scrabble.Server
 	{
 		public object Process(Dictionary<string, object> dict)
 		{
-			
+			return "<TODO>";
 		}
 	}
 }
