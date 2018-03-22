@@ -20,10 +20,8 @@
     <TargetFrameworkProfile />
   </PropertyGroup>
   <ItemGroup>
-    <Content Include="bin\Scrabble.dll" />
-    <Content Include="bin\Scrabble.pdb" />
+  
     <Content Include="bin\Scrabble.Server.dll" />
-    <Content Include="bin\Scrabble.Server.pdb" />
     <Content Include="scrabble.aspx" />
     <Content Include="Index.html" />
     <Content Include="scripts\bn.config.js" />
@@ -196,6 +194,7 @@
     <TypeScriptNoEmitOnError>True</TypeScriptNoEmitOnError>
     <TypeScriptMapRoot />
     <TypeScriptSourceRoot />
+    <Optimize>true</Optimize>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <TypeScriptRemoveComments>true</TypeScriptRemoveComments>
