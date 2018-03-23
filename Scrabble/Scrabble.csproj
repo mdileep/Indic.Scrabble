@@ -18,10 +18,9 @@
     <IISExpressUseClassicPipelineMode />
     <UseGlobalApplicationHostFile />
     <TargetFrameworkProfile />
+    <Use64BitIISExpress />
   </PropertyGroup>
   <ItemGroup>
-  
-    <Content Include="bin\Scrabble.Server.dll" />
     <Content Include="scrabble.aspx" />
     <Content Include="Index.html" />
     <Content Include="scripts\bn.config.js" />
@@ -154,6 +153,15 @@
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Scrabble.Server\Scrabble.Server.csproj">
+      <Project>{e3e5c9f0-0fb2-4e30-be88-50b98c65d709}</Project>
+      <Name>Scrabble.Server</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="bin\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">12.0</VisualStudioVersion>
