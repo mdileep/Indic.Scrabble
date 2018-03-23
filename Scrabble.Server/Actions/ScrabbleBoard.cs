@@ -1,8 +1,8 @@
 ﻿//---------------------------------------------------------------------------------------------
-// <copyright file="Parser.cs" company="Chandam-ఛందం">
+// <copyright file="ScrabbleBoard.cs" company="Chandam-ఛందం">
 //    Copyright © 2013 - 2018 'Chandam-ఛందం' : http://chandam.apphb.com
 //    Original Author : Dileep Miriyala (m.dileep@gmail.com)
-//    Last Updated    : 21-Mar-2018 23:34EST
+//    Last Updated    : 22-Mar-2018 21:32EST
 //    Revisions:
 //       Version    | Author                   | Email                     | Remarks
 //       1.0        | Dileep Miriyala          | m.dileep@gmail.com        | Initial Commit
@@ -13,16 +13,24 @@
 
 namespace Scrabble.Server
 {
-	public class Parser
+	public class ScrabbleBoard
 	{
-		public static Request ParseRequest(string json)
+		public ScrabbleBoard()
 		{
-			if (json == null)
-			{
-				return new Request();
-			}
-			var req = ParseUtil.ParseJSON<Request>(json);
-			return req;
+
 		}
+
+		public string Reference;
+		public string Language;
+		//
+		public string Bot;
+		//
+		public int Size;
+		public string[] Cells;
+		public int[] Weights;
+		//Inputs
+		public string Vowels;
+		public string Conso;
+		public string Special;
 	}
 }

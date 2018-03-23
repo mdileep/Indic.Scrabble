@@ -11,24 +11,51 @@
 //---------------------------------------------------------------------------------------------
 
 
+using System.Collections.Generic;
+using System.IO;
+using System.Runtime.Serialization.Json;
+using System.Text;
 using System.Web.Script.Serialization;
 
 namespace Scrabble.Server
 {
 	class ParseUtil
 	{
+		internal static string ToJSONStrict(object obj)
+		{
+			byte[] json = null;
+			using (MemoryStream ms = new MemoryStream())
+			{
+				DataContractJsonSerializer ser = new DataContractJsonSerializer(obj.GetType());
+				ser.WriteObject(ms, obj);
+				json = ms.ToArray();
+				ms.Close();
+			}
+			return Encoding.UTF8.GetString(json, 0, json.Length);
+		}
+
+		internal static T ParseJSONStrict<T>(string json)
+		{
+			T obj = default(T);
+			using (MemoryStream ms = new MemoryStream(Encoding.UTF8.GetBytes(json)))
+			{
+				DataContractJsonSerializer ser = new DataContractJsonSerializer(typeof(T));
+				obj = (T)ser.ReadObject(ms);
+				ms.Close();
+			}
+			return obj;
+		}
+
 		internal static T ParseJSON<T>(string json)
 		{
 			var ser = new JavaScriptSerializer();
-			return (T)ser.DeserializeObject(json);
+			var obj = ser.DeserializeObject(json);
+			return ConvertTo<T>(obj);
 		}
 
 		internal static string ToJSON(object o)
 		{
-			JavaScriptSerializer serializer = new JavaScriptSerializer
-			{
-
-			};
+			JavaScriptSerializer serializer = new JavaScriptSerializer();
 			return serializer.Serialize(o);
 		}
 

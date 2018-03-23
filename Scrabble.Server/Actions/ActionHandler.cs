@@ -41,12 +41,10 @@ namespace Scrabble.Server
 			using (Watcher W = new Watcher(action))
 			{
 				iAPIAction command = LookupRegsiter(action);
-				var actionReponse = command.Process(req.Raw);
+				var actionReponse = command.Process(req);
 				Response response = new Response
 				{
 					Action = action,
-					Language = req.Language,
-					Reference = req.Reference,
 					Result = actionReponse,
 					Effort = W.Elapsed()
 				};

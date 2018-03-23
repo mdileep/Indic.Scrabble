@@ -12,6 +12,7 @@
 
 
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
@@ -25,6 +26,12 @@ namespace Scrabble.Server
 		{
 			string val = request[key];
 			return val;
+		}
+
+		internal static string ReadRequest(HttpRequest request)
+		{
+			StreamReader stream = new StreamReader(request.InputStream);
+			return stream.ReadToEnd();
 		}
 
 		internal static string GetQuery(HttpRequest request, string key, List<string> valid, string defaultVal)
@@ -75,6 +82,11 @@ namespace Scrabble.Server
 				}
 			}
 			return result;
+		}
+
+		internal static string Path(string file)
+		{
+			return HttpContext.Current.Server.MapPath(file);
 		}
 	}
 }

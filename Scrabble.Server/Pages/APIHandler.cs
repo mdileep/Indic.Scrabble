@@ -10,6 +10,8 @@
 // </copyright>
 //---------------------------------------------------------------------------------------------
 
+using System;
+using System.Collections.Generic;
 using System.Web;
 
 namespace Scrabble.Server
@@ -18,12 +20,25 @@ namespace Scrabble.Server
 	{
 		public void ProcessRequest(HttpContext context)
 		{
-			context.Response.ContentType = "application/json";
-			var args = ServerUtil.Get(context.Request, "args");
-			var action = ServerUtil.GetQuery(context.Request, "action", Config.Actions, ActionNames.Help);
-			var req = Parser.ParseRequest(args);
-			var response = ActionHandler.Process(action, req);
+			Response response = null;
+			try
+			{
+				var reqJSON = ServerUtil.ReadRequest(context.Request);
+				var action = ServerUtil.GetQuery(context.Request, "action", Config.Actions, ActionNames.Help);
+				var req = Parser.ParseRequest(reqJSON);
+				response = ActionHandler.Process(action, req);
+			}
+			catch (Exception ex)
+			{
+				response = new Response
+				{
+					Action = "ERROR",
+					Language = Config.DefaultLang,
+					Result = new Dictionary<string, string> { { "Debug", ex.Message } }
+				};
+			}
 
+			context.Response.ContentType = "application/json";
 			string responseJSON = ParseUtil.ToJSON(response);
 			context.Response.Write(responseJSON);
 		}

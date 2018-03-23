@@ -10,7 +10,7 @@
 // </copyright>
 //---------------------------------------------------------------------------------------------
 
-
+using System.Runtime.Serialization;
 
 namespace Scrabble.Server
 {

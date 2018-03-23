@@ -16,13 +16,8 @@ using System.Collections.Generic;
 
 namespace Scrabble.Server
 {
-	public class Request
+	public class Request : Dictionary<string, object>
 	{
 
-		public string Language { get; set; }
-
-		public string Reference { get; set; }
-
-		public Dictionary<string, object> Raw { get; set; }
 	}
 }
