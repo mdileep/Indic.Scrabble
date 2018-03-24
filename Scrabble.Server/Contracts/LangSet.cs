@@ -23,6 +23,17 @@ namespace Shared
 		public string[] Consonents = new string[] { };
 		public Dictionary<string, string> Synonyms = new Dictionary<string, string>();
 		public string Virama = "";
-		public const char ZWNJ = (char)0x200C;
+		internal const char ZWNJ = (char)0x200C;
+	}
+	public class Bot
+	{
+		public string DisplayName;
+		public string Language;
+		public string Dictionary;
+	}
+	public class KnownBoard
+	{
+		public int Size;
+		public int[] Weights;
 	}
 }

@@ -1,0 +1,12 @@
+﻿{
+  "eenadu": {
+    "Name": "ఈనాడు",
+    "Language": "te",
+    "Dictionary": "www.eenadu.net.scrabble"
+  },
+  "bbc.te": {
+    "Name": "బీబీసీ తెలుగు",
+    "Language": "te",
+    "Dictionary": "www.bbc.com.scrabble"
+  }
+}

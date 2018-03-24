@@ -10,12 +10,12 @@
 // </copyright>
 //---------------------------------------------------------------------------------------------
 
-
 using Scrabble.Server;
 using Shared;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -34,11 +34,30 @@ namespace Scrabble
 
 		public Runner(ScrabbleBoard Board)
 		{
-			CharSet = Config.GetCharSet(Board.Language);
-			file = Board.Bot + ".scrabble";
-			size = Board.Size;
+			if (Board == null)
+			{
+				return;
+			}
+			var bot = Config.GetBot(Board.Bot);
+			if (bot == null)
+			{
+				return;
+			}
+
+			var board = Config.GetBoard(Board.Name);
+			if (board == null)
+			{
+				return;
+			}
+			
+			//
+			file = bot.Dictionary;
+			CharSet = Config.GetCharSet(bot.Language);
+			//
+			size = board.Size;
+			weights = board.Weights;
+			//
 			cells = Board.Cells;
-			weights = Board.Weights;
 			vowels = Board.Vowels;
 			conso = Board.Conso;
 			special = Board.Special;
@@ -47,6 +66,10 @@ namespace Scrabble
 		public List<ProbableMove> Run()
 		{
 			var Moves = new List<ProbableMove>();
+			if (!new FileInfo(ServerUtil.Path(file)).Exists)
+			{
+				return Moves;
+			}
 			if (CharSet == null || cells == null || weights == null || string.IsNullOrEmpty(file) ||
 				(string.IsNullOrEmpty(vowels) && string.IsNullOrEmpty(conso) && string.IsNullOrEmpty(special)))
 			{
@@ -56,7 +79,6 @@ namespace Scrabble
 			{
 				return Moves;
 			}
-
 
 
 			int maxIndex = MaxWeightIndex(weights);
@@ -251,10 +273,10 @@ namespace Scrabble
 					string Center = "";
 					string Post = "";
 
-					int f = word.String.IndexOf(',');
+					int f = word.Tiles.IndexOf(',');
 
-					Center = word.String.Substring(0, f);
-					Post = word.String.Substring(f + 1);
+					Center = word.Tiles.Substring(0, f);
+					Post = word.Tiles.Substring(f + 1);
 
 					string[] Pres = Pre == "" ? new string[] { } : Pre.TrimEnd(',').Split(',');
 					string[] Centers = Center.Split(',');
@@ -285,20 +307,20 @@ namespace Scrabble
 			{
 				foreach (Word wordOnBoard in WordsOnBoard)
 				{
-					string raw = wordOnBoard.String.Replace("(", "").Replace(")", "").Replace(",", "").Replace("|", ",");
+					string raw = wordOnBoard.Tiles.Replace("(", "").Replace(")", "").Replace(",", "").Replace("|", ",");
 
-					string pattern = GenWordPattern(wordOnBoard.String, "(?<Center{0}>.*?)", SunnaPattern, "(?<Center{0}>.*?)", "(?<Pre>.*?)", "(?<Post>.*?)", true);
+					string pattern = GenWordPattern(wordOnBoard.Tiles, "(?<Center{0}>.*?)", SunnaPattern, "(?<Center{0}>.*?)", "(?<Pre>.*?)", "(?<Post>.*?)", true);
 					pattern = string.Format("^{0}$", pattern.TrimEnd('|'));
 					Regex R = new Regex(pattern);
 
 					foreach (Word word in WordExtensions)
 					{
-						if (raw == word.String)
+						if (raw == word.Tiles)
 						{
 							continue;
 						}
 
-						Match M = R.Match(word.String);
+						Match M = R.Match(word.Tiles);
 						if (M.Success)
 						{
 							string Pre = "";
@@ -369,7 +391,7 @@ namespace Scrabble
 
 				foreach (Word pos in All)
 				{
-					string pattern = GetSyllablePattern2(pos.String, "(?<Conso>.*?)", "(?<Pre>.*?)", SunnaPattern + "(?<Post>.*?)");
+					string pattern = GetSyllablePattern2(pos.Tiles, "(?<Conso>.*?)", "(?<Pre>.*?)", SunnaPattern + "(?<Post>.*?)");
 					pattern = string.Format("^{0}$", pattern);
 					Regex R = new Regex(pattern);
 
@@ -379,7 +401,7 @@ namespace Scrabble
 						string Center = "";
 						string Post = "";
 
-						Match M = R.Match(word.String);
+						Match M = R.Match(word.Tiles);
 						if (!M.Success)
 						{
 							continue;
@@ -437,7 +459,7 @@ namespace Scrabble
 						string temp = Join(Pre[x], Seperator);
 						NewCells[n.Left] += temp;
 						Impacted.Add(n.Left);
-						Moves.Add(new Word { String = temp, Index = n.Left });
+						Moves.Add(new Word { Tiles = temp, Index = n.Left });
 					}
 				}
 			}
@@ -454,7 +476,7 @@ namespace Scrabble
 					string temp = Join(Centers[c], Seperator);
 					NewCells[cellIndex] += temp;
 					Impacted.Add(cellIndex);
-					Moves.Add(new Word { String = temp, Index = cellIndex });
+					Moves.Add(new Word { Tiles = temp, Index = cellIndex });
 				}
 			}
 
@@ -468,7 +490,7 @@ namespace Scrabble
 						string temp = Join(Post[x], Seperator);
 						NewCells[n.Right] += temp;
 						Impacted.Add(n.Right);
-						Moves.Add(new Word { String = temp, Index = n.Right });
+						Moves.Add(new Word { Tiles = temp, Index = n.Right });
 					}
 				}
 			}
@@ -506,7 +528,7 @@ namespace Scrabble
 						string temp = Join(Pre[x], Seperator);
 						NewCells[n.Top] += temp;
 						Impacted.Add(n.Top);
-						Moves.Add(new Word { String = temp, Index = n.Top });
+						Moves.Add(new Word { Tiles = temp, Index = n.Top });
 					}
 				}
 			}
@@ -524,7 +546,7 @@ namespace Scrabble
 					string temp = Join(Centers[c], Seperator);
 					NewCells[cellIndex] += temp;
 					Impacted.Add(cellIndex);
-					Moves.Add(new Word { String = temp, Index = cellIndex });
+					Moves.Add(new Word { Tiles = temp, Index = cellIndex });
 				}
 			}
 
@@ -540,7 +562,7 @@ namespace Scrabble
 						string temp = Join(Post[x], Seperator);
 						NewCells[n.Bottom] += temp;
 						Impacted.Add(n.Bottom);
-						Moves.Add(new Word { String = temp, Index = n.Bottom });
+						Moves.Add(new Word { Tiles = temp, Index = n.Bottom });
 					}
 				}
 			}
@@ -569,7 +591,7 @@ namespace Scrabble
 			if (r != "")
 			{
 				//Move Right..
-				Righties.Add(new Word { String = r, Index = Neighbor.Right });
+				Righties.Add(new Word { Tiles = r, Index = Neighbor.Right });
 				int index_ = Neighbor.Right;
 				bool flg = true;
 				while (flg)
@@ -581,14 +603,14 @@ namespace Scrabble
 						flg = false;
 						break;
 					}
-					Righties.Add(new Word { String = r_, Index = n.Right });
+					Righties.Add(new Word { Tiles = r_, Index = n.Right });
 					index_ = n.Right;
 				}
 			}
 			if (l != "")
 			{
 				//Move Left..
-				Lefties.Add(new Word { String = l, Index = Neighbor.Left });
+				Lefties.Add(new Word { Tiles = l, Index = Neighbor.Left });
 
 				int index_ = Neighbor.Left;
 				bool flg = true;
@@ -601,7 +623,7 @@ namespace Scrabble
 						flg = false;
 						break;
 					}
-					Lefties.Add(new Word { String = l_, Index = n.Left });
+					Lefties.Add(new Word { Tiles = l_, Index = n.Left });
 					index_ = n.Left;
 				}
 			}
@@ -612,7 +634,7 @@ namespace Scrabble
 			if (t != "")
 			{
 				//Move Top..
-				Topies.Add(new Word { String = t, Index = Neighbor.Top });
+				Topies.Add(new Word { Tiles = t, Index = Neighbor.Top });
 				int index_ = Neighbor.Top;
 				bool flg = true;
 				while (flg)
@@ -624,7 +646,7 @@ namespace Scrabble
 						flg = false;
 						break;
 					}
-					Topies.Add(new Word { String = t_, Index = n.Top });
+					Topies.Add(new Word { Tiles = t_, Index = n.Top });
 					index_ = n.Top;
 				}
 			}
@@ -632,7 +654,7 @@ namespace Scrabble
 			if (b != "")
 			{
 				//Move Bottom..
-				Downies.Add(new Word { String = b, Index = Neighbor.Bottom });
+				Downies.Add(new Word { Tiles = b, Index = Neighbor.Bottom });
 				int index_ = Neighbor.Bottom;
 				bool flg = true;
 				while (flg)
@@ -644,7 +666,7 @@ namespace Scrabble
 						flg = false;
 						break;
 					}
-					Downies.Add(new Word { String = d_, Index = n.Bottom });
+					Downies.Add(new Word { Tiles = d_, Index = n.Bottom });
 					index_ = n.Bottom;
 				}
 			}
@@ -654,12 +676,12 @@ namespace Scrabble
 
 			if (Topies.Count + Downies.Count > 0)
 			{
-				ProbableWord Vertical = MakeAWord(Topies, new Word { String = Cells[index], Index = index }, Downies);
+				ProbableWord Vertical = MakeAWord(Topies, new Word { Tiles = Cells[index], Index = index }, Downies);
 				List.Add(Vertical);
 			}
 			if (Lefties.Count + Righties.Count > 0)
 			{
-				ProbableWord Harizontal = MakeAWord(Lefties, new Word { String = Cells[index], Index = index }, Righties);
+				ProbableWord Harizontal = MakeAWord(Lefties, new Word { Tiles = Cells[index], Index = index }, Righties);
 				List.Add(Harizontal);
 			}
 			return List;
@@ -672,19 +694,19 @@ namespace Scrabble
 			string ret = "";
 			foreach (Word s in F1)
 			{
-				ret = ret + s.String.Replace(",", "") + ",";
-				TargetCell Cell = new TargetCell { Target = s.String, Index = s.Index };
+				ret = ret + s.Tiles.Replace(",", "") + ",";
+				TargetCell Cell = new TargetCell { Target = s.Tiles, Index = s.Index };
 				List.Add(Cell);
 			}
 			{
-				ret = ret + C.String.Replace(",", "") + ",";
-				TargetCell Cell = new TargetCell { Target = C.String, Index = C.Index };
+				ret = ret + C.Tiles.Replace(",", "") + ",";
+				TargetCell Cell = new TargetCell { Target = C.Tiles, Index = C.Index };
 				List.Add(Cell);
 			}
 			foreach (Word s in F2)
 			{
-				ret = ret + s.String.Replace(",", "") + ",";
-				TargetCell Cell = new TargetCell { Target = s.String, Index = s.Index };
+				ret = ret + s.Tiles.Replace(",", "") + ",";
+				TargetCell Cell = new TargetCell { Target = s.Tiles, Index = s.Index };
 				List.Add(Cell);
 			}
 			ret = ret.Trim(',');
@@ -702,7 +724,7 @@ namespace Scrabble
 			{
 				List.Add(new Word
 				{
-					String = line,
+					Tiles = line,
 					Index = cnt++,
 					Syllables = line.Count(x => x == ',') + 1,
 				});
@@ -730,7 +752,7 @@ namespace Scrabble
 						continue;
 					}
 
-					Dictionary<string, int> CharCount = GetCountDict(word.String);
+					Dictionary<string, int> CharCount = GetCountDict(word.Tiles);
 
 					bool isValid = Validate(InputDict, CharCount);
 					if (!isValid)
@@ -738,7 +760,7 @@ namespace Scrabble
 						continue;
 					}
 
-					Dictionary<string, int> CharCount2 = GetCountDict2(word.String, pattern);
+					Dictionary<string, int> CharCount2 = GetCountDict2(word.Tiles, pattern);
 					isValid = Validate(InputDict2, CharCount2);
 					if (!isValid)
 					{
@@ -803,7 +825,7 @@ namespace Scrabble
 		{
 			foreach (var w in WV)
 			{
-				var v = AllWords.Find(x => x.String == w.String);
+				var v = AllWords.Find(x => x.Tiles == w.String);
 				if (v == null)
 				{
 					return false;
@@ -1265,7 +1287,7 @@ namespace Scrabble
 			string ret = "";
 			foreach (Word s in List)
 			{
-				ret = ret + s.String + Seperator;
+				ret = ret + s.Tiles + Seperator;
 			}
 			ret = ret.TrimEnd(Seperator);
 			return ret;
@@ -1316,15 +1338,15 @@ namespace Scrabble
 						if (includeDuplicates)
 						{
 							int startIndex = GetStartIndex(option, r, i, size, cnt);
-							Words.Add(new Word { String = word, Syllables = cnt, Position = option, Index = startIndex });
+							Words.Add(new Word { Tiles = word, Syllables = cnt, Position = option, Index = startIndex });
 						}
 						else
 						{
-							Word X = Words.Find(x => x.String == word);
+							Word X = Words.Find(x => x.Tiles == word);
 							if (X == null)
 							{
 								int startIndex = GetStartIndex(option, r, i, size, cnt);
-								Words.Add(new Word { String = word, Syllables = cnt, Position = option, Index = startIndex });
+								Words.Add(new Word { Tiles = word, Syllables = cnt, Position = option, Index = startIndex });
 							}
 						}
 					}
@@ -1339,15 +1361,15 @@ namespace Scrabble
 				if (includeDuplicates)
 				{
 					int startIndex = GetStartIndex(option, r, size, size, cnt);
-					Words.Add(new Word { String = word, Syllables = cnt, Position = option, Index = startIndex });
+					Words.Add(new Word { Tiles = word, Syllables = cnt, Position = option, Index = startIndex });
 				}
 				else
 				{
-					Word X = Words.Find(x => x.String == word);
+					Word X = Words.Find(x => x.Tiles == word);
 					if (X == null)
 					{
 						int startIndex = GetStartIndex(option, r, size, size, cnt);
-						Words.Add(new Word { String = word, Syllables = cnt, Position = option, Index = startIndex });
+						Words.Add(new Word { Tiles = word, Syllables = cnt, Position = option, Index = startIndex });
 					}
 				}
 			}
@@ -1425,14 +1447,14 @@ namespace Scrabble
 					{
 						string x = free ? cell : "(" + cell + ")";
 
-						List.Add(new Word { String = x, Index = index });
+						List.Add(new Word { Tiles = x, Index = index });
 
 					}
 				}
 				else
 				{
 					string x = free ? cell : "(" + cell + ")";
-					List.Add(new Word { String = x, Index = index });
+					List.Add(new Word { Tiles = x, Index = index });
 				}
 			}
 			return List;
@@ -1539,7 +1561,7 @@ namespace Scrabble
 		List<Word> MatchedWords2(List<Word> words, string Pattern)
 		{
 			Regex r = new Regex(Pattern, RegexOptions.IgnoreCase);
-			List<Word> List = words.FindAll(delegate (Word s) { return r.IsMatch(s.String); });
+			List<Word> List = words.FindAll(delegate (Word s) { return r.IsMatch(s.Tiles); });
 			return List;
 		}
 	}

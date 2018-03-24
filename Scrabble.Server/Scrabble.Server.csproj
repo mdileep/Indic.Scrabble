@@ -47,6 +47,7 @@
     <Compile Include="Actions\ProbablesAction.cs" />
     <Compile Include="Actions\ScrabbleBoard.cs" />
     <Compile Include="Actions\ValidateAction.cs" />
+    <Compile Include="Game\WordUtil.cs" />
     <Compile Include="Shared\Printer.cs" />
     <Compile Include="Pages\APIHandler.cs" />
     <Compile Include="Game\BoardUtil.cs" />
@@ -93,6 +94,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Resources\CharSets.json" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Boards.json" />
+    <EmbeddedResource Include="Resources\Bots.json" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

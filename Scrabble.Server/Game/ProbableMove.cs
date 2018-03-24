@@ -17,14 +17,9 @@ namespace Scrabble
 {
 	public class ProbableMove
 	{
-		public List<ProbableWord> Words;
+		public string Direction;
 		public int Score;
 		public List<Word> Moves;
-		public string Direction;
-
-		public override string ToString()
-		{
-			return Direction + " " + Score;
-		}
+		internal List<ProbableWord> Words;
 	}
 }

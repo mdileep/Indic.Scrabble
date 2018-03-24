@@ -18,7 +18,14 @@ namespace Scrabble.Server
 	{
 		public object Process(Dictionary<string, object> dict)
 		{
-			return "<TODO>";
+			var Board = ParseUtil.ConvertTo<ScrabbleBoard>(dict);
+			Runner R = new Runner(Board);
+			var Moves = R.Run();
+			if (Moves.Count == 0)
+			{
+				return null;
+			}
+			return Moves[0];
 		}
 	}
 }

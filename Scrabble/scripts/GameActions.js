@@ -3,6 +3,8 @@ define(["require", "exports", 'Messages', 'Indic', 'Util'], function (require, e
     var GameActions = (function () {
         function GameActions() {
         }
+        GameActions.Temp = function (state, args) {
+        };
         GameActions.Pass = function (state, args) {
             var isValidMove = GameActions.ValidateMove(state.Board);
             if (!isValidMove) {

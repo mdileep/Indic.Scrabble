@@ -18,6 +18,7 @@ import * as Game from 'GameRoom';
 import * as Sets from 'AksharaSets';
 import * as M from 'Messages';
 import * as DragDropTouch from 'DragDropTouch';
+
 export class GameLoader {
     public static ConfigGame(): void {
         //No Validations..

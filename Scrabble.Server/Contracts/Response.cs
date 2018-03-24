@@ -10,20 +10,14 @@
 // </copyright>
 //---------------------------------------------------------------------------------------------
 
-using System.Runtime.Serialization;
-
 namespace Scrabble.Server
 {
 	public class Response
 	{
 		public string Action { get; set; }
-
-		public string Language { get; set; }
-
-		public string Reference { get; set; }
-
-		public object Result { get; set; }
-
 		public string Effort { get; set; }
+		public string Language { get; set; }
+		public string Reference { get; set; }
+		public object Result { get; set; }
 	}
 }

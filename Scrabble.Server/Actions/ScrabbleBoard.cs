@@ -15,20 +15,12 @@ namespace Scrabble.Server
 {
 	public class ScrabbleBoard
 	{
-		public ScrabbleBoard()
-		{
-
-		}
-
-		public string Reference;
-		public string Language;
-		//
+		public string Name;
 		public string Bot;
 		//
-		public int Size;
+		public string Reference;
+		//Dynamic
 		public string[] Cells;
-		public int[] Weights;
-		//Inputs
 		public string Vowels;
 		public string Conso;
 		public string Special;

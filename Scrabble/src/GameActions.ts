@@ -15,6 +15,8 @@ import * as Indic from 'Indic';
 import * as Util from 'Util';
 
 export class GameActions {
+    static Temp(state: Contracts.iGameState, args: Contracts.iArgs): void {
+    }
     static Pass(state: Contracts.iGameState, args: Contracts.iArgs): void {
         var isValidMove: boolean = GameActions.ValidateMove(state.Board);
         if (!isValidMove) {

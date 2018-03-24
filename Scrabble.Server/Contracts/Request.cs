@@ -10,8 +10,6 @@
 // </copyright>
 //---------------------------------------------------------------------------------------------
 
-
-
 using System.Collections.Generic;
 
 namespace Scrabble.Server
