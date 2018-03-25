@@ -39,6 +39,7 @@ export interface iTileProps extends iComponent {
 }
 export interface iBoardProps extends iComponent {
     Size: number;
+    Name: string;
     Cells: iCellProps[];
 }
 export interface iCellProps extends iComponent {
@@ -64,6 +65,8 @@ export interface iPlayer extends iComponent {
     CurrentTurn: boolean;
     Awarded: iWord[];
     Claimed: iWord[];
+    IsBot: boolean;
+    BotId: string;
 }
 export interface iGameTable extends iComponent {
     VowelTray: iTrayProps;
@@ -71,6 +74,7 @@ export interface iGameTable extends iComponent {
     CanReDraw: boolean;
     MaxOnTable: number;
     MaxVowels: number;
+    Message: string;
 }
 export interface iGameState extends iComponent {
     Cabinet: iCabinetProps;
@@ -93,14 +97,16 @@ export interface iArgs {
     SrcCell?: number;
 }
 export class Actions {
+    public static Init: number = 0;
     public static ToBoard: number = 1;
     public static ToTray: number = 2;
     public static OpenOrClose: number = 3;
     public static Pass: number = 4;
     public static ReDraw: number = 5;
     public static Approve: number = 6;
+    public static BotMove: number = 7;
+    public static BotMoveResponse: number = 8;
 }
-
 //Load Schema is Differet from iGameState 
 //TODO: May use the Same Schema??
 export interface iLoadState {
@@ -121,6 +127,7 @@ export interface iRawCabinet {
 }
 export interface iRawBoard {
     Size: number;
+    Name: string;
     Weights: number[];
 }
 export interface iRawTray {
@@ -156,4 +163,20 @@ export interface iPlayerView extends iPlayer {
 export interface iPlayersView extends iPlayers {
     showScores: boolean;
     showWordsList: boolean;
+}
+//
+export interface iBotMove {
+    Index: number;
+    Tiles: string;
+}
+export interface iBotMoveResult {
+    Direction: string,
+    Score: number;
+    Moves: iBotMove[];
+}
+export interface iBotMoveResponse {
+    Action: string;
+    Effort: string;
+    Reference: string;
+    Result: iBotMoveResult;
 }

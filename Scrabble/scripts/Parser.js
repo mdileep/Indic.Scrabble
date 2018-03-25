@@ -37,6 +37,7 @@ define(["require", "exports", "GameActions", "Indic"], function (require, export
             raw.Id = raw.key;
             raw.className = "gameTable";
             raw.CanReDraw = true;
+            raw.ReadOnly = false;
             raw.MaxOnTable = JSON.MaxOnTable;
             raw.MaxVowels = JSON.MaxVowels;
             raw.VowelTray = vTray;
@@ -98,6 +99,7 @@ define(["require", "exports", "GameActions", "Indic"], function (require, export
             var raw = {};
             raw.key = "Board";
             raw.Size = JSON.Size;
+            raw.Name = JSON.Name;
             raw.Cells = [];
             var index = 0;
             for (var i = 0; i < JSON.Size; i++) {
@@ -132,6 +134,8 @@ define(["require", "exports", "GameActions", "Indic"], function (require, export
                 player.Claimed = [];
                 player.Id = "P_" + (i + 1);
                 player.key = player.Id;
+                player.IsBot = player.IsBot == null ? false : player.IsBot;
+                player.BotId = player.BotId;
                 raw.Players.push(player);
             }
             return raw;

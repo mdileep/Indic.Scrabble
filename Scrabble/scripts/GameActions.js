@@ -1,9 +1,13 @@
-define(["require", "exports", 'Messages', 'Indic', 'Util'], function (require, exports, Messages, Indic, Util) {
+define(["require", "exports", 'Contracts', 'Messages', 'Indic', 'Util', 'axios', 'GameLoader'], function (require, exports, Contracts, Messages, Indic, Util, axios, GameLoader) {
     "use strict";
     var GameActions = (function () {
         function GameActions() {
         }
-        GameActions.Temp = function (state, args) {
+        GameActions.Init = function (state, args) {
+            var players = state.Players.Players;
+            var currentPlayer = state.Players.CurrentPlayer;
+            state.GameTable.Message = Util.Util.Format(Messages.Messages.YourTurn, [players[currentPlayer].Name]);
+            GameActions.Think(state);
         };
         GameActions.Pass = function (state, args) {
             var isValidMove = GameActions.ValidateMove(state.Board);
@@ -31,6 +35,99 @@ define(["require", "exports", 'Messages', 'Indic', 'Util'], function (require, e
             GameActions.SwitchTurn(state);
             GameActions.SaveBoard(state);
             GameActions.Refresh(state);
+            GameActions.Think(state);
+        };
+        GameActions.Think = function (state) {
+            var players = state.Players.Players;
+            var currentPlayer = state.Players.CurrentPlayer;
+            var isBot = players[currentPlayer].IsBot;
+            state.GameTable.ReadOnly = isBot;
+            if (!isBot) {
+                return;
+            }
+            state.GameTable.Message = Util.Util.Format(Messages.Messages.Thinking, [players[currentPlayer].Name]);
+            setTimeout(GameActions.NextMove, 1000);
+        };
+        GameActions.NextMove = function () {
+            GameLoader.GameLoader.store.dispatch({
+                type: Contracts.Actions.BotMove,
+                args: {}
+            });
+        };
+        GameActions.BotMove2 = function (state, respone) {
+            var result = respone.Result;
+            if (result == null) {
+                GameActions.ReDraw(state, {});
+                GameActions.Pass(state, {});
+                return;
+            }
+            for (var i in result.Moves) {
+                var Move = result.Moves[i];
+                var tiles = Move.Tiles.split(',');
+                for (var j in tiles) {
+                    var tile = tiles[j];
+                    GameActions.ToBoard(state, {
+                        Origin: "Tile",
+                        Src: tile,
+                        TargetCell: Move.Index
+                    });
+                }
+            }
+            GameActions.Pass(state, {});
+        };
+        GameActions.BotMove = function (state, args) {
+            var Cells = [];
+            for (var i in state.Board.Cells) {
+                var Cell = state.Board.Cells[i];
+                var arr = [];
+                for (var indx in Cell.Confirmed) {
+                    var c = Cell.Confirmed[indx];
+                    if (Indic.Indic.IsSpecialSet(c)) {
+                        arr.push(Indic.Indic.GetSynonym(c));
+                        continue;
+                    }
+                    arr.push(c);
+                }
+                Cells.push(arr.join(','));
+            }
+            var Vowels = [];
+            var Cosos = [];
+            var Special = [];
+            for (var i in state.GameTable.VowelTray.Tiles) {
+                var Tile = state.GameTable.VowelTray.Tiles[i];
+                Vowels.push(Tile.Text);
+            }
+            for (var i in state.GameTable.ConsoTray.Tiles) {
+                var Tile = state.GameTable.ConsoTray.Tiles[i];
+                if (Tile.Text.length > 1) {
+                    Special.push(Tile.Text);
+                    continue;
+                }
+                Cosos.push(Tile.Text);
+            }
+            var Name = state.Board.Name;
+            var players = state.Players.Players;
+            var currentPlayer = state.Players.CurrentPlayer;
+            var BotName = players[currentPlayer].BotId;
+            var reference = Math.floor(Math.random() * 1000).toString();
+            axios
+                .post("/API.ashx?nextmove", {
+                "Reference": reference,
+                "Name": Name,
+                "Bot": BotName,
+                "Cells": Cells,
+                "Vowels": Vowels.join(' '),
+                "Conso": Cosos.join(' '),
+                "Special": Special.join(' ')
+            })
+                .then(function (response) {
+                GameLoader.GameLoader.store.dispatch({
+                    type: Contracts.Actions.BotMoveResponse,
+                    args: response.data
+                });
+            })
+                .catch(function (error) {
+            });
         };
         GameActions.SaveBoard = function (state) {
             for (var i = 0; i < state.Board.Cells.length; i++) {
@@ -150,6 +247,7 @@ define(["require", "exports", 'Messages', 'Indic', 'Util'], function (require, e
                 player.CurrentTurn = !player.CurrentTurn;
                 if (player.CurrentTurn) {
                     state.Players.CurrentPlayer = i;
+                    state.GameTable.Message = Util.Util.Format(Messages.Messages.YourTurn, [player.Name]);
                 }
             }
         };

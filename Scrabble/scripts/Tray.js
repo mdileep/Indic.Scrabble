@@ -37,7 +37,7 @@ define(["require", "exports", "react", 'Tile'], function (require, exports, Reac
                 Id: id,
                 key: id,
                 className: "",
-                ReadOnly: tileProp.ReadOnly,
+                ReadOnly: tileProp.ReadOnly || this.props.ReadOnly,
                 Show: true,
                 Text: tileProp.Text,
                 Remaining: tileProp.Remaining,

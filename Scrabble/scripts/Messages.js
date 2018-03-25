@@ -12,6 +12,8 @@ define(["require", "exports"], function (require, exports) {
         Messages.OrphanCell = "";
         Messages.HasDupliates = "";
         Messages.Claimed = "";
+        Messages.Thinking = "";
+        Messages.YourTurn = "";
         return Messages;
     }());
     exports.Messages = Messages;

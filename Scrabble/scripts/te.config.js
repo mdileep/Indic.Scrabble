@@ -49,6 +49,7 @@ var InitState = {
         ]
     },
     Board: {
+        Name: "11x11",
         Size: 11,
         Weights: [
             6, 1, 1, 1, 1, 1, 1, 1, 1, 1, 6,
@@ -66,8 +67,8 @@ var InitState = {
     },
     Players: {
         Players: [
-            { Name: "శర్వాణీ" },
-            { Name: "శ్రీదీపిక" }
+            { Name: "ఆటగాడు" },
+            { Name: "ఈనాడు", IsBot: true, BotId: "eenadu" }
         ]
     },
     InfoBar: {}
@@ -142,7 +143,9 @@ var Configuration = {
         "ౌ": "ఔ"
     },
     Syllables: {
-        "ము": ["మ", "ు"]
+        "ము": ["మ", "ు"],
+        "లు": ["ల", "ు"],
+        "క్ష": ["క", "ష"]
     },
     Messages: {
         InvalidMove: "'{0}' ను '{1}' తో కలపడం సాధ్యంకాదు.",
@@ -153,6 +156,8 @@ var Configuration = {
         HasOraphans: "ఏకాక్షరపదాలు అంగీకారం కావు.",
         OrphanCell: "ఏకాక్షరము {2} అడ్డం: {0} నిలువు:{1} వద్ధ ఉన్నది ",
         HasDupliates: "ఇదే పదం ('{0}') ఇప్పటికే పటంపై ఉంది.",
-        Claimed: "* దావాలో ఉన్నది"
+        Claimed: "* దావాలో ఉన్నది",
+        Thinking: "'{0}' ఆలోచిస్తోంది.",
+        YourTurn: "ఇప్పుడు '{0}' వంతు"
     }
 };

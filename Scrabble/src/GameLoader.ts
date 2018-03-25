@@ -46,6 +46,12 @@ export class GameLoader {
         GameLoader.rootEl = document.getElementById('root');
         GameLoader.OnGameRender();
         GameLoader.store.subscribe(GameLoader.OnGameRender);
+
+        GameLoader.store.dispatch({
+            type: Contracts.Actions.Init,
+            args: {
+            }
+        });
     }
     public static store: Redux.Store<Contracts.iGameState>;
     public static rootEl: HTMLElement;

@@ -13,9 +13,15 @@ import * as Contracts from 'Contracts';
 import * as Messages from 'Messages';
 import * as Indic from 'Indic';
 import * as Util from 'Util';
+import * as axios from 'axios';
+import * as GameLoader from 'GameLoader';
 
 export class GameActions {
-    static Temp(state: Contracts.iGameState, args: Contracts.iArgs): void {
+    static Init(state: Contracts.iGameState, args: Contracts.iArgs): void {
+        var players = state.Players.Players;
+        var currentPlayer = state.Players.CurrentPlayer
+        state.GameTable.Message = Util.Util.Format(Messages.Messages.YourTurn, [players[currentPlayer].Name]);
+        GameActions.Think(state);
     }
     static Pass(state: Contracts.iGameState, args: Contracts.iArgs): void {
         var isValidMove: boolean = GameActions.ValidateMove(state.Board);
@@ -44,6 +50,111 @@ export class GameActions {
         GameActions.SwitchTurn(state);
         GameActions.SaveBoard(state);
         GameActions.Refresh(state);
+        GameActions.Think(state);
+    }
+    static Think(state: Contracts.iGameState): void {
+        var players = state.Players.Players;
+        var currentPlayer = state.Players.CurrentPlayer;
+        var isBot: boolean = players[currentPlayer].IsBot;
+        state.GameTable.ReadOnly = isBot;
+        //Ideally should trigger after completion of Rendering..!!
+        if (!isBot) {
+            return;
+        }
+        state.GameTable.Message = Util.Util.Format(Messages.Messages.Thinking, [players[currentPlayer].Name]);
+        setTimeout(GameActions.NextMove, 1000);
+    }
+    static NextMove(): void {
+        GameLoader.GameLoader.store.dispatch({
+            type: Contracts.Actions.BotMove,
+            args: {
+            }
+        });
+    }
+    static BotMove2(state: Contracts.iGameState, respone: Contracts.iBotMoveResponse): void {
+        var result = respone.Result;
+        if (result == null) {
+            GameActions.ReDraw(state, {});
+            GameActions.Pass(state, {});
+            return;
+        }
+        for (var i in result.Moves) {
+            var Move: Contracts.iBotMove = result.Moves[i];
+            var tiles: string[] = Move.Tiles.split(',');
+
+            for (var j in tiles) {
+                var tile = tiles[j];
+                GameActions.ToBoard(state,
+                    {
+                        Origin: "Tile",
+                        Src: tile,
+                        TargetCell: Move.Index
+                    });
+            }
+
+        }
+        GameActions.Pass(state, {});
+    }
+    static BotMove(state: Contracts.iGameState, args: Contracts.iArgs): void {
+        var Cells: string[] = [];
+        for (var i in state.Board.Cells) {
+            var Cell: Contracts.iCellProps = state.Board.Cells[i];
+            var arr: string[] = [];
+            for (var indx in Cell.Confirmed) {
+                var c = Cell.Confirmed[indx];
+                if (Indic.Indic.IsSpecialSet(c)) {
+                    arr.push(Indic.Indic.GetSynonym(c));
+                    continue;
+                }
+                arr.push(c);
+            }
+            Cells.push(arr.join(','));
+        }
+
+        var Vowels: string[] = [];
+        var Cosos: string[] = [];
+        var Special: string[] = [];
+
+        for (var i in state.GameTable.VowelTray.Tiles) {
+            var Tile: Contracts.iTileProps = state.GameTable.VowelTray.Tiles[i];
+            Vowels.push(Tile.Text);
+        }
+
+        for (var i in state.GameTable.ConsoTray.Tiles) {
+            var Tile: Contracts.iTileProps = state.GameTable.ConsoTray.Tiles[i];
+            if (Tile.Text.length > 1) {
+                Special.push(Tile.Text);
+                continue;
+            }
+            Cosos.push(Tile.Text);
+        }
+
+        var Name: string = state.Board.Name;
+        var players = state.Players.Players;
+        var currentPlayer = state.Players.CurrentPlayer;
+        var BotName: string = players[currentPlayer].BotId;
+        var reference = Math.floor(Math.random() * 1000).toString();
+
+        axios
+            .post("/API.ashx?nextmove",
+            {
+                "Reference": reference,
+                "Name": Name,
+                "Bot": BotName,
+                "Cells": Cells,
+                "Vowels": Vowels.join(' '),
+                "Conso": Cosos.join(' '),
+                "Special": Special.join(' ')
+            })
+            .then(response => {
+                GameLoader.GameLoader.store.dispatch({
+                    type: Contracts.Actions.BotMoveResponse,
+                    args: response.data
+                });
+            })
+            .catch(error => {
+
+            });
     }
     static SaveBoard(state: Contracts.iGameState): void {
         for (var i = 0; i < state.Board.Cells.length; i++) {
@@ -164,6 +275,7 @@ export class GameActions {
             player.CurrentTurn = !player.CurrentTurn;
             if (player.CurrentTurn) {
                 state.Players.CurrentPlayer = i;
+                state.GameTable.Message = Util.Util.Format(Messages.Messages.YourTurn, [player.Name]);
             }
         }
     }
@@ -190,7 +302,6 @@ export class GameActions {
         var src: string = args.Src;
         var tray: Contracts.iTrayProps;
         var tile: Contracts.iTileProps;
-
         if (args.Origin == "Tile") {
             var remaining = GameActions.GetRemaining(state, src);
             if (remaining == 0) {

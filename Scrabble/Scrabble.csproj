@@ -23,6 +23,7 @@
   <ItemGroup>
     <Content Include="scrabble.aspx" />
     <Content Include="Index.html" />
+    <Content Include="scripts\axios.js" />
     <Content Include="scripts\bn.config.js" />
     <Content Include="scripts\gu.config.js" />
     <Content Include="scripts\hi.config.js" />
@@ -92,7 +93,9 @@
     <TypeScriptCompile Include="src\te.config.ts" />
   </ItemGroup>
   <ItemGroup>
+    <TypeScriptCompile Include="typings\axios.d.ts" />
     <TypeScriptCompile Include="typings\Custom.d.ts" />
+    <TypeScriptCompile Include="typings\es6-promise.d.ts" />
     <TypeScriptCompile Include="typings\react-dom.d.ts" />
     <TypeScriptCompile Include="typings\react.d.ts" />
     <TypeScriptCompile Include="typings\redux.d.ts" />

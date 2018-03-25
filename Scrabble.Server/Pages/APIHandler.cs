@@ -33,7 +33,6 @@ namespace Scrabble.Server
 				response = new Response
 				{
 					Action = "ERROR",
-					Language = Config.DefaultLang,
 					Result = new Dictionary<string, string> { { "Debug", ex.Message } }
 				};
 			}

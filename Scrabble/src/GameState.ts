@@ -16,6 +16,10 @@ import * as GameActions from "GameActions";
 export default (state: Contracts.iGameState = Parser.Parser.Parse(InitState), action: Contracts.iActionArgs) => {
     var args = action.args;
     switch (action.type) {
+        case Contracts.Actions.Init:
+            GameActions.GameActions.Init(state, args);
+            return state;
+
         case Contracts.Actions.ToBoard:
             if (console) console.log("Moving Tile from Tray to Board.");
             GameActions.GameActions.ToBoard(state, args);
@@ -39,6 +43,16 @@ export default (state: Contracts.iGameState = Parser.Parser.Parse(InitState), ac
         case Contracts.Actions.ReDraw:
             if (console) console.log("ReDraw Tiles");
             GameActions.GameActions.ReDraw(state, args);
+            return state;
+
+        case Contracts.Actions.BotMove:
+            if (console) console.log("Bot is Thinking");
+            GameActions.GameActions.BotMove(state, args);
+            return state;
+
+        case Contracts.Actions.BotMoveResponse:
+            if (console) console.log("Bot Responded");
+            GameActions.GameActions.BotMove2(state, args as Contracts.iBotMoveResponse);
             return state;
 
         default:

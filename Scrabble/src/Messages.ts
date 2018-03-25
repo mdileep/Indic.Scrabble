@@ -20,4 +20,6 @@ export class Messages {
     public static OrphanCell: string = "";
     public static HasDupliates: string = "";
     public static Claimed: string = "";
+    public static Thinking: string = "";
+    public static YourTurn: string = "";
 }

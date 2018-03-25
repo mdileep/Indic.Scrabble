@@ -52,7 +52,7 @@ class Tray extends React.Component<Contracts.iTrayView, Contracts.iTrayView> {
                 Id: id,
                 key: id,
                 className: "",
-                ReadOnly: tileProp.ReadOnly,
+                ReadOnly: tileProp.ReadOnly || this.props.ReadOnly,
                 Show: true,
                 Text: tileProp.Text,
                 Remaining: tileProp.Remaining,

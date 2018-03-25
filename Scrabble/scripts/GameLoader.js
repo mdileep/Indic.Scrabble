@@ -1,4 +1,4 @@
-define(["require", "exports", "react", "react-dom", 'redux', 'GameState', 'GameRoom', 'AksharaSets', 'Messages', 'DragDropTouch'], function (require, exports, React, ReactDOM, Redux, GameState_1, Game, Sets, M, DragDropTouch) {
+define(["require", "exports", "react", "react-dom", 'redux', 'GameState', 'Contracts', 'GameRoom', 'AksharaSets', 'Messages', 'DragDropTouch'], function (require, exports, React, ReactDOM, Redux, GameState_1, Contracts, Game, Sets, M, DragDropTouch) {
     "use strict";
     var GameLoader = (function () {
         function GameLoader() {
@@ -29,6 +29,10 @@ define(["require", "exports", "react", "react-dom", 'redux', 'GameState', 'GameR
             GameLoader.rootEl = document.getElementById('root');
             GameLoader.OnGameRender();
             GameLoader.store.subscribe(GameLoader.OnGameRender);
+            GameLoader.store.dispatch({
+                type: Contracts.Actions.Init,
+                args: {}
+            });
         };
         return GameLoader;
     }());

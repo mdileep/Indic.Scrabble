@@ -41,7 +41,6 @@ export class Parser {
         };
         return gameState;
     }
-
     public static BuildGameTable(JSON: Contracts.iRawGameTable, cache: Contracts.iCachedTile): Contracts.iGameTable {
         var vAvailable = GameActions.GameActions.DrawVowelTiles(cache, JSON.MaxVowels);
         var vTray = GameActions.GameActions.SetTableTray(vAvailable, "Vowels");
@@ -49,19 +48,18 @@ export class Parser {
         var cAvailable = GameActions.GameActions.DrawConsoTiles(cache, JSON.MaxOnTable - JSON.MaxVowels);
         var cTray = GameActions.GameActions.SetTableTray(cAvailable, "Conso");
 
-
         var raw: Contracts.iGameTable = ({} as any) as Contracts.iGameTable;
         raw.key = "gameTable";
         raw.Id = raw.key;
         raw.className = "gameTable";
         raw.CanReDraw = true;
+        raw.ReadOnly = false;
         raw.MaxOnTable = JSON.MaxOnTable;
         raw.MaxVowels = JSON.MaxVowels;
         raw.VowelTray = vTray;
         raw.ConsoTray = cTray;
         return raw;
     }
-
     public static ParseCabinet(JSON: Contracts.iRawCabinet): Contracts.iCabinetProps {
         var raw: Contracts.iCabinetProps = ({} as any) as Contracts.iCabinetProps;
         raw.key = "Cabinet";
@@ -113,11 +111,11 @@ export class Parser {
         }
         return tilesDict;
     }
-
     public static ParseBoard(JSON: Contracts.iRawBoard): Contracts.iBoardProps {
         var raw: Contracts.iBoardProps = ({} as any) as Contracts.iBoardProps;
         raw.key = "Board";
         raw.Size = JSON.Size;
+        raw.Name = JSON.Name;
         raw.Cells = [];
         var index = 0;
         for (var i = 0; i < JSON.Size; i++) {
@@ -151,6 +149,8 @@ export class Parser {
             player.Claimed = [];
             player.Id = "P_" + (i + 1);
             player.key = player.Id;
+            player.IsBot = player.IsBot == null ? false : player.IsBot;
+            player.BotId = player.BotId;
             raw.Players.push(player);
         }
         return raw;

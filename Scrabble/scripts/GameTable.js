@@ -14,6 +14,7 @@ define(["require", "exports", "react", 'Contracts', 'GameLoader', 'Tray', 'Util'
         GameTable.prototype.render = function () {
             var _this = this;
             var childs = [];
+            var message = this.renderMessage();
             var reDraw = this.renderReDraw();
             var pass = this.renderPass();
             var id = "actions";
@@ -23,11 +24,11 @@ define(["require", "exports", "react", 'Contracts', 'GameLoader', 'Tray', 'Util'
                 ref: id,
                 className: "actions",
                 title: "Actions",
-            }, [reDraw, pass]);
+            }, [message, reDraw, pass]);
             childs.push(actions);
-            var vowelTray = React.createElement(Tray.default, Util.Util.Merge(this.props.VowelTray, { ShowLabel: false }));
+            var vowelTray = React.createElement(Tray.default, Util.Util.Merge(this.props.VowelTray, { ShowLabel: false, ReadOnly: this.props.ReadOnly }));
             childs.push(vowelTray);
-            var consoTray = React.createElement(Tray.default, Util.Util.Merge(this.props.ConsoTray, { ShowLabel: false }));
+            var consoTray = React.createElement(Tray.default, Util.Util.Merge(this.props.ConsoTray, { ShowLabel: false, ReadOnly: this.props.ReadOnly }));
             childs.push(consoTray);
             var id = "GameTable";
             var elem = React.createElement('div', {
@@ -41,6 +42,17 @@ define(["require", "exports", "react", 'Contracts', 'GameLoader', 'Tray', 'Util'
             }, childs);
             return elem;
         };
+        GameTable.prototype.renderMessage = function () {
+            var id = "message";
+            var pass = React.createElement('span', {
+                id: id,
+                key: id,
+                ref: id,
+                className: "message",
+                title: this.props.Message
+            }, [], this.props.Message);
+            return pass;
+        };
         GameTable.prototype.renderReDraw = function () {
             var id = "draw";
             var pass = React.createElement('button', {
@@ -49,7 +61,7 @@ define(["require", "exports", "react", 'Contracts', 'GameLoader', 'Tray', 'Util'
                 ref: id,
                 className: "redraw",
                 title: "Re-Draw",
-                disabled: !this.props.CanReDraw,
+                disabled: this.props.ReadOnly || !this.props.CanReDraw,
                 onClick: this.OnReDraw,
             }, [], "Re-Draw");
             return pass;
@@ -63,6 +75,7 @@ define(["require", "exports", "react", 'Contracts', 'GameLoader', 'Tray', 'Util'
                 className: "pass",
                 title: "Pass",
                 onClick: this.OnPass,
+                disabled: this.props.ReadOnly,
             }, [], "Pass");
             return pass;
         };
