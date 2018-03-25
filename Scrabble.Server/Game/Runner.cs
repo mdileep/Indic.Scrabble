@@ -315,7 +315,7 @@ namespace Scrabble
 
 						string pattern = GenWordPattern(wordOnBoard.Tiles, "(?<Center{0}>.*?)", SunnaPattern, "(?<Center{0}>.*?)", "(?<Pre>.*?)", "(?<Post>.*?)", true);
 						pattern = string.Format("^{0}$", pattern.TrimEnd('|'));
-						Regex R = new Regex(pattern);
+						Regex R = new Regex(pattern, RegexOptions.Compiled);
 
 						foreach (Word word in WordExtensions)
 						{
@@ -400,7 +400,7 @@ namespace Scrabble
 					{
 						string pattern = GetSyllablePattern2(pos.Tiles, "(?<Conso>.*?)", "(?<Pre>.*?)", SunnaPattern + "(?<Post>.*?)");
 						pattern = string.Format("^{0}$", pattern);
-						Regex R = new Regex(pattern);
+						Regex R = new Regex(pattern, RegexOptions.Compiled);
 
 						foreach (Word word in List)
 						{
@@ -799,7 +799,7 @@ namespace Scrabble
 		{
 			Dictionary<string, int> Extra = new Dictionary<string, int>();
 
-			Regex R = new Regex(pattern);
+			Regex R = new Regex(pattern, RegexOptions.Compiled);
 			var M = R.Match(input);
 
 			Group Conso = M.Groups["Conso"];
@@ -1581,7 +1581,7 @@ namespace Scrabble
 
 		List<Word> MatchedWords2(List<Word> words, string Pattern)
 		{
-			Regex r = new Regex(Pattern, RegexOptions.IgnoreCase);
+			Regex r = new Regex(Pattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
 			List<Word> List = words.FindAll(delegate (Word s) { return r.IsMatch(s.Tiles); });
 			return List;
 		}
