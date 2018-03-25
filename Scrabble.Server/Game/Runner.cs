@@ -238,33 +238,36 @@ namespace Scrabble
 
 		void RefreshScores(List<ProbableMove> Moves, int[] Weights, int size)
 		{
-			foreach (var Move in Moves)
+			using (new Watcher("\tRefresh Scores"))
 			{
-				int score = 0;
-				foreach (var w in Move.Words)
+				foreach (var Move in Moves)
 				{
-					var wordScore = 0;
-					foreach (var cell in w.Cells)
+					int score = 0;
+					foreach (var w in Move.Words)
 					{
-						var weight = Weights[cell.Index];
-						wordScore = wordScore + weight;
-						cell.Score = weight;
+						var wordScore = 0;
+						foreach (var cell in w.Cells)
+						{
+							var weight = Weights[cell.Index];
+							wordScore = wordScore + weight;
+							cell.Score = weight;
+						}
+						w.Score = wordScore;
+						score = score + wordScore;
 					}
-					w.Score = wordScore;
-					score = score + wordScore;
+					Move.Score = score;
 				}
-				Move.Score = score;
+				Moves.Sort(delegate (ProbableMove x, ProbableMove y)
+				{
+					return x.Score.CompareTo(y.Score);
+				});
+				Moves.Reverse();
 			}
-			Moves.Sort(delegate (ProbableMove x, ProbableMove y)
-			{
-				return x.Score.CompareTo(y.Score);
-			});
-			Moves.Reverse();
 		}
 
 		List<ProbableMove> EmptyExtensions(string[] Cells, int size, int maxIndex, List<Word> AllWords, List<Word> List)
 		{
-			using (new Watcher("Empty Extesnsions"))
+			using (new Watcher("\tEmpty Extesnsions"))
 			{
 				List<ProbableMove> Moves = new List<ProbableMove>();
 				{
@@ -305,7 +308,7 @@ namespace Scrabble
 
 		List<ProbableMove> WordExtensions(string[] Cells, int size, List<Word> AllWords, List<Word> WordExtensions, List<Word> WordsOnBoard, string SunnaPattern)
 		{
-			using (new Watcher("Word Extesnsions"))
+			using (new Watcher("\tWord Extesnsions"))
 			{
 				List<ProbableMove> Moves = new List<ProbableMove>();
 				{
@@ -390,7 +393,7 @@ namespace Scrabble
 
 		List<ProbableMove> SyllableExtensions(string[] Cells, int size, List<Word> AllWords, List<Word> List, string SunnaPattern)
 		{
-			using (new Watcher("Syllable Extensions"))
+			using (new Watcher("\tSyllable Extensions"))
 			{
 				List<ProbableMove> Moves = new List<ProbableMove>();
 				{
@@ -447,7 +450,6 @@ namespace Scrabble
 
 		ProbableMove TryHarizontal(string[] Cells, int size, int Index, int offset, string[] Pre, string[] Centers, string[] Post)
 		{
-			//using (new Watcher("\tTry Harizontal"))
 			{
 
 				List<Word> Moves = new List<Word>();
@@ -517,11 +519,8 @@ namespace Scrabble
 
 		ProbableMove TryVertical(string[] Cells, int size, int Index, int offset, string[] Pre, string[] Centers, string[] Post)
 		{
-			//using (new Watcher("\tTry Vertical"))
 			{
-
 				List<Word> Moves = new List<Word>();
-
 				int PreCount = Pre.Length;
 				int PostCount = Post.Length;
 				char Seperator = ',';
@@ -733,7 +732,7 @@ namespace Scrabble
 
 		List<Word> LoadWords(string file)
 		{
-			using (new Watcher("Load Words"))
+			using (new Watcher("\tLoad Words"))
 			{
 				List<Word> List = new List<Word>();
 				string[] lines = System.IO.File.ReadAllLines(ServerUtil.Path(file));
@@ -758,7 +757,7 @@ namespace Scrabble
 				return new List<Word>();
 			}
 
-			using (new Watcher("ShortList " + pattern))
+			using (new Watcher("\tShortList "))
 			{
 				Dictionary<string, int> InputDict = GetCountDict(inputs);
 				Dictionary<string, int> InputDict2 = GetCountDict(options);
@@ -1581,9 +1580,12 @@ namespace Scrabble
 
 		List<Word> MatchedWords2(List<Word> words, string Pattern)
 		{
-			Regex r = new Regex(Pattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
-			List<Word> List = words.FindAll(delegate (Word s) { return r.IsMatch(s.Tiles); });
-			return List;
+			using (new Watcher("\t\tMatch Words " + Pattern))
+			{
+				Regex r = new Regex(Pattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
+				List<Word> List = words.FindAll(delegate (Word s) { return r.IsMatch(s.Tiles); });
+				return List;
+			}
 		}
 	}
 }

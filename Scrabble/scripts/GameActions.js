@@ -100,7 +100,7 @@ define(["require", "exports", 'Contracts', 'Messages', 'Indic', 'Util', 'axios',
             for (var i in state.GameTable.ConsoTray.Tiles) {
                 var Tile = state.GameTable.ConsoTray.Tiles[i];
                 if (Tile.Text.length > 1) {
-                    Special.push(Indic.Indic.GetSyllables(Tile.Text).join(''));
+                    Special.push("(" + Indic.Indic.GetSyllables(Tile.Text).join(',') + ") ");
                     continue;
                 }
                 Cosos.push(Tile.Text);

@@ -81,7 +81,6 @@ export class GameActions {
         for (var i in result.Moves) {
             var Move: Contracts.iBotMove = result.Moves[i];
             var tiles: string[] = Move.Tiles.split(',');
-
             for (var j in tiles) {
                 var tile = tiles[j];
                 GameActions.ToBoard(state,
@@ -123,7 +122,7 @@ export class GameActions {
         for (var i in state.GameTable.ConsoTray.Tiles) {
             var Tile: Contracts.iTileProps = state.GameTable.ConsoTray.Tiles[i];
             if (Tile.Text.length > 1) {
-                Special.push(Indic.Indic.GetSyllables(Tile.Text).join(''));
+                Special.push("(" + Indic.Indic.GetSyllables(Tile.Text).join(',') + ") ");
                 continue;
             }
             Cosos.push(Tile.Text);
