@@ -54,7 +54,7 @@ namespace Scrabble
 		private void End()
 		{
 			stopWatch.Stop();
-			Printer.PrintLine(string.Format("Time taken to run {0} : {1}", title, ElapsedTime()));
+			Printer.PrintLine(string.Format("{0} : {1}", title, ElapsedTime()));
 		}
 
 		private string ElapsedTime()

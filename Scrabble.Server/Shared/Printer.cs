@@ -13,6 +13,7 @@
 
 using Scrabble.Server;
 using System.IO;
+using System.Text;
 
 namespace Scrabble
 {
@@ -25,7 +26,7 @@ namespace Scrabble
 #else
 			try
 			{
-				using (StreamWriter SW = new StreamWriter(ServerUtil.Path("log.txt"), true))
+				using (StreamWriter SW = new StreamWriter(ServerUtil.Path("log.txt"), true, Encoding.UTF8))
 				{
 					SW.WriteLine(content);
 				}
@@ -35,6 +36,6 @@ namespace Scrabble
 				//Ignore..
 			}
 #endif
+		}
 	}
-}
 }
