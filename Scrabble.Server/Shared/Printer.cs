@@ -11,6 +11,9 @@
 //---------------------------------------------------------------------------------------------
 
 
+using Scrabble.Server;
+using System.IO;
+
 namespace Scrabble
 {
 	internal class Printer
@@ -20,9 +23,18 @@ namespace Scrabble
 #if DEBUG
 				Debug.WriteLine(content);
 #else
-			//May be Log to a Text File.
+			try
+			{
+				using (StreamWriter SW = new StreamWriter(ServerUtil.Path("log.txt"), true))
+				{
+					SW.WriteLine(content);
+				}
+			}
+			catch
+			{
+				//Ignore..
+			}
 #endif
-
-		}
 	}
+}
 }
