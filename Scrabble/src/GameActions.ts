@@ -123,7 +123,7 @@ export class GameActions {
         for (var i in state.GameTable.ConsoTray.Tiles) {
             var Tile: Contracts.iTileProps = state.GameTable.ConsoTray.Tiles[i];
             if (Tile.Text.length > 1) {
-                Special.push(Tile.Text);
+                Special.push(Indic.Indic.GetSyllables(Tile.Text).join(''));
                 continue;
             }
             Cosos.push(Tile.Text);
