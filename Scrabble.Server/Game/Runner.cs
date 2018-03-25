@@ -447,7 +447,7 @@ namespace Scrabble
 
 		ProbableMove TryHarizontal(string[] Cells, int size, int Index, int offset, string[] Pre, string[] Centers, string[] Post)
 		{
-			using (new Watcher("\tTry Harizontal"))
+			//using (new Watcher("\tTry Harizontal"))
 			{
 
 				List<Word> Moves = new List<Word>();
@@ -517,7 +517,7 @@ namespace Scrabble
 
 		ProbableMove TryVertical(string[] Cells, int size, int Index, int offset, string[] Pre, string[] Centers, string[] Post)
 		{
-			using (new Watcher("\tTry Vertical"))
+			//using (new Watcher("\tTry Vertical"))
 			{
 
 				List<Word> Moves = new List<Word>();
