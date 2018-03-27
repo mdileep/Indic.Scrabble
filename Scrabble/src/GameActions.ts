@@ -44,13 +44,24 @@ export class GameActions {
         if (!isValid) {
             return;
         }
+
         GameActions.ResetTable(state);
         GameActions.AwardClaims(state);
         GameActions.SetScores(state);
         GameActions.SwitchTurn(state);
         GameActions.SaveBoard(state);
         GameActions.Refresh(state);
+        if (state.GameOver) {
+            GameActions.SetWinner(state);
+            return;
+        }
         GameActions.Think(state);
+    }
+    static SetWinner(state: Contracts.iGameState)
+    {
+        state.ReadOnly = true;
+        //Todo:...Display Winner..!!
+        state.InfoBar.Messages.push(Messages.Messages.GameOver);
     }
     static Think(state: Contracts.iGameState): void {
         var players = state.Players.Players;
@@ -62,7 +73,7 @@ export class GameActions {
             return;
         }
         state.GameTable.Message = Util.Util.Format(Messages.Messages.Thinking, [players[currentPlayer].Name]);
-        setTimeout(GameActions.NextMove, 1000);
+        setTimeout(GameActions.NextMove, 2000);
     }
     static NextMove(): void {
         GameLoader.GameLoader.store.dispatch({
@@ -74,10 +85,13 @@ export class GameActions {
     static BotMove2(state: Contracts.iGameState, respone: Contracts.iBotMoveResponse): void {
         var result = respone.Result;
         if (result == null) {
+            state.InfoBar.Messages.push(Util.Util.Format(Messages.Messages.BotNoWords, [respone.Effort, state.Players.Players[state.Players.CurrentPlayer].Name]));
             GameActions.ReDraw(state, {});
             GameActions.Pass(state, {});
             return;
         }
+
+        state.InfoBar.Messages.push(Util.Util.Format(Messages.Messages.BotEffort, [respone.Effort, state.Players.Players[state.Players.CurrentPlayer].Name]));
         for (var i in result.Moves) {
             var Move: Contracts.iBotMove = result.Moves[i];
             var tiles: string[] = Move.Tiles.split(',');
@@ -225,7 +239,6 @@ export class GameActions {
             var word: Contracts.iWord = Claims[key];
             var isDuplicate: boolean = Util.Util.Contains(word, Awarded);
             if (isDuplicate) {
-                debugger;
                 word.Score = 0;
             }
         }
@@ -265,7 +278,16 @@ export class GameActions {
             for (var w = 0; w < player.Awarded.length; w++) {
                 score += player.Awarded[w].Score;
             }
-            player.Score = score;
+            if (player.Score == score) {
+                player.NoWords++;
+            }
+            else {
+                player.Score = score;
+                player.NoWords = 0;
+            }
+            if (player.NoWords >= 5) {
+                state.GameOver = true;
+            }
         }
     }
     static SwitchTurn(state: Contracts.iGameState): void {
@@ -314,7 +336,7 @@ export class GameActions {
 
         var isValid = Indic.Indic.IsValid(list);
         if (!isValid) {
-            state.InfoBar.Messages.push(Util.Util.Format(Messages.Messages.InvalidMove, [cell.Current, src]));
+            //state.InfoBar.Messages.push(Util.Util.Format(Messages.Messages.InvalidMove, [cell.Current, src]));
             if (!useSynonyms) {
                 return;
             }
@@ -322,7 +344,7 @@ export class GameActions {
             if (synonym == null) {
                 return;
             }
-            state.InfoBar.Messages.push(Util.Util.Format(Messages.Messages.UseSynonym, [cell.Current, src, synonym]));
+            //state.InfoBar.Messages.push(Util.Util.Format(Messages.Messages.UseSynonym, [cell.Current, src, synonym]));
 
             var iPos: Contracts.iArgs = {} as Contracts.iArgs;
             iPos.Src = synonym;

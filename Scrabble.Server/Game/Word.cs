@@ -18,5 +18,10 @@ namespace Scrabble
 		public string Tiles;
 		internal int Syllables;
 		internal string Position;
+
+		public override string ToString()
+		{
+			return Tiles;
+		}
 	}
 }

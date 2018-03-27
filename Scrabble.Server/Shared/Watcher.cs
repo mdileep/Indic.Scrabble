@@ -25,12 +25,17 @@ namespace Scrabble
 
 		public Watcher(string title)
 		{
-			Init(title);
+			Init(title, new string[] { });
+		}
+
+		public Watcher(string title, string[] args)
+		{
+			Init(title, args);
 		}
 
 		public Watcher()
 		{
-			Init("");
+			Init("", new string[] { });
 		}
 
 		public string Elapsed()
@@ -43,11 +48,12 @@ namespace Scrabble
 			End();
 		}
 
-		private void Init(string title)
+		private void Init(string title, string[] args)
 		{
 			stopWatch = new Stopwatch();
 			stopWatch.Start();
 			this.title = title;
+			Printer.PrintLine(string.Format("{0} : {1} {2}", title, "START", string.Join(",", args)));
 		}
 
 

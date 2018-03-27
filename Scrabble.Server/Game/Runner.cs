@@ -17,6 +17,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System;
 
 namespace Scrabble
 {
@@ -85,8 +86,11 @@ namespace Scrabble
 			string[] inputs = new string[] { };
 			string EmptyBoardPattern = "";
 			var SyllablePattern = "";
-			var SunnaPattern = ""; var SunnaPattern2 = "";
+			var SunnaPattern = "";
+			var SunnaPattern2 = "";
 			var WordPattern = "";
+			var AllPattern = "";
+
 			string[] options = new string[] { };
 			{
 				List<string> NonCornerSyllables = GetSyllableList(cells, size, true, false);
@@ -96,7 +100,7 @@ namespace Scrabble
 				inputs = (GetFlatList(EverySyllableOnBoard, ',') + " " + vowels + " " + conso + " " + special).Replace("(", " ").Replace(")", " ").Replace(",", " ").Replace("|", " ").Split(' ');
 
 				BuildPatterns(NonCornerSyllables, WordsOnBoard,
-							vowels, conso, special,
+							vowels, conso, special, inputs, ref AllPattern,
 							ref SunnaPattern, ref SunnaPattern2,
 							ref EmptyBoardPattern, ref SyllablePattern, ref WordPattern);
 
@@ -104,6 +108,11 @@ namespace Scrabble
 			}
 
 			List<Word> WordsDictionary = LoadWords(file);
+			//Trick ??? It would fail as the words grows..
+			//Not a Optimised solution for sure..
+			//May be needs to revisit the overall mechanism  :(
+			//
+			WordsDictionary = MatchedWords2(WordsDictionary, new Regex(AllPattern, RegexOptions.Compiled));
 
 			if (!string.IsNullOrEmpty(EmptyBoardPattern))
 			{
@@ -126,15 +135,17 @@ namespace Scrabble
 		}
 
 		void BuildPatterns(List<string> NonCornerSyllables,
-								   List<Word> WordsOnBoard,
-								   string Vowels,
-								   string Conso,
-								   string Special,
-								   ref string SunnaPattern,
-								   ref string SunnaPattern2,
-								   ref string EmptyBoardPattern,
-								   ref string SyllablePattern,
-								   ref string WordPattern)
+								List<Word> WordsOnBoard,
+								string Vowels,
+								string Conso,
+								string Special,
+								string[] inputs,
+								ref string AllPattern,
+								ref string SunnaPattern,
+								ref string SunnaPattern2,
+								ref string EmptyBoardPattern,
+								ref string SyllablePattern,
+								ref string WordPattern)
 
 		{
 			string SyllableSeq = GetFlatList(NonCornerSyllables, '|');
@@ -144,6 +155,8 @@ namespace Scrabble
 			Conso = Distinct(Conso, ' ');
 			Special = Distinct(Special, ' ');
 			WordSeq = Distinct(WordSeq, ':');
+
+			AllPattern = string.Format("^(?<All>[{0},]*$)", GetDistinctFlatList(inputs));
 
 			// ConsoOptions:
 			//            C-Options
@@ -196,6 +209,24 @@ namespace Scrabble
 					WordPattern = string.Format("^{0}$", WordPattern);
 				}
 			}
+		}
+
+		string GetDistinctFlatList(string[] inputs)
+		{
+			//........Improve for sure.....
+			string s = "";
+			var List = new List<string>();
+			foreach (var key in inputs)
+			{
+				if (List.Contains(key))
+				{
+					continue;
+				}
+				List.Add(key);
+				s = s + key;
+			}
+			List = null;
+			return s;
 		}
 
 		string GetPattern(string pos)
@@ -426,6 +457,11 @@ namespace Scrabble
 							string[] Centers = Center.Split(',');
 							string[] Posts = Post == "" ? new string[] { } : Post.TrimStart(',').Split(',');
 
+							if (!Post.StartsWith(",") && Posts.Length > 0)
+							{
+								Centers = (Center + Posts[0]).Split(',');
+								Posts = Posts.Skip(1).ToArray();
+							}
 
 							ProbableMove WH = TryHarizontal(Cells, size, pos.Index, 0, Pres, Centers, Posts);
 							ProbableMove WV = TryVertical(Cells, size, pos.Index, 0, Pres, Centers, Posts);
@@ -761,8 +797,9 @@ namespace Scrabble
 			{
 				Dictionary<string, int> InputDict = GetCountDict(inputs);
 				Dictionary<string, int> InputDict2 = GetCountDict(options);
+				Regex R = new Regex(pattern, RegexOptions.Compiled);
 
-				List<Word> Matches = MatchedWords2(words, pattern);
+				List<Word> Matches = MatchedWords2(words, R);
 				List<Word> Shortlisted = new List<Word>();
 				{
 					foreach (Word word in Matches)
@@ -780,7 +817,7 @@ namespace Scrabble
 							continue;
 						}
 
-						Dictionary<string, int> CharCount2 = GetCountDict2(word.Tiles, pattern);
+						Dictionary<string, int> CharCount2 = GetCountDict2(word.Tiles, R);
 						isValid = Validate(InputDict2, CharCount2);
 						if (!isValid)
 						{
@@ -794,11 +831,9 @@ namespace Scrabble
 			}
 		}
 
-		Dictionary<string, int> GetCountDict2(string input, string pattern)
+		Dictionary<string, int> GetCountDict2(string input, Regex R)
 		{
 			Dictionary<string, int> Extra = new Dictionary<string, int>();
-
-			Regex R = new Regex(pattern, RegexOptions.Compiled);
 			var M = R.Match(input);
 
 			Group Conso = M.Groups["Conso"];
@@ -1085,6 +1120,10 @@ namespace Scrabble
 			string ret = ""; int Special = 1;
 			foreach (string syllable in syllables)
 			{
+				if (string.IsNullOrEmpty(syllable))
+				{
+					continue;
+				}
 				string temp = "";
 
 				List<string> Consos = new List<string>();
@@ -1578,14 +1617,15 @@ namespace Scrabble
 			return -1;
 		}
 
-		List<Word> MatchedWords2(List<Word> words, string Pattern)
+		List<Word> MatchedWords2(List<Word> words, Regex r)
 		{
-			using (new Watcher("\t\tMatch Words " + Pattern))
+			using (new Watcher("\t\tMatch Words: ", new string[] { r.ToString() }))
 			{
-				Regex r = new Regex(Pattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
 				List<Word> List = words.FindAll(delegate (Word s) { return r.IsMatch(s.Tiles); });
+				Printer.PrintLine(string.Format("\t\t Items Found: {0} of {1}", List.Count, words.Count));
 				return List;
 			}
 		}
 	}
 }
+

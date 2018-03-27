@@ -14,6 +14,9 @@ define(["require", "exports"], function (require, exports) {
         Messages.Claimed = "";
         Messages.Thinking = "";
         Messages.YourTurn = "";
+        Messages.BotEffort = "";
+        Messages.BotNoWords = "";
+        Messages.GameOver = "";
         return Messages;
     }());
     exports.Messages = Messages;

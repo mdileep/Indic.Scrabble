@@ -65,6 +65,7 @@ export interface iPlayer extends iComponent {
     CurrentTurn: boolean;
     Awarded: iWord[];
     Claimed: iWord[];
+    NoWords: number;
     IsBot: boolean;
     BotId: string;
 }
@@ -83,6 +84,7 @@ export interface iGameState extends iComponent {
     InfoBar: iInfoBar;
     GameTable: iGameTable;
     Cache: iCachedTile;
+    GameOver: boolean;
 }
 export interface iActionArgs {
     type: number;

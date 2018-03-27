@@ -22,4 +22,7 @@ export class Messages {
     public static Claimed: string = "";
     public static Thinking: string = "";
     public static YourTurn: string = "";
+    public static BotEffort: string = "";
+    public static BotNoWords: string = "";
+    public static GameOver: string = "";
 }

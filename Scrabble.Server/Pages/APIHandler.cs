@@ -50,4 +50,38 @@ namespace Scrabble.Server
 			}
 		}
 	}
-}
+
+	public class APIPage : System.Web.UI.Page
+	{
+		protected void Page_Load(object sender, EventArgs e)
+		{
+			try
+			{
+				Response response = null;
+				try
+				{
+					var reqJSON = ServerUtil.ReadRequest(Request);
+					var action = ServerUtil.GetQuery(Request, "action", Config.Actions, ActionNames.Help);
+					var req = Parser.ParseRequest(reqJSON);
+					response = ActionHandler.Process(action, req);
+				}
+				catch (Exception ex)
+				{
+					response = new Response
+					{
+						Action = "ERROR",
+						Result = new Dictionary<string, string> { { "Debug", ex.Message } }
+					};
+				}
+
+				Response.Clear();
+				Response.ContentType = "application/json";
+				string responseJSON = ParseUtil.ToJSON(response);
+				Response.Write(responseJSON);
+			}
+			catch
+			{
+			}
+		}
+	}
+	}

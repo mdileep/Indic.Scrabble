@@ -22,6 +22,7 @@ define(["require", "exports", "GameActions", "Indic"], function (require, export
                 Players: players,
                 InfoBar: infoBar,
                 ReadOnly: false,
+                GameOver: false,
                 Show: true,
                 GameTable: gameTable
             };
@@ -134,6 +135,7 @@ define(["require", "exports", "GameActions", "Indic"], function (require, export
                 player.Claimed = [];
                 player.Id = "P_" + (i + 1);
                 player.key = player.Id;
+                player.NoWords = 0;
                 player.IsBot = player.IsBot == null ? false : player.IsBot;
                 player.BotId = player.BotId;
                 raw.Players.push(player);

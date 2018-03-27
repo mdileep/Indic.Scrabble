@@ -21,5 +21,10 @@ namespace Scrabble
 		public int Score;
 		public List<Word> Moves;
 		internal List<ProbableWord> Words;
+
+		public override string ToString()
+		{
+			return Direction + " " + Moves.Count;
+		}
 	}
 }
