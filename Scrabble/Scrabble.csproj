@@ -23,6 +23,7 @@
   <ItemGroup>
     <Content Include="scrabble.aspx" />
     <Content Include="Index.html" />
+    <Content Include="scripts\AskServer.js" />
     <Content Include="scripts\axios.js" />
     <Content Include="scripts\bn.config.js" />
     <Content Include="scripts\gu.config.js" />
@@ -61,6 +62,7 @@
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="src\AksharaSets.ts" />
+    <TypeScriptCompile Include="src\AskServer.ts" />
     <TypeScriptCompile Include="src\bn.config.ts" />
     <TypeScriptCompile Include="src\BoardCell.ts" />
     <TypeScriptCompile Include="src\DragDropTouch.ts" />
