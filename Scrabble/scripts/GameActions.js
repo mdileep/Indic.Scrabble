@@ -1,4 +1,4 @@
-define(["require", "exports", 'Contracts', 'Messages', 'Indic', 'Util', 'axios', 'GameLoader'], function (require, exports, Contracts, Messages, Indic, Util, axios, GameLoader) {
+define(["require", "exports", 'Messages', 'Indic', 'Util', 'AskServer'], function (require, exports, Messages, Indic, Util, AskServer) {
     "use strict";
     var GameActions = (function () {
         function GameActions() {
@@ -35,6 +35,7 @@ define(["require", "exports", 'Contracts', 'Messages', 'Indic', 'Util', 'axios',
             GameActions.SwitchTurn(state);
             GameActions.SaveBoard(state);
             GameActions.Refresh(state);
+            GameActions.SetStats(state);
             if (state.GameOver) {
                 GameActions.SetWinner(state);
                 return;
@@ -43,7 +44,62 @@ define(["require", "exports", 'Contracts', 'Messages', 'Indic', 'Util', 'axios',
         };
         GameActions.SetWinner = function (state) {
             state.ReadOnly = true;
+            var winner = GameActions.FindWinner(state);
+            if (winner == null) {
+                state.GameTable.Message = Messages.Messages.MatchTied;
+            }
+            else {
+                state.GameTable.Message = Util.Util.Format(Messages.Messages.Winner, [winner.Name]);
+            }
+            state.InfoBar.Messages.push(Util.Util.Format(Messages.Messages.Stats, [state.Stats.EmptyCells, state.Stats.Occupancy.toFixed(2), state.Stats.TotalWords, state.Stats.UnUsed.toFixed(2)]));
             state.InfoBar.Messages.push(Messages.Messages.GameOver);
+            state.InfoBar.Messages.push(state.GameTable.Message);
+        };
+        GameActions.SetStats = function (state) {
+            var stats = {
+                EmptyCells: 0,
+                Occupancy: 0,
+                TotalWords: 0,
+                UnUsed: 0
+            };
+            stats.TotalWords = GameActions.GetTotalWords(state.Players);
+            stats.EmptyCells = GameActions.GetEmptyCells(state.Board);
+            stats.Occupancy = (state.Board.Cells.length - stats.EmptyCells) * 100.00 / state.Board.Cells.length;
+            stats.UnUsed = state.Cabinet.Remaining * 100.00 / state.Cabinet.Total;
+            state.Stats = stats;
+        };
+        GameActions.GetEmptyCells = function (board) {
+            var tot = 0;
+            for (var i = 0; i < board.Cells.length; i++) {
+                var tiles = board.Cells[i].Confirmed.length;
+                if (tiles == 0) {
+                    tot++;
+                }
+            }
+            return tot;
+        };
+        GameActions.GetTotalWords = function (players) {
+            var tot = 0;
+            for (var i = 0; i < players.Players.length; i++) {
+                var player = players.Players[i];
+                tot = tot + player.Awarded.length;
+            }
+            return tot;
+        };
+        GameActions.FindWinner = function (state) {
+            var maxScore = -1;
+            var winnerIndex = 0;
+            for (var i = 0; i < state.Players.Players.length; i++) {
+                var player = state.Players.Players[i];
+                if (player.Score == maxScore) {
+                    return null;
+                }
+                if (player.Score > maxScore) {
+                    maxScore = player.Score;
+                    winnerIndex = i;
+                }
+            }
+            return state.Players.Players[winnerIndex];
         };
         GameActions.Think = function (state) {
             var players = state.Players.Players;
@@ -54,28 +110,26 @@ define(["require", "exports", 'Contracts', 'Messages', 'Indic', 'Util', 'axios',
                 return;
             }
             state.GameTable.Message = Util.Util.Format(Messages.Messages.Thinking, [players[currentPlayer].Name]);
-            setTimeout(GameActions.NextMove, 2000);
+            setTimeout(AskServer.AskServer.NextMove, GameActions.BotWait);
         };
-        GameActions.NextMove = function () {
-            GameLoader.GameLoader.store.dispatch({
-                type: Contracts.Actions.BotMove,
-                args: {}
-            });
-        };
-        GameActions.BotMove2 = function (state, respone) {
-            var result = respone.Result;
+        GameActions.BotMoveResponse = function (state, response) {
+            var result = response.Result;
+            var player = state.Players.Players[state.Players.CurrentPlayer];
             if (result == null) {
-                state.InfoBar.Messages.push(Util.Util.Format(Messages.Messages.BotNoWords, [respone.Effort, state.Players.Players[state.Players.CurrentPlayer].Name]));
+                state.InfoBar.Messages.push(Util.Util.Format(Messages.Messages.BotNoWords, [response.Effort, player.Name]));
                 GameActions.ReDraw(state, {});
                 GameActions.Pass(state, {});
                 return;
             }
-            state.InfoBar.Messages.push(Util.Util.Format(Messages.Messages.BotEffort, [respone.Effort, state.Players.Players[state.Players.CurrentPlayer].Name]));
+            state.InfoBar.Messages.push(Util.Util.Format(result.WordsCount == 1 ? Messages.Messages.BotEffort : Messages.Messages.BotEffort2, [response.Effort, player.Name, result.WordsCount]));
             for (var i in result.Moves) {
                 var Move = result.Moves[i];
                 var tiles = Move.Tiles.split(',');
                 for (var j in tiles) {
                     var tile = tiles[j];
+                    if (Indic.Indic.HasSyllableSynonym(tile)) {
+                        tile = Indic.Indic.GetSyllableSynonym(tile);
+                    }
                     GameActions.ToBoard(state, {
                         Origin: "Tile",
                         Src: tile,
@@ -92,6 +146,10 @@ define(["require", "exports", 'Contracts', 'Messages', 'Indic', 'Util', 'axios',
                 var arr = [];
                 for (var indx in Cell.Confirmed) {
                     var c = Cell.Confirmed[indx];
+                    if (Indic.Indic.IsSpecialSyllable(c)) {
+                        arr = arr.concat(Indic.Indic.GetSyllableTiles(c));
+                        continue;
+                    }
                     if (Indic.Indic.IsSpecialSet(c)) {
                         arr.push(Indic.Indic.GetSynonym(c));
                         continue;
@@ -110,7 +168,7 @@ define(["require", "exports", 'Contracts', 'Messages', 'Indic', 'Util', 'axios',
             for (var i in state.GameTable.ConsoTray.Tiles) {
                 var Tile = state.GameTable.ConsoTray.Tiles[i];
                 if (Tile.Text.length > 1) {
-                    Special.push("(" + Indic.Indic.GetSyllables(Tile.Text).join(',') + ") ");
+                    Special.push("(" + Indic.Indic.GetSyllableTiles(Tile.Text).join(',') + ") ");
                     continue;
                 }
                 Cosos.push(Tile.Text);
@@ -120,8 +178,7 @@ define(["require", "exports", 'Contracts', 'Messages', 'Indic', 'Util', 'axios',
             var currentPlayer = state.Players.CurrentPlayer;
             var BotName = players[currentPlayer].BotId;
             var reference = Math.floor(Math.random() * 1000).toString();
-            axios
-                .post("/API.ashx?nextmove", {
+            var post = {
                 "Reference": reference,
                 "Name": Name,
                 "Bot": BotName,
@@ -129,15 +186,8 @@ define(["require", "exports", 'Contracts', 'Messages', 'Indic', 'Util', 'axios',
                 "Vowels": Vowels.join(' '),
                 "Conso": Cosos.join(' '),
                 "Special": Special.join(' ')
-            })
-                .then(function (response) {
-                GameLoader.GameLoader.store.dispatch({
-                    type: Contracts.Actions.BotMoveResponse,
-                    args: response.data
-                });
-            })
-                .catch(function (error) {
-            });
+            };
+            AskServer.AskServer.BotMove(post);
         };
         GameActions.SaveBoard = function (state) {
             for (var i = 0; i < state.Board.Cells.length; i++) {
@@ -209,7 +259,7 @@ define(["require", "exports", 'Contracts', 'Messages', 'Indic', 'Util', 'axios',
                 var word = Claims[key];
                 var isDuplicate = Util.Util.Contains(word, Awarded);
                 if (isDuplicate) {
-                    word.Score = 0;
+                    word.Score = 1;
                 }
             }
             var playerId = state.Players.CurrentPlayer;
@@ -247,14 +297,18 @@ define(["require", "exports", 'Contracts', 'Messages', 'Indic', 'Util', 'axios',
                 for (var w = 0; w < player.Awarded.length; w++) {
                     score += player.Awarded[w].Score;
                 }
-                if (player.Score == score) {
-                    player.NoWords++;
+                if (player.CurrentTurn) {
+                    if (player.Score == score) {
+                        player.NoWords++;
+                        state.InfoBar.Messages.push(Util.Util.Format(Messages.Messages.NoWordsAdded, [player.Name, player.NoWords]));
+                    }
+                    else {
+                        player.NoWords = 0;
+                    }
                 }
-                else {
-                    player.Score = score;
-                    player.NoWords = 0;
-                }
-                if (player.NoWords >= 5) {
+                player.Score = score;
+                if (player.NoWords >= GameActions.NoWords) {
+                    state.InfoBar.Messages.push(Util.Util.Format(Messages.Messages.WhyGameOver, [player.Name, player.NoWords]));
                     state.GameOver = true;
                 }
             }
@@ -723,6 +777,8 @@ define(["require", "exports", 'Contracts', 'Messages', 'Indic', 'Util', 'axios',
             var pickedConso = Util.Util.Draw(conso, maxConsos);
             return pickedConso;
         };
+        GameActions.NoWords = 3;
+        GameActions.BotWait = 1000;
         return GameActions;
     }());
     exports.GameActions = GameActions;

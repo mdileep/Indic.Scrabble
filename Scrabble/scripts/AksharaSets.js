@@ -10,7 +10,9 @@ define(["require", "exports"], function (require, exports) {
         AksharaSets.Consonents = [];
         AksharaSets.Virama = "";
         AksharaSets.Synonyms = {};
-        AksharaSets.Syllables = {};
+        AksharaSets.SyllableTiles = {};
+        AksharaSets.SyllableChars = {};
+        AksharaSets.SyllableSynonym = {};
         return AksharaSets;
     }());
     exports.AksharaSets = AksharaSets;

@@ -10,6 +10,7 @@ define(["require", "exports", "GameActions", "Indic"], function (require, export
             var players = Parser.ParsePlayers(JSON.Players);
             var infoBar = Parser.ParseInfoBar(JSON.InfoBar);
             var gameTable = Parser.BuildGameTable(JSON.GameTable, cache);
+            var stats = { EmptyCells: 0, Occupancy: 0, TotalWords: 0, UnUsed: 0 };
             GameActions.GameActions.RefreshTrays(cabinet.Trays, cache);
             GameActions.GameActions.RefreshCabinet(cabinet, cache);
             var gameState = {
@@ -24,6 +25,7 @@ define(["require", "exports", "GameActions", "Indic"], function (require, export
                 ReadOnly: false,
                 GameOver: false,
                 Show: true,
+                Stats: stats,
                 GameTable: gameTable
             };
             return gameState;

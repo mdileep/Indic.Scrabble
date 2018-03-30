@@ -104,10 +104,19 @@ export class Indic {
         return Indic.Contains(AS.AksharaSets.SunnaSet, char);
     }
     public static IsSpecialSyllable(char: string): boolean {
-        return AS.AksharaSets.Syllables[char] != null;
+        return AS.AksharaSets.SyllableChars[char] != null;
     }
-    public static GetSyllables(char: string): string[] {
-        return AS.AksharaSets.Syllables[char];
+    public static GetSyllableChars(char: string): string[] {
+        return AS.AksharaSets.SyllableChars[char];
+    }
+    public static GetSyllableTiles(char: string): string[] {
+        return AS.AksharaSets.SyllableTiles[char];
+    }
+    public static GetSyllableSynonym(char: string): string {
+        return AS.AksharaSets.SyllableSynonym[char];
+    }
+    public static HasSyllableSynonym(char: string): boolean {
+        return AS.AksharaSets.SyllableSynonym[char] != null;
     }
     public static GetSynonym(akshara: string): string {
         return AS.AksharaSets.Synonyms[akshara];
@@ -120,7 +129,7 @@ export class Indic {
         for (var key in original) {
             var char = original[key];
             if (Indic.IsSpecialSyllable(char)) {
-                var set: string[] = Indic.GetSyllables(char);
+                var set: string[] = Indic.GetSyllableChars(char);
                 arr = arr.concat(set);
                 continue;
             }

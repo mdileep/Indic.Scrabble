@@ -24,5 +24,11 @@ export class Messages {
     public static YourTurn: string = "";
     public static BotEffort: string = "";
     public static BotNoWords: string = "";
+    public static BotEffort2: string = "";
     public static GameOver: string = "";
+    public static Winner: string = "";
+    public static MatchTied: string = "";
+    public static WhyGameOver: string = "";
+    public static NoWordsAdded: string = "";
+    public static Stats: string = "";
 }

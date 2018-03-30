@@ -18,5 +18,7 @@ export class AksharaSets {
     public static Consonents: string[] = [];
     public static Virama: string = "";
     public static Synonyms: any = {};
-    public static Syllables: any = {};
+    public static SyllableTiles: any = {};
+    public static SyllableChars: any = {};
+    public static SyllableSynonym: any = {};
 }

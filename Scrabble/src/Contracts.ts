@@ -84,6 +84,7 @@ export interface iGameState extends iComponent {
     InfoBar: iInfoBar;
     GameTable: iGameTable;
     Cache: iCachedTile;
+    Stats: iBoardsStats;
     GameOver: boolean;
 }
 export interface iActionArgs {
@@ -154,6 +155,12 @@ export interface iCachedTile {
     Remaining: number;
     Total: number;
 }
+export interface iBoardsStats {
+    Occupancy: number;
+    EmptyCells: number;
+    TotalWords: number;
+    UnUsed: number;
+}
 // Views
 export interface iTrayView extends iTrayProps {
     ShowLabel: boolean;
@@ -174,6 +181,7 @@ export interface iBotMove {
 export interface iBotMoveResult {
     Direction: string,
     Score: number;
+    WordsCount: number;
     Moves: iBotMove[];
 }
 export interface iBotMoveResponse {

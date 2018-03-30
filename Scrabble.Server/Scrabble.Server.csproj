@@ -47,6 +47,9 @@
     <Compile Include="Actions\ProbablesAction.cs" />
     <Compile Include="Actions\ScrabbleBoard.cs" />
     <Compile Include="Actions\ValidateAction.cs" />
+    <Compile Include="Game\iRunner.cs" />
+    <Compile Include="Game\PerfTest.cs" />
+    <Compile Include="Game\Runner2.cs" />
     <Compile Include="Game\WordUtil.cs" />
     <Compile Include="Shared\Printer.cs" />
     <Compile Include="Pages\APIHandler.cs" />

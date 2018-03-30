@@ -17,21 +17,11 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System;
 
 namespace Scrabble
 {
-	public class Runner
+	internal class Runner : iRunner
 	{
-		CharSet CharSet;
-		private string file;
-		private int size;
-		private string[] cells;
-		private int[] weights;
-		private string vowels;
-		private string conso;
-		private string special;
-
 		public Runner(ScrabbleBoard Board)
 		{
 			if (Board == null)
@@ -43,13 +33,12 @@ namespace Scrabble
 			{
 				return;
 			}
-
+			//
 			var board = Config.GetBoard(Board.Name);
 			if (board == null)
 			{
 				return;
 			}
-
 			//
 			file = bot.Dictionary;
 			CharSet = Config.GetCharSet(bot.Language);
@@ -62,8 +51,16 @@ namespace Scrabble
 			conso = Board.Conso;
 			special = Board.Special;
 		}
-
-		public List<ProbableMove> Run()
+		public ProbableMove BestMove()
+		{
+			var Moves = Probables();
+			if (Moves.Count == 0)
+			{
+				return null;
+			}
+			return Moves[0];
+		}
+		public List<ProbableMove> Probables()
 		{
 			var Moves = new List<ProbableMove>();
 			if (!new FileInfo(ServerUtil.Path(file)).Exists)
@@ -79,7 +76,6 @@ namespace Scrabble
 			{
 				return Moves;
 			}
-
 
 			int maxIndex = MaxWeightIndex(weights);
 			List<Word> WordsOnBoard = new List<Word>();
@@ -108,11 +104,11 @@ namespace Scrabble
 			}
 
 			List<Word> WordsDictionary = LoadWords(file);
-			//Trick ??? It would fail as the words grows..
-			//Not a Optimised solution for sure..
+			//Trick ??? It would fail as the words grows on table..
+			//Not a Optimised solution..
 			//May be needs to revisit the overall mechanism  :(
 			//
-			WordsDictionary = MatchedWords2(WordsDictionary, new Regex(AllPattern, RegexOptions.Compiled));
+			WordsDictionary = MatchedWords(WordsDictionary, new Regex(AllPattern, RegexOptions.Compiled));
 
 			if (!string.IsNullOrEmpty(EmptyBoardPattern))
 			{
@@ -132,168 +128,6 @@ namespace Scrabble
 			RefreshScores(Moves, weights, size);
 
 			return Moves;
-		}
-
-		void BuildPatterns(List<string> NonCornerSyllables,
-								List<Word> WordsOnBoard,
-								string Vowels,
-								string Conso,
-								string Special,
-								string[] inputs,
-								ref string AllPattern,
-								ref string SunnaPattern,
-								ref string SunnaPattern2,
-								ref string EmptyBoardPattern,
-								ref string SyllablePattern,
-								ref string WordPattern)
-
-		{
-			string SyllableSeq = GetFlatList(NonCornerSyllables, '|');
-			string WordSeq = GetFlatList(WordsOnBoard, ':');
-
-			Vowels = Distinct(Vowels, ' ');
-			Conso = Distinct(Conso, ' ');
-			Special = Distinct(Special, ' ');
-			WordSeq = Distinct(WordSeq, ':');
-
-			AllPattern = string.Format("^(?<All>[{0},]*$)", GetDistinctFlatList(inputs));
-
-			// ConsoOptions:
-			//            C-Options
-			// AllOptions:
-			//            C-Options+V-Options
-			// SpecialPattern:
-			//            (మ[ConsoOptions]ఉ)|(కష)
-			// ConsoPattern:
-			//           ([ConsoOptions + Comma] | SpecialPattern)*
-			// ConsoPatternNoComma:
-			//           ([ConsoOptions] | SpecialPattern)*
-			// AllPattern:
-			//           ([AllOptions + Comma] | SpecialPattern)*
-
-			string consoOptions = Conso.Replace(" ", "");
-			string specialOptions = Special.Replace("(", "").Replace(")", "");
-			string specialPattern = GetSpecialSyllablePattern(specialOptions, consoOptions);
-			string consoPatternNoComma = Special == "" ?
-										string.Format("(?<Conso>[{0}])*", consoOptions) :
-										string.Format("(?<Conso>[{0}]|{1})*", consoOptions, specialPattern);
-			string allOptions = (Conso + Vowels).Replace(" ", "");
-			string allPattern = Special == "" ?
-										string.Format("(?<All>[{0},]*)", allOptions) :
-										string.Format("(?<All>[{0},]|{1})*", allOptions, specialPattern);
-			string allPatternNoComma = Special == "" ?
-										string.Format("(?<All>[{0}]*)", allOptions) :
-										string.Format("(?<All>[{0}]|{1})*", allOptions, specialPattern);
-			string sunnaOptions = GetSunnaOptions(Vowels);
-			SunnaPattern = sunnaOptions == "" ? "" : string.Format("(?<Sunna>[{0}]*)", sunnaOptions);
-			SunnaPattern2 = sunnaOptions == "" ? "" : string.Format("(?<Center{{0}}>[{0}]*)", sunnaOptions);
-
-			if (SyllableSeq == "")
-			{
-				EmptyBoardPattern = string.Format("^{0}$", allPattern);
-			}
-			else
-			{
-				if (SyllableSeq != "")
-				{
-					// Accu or Hallu:
-					//      AllPattern Accu AllPattern
-					// H-V:
-					//       AllPattern H1 ConsoPatternNoComma V1 AllPattern
-					SyllablePattern = GetSyllablePattern(SyllableSeq.Replace("(", "").Replace(")", "").Split('|'), consoPatternNoComma, allPattern);
-					SyllablePattern = string.Format("^({0})*?$", SyllablePattern);
-				}
-				if (WordSeq != "")
-				{
-					WordPattern = GenWordsPattern(WordSeq, consoPatternNoComma, SunnaPattern, allPatternNoComma, allPattern, allPattern, false);
-					WordPattern = string.Format("^{0}$", WordPattern);
-				}
-			}
-		}
-
-		string GetDistinctFlatList(string[] inputs)
-		{
-			//........Improve for sure.....
-			string s = "";
-			var List = new List<string>();
-			foreach (var key in inputs)
-			{
-				if (List.Contains(key))
-				{
-					continue;
-				}
-				List.Add(key);
-				s = s + key;
-			}
-			List = null;
-			return s;
-		}
-
-		string GetPattern(string pos)
-		{
-			string x = GenSyllableFilter(pos, false);
-			x = x.TrimEnd(',');
-			x = "^(.*?)" + x.Replace("{0}", "").Replace("{1}", "(.*?)") + "(.*?)$";
-			return x;
-		}
-
-		string GetSunnaOptions(string Vowels)
-		{
-			string ret = "";
-			foreach (string vowel in Vowels.Split(' '))
-			{
-				if (CharSet.SunnaSet.Contains(vowel))
-				{
-					ret = ret + vowel;
-				}
-			}
-			return ret;
-		}
-
-		int MaxWeightIndex(int[] Weights)
-		{
-			int maxIndex = 0;
-			int maxVal = 0;
-			int index = 0;
-			foreach (int weight in Weights)
-			{
-				if (weight > maxVal)
-				{
-					maxVal = weight;
-					maxIndex = index;
-				}
-				index++;
-			}
-			return maxIndex;
-		}
-
-		void RefreshScores(List<ProbableMove> Moves, int[] Weights, int size)
-		{
-			using (new Watcher("\tRefresh Scores"))
-			{
-				foreach (var Move in Moves)
-				{
-					int score = 0;
-					foreach (var w in Move.Words)
-					{
-						var wordScore = 0;
-						foreach (var cell in w.Cells)
-						{
-							var weight = Weights[cell.Index];
-							wordScore = wordScore + weight;
-							cell.Score = weight;
-						}
-						w.Score = wordScore;
-						score = score + wordScore;
-					}
-					Move.Score = score;
-				}
-				Moves.Sort(delegate (ProbableMove x, ProbableMove y)
-				{
-					return x.Score.CompareTo(y.Score);
-				});
-				Moves.Reverse();
-			}
 		}
 
 		List<ProbableMove> EmptyExtensions(string[] Cells, int size, int maxIndex, List<Word> AllWords, List<Word> List)
@@ -336,92 +170,6 @@ namespace Scrabble
 				return Moves;
 			}
 		}
-
-		List<ProbableMove> WordExtensions(string[] Cells, int size, List<Word> AllWords, List<Word> WordExtensions, List<Word> WordsOnBoard, string SunnaPattern)
-		{
-			using (new Watcher("\tWord Extesnsions"))
-			{
-				List<ProbableMove> Moves = new List<ProbableMove>();
-				{
-					foreach (Word wordOnBoard in WordsOnBoard)
-					{
-						string raw = wordOnBoard.Tiles.Replace("(", "").Replace(")", "").Replace(",", "").Replace("|", ",");
-
-						string pattern = GenWordPattern(wordOnBoard.Tiles, "(?<Center{0}>.*?)", SunnaPattern, "(?<Center{0}>.*?)", "(?<Pre>.*?)", "(?<Post>.*?)", true);
-						pattern = string.Format("^{0}$", pattern.TrimEnd('|'));
-						Regex R = new Regex(pattern, RegexOptions.Compiled);
-
-						foreach (Word word in WordExtensions)
-						{
-							if (raw == word.Tiles)
-							{
-								continue;
-							}
-
-							Match M = R.Match(word.Tiles);
-							if (M.Success)
-							{
-								string Pre = "";
-								string Post = "";
-								string Center = "";
-
-
-								Pre = MatchedString(M.Groups["Pre"], "");
-								for (int i = 0; i < word.Syllables; i++)
-								{
-									Center = Center + MatchedString(M.Groups["Center" + (i + 1)], ",") + ":";
-								}
-								Center = Center.TrimEnd(':');
-								Post = MatchedString(M.Groups["Post"], "");
-
-
-								string[] Pres = Pre == "" ? new string[] { } : Pre.TrimEnd(',').Split(',');
-								string[] Centers = Center.Split(':');
-								string[] Posts = Post == "" ? new string[] { } : Post.TrimStart(',').Split(',');
-
-
-								if (wordOnBoard.Position == "R")
-								{
-									ProbableMove WH = TryHarizontal(Cells, size, wordOnBoard.Index, wordOnBoard.Syllables - 1, Pres, Centers, Posts);
-									bool WHValid = Validate(WH, AllWords);
-									if (WHValid)
-									{
-										Moves.Add(WH);
-									}
-								}
-								if (wordOnBoard.Position == "C")
-								{
-									ProbableMove WH = TryVertical(Cells, size, wordOnBoard.Index, wordOnBoard.Syllables - 1, Pres, Centers, Posts);
-									bool WHValid = Validate(WH, AllWords);
-									if (WHValid)
-									{
-										Moves.Add(WH);
-									}
-								}
-
-							}
-						}
-
-					}
-				}
-				return Moves;
-			}
-		}
-
-		string MatchedString(Group group, string seperator)
-		{
-			string ret = "";
-			foreach (Capture capture in group.Captures)
-			{
-				ret = ret + capture.Value + seperator;
-			}
-			if (!string.IsNullOrEmpty(seperator))
-			{
-				ret = ret.TrimEnd(seperator.ToCharArray());
-			}
-			return ret;
-		}
-
 		List<ProbableMove> SyllableExtensions(string[] Cells, int size, List<Word> AllWords, List<Word> List, string SunnaPattern)
 		{
 			using (new Watcher("\tSyllable Extensions"))
@@ -483,6 +231,75 @@ namespace Scrabble
 				return Moves;
 			}
 		}
+		List<ProbableMove> WordExtensions(string[] Cells, int size, List<Word> AllWords, List<Word> WordExtensions, List<Word> WordsOnBoard, string SunnaPattern)
+		{
+			using (new Watcher("\tWord Extesnsions"))
+			{
+				List<ProbableMove> Moves = new List<ProbableMove>();
+				{
+					foreach (Word wordOnBoard in WordsOnBoard)
+					{
+						string raw = wordOnBoard.Tiles.Replace("(", "").Replace(")", "").Replace(",", "").Replace("|", ",");
+
+						string pattern = GenWordPattern(wordOnBoard.Tiles, "(?<Center{0}>.*?)", SunnaPattern, "(?<Center{0}>.*?)", "(?<Pre>.*?)", "(?<Post>.*?)", true);
+						pattern = string.Format("^{0}$", pattern.TrimEnd('|'));
+						Regex R = new Regex(pattern, RegexOptions.Compiled);
+
+						foreach (Word word in WordExtensions)
+						{
+							if (raw == word.Tiles)
+							{
+								continue;
+							}
+
+							Match M = R.Match(word.Tiles);
+							if (M.Success)
+							{
+								string Pre = "";
+								string Post = "";
+								string Center = "";
+
+
+								Pre = MatchedString(M.Groups["Pre"], "");
+								for (int i = 0; i < word.Syllables; i++)
+								{
+									Center = Center + MatchedString(M.Groups["Center" + (i + 1)], ",") + ":";
+								}
+								Center = Center.TrimEnd(':');
+								Post = MatchedString(M.Groups["Post"], "");
+
+
+								string[] Pres = Pre == "" ? new string[] { } : Pre.TrimEnd(',').Split(',');
+								string[] Centers = Center.Split(':');
+								string[] Posts = Post == "" ? new string[] { } : Post.TrimStart(',').Split(',');
+
+
+								if (wordOnBoard.Position == "R")
+								{
+									ProbableMove WH = TryHarizontal(Cells, size, wordOnBoard.Index, wordOnBoard.Syllables - 1, Pres, Centers, Posts);
+									bool WHValid = Validate(WH, AllWords);
+									if (WHValid)
+									{
+										Moves.Add(WH);
+									}
+								}
+								if (wordOnBoard.Position == "C")
+								{
+									ProbableMove WH = TryVertical(Cells, size, wordOnBoard.Index, wordOnBoard.Syllables - 1, Pres, Centers, Posts);
+									bool WHValid = Validate(WH, AllWords);
+									if (WHValid)
+									{
+										Moves.Add(WH);
+									}
+								}
+							}
+						}
+
+					}
+				}
+				return Moves;
+			}
+		}
 
 		ProbableMove TryHarizontal(string[] Cells, int size, int Index, int offset, string[] Pre, string[] Centers, string[] Post)
 		{
@@ -493,10 +310,8 @@ namespace Scrabble
 				int PostCount = Post.Length;
 				char Seperator = ',';
 
-
 				string[] NewCells = (string[])Cells.Clone();
 				List<int> Impacted = new List<int>();
-
 
 				if (Pre.Length != 0)
 				{
@@ -509,6 +324,10 @@ namespace Scrabble
 							NewCells[n.Left] += temp;
 							Impacted.Add(n.Left);
 							Moves.Add(new Word { Tiles = temp, Index = n.Left });
+						}
+						else
+						{
+							return new ProbableMove { Words = new List<ProbableWord>(), Direction = "H", Moves = new List<Word>() };
 						}
 					}
 				}
@@ -541,6 +360,10 @@ namespace Scrabble
 							Impacted.Add(n.Right);
 							Moves.Add(new Word { Tiles = temp, Index = n.Right });
 						}
+						else
+						{
+							return new ProbableMove { Words = new List<ProbableWord>(), Direction = "H", Moves = new List<Word>() };
+						}
 					}
 				}
 
@@ -552,7 +375,6 @@ namespace Scrabble
 				return new ProbableMove { Words = W, Moves = Moves, Direction = "H" };
 			}
 		}
-
 		ProbableMove TryVertical(string[] Cells, int size, int Index, int offset, string[] Pre, string[] Centers, string[] Post)
 		{
 			{
@@ -568,7 +390,6 @@ namespace Scrabble
 
 				if (Pre.Length != 0)
 				{
-
 					for (int x = Pre.Length - 1; x >= 0; x--)
 					{
 						int cellIndex = BoardUtil.Abs(Pos.X - x, Pos.Y, size);
@@ -580,12 +401,15 @@ namespace Scrabble
 							Impacted.Add(n.Top);
 							Moves.Add(new Word { Tiles = temp, Index = n.Top });
 						}
+						else
+						{
+							return new ProbableMove { Words = new List<ProbableWord>(), Direction = "V", Moves = new List<Word>() };
+						}
 					}
 				}
 
 				if (Centers.Length != 0)
 				{
-
 					for (int c = 0; c < Centers.Length; c++)
 					{
 						int cellIndex = BoardUtil.Abs(Pos.X + c, Pos.Y, size);
@@ -602,7 +426,6 @@ namespace Scrabble
 
 				if (Post.Length != 0)
 				{
-
 					for (int x = 0; x < Post.Length; x++)
 					{
 						int cellIndex = BoardUtil.Abs(Pos.X + offset + x, Pos.Y, size);
@@ -613,6 +436,10 @@ namespace Scrabble
 							NewCells[n.Bottom] += temp;
 							Impacted.Add(n.Bottom);
 							Moves.Add(new Word { Tiles = temp, Index = n.Bottom });
+						}
+						else
+						{
+							return new ProbableMove { Words = new List<ProbableWord>(), Direction = "V", Moves = new List<Word>() };
 						}
 					}
 				}
@@ -625,7 +452,247 @@ namespace Scrabble
 				return new ProbableMove { Words = W, Moves = Moves, Direction = "V" };
 			}
 		}
+		void RefreshScores(List<ProbableMove> Moves, int[] Weights, int size)
+		{
+			//using (new Watcher("\tRefresh Scores"))
+			{
+				foreach (var Move in Moves)
+				{
+					int score = 0;
+					foreach (var w in Move.Words)
+					{
+						var wordScore = 0;
+						foreach (var cell in w.Cells)
+						{
+							var weight = Weights[cell.Index];
+							wordScore = wordScore + weight;
+							cell.Score = weight;
+						}
+						w.Score = wordScore;
+						score = score + wordScore;
+					}
+					Move.Score = score;
+				}
+				Moves.Sort(delegate (ProbableMove x, ProbableMove y)
+				{
+					return x.Score.CompareTo(y.Score);
+				});
+				Moves.Reverse();
+			}
+		}
 
+		List<Word> ShortList(string[] inputs, List<Word> words, string pattern, string[] options)
+		{
+			if (string.IsNullOrEmpty(pattern))
+			{
+				return new List<Word>();
+			}
+
+			using (new Watcher("\tShortList "))
+			{
+				Dictionary<string, int> InputDict = GetCountDict(inputs);
+				Dictionary<string, int> InputDict2 = GetCountDict(options);
+				Regex R = new Regex(pattern, RegexOptions.Compiled);
+
+				List<Word> Matches = MatchedWords(words, R);
+				List<Word> Shortlisted = new List<Word>();
+				{
+					foreach (Word word in Matches)
+					{
+						if (word.Syllables == 1)
+						{
+							continue;
+						}
+
+						Dictionary<string, int> CharCount = GetCountDict(word.Tiles);
+
+						bool isValid = Validate(InputDict, CharCount);
+						if (!isValid)
+						{
+							continue;
+						}
+
+						Dictionary<string, int> CharCount2 = GetCountDict2(word.Tiles, R);
+						isValid = Validate(InputDict2, CharCount2);
+						if (!isValid)
+						{
+							continue;
+						}
+
+						Shortlisted.Add(word);
+					}
+				}
+				return Shortlisted;
+			}
+		}
+		List<Word> LoadWords(string file)
+		{
+			using (new Watcher("\tLoad Words"))
+			{
+				List<Word> List = new List<Word>();
+				string[] lines = System.IO.File.ReadAllLines(ServerUtil.Path(file));
+				int cnt = 0;
+				foreach (string line in lines)
+				{
+					List.Add(new Word
+					{
+						Tiles = line,
+						Index = cnt++,
+						Syllables = line.Count(x => x == ',') + 1,
+					});
+				}
+				return List;
+			}
+		}
+
+		bool Validate(ProbableMove WV, List<Word> AllWords)
+		{
+			WV.Words = WV.Words.Distinct(new ProbableWordComparer()).ToList();
+			if (WV.Words.Count == 0 || WV.Moves.Count == 0)
+			{
+				return false;
+			}
+			return Validate(WV.Words, AllWords);
+		}
+		bool Validate(List<ProbableWord> WV, List<Word> AllWords)
+		{
+			foreach (var w in WV)
+			{
+				var v = AllWords.Find(x => x.Tiles == w.String);
+				if (v == null)
+				{
+					return false;
+				}
+			}
+			return true;
+		}
+		bool Validate(Dictionary<string, int> InputDict, Dictionary<string, int> CharCount)
+		{
+			if (InputDict == null)
+			{
+				return true;
+			}
+			bool isValid = true;
+			foreach (var item in CharCount)
+			{
+				if (!InputDict.ContainsKey(item.Key))
+				{
+					isValid = false;
+					break;
+				}
+				if (InputDict[item.Key] < item.Value)
+				{
+					isValid = false;
+					break;
+				}
+			}
+			return isValid;
+		}
+
+		List<Word> MatchedWords(List<Word> words, Regex r)
+		{
+			using (new Watcher("\t\tMatch Words: ", new string[] { r.ToString() }))
+			{
+				List<Word> List = words.FindAll(delegate (Word s) { return r.IsMatch(s.Tiles); });
+				Printer.PrintLine(string.Format("\t\t Items Found: {0} of {1}", List.Count, words.Count));
+				return List;
+			}
+		}
+		string MatchedString(Group group, string seperator)
+		{
+			string ret = "";
+			foreach (Capture capture in group.Captures)
+			{
+				ret = ret + capture.Value + seperator;
+			}
+			if (!string.IsNullOrEmpty(seperator))
+			{
+				ret = ret.TrimEnd(seperator.ToCharArray());
+			}
+			return ret;
+		}
+
+		List<Word> GetWordsOnBoard(string[] Cells, int size, bool includeDuplicates)
+		{
+			List<Word> Words = new List<Word>();
+			for (var i = 0; i < size; i++)
+			{
+				var R = GetWords(Cells, "R", i, size, includeDuplicates);
+				var C = GetWords(Cells, "C", i, size, includeDuplicates);
+				Words.AddRange(R);
+				Words.AddRange(C);
+			}
+			return Words;
+		}
+		List<Word> GetWords(string[] Cells, string option, int r, int size, bool includeDuplicates)
+		{
+			List<Word> Words = new List<Word>();
+			var pending = "";
+			var cnt = 0;
+			for (var i = 0; i < size; i++)
+			{
+				var index = -1;
+				switch (option)
+				{
+					case "R":
+						index = BoardUtil.Abs(r, i, size);
+						break;
+					case "C":
+						index = BoardUtil.Abs(i, r, size);
+						break;
+				}
+				var cell = Cells[index];
+				if (cell != "")
+				{
+					pending += "(" + cell + ")|";
+					cnt++;
+					continue;
+				}
+				if (pending != "" && cell == "")
+				{
+					if (cnt > 1)
+					{
+						var word = pending.TrimEnd('|');
+						if (includeDuplicates)
+						{
+							int startIndex = GetStartIndex(option, r, i, size, cnt);
+							Words.Add(new Word { Tiles = word, Syllables = cnt, Position = option, Index = startIndex });
+						}
+						else
+						{
+							Word X = Words.Find(x => x.Tiles == word);
+							if (X == null)
+							{
+								int startIndex = GetStartIndex(option, r, i, size, cnt);
+								Words.Add(new Word { Tiles = word, Syllables = cnt, Position = option, Index = startIndex });
+							}
+						}
+					}
+					pending = "";
+					cnt = 0;
+					continue;
+				}
+			}
+			if (cnt > 1)
+			{
+				var word = pending.TrimEnd('|');
+				if (includeDuplicates)
+				{
+					int startIndex = GetStartIndex(option, r, size, size, cnt);
+					Words.Add(new Word { Tiles = word, Syllables = cnt, Position = option, Index = startIndex });
+				}
+				else
+				{
+					Word X = Words.Find(x => x.Tiles == word);
+					if (X == null)
+					{
+						int startIndex = GetStartIndex(option, r, size, size, cnt);
+						Words.Add(new Word { Tiles = word, Syllables = cnt, Position = option, Index = startIndex });
+					}
+				}
+			}
+			return Words;
+		}
 		List<ProbableWord> WordsAt(string[] Cells, int size, int index)
 		{
 			List<ProbableWord> List = new List<ProbableWord>();
@@ -737,7 +804,6 @@ namespace Scrabble
 			}
 			return List;
 		}
-
 		ProbableWord MakeAWord(List<Word> F1, Word C, List<Word> F2)
 		{
 			ProbableWord W = new ProbableWord();
@@ -765,86 +831,102 @@ namespace Scrabble
 			W.Cells = List;
 			return W;
 		}
-
-		List<Word> LoadWords(string file)
+		int GetStartIndex(string option, int r, int pos, int size, int move)
 		{
-			using (new Watcher("\tLoad Words"))
+			switch (option)
 			{
-				List<Word> List = new List<Word>();
-				string[] lines = System.IO.File.ReadAllLines(ServerUtil.Path(file));
-				int cnt = 0;
-				foreach (string line in lines)
-				{
-					List.Add(new Word
-					{
-						Tiles = line,
-						Index = cnt++,
-						Syllables = line.Count(x => x == ',') + 1,
-					});
-				}
-				return List;
+				case "R":
+					return BoardUtil.Abs(r, pos - move, size);
+
+				case "C":
+					return BoardUtil.Abs(pos - move, r, size);
+
 			}
+			return -1;
 		}
 
-		List<Word> ShortList(string[] inputs, List<Word> words, string pattern, string[] options)
+		void BuildPatterns(List<string> NonCornerSyllables,
+							List<Word> WordsOnBoard,
+							string Vowels,
+							string Conso,
+							string Special,
+							string[] inputs,
+							ref string AllPattern,
+							ref string SunnaPattern,
+							ref string SunnaPattern2,
+							ref string EmptyBoardPattern,
+							ref string SyllablePattern,
+							ref string WordPattern)
+
 		{
-			if (string.IsNullOrEmpty(pattern))
+			string SyllableSeq = GetFlatList(NonCornerSyllables, '|');
+			string WordSeq = GetFlatList(WordsOnBoard, ':');
+
+			Vowels = Distinct(Vowels, ' ');
+			Conso = Distinct(Conso, ' ');
+			Special = Distinct(Special, ' ');
+			WordSeq = Distinct(WordSeq, ':');
+
+			AllPattern = string.Format("^(?<All>[{0},]*$)", GetDistinctFlatList(inputs));
+
+			// ConsoOptions:
+			//            C-Options
+			// AllOptions:
+			//            C-Options+V-Options
+			// SpecialPattern:
+			//            (మ[ConsoOptions]ఉ)|(కష)
+			// ConsoPattern:
+			//           ([ConsoOptions + Comma] | SpecialPattern)*
+			// ConsoPatternNoComma:
+			//           ([ConsoOptions] | SpecialPattern)*
+			// AllPattern:
+			//           ([AllOptions + Comma] | SpecialPattern)*
+
+			string consoOptions = Conso.Replace(" ", "");
+			string specialOptions = Special.Replace("(", "").Replace(")", "");
+			string specialPattern = GetSpecialSyllablePattern(specialOptions, consoOptions);
+
+			string consoPatternNoComma = Special == "" ?
+										string.Format("(?<Conso>[{0}])*", consoOptions) :
+										string.Format("(?<Conso>[{0}]|{1})*", consoOptions, specialPattern);
+
+			if (string.IsNullOrEmpty(consoOptions))
 			{
-				return new List<Word>();
+				consoPatternNoComma = "";
 			}
 
-			using (new Watcher("\tShortList "))
-			{
-				Dictionary<string, int> InputDict = GetCountDict(inputs);
-				Dictionary<string, int> InputDict2 = GetCountDict(options);
-				Regex R = new Regex(pattern, RegexOptions.Compiled);
+			string allOptions = (Conso + Vowels).Replace(" ", "");
+			string allPattern = Special == "" ?
+										string.Format("(?<All>[{0},]*)", allOptions) :
+										string.Format("(?<All>[{0},]|{1})*", allOptions, specialPattern);
+			string allPatternNoComma = Special == "" ?
+										string.Format("(?<All>[{0}]*)", allOptions) :
+										string.Format("(?<All>[{0}]|{1})*", allOptions, specialPattern);
+			string sunnaOptions = GetSunnaOptions(Vowels);
+			SunnaPattern = sunnaOptions == "" ? "" : string.Format("(?<Sunna>[{0}]*)", sunnaOptions);
+			SunnaPattern2 = sunnaOptions == "" ? "" : string.Format("(?<Center{{0}}>[{0}]*)", sunnaOptions);
 
-				List<Word> Matches = MatchedWords2(words, R);
-				List<Word> Shortlisted = new List<Word>();
+			if (SyllableSeq == "")
+			{
+				EmptyBoardPattern = string.Format("^{0}$", allPattern);
+			}
+			else
+			{
+				if (SyllableSeq != "")
 				{
-					foreach (Word word in Matches)
-					{
-						if (word.Syllables == 1)
-						{
-							continue;
-						}
-
-						Dictionary<string, int> CharCount = GetCountDict(word.Tiles);
-
-						bool isValid = Validate(InputDict, CharCount);
-						if (!isValid)
-						{
-							continue;
-						}
-
-						Dictionary<string, int> CharCount2 = GetCountDict2(word.Tiles, R);
-						isValid = Validate(InputDict2, CharCount2);
-						if (!isValid)
-						{
-							continue;
-						}
-
-						Shortlisted.Add(word);
-					}
+					// Accu or Hallu:
+					//      AllPattern Accu AllPattern
+					// H-V:
+					//       AllPattern H1 ConsoPatternNoComma V1 AllPattern
+					SyllablePattern = GetSyllablePattern(SyllableSeq.Replace("(", "").Replace(")", "").Split('|'), consoPatternNoComma, allPattern);
+					SyllablePattern = string.Format("^({0})$", SyllablePattern);
 				}
-				return Shortlisted;
+				if (WordSeq != "")
+				{
+					WordPattern = GenWordsPattern(WordSeq, consoPatternNoComma, SunnaPattern, allPatternNoComma, allPattern, allPattern, false);
+					WordPattern = string.Format("^{0}$", WordPattern);
+				}
 			}
-		}
-
-		Dictionary<string, int> GetCountDict2(string input, Regex R)
-		{
-			Dictionary<string, int> Extra = new Dictionary<string, int>();
-			var M = R.Match(input);
-
-			Group Conso = M.Groups["Conso"];
-			Group Special = M.Groups["Special"];
-			Group All = M.Groups["All"];
-
-			UpdateDict(Conso, Extra, 1);
-			UpdateDict(Special, Extra, 2);
-			UpdateDict(All, Extra, 1);
-
-			return Extra;
 		}
 
 		void UpdateDict(Group Conso, Dictionary<string, int> Extra, int threshold)
@@ -865,30 +947,6 @@ namespace Scrabble
 				}
 			}
 		}
-
-		bool Validate(ProbableMove WV, List<Word> AllWords)
-		{
-			WV.Words = WV.Words.Distinct(new ProbableWordComparer()).ToList();
-			if (WV.Words.Count == 0 || WV.Moves.Count == 0)
-			{
-				return false;
-			}
-			return Validate(WV.Words, AllWords);
-		}
-
-		bool Validate(List<ProbableWord> WV, List<Word> AllWords)
-		{
-			foreach (var w in WV)
-			{
-				var v = AllWords.Find(x => x.Tiles == w.String);
-				if (v == null)
-				{
-					return false;
-				}
-			}
-			return true;
-		}
-
 		string Insert(string original, string val)
 		{
 			List<string> Consos = new List<string>();
@@ -906,68 +964,88 @@ namespace Scrabble
 			return ret;
 		}
 
-		string Join(string str, char join)
+		List<string> GetSyllableList(string[] Cells, int size, bool filterEdges, bool asGroups)
 		{
-			string ret = "";
-			foreach (char ch in str)
+			List<string> List = new List<string>();
+			for (int index = 0; index < Cells.Length; index++)
 			{
-				ret = ret + ch + join;
-			}
-			ret = ret.TrimEnd(join);
-			return ret;
-		}
-
-		string GenWordsPattern(string Set, string consoPatternNoComma, string sunnaPattern, string allPatternNoComma,
-		   string prePattern, string postPattern, bool useSyllableIndex)
-		{
-			if (Set == "")
-			{
-				return "";
-			}
-			string ret = "";
-			foreach (string word in Set.Split(':'))
-			{
-				ret = ret + GenWordPattern(word, consoPatternNoComma, sunnaPattern, allPatternNoComma, prePattern, postPattern, useSyllableIndex);
-			}
-			ret = ret.TrimEnd('|');
-			return ret;
-		}
-
-		string GenWordPattern(string word, string consoPatternNoComma, string sunnaPattern, string allPatternNoComma,
-		   string prePattern, string postPattern,
-		   bool useSyllableIndex)
-		{
-			string temp = "";
-			var arr = word.Split('|');
-			for (int i = 0; i < arr.Length; i++)
-			{
-				string syllable = arr[i];
-
-				string pattern = "";
-				if (useSyllableIndex)
+				string cell = Cells[index];
+				if (cell == "")
 				{
-					pattern = GetSyllablePattern(
-							syllable.Replace("(", "").Replace(")", ""),
-							string.Format(consoPatternNoComma, i + 1),
-							string.Format(sunnaPattern, i + 1),
-							i == arr.Length - 1 ? "" : string.Format(allPatternNoComma, i + 1));
+					continue;
+				}
+				Neighbor Neighbor = BoardUtil.FindNeighbors(index, size);
+
+				string r = Neighbor.Right != -1 ? Cells[Neighbor.Right] : "";
+				string l = Neighbor.Left != -1 ? Cells[Neighbor.Left] : "";
+				string t = Neighbor.Top != -1 ? Cells[Neighbor.Top] : "";
+				string b = Neighbor.Bottom != -1 ? Cells[Neighbor.Bottom] : "";
+
+				if (filterEdges)
+				{
+					if ((r != "" || l != "") && (t != "" || b != ""))
+					{
+
+					}
+					else
+					{
+						string x = asGroups ? cell : "(" + cell + ")";
+						if (!List.Contains(x))
+						{
+							List.Add(x);
+						}
+					}
 				}
 				else
 				{
-					pattern = GetSyllablePattern(
-						syllable.Replace("(", "").Replace(")", ""),
-						consoPatternNoComma,
-						sunnaPattern,
-						i == arr.Length - 1 ? "" : allPatternNoComma);
+					string x = asGroups ? cell : "(" + cell + ")";
+					if (!List.Contains(x))
+					{
+						List.Add(x);
+					}
 				}
-				temp = temp + pattern + ",";
 			}
-			temp = temp.TrimEnd(',');
-			temp = prePattern + temp + postPattern;
-			temp = string.Format("({0})|", temp);
-			return temp;
+			return List;
 		}
+		List<Word> GetSyllableList2(string[] Cells, int size, bool filter, bool free)
+		{
+			List<Word> List = new List<Word>();
+			for (int index = 0; index < Cells.Length; index++)
+			{
+				string cell = Cells[index];
+				if (cell == "")
+				{
+					continue;
+				}
+				var Neighbor = BoardUtil.FindNeighbors(index, size);
 
+				string r = Neighbor.Right != -1 ? Cells[Neighbor.Right] : "";
+				string l = Neighbor.Left != -1 ? Cells[Neighbor.Left] : "";
+				string t = Neighbor.Top != -1 ? Cells[Neighbor.Top] : "";
+				string b = Neighbor.Bottom != -1 ? Cells[Neighbor.Bottom] : "";
+
+				if (filter)
+				{
+					if ((r != "" || l != "") && (t != "" || b != ""))
+					{
+
+					}
+					else
+					{
+						string x = free ? cell : "(" + cell + ")";
+
+						List.Add(new Word { Tiles = x, Index = index });
+
+					}
+				}
+				else
+				{
+					string x = free ? cell : "(" + cell + ")";
+					List.Add(new Word { Tiles = x, Index = index });
+				}
+			}
+			return List;
+		}
 		string GetSyllablePattern(string[] syllables, string consoPatternNoComma, string allPattern)
 		{
 			string ret = "";
@@ -979,7 +1057,6 @@ namespace Scrabble
 			ret = ret.TrimEnd('|');
 			return ret;
 		}
-
 		string GetSyllablePattern(string syllable, string consoPatternNoComma, string sunnaPattern, string allPatternNoComma)
 		{
 			string temp = "";
@@ -1036,12 +1113,10 @@ namespace Scrabble
 			}
 			return temp;
 		}
-
 		string GetSyllablePattern(string syllable, string consoPatternNoComma, string allPattern)
 		{
 			return GetSyllablePattern2(syllable, consoPatternNoComma, allPattern, allPattern);
 		}
-
 		string GetSyllablePattern2(string syllable, string consoPatternNoComma, string prePattern, string PostPattern)
 		{
 			string temp = "";
@@ -1081,6 +1156,64 @@ namespace Scrabble
 			}
 			return temp;
 		}
+		string GetSpecialSyllablePattern(string specialOptions, string consoOptions)
+		{
+			if (string.IsNullOrEmpty(specialOptions))
+			{
+				return "";
+			}
+			string[] syllables = specialOptions.Split(' ');
+			string ret = ""; int Special = 1;
+			foreach (string syllable in syllables)
+			{
+				if (string.IsNullOrEmpty(syllable))
+				{
+					continue;
+				}
+				string temp = "";
+
+				List<string> Consos = new List<string>();
+				List<string> Vowels = new List<string>();
+				Classify(syllable, Consos, Vowels);
+
+				if (Vowels.Count > 0 && Consos.Count > 0)
+				{
+					//Both Exists
+					//(మ[ConsoOptions]ఉ)
+					foreach (var a in Consos)
+					{
+						temp = temp + a;
+					}
+					if (!string.IsNullOrEmpty(consoOptions))
+					{
+						temp = temp + string.Format("[{0}]*", consoOptions);
+					}
+					foreach (var a in Vowels)
+					{
+						temp = temp + a;
+					}
+					temp = string.Format("(?<Special>{0})", temp);
+				}
+				else
+				{
+					//Both Exists
+					//(కష)
+					foreach (var a in Consos)
+					{
+						temp = temp + a;
+					}
+					foreach (var a in Vowels)
+					{
+						temp = temp + a;
+					}
+					temp = string.Format("(?<Special>{0})", temp, Special);
+				}
+				Special++;
+				ret = ret + temp + "|";
+			}
+			ret = ret.TrimEnd('|');
+			return ret;
+		}
 
 		void Classify(string syllable, List<string> Consos, List<string> Vowels)
 		{
@@ -1110,62 +1243,71 @@ namespace Scrabble
 			Vowels.AddRange(Sunna);
 		}
 
-		string GetSpecialSyllablePattern(string specialOptions, string consoOptions)
+		string GetPattern(string pos)
 		{
-			if (string.IsNullOrEmpty(specialOptions))
+			string x = GenSyllableFilter(pos, false);
+			x = x.TrimEnd(',');
+			x = "^(.*?)" + x.Replace("{0}", "").Replace("{1}", "(.*?)") + "(.*?)$";
+			return x;
+		}
+		string GetSunnaOptions(string Vowels)
+		{
+			string ret = "";
+			foreach (string vowel in Vowels.Split(' '))
+			{
+				if (CharSet.SunnaSet.Contains(vowel))
+				{
+					ret = ret + vowel;
+				}
+			}
+			return ret;
+		}
+		string GenWordsPattern(string Set, string consoPatternNoComma, string sunnaPattern, string allPatternNoComma, string prePattern, string postPattern, bool useSyllableIndex)
+		{
+			if (Set == "")
 			{
 				return "";
 			}
-			string[] syllables = specialOptions.Split(' ');
-			string ret = ""; int Special = 1;
-			foreach (string syllable in syllables)
+			string ret = "";
+			foreach (string word in Set.Split(':'))
 			{
-				if (string.IsNullOrEmpty(syllable))
-				{
-					continue;
-				}
-				string temp = "";
-
-				List<string> Consos = new List<string>();
-				List<string> Vowels = new List<string>();
-				Classify(syllable, Consos, Vowels);
-
-				if (Vowels.Count > 0 && Consos.Count > 0)
-				{
-					//Both Exists
-					//(మ[ConsoOptions]ఉ)
-					foreach (var a in Consos)
-					{
-						temp = temp + a;
-					}
-					temp = temp + string.Format("[{0}]*", consoOptions);
-					foreach (var a in Vowels)
-					{
-						temp = temp + a;
-					}
-					temp = string.Format("(?<Special>{0})", temp);
-				}
-				else
-				{
-					//Both Exists
-					//(కష)
-					foreach (var a in Consos)
-					{
-						temp = temp + a;
-					}
-					foreach (var a in Vowels)
-					{
-						temp = temp + a;
-					}
-					temp = string.Format("(?<Special>{0})", temp, Special);
-				}
-				Special++;
-				ret = ret + temp + "|";
+				ret = ret + GenWordPattern(word, consoPatternNoComma, sunnaPattern, allPatternNoComma, prePattern, postPattern, useSyllableIndex);
 			}
 			ret = ret.TrimEnd('|');
 			return ret;
 		}
+		string GenWordPattern(string word, string consoPatternNoComma, string sunnaPattern, string allPatternNoComma, string prePattern, string postPattern, bool useSyllableIndex)
+		{
+			string temp = "";
+			var arr = word.Split('|');
+			for (int i = 0; i < arr.Length; i++)
+			{
+				string syllable = arr[i];
 
+				string pattern = "";
+				if (useSyllableIndex)
+				{
+					pattern = GetSyllablePattern(
+							syllable.Replace("(", "").Replace(")", ""),
+							string.Format(consoPatternNoComma, i + 1),
+							string.Format(sunnaPattern, i + 1),
+							i == arr.Length - 1 ? "" : string.Format(allPatternNoComma, i + 1));
+				}
+				else
+				{
+					pattern = GetSyllablePattern(
+						syllable.Replace("(", "").Replace(")", ""),
+						consoPatternNoComma,
+						sunnaPattern,
+						i == arr.Length - 1 ? "" : allPatternNoComma);
+				}
+				temp = temp + pattern + ",";
+			}
+			temp = temp.TrimEnd(',');
+			temp = prePattern + temp + postPattern;
+			temp = string.Format("({0})|", temp);
+			return temp;
+		}
 		string GenSyllableFilter(string syllable, bool useStandard)
 		{
 			string ret = "";
@@ -1242,7 +1384,6 @@ namespace Scrabble
 			}
 			return ret;
 		}
-
 		string GenSyllablesFilter2(string Set)
 		{
 			string ret = "";
@@ -1254,7 +1395,6 @@ namespace Scrabble
 			ret = ret.TrimEnd('|');
 			return ret;
 		}
-
 		string GenSyllableFilter2(string syllable)
 		{
 			string ret = "";
@@ -1317,7 +1457,6 @@ namespace Scrabble
 			}
 			return ret;
 		}
-
 		string GenSyllablesFilter(string Set)
 		{
 			string ret = "";
@@ -1340,7 +1479,6 @@ namespace Scrabble
 			ret = ret.TrimEnd(Seperator);
 			return ret;
 		}
-
 		string GetFlatList(List<Word> List, char Seperator)
 		{
 			string ret = "";
@@ -1351,173 +1489,50 @@ namespace Scrabble
 			ret = ret.TrimEnd(Seperator);
 			return ret;
 		}
-
-		List<Word> GetWordsOnBoard(string[] Cells, int size, bool includeDuplicates)
-		{
-			List<Word> Words = new List<Word>();
-			for (var i = 0; i < size; i++)
-			{
-				var R = GetWords(Cells, "R", i, size, includeDuplicates);
-				var C = GetWords(Cells, "C", i, size, includeDuplicates);
-				Words.AddRange(R);
-				Words.AddRange(C);
-			}
-			return Words;
-		}
-
-		List<Word> GetWords(string[] Cells, string option, int r, int size, bool includeDuplicates)
-		{
-			List<Word> Words = new List<Word>();
-			var pending = "";
-			var cnt = 0;
-			for (var i = 0; i < size; i++)
-			{
-				var index = -1;
-				switch (option)
-				{
-					case "R":
-						index = BoardUtil.Abs(r, i, size);
-						break;
-					case "C":
-						index = BoardUtil.Abs(i, r, size);
-						break;
-				}
-				var cell = Cells[index];
-				if (cell != "")
-				{
-					pending += "(" + cell + ")|";
-					cnt++;
-					continue;
-				}
-				if (pending != "" && cell == "")
-				{
-					if (cnt > 1)
-					{
-						var word = pending.TrimEnd('|');
-						if (includeDuplicates)
-						{
-							int startIndex = GetStartIndex(option, r, i, size, cnt);
-							Words.Add(new Word { Tiles = word, Syllables = cnt, Position = option, Index = startIndex });
-						}
-						else
-						{
-							Word X = Words.Find(x => x.Tiles == word);
-							if (X == null)
-							{
-								int startIndex = GetStartIndex(option, r, i, size, cnt);
-								Words.Add(new Word { Tiles = word, Syllables = cnt, Position = option, Index = startIndex });
-							}
-						}
-					}
-					pending = "";
-					cnt = 0;
-					continue;
-				}
-			}
-			if (cnt > 1)
-			{
-				var word = pending.TrimEnd('|');
-				if (includeDuplicates)
-				{
-					int startIndex = GetStartIndex(option, r, size, size, cnt);
-					Words.Add(new Word { Tiles = word, Syllables = cnt, Position = option, Index = startIndex });
-				}
-				else
-				{
-					Word X = Words.Find(x => x.Tiles == word);
-					if (X == null)
-					{
-						int startIndex = GetStartIndex(option, r, size, size, cnt);
-						Words.Add(new Word { Tiles = word, Syllables = cnt, Position = option, Index = startIndex });
-					}
-				}
-			}
-			return Words;
-		}
-
-		List<string> GetSyllableList(string[] Cells, int size, bool filterEdges, bool asGroups)
+		string Distinct(string Set, char Seperator)
 		{
 			List<string> List = new List<string>();
-			for (int index = 0; index < Cells.Length; index++)
+
+			foreach (string s in Set.Split(Seperator))
 			{
-				string cell = Cells[index];
-				if (cell == "")
+				if (!List.Contains(s))
 				{
-					continue;
-				}
-				Neighbor Neighbor = BoardUtil.FindNeighbors(index, size);
-
-				string r = Neighbor.Right != -1 ? Cells[Neighbor.Right] : "";
-				string l = Neighbor.Left != -1 ? Cells[Neighbor.Left] : "";
-				string t = Neighbor.Top != -1 ? Cells[Neighbor.Top] : "";
-				string b = Neighbor.Bottom != -1 ? Cells[Neighbor.Bottom] : "";
-
-				if (filterEdges)
-				{
-					if ((r != "" || l != "") && (t != "" || b != ""))
-					{
-
-					}
-					else
-					{
-						string x = asGroups ? cell : "(" + cell + ")";
-						if (!List.Contains(x))
-						{
-							List.Add(x);
-						}
-					}
-				}
-				else
-				{
-					string x = asGroups ? cell : "(" + cell + ")";
-					if (!List.Contains(x))
-					{
-						List.Add(x);
-					}
+					List.Add(s);
 				}
 			}
-			return List;
-		}
 
-		List<Word> GetSyllableList2(string[] Cells, int size, bool filter, bool free)
+			return GetFlatList(List, Seperator);
+
+		}
+		string Join(string str, char join)
 		{
-			List<Word> List = new List<Word>();
-			for (int index = 0; index < Cells.Length; index++)
+			string ret = "";
+			foreach (char ch in str)
 			{
-				string cell = Cells[index];
-				if (cell == "")
+				ret = ret + ch + join;
+			}
+			ret = ret.TrimEnd(join);
+			return ret;
+		}
+		string GetDistinctFlatList(string[] inputs)
+		{
+			//........Improve for sure.....
+			string s = "";
+			var List = new List<string>();
+			foreach (var key in inputs)
+			{
+				if (List.Contains(key))
 				{
 					continue;
 				}
-				var Neighbor = BoardUtil.FindNeighbors(index, size);
-
-				string r = Neighbor.Right != -1 ? Cells[Neighbor.Right] : "";
-				string l = Neighbor.Left != -1 ? Cells[Neighbor.Left] : "";
-				string t = Neighbor.Top != -1 ? Cells[Neighbor.Top] : "";
-				string b = Neighbor.Bottom != -1 ? Cells[Neighbor.Bottom] : "";
-
-				if (filter)
-				{
-					if ((r != "" || l != "") && (t != "" || b != ""))
-					{
-
-					}
-					else
-					{
-						string x = free ? cell : "(" + cell + ")";
-
-						List.Add(new Word { Tiles = x, Index = index });
-
-					}
-				}
-				else
-				{
-					string x = free ? cell : "(" + cell + ")";
-					List.Add(new Word { Tiles = x, Index = index });
-				}
+				List.Add(key);
+				s = s + key;
 			}
-			return List;
+			List = null;
+			return s;
 		}
+
+
 		Dictionary<string, int> GetCountDict(string input)
 		{
 			Dictionary<string, int> Dict = new Dictionary<string, int>();
@@ -1538,7 +1553,6 @@ namespace Scrabble
 			}
 			return Dict;
 		}
-
 		Dictionary<string, int> GetCountDict(string[] inputs)
 		{
 			if (inputs == null)
@@ -1563,69 +1577,46 @@ namespace Scrabble
 			}
 			return Dict;
 		}
-
-		bool Validate(Dictionary<string, int> InputDict, Dictionary<string, int> CharCount)
+		Dictionary<string, int> GetCountDict2(string input, Regex R)
 		{
-			if (InputDict == null)
+			Dictionary<string, int> Extra = new Dictionary<string, int>();
+			var M = R.Match(input);
+
+			Group Conso = M.Groups["Conso"];
+			Group Special = M.Groups["Special"];
+			Group All = M.Groups["All"];
+
+			UpdateDict(Conso, Extra, 1);
+			UpdateDict(Special, Extra, 2);
+			UpdateDict(All, Extra, 1);
+
+			return Extra;
+		}
+
+		int MaxWeightIndex(int[] Weights)
+		{
+			int maxIndex = 0;
+			int maxVal = 0;
+			int index = 0;
+			foreach (int weight in Weights)
 			{
-				return true;
-			}
-			bool isValid = true;
-			foreach (var item in CharCount)
-			{
-				if (!InputDict.ContainsKey(item.Key))
+				if (weight > maxVal)
 				{
-					isValid = false;
-					break;
+					maxVal = weight;
+					maxIndex = index;
 				}
-				if (InputDict[item.Key] < item.Value)
-				{
-					isValid = false;
-					break;
-				}
+				index++;
 			}
-			return isValid;
+			return maxIndex;
 		}
 
-		string Distinct(string Set, char Seperator)
-		{
-			List<string> List = new List<string>();
-
-			foreach (string s in Set.Split(Seperator))
-			{
-				if (!List.Contains(s))
-				{
-					List.Add(s);
-				}
-			}
-
-			return GetFlatList(List, Seperator);
-
-		}
-
-		int GetStartIndex(string option, int r, int pos, int size, int move)
-		{
-			switch (option)
-			{
-				case "R":
-					return BoardUtil.Abs(r, pos - move, size);
-
-				case "C":
-					return BoardUtil.Abs(pos - move, r, size);
-
-			}
-			return -1;
-		}
-
-		List<Word> MatchedWords2(List<Word> words, Regex r)
-		{
-			using (new Watcher("\t\tMatch Words: ", new string[] { r.ToString() }))
-			{
-				List<Word> List = words.FindAll(delegate (Word s) { return r.IsMatch(s.Tiles); });
-				Printer.PrintLine(string.Format("\t\t Items Found: {0} of {1}", List.Count, words.Count));
-				return List;
-			}
-		}
+		CharSet CharSet;
+		private string file;
+		private int size;
+		private string[] cells;
+		private int[] weights;
+		private string vowels;
+		private string conso;
+		private string special;
 	}
 }
-

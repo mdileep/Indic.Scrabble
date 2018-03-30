@@ -19,13 +19,8 @@ namespace Scrabble.Server
 		public object Process(Dictionary<string, object> dict)
 		{
 			var Board = ParseUtil.ConvertTo<ScrabbleBoard>(dict);
-			Runner R = new Runner(Board);
-			var Moves = R.Run();
-			if (Moves.Count == 0)
-			{
-				return null;
-			}
-			return Moves[0];
+			var R = new Runner2(Board);
+			return R.BestMove();
 		}
 	}
 }

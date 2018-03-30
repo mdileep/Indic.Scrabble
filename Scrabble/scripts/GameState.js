@@ -41,7 +41,7 @@ define(["require", "exports", 'Contracts', 'Parser', "GameActions"], function (r
             case Contracts.Actions.BotMoveResponse:
                 if (console)
                     console.log("Bot Responded");
-                GameActions.GameActions.BotMove2(state, args);
+                GameActions.GameActions.BotMoveResponse(state, args);
                 return state;
             default:
                 return state;

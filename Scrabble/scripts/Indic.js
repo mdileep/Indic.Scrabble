@@ -94,10 +94,19 @@ define(["require", "exports", 'AksharaSets'], function (require, exports, AS) {
             return Indic.Contains(AS.AksharaSets.SunnaSet, char);
         };
         Indic.IsSpecialSyllable = function (char) {
-            return AS.AksharaSets.Syllables[char] != null;
+            return AS.AksharaSets.SyllableChars[char] != null;
         };
-        Indic.GetSyllables = function (char) {
-            return AS.AksharaSets.Syllables[char];
+        Indic.GetSyllableChars = function (char) {
+            return AS.AksharaSets.SyllableChars[char];
+        };
+        Indic.GetSyllableTiles = function (char) {
+            return AS.AksharaSets.SyllableTiles[char];
+        };
+        Indic.GetSyllableSynonym = function (char) {
+            return AS.AksharaSets.SyllableSynonym[char];
+        };
+        Indic.HasSyllableSynonym = function (char) {
+            return AS.AksharaSets.SyllableSynonym[char] != null;
         };
         Indic.GetSynonym = function (akshara) {
             return AS.AksharaSets.Synonyms[akshara];
@@ -110,7 +119,7 @@ define(["require", "exports", 'AksharaSets'], function (require, exports, AS) {
             for (var key in original) {
                 var char = original[key];
                 if (Indic.IsSpecialSyllable(char)) {
-                    var set = Indic.GetSyllables(char);
+                    var set = Indic.GetSyllableChars(char);
                     arr = arr.concat(set);
                     continue;
                 }

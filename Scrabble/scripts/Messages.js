@@ -16,7 +16,13 @@ define(["require", "exports"], function (require, exports) {
         Messages.YourTurn = "";
         Messages.BotEffort = "";
         Messages.BotNoWords = "";
+        Messages.BotEffort2 = "";
         Messages.GameOver = "";
+        Messages.Winner = "";
+        Messages.MatchTied = "";
+        Messages.WhyGameOver = "";
+        Messages.NoWordsAdded = "";
+        Messages.Stats = "";
         return Messages;
     }());
     exports.Messages = Messages;

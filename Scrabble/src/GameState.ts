@@ -52,7 +52,7 @@ export default (state: Contracts.iGameState = Parser.Parser.Parse(InitState), ac
 
         case Contracts.Actions.BotMoveResponse:
             if (console) console.log("Bot Responded");
-            GameActions.GameActions.BotMove2(state, args as Contracts.iBotMoveResponse);
+            GameActions.GameActions.BotMoveResponse(state, args as Contracts.iBotMoveResponse);
             return state;
 
         default:

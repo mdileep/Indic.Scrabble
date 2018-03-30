@@ -13,10 +13,13 @@ import * as Contracts from 'Contracts';
 import * as Messages from 'Messages';
 import * as Indic from 'Indic';
 import * as Util from 'Util';
-import * as axios from 'axios';
-import * as GameLoader from 'GameLoader';
+import * as AskServer from 'AskServer';
 
 export class GameActions {
+    //Move to Seperate Config File
+    static NoWords: number = 3;
+    static BotWait: number = 1000;
+
     static Init(state: Contracts.iGameState, args: Contracts.iArgs): void {
         var players = state.Players.Players;
         var currentPlayer = state.Players.CurrentPlayer
@@ -51,17 +54,70 @@ export class GameActions {
         GameActions.SwitchTurn(state);
         GameActions.SaveBoard(state);
         GameActions.Refresh(state);
+        GameActions.SetStats(state);
         if (state.GameOver) {
             GameActions.SetWinner(state);
             return;
         }
         GameActions.Think(state);
     }
-    static SetWinner(state: Contracts.iGameState)
-    {
+    static SetWinner(state: Contracts.iGameState) {
         state.ReadOnly = true;
-        //Todo:...Display Winner..!!
+        var winner: Contracts.iPlayer = GameActions.FindWinner(state);
+        if (winner == null) {
+            state.GameTable.Message = Messages.Messages.MatchTied;
+        } else {
+            state.GameTable.Message = Util.Util.Format(Messages.Messages.Winner, [winner.Name]);
+        }
+        state.InfoBar.Messages.push(Util.Util.Format(Messages.Messages.Stats, [state.Stats.EmptyCells, state.Stats.Occupancy.toFixed(2), state.Stats.TotalWords, state.Stats.UnUsed.toFixed(2)]));
         state.InfoBar.Messages.push(Messages.Messages.GameOver);
+        state.InfoBar.Messages.push(state.GameTable.Message);
+    }
+    static SetStats(state: Contracts.iGameState) {
+        var stats: Contracts.iBoardsStats = {
+            EmptyCells: 0,
+            Occupancy: 0,
+            TotalWords: 0,
+            UnUsed: 0
+        };
+        stats.TotalWords = GameActions.GetTotalWords(state.Players);
+        stats.EmptyCells = GameActions.GetEmptyCells(state.Board);
+        stats.Occupancy = (state.Board.Cells.length - stats.EmptyCells) * 100.00 / state.Board.Cells.length;
+        stats.UnUsed = state.Cabinet.Remaining * 100.00 / state.Cabinet.Total;
+        state.Stats = stats;
+    }
+    static GetEmptyCells(board: Contracts.iBoardProps): number {
+        var tot: number = 0;
+        for (var i: number = 0; i < board.Cells.length; i++) {
+            var tiles = board.Cells[i].Confirmed.length;
+            if (tiles == 0) {
+                tot++;
+            }
+        }
+        return tot;
+    }
+    static GetTotalWords(players: Contracts.iPlayers): number {
+        var tot: number = 0;
+        for (var i = 0; i < players.Players.length; i++) {
+            var player: Contracts.iPlayer = players.Players[i];
+            tot = tot + player.Awarded.length;
+        }
+        return tot;
+    }
+    static FindWinner(state: Contracts.iGameState): Contracts.iPlayer {
+        var maxScore: number = -1;
+        var winnerIndex: number = 0;
+        for (var i = 0; i < state.Players.Players.length; i++) {
+            var player: Contracts.iPlayer = state.Players.Players[i];
+            if (player.Score == maxScore) {
+                return null;
+            }
+            if (player.Score > maxScore) {
+                maxScore = player.Score;
+                winnerIndex = i;
+            }
+        }
+        return state.Players.Players[winnerIndex];
     }
     static Think(state: Contracts.iGameState): void {
         var players = state.Players.Players;
@@ -73,30 +129,26 @@ export class GameActions {
             return;
         }
         state.GameTable.Message = Util.Util.Format(Messages.Messages.Thinking, [players[currentPlayer].Name]);
-        setTimeout(GameActions.NextMove, 2000);
+        setTimeout(AskServer.AskServer.NextMove, GameActions.BotWait);
     }
-    static NextMove(): void {
-        GameLoader.GameLoader.store.dispatch({
-            type: Contracts.Actions.BotMove,
-            args: {
-            }
-        });
-    }
-    static BotMove2(state: Contracts.iGameState, respone: Contracts.iBotMoveResponse): void {
-        var result = respone.Result;
+    static BotMoveResponse(state: Contracts.iGameState, response: Contracts.iBotMoveResponse): void {
+        var result = response.Result;
+        var player: Contracts.iPlayer = state.Players.Players[state.Players.CurrentPlayer];
         if (result == null) {
-            state.InfoBar.Messages.push(Util.Util.Format(Messages.Messages.BotNoWords, [respone.Effort, state.Players.Players[state.Players.CurrentPlayer].Name]));
+            state.InfoBar.Messages.push(Util.Util.Format(Messages.Messages.BotNoWords, [response.Effort, player.Name]));
             GameActions.ReDraw(state, {});
             GameActions.Pass(state, {});
             return;
         }
-
-        state.InfoBar.Messages.push(Util.Util.Format(Messages.Messages.BotEffort, [respone.Effort, state.Players.Players[state.Players.CurrentPlayer].Name]));
+        state.InfoBar.Messages.push(Util.Util.Format(result.WordsCount == 1 ? Messages.Messages.BotEffort : Messages.Messages.BotEffort2, [response.Effort, player.Name, result.WordsCount]));
         for (var i in result.Moves) {
             var Move: Contracts.iBotMove = result.Moves[i];
             var tiles: string[] = Move.Tiles.split(',');
             for (var j in tiles) {
                 var tile = tiles[j];
+                if (Indic.Indic.HasSyllableSynonym(tile)) {
+                    tile = Indic.Indic.GetSyllableSynonym(tile);
+                }
                 GameActions.ToBoard(state,
                     {
                         Origin: "Tile",
@@ -104,7 +156,6 @@ export class GameActions {
                         TargetCell: Move.Index
                     });
             }
-
         }
         GameActions.Pass(state, {});
     }
@@ -115,6 +166,10 @@ export class GameActions {
             var arr: string[] = [];
             for (var indx in Cell.Confirmed) {
                 var c = Cell.Confirmed[indx];
+                if (Indic.Indic.IsSpecialSyllable(c)) {
+                    arr = arr.concat(Indic.Indic.GetSyllableTiles(c));
+                    continue;
+                }
                 if (Indic.Indic.IsSpecialSet(c)) {
                     arr.push(Indic.Indic.GetSynonym(c));
                     continue;
@@ -136,7 +191,7 @@ export class GameActions {
         for (var i in state.GameTable.ConsoTray.Tiles) {
             var Tile: Contracts.iTileProps = state.GameTable.ConsoTray.Tiles[i];
             if (Tile.Text.length > 1) {
-                Special.push("(" + Indic.Indic.GetSyllables(Tile.Text).join(',') + ") ");
+                Special.push("(" + Indic.Indic.GetSyllableTiles(Tile.Text).join(',') + ") ");
                 continue;
             }
             Cosos.push(Tile.Text);
@@ -147,27 +202,16 @@ export class GameActions {
         var currentPlayer = state.Players.CurrentPlayer;
         var BotName: string = players[currentPlayer].BotId;
         var reference = Math.floor(Math.random() * 1000).toString();
-
-        axios
-            .post("/API.ashx?nextmove",
-            {
-                "Reference": reference,
-                "Name": Name,
-                "Bot": BotName,
-                "Cells": Cells,
-                "Vowels": Vowels.join(' '),
-                "Conso": Cosos.join(' '),
-                "Special": Special.join(' ')
-            })
-            .then(response => {
-                GameLoader.GameLoader.store.dispatch({
-                    type: Contracts.Actions.BotMoveResponse,
-                    args: response.data
-                });
-            })
-            .catch(error => {
-
-            });
+        var post = {
+            "Reference": reference,
+            "Name": Name,
+            "Bot": BotName,
+            "Cells": Cells,
+            "Vowels": Vowels.join(' '),
+            "Conso": Cosos.join(' '),
+            "Special": Special.join(' ')
+        };
+        AskServer.AskServer.BotMove(post);
     }
     static SaveBoard(state: Contracts.iGameState): void {
         for (var i = 0; i < state.Board.Cells.length; i++) {
@@ -239,7 +283,7 @@ export class GameActions {
             var word: Contracts.iWord = Claims[key];
             var isDuplicate: boolean = Util.Util.Contains(word, Awarded);
             if (isDuplicate) {
-                word.Score = 0;
+                word.Score = 1;
             }
         }
         var playerId: number = state.Players.CurrentPlayer;
@@ -278,14 +322,16 @@ export class GameActions {
             for (var w = 0; w < player.Awarded.length; w++) {
                 score += player.Awarded[w].Score;
             }
-            if (player.Score == score) {
-                player.NoWords++;
+            if (player.CurrentTurn) {
+                if (player.Score == score) {
+                    player.NoWords++;
+                    state.InfoBar.Messages.push(Util.Util.Format(Messages.Messages.NoWordsAdded, [player.Name, player.NoWords]));
+                }
+                else { player.NoWords = 0; }
             }
-            else {
-                player.Score = score;
-                player.NoWords = 0;
-            }
-            if (player.NoWords >= 5) {
+            player.Score = score;
+            if (player.NoWords >= GameActions.NoWords) {
+                state.InfoBar.Messages.push(Util.Util.Format(Messages.Messages.WhyGameOver, [player.Name, player.NoWords]));
                 state.GameOver = true;
             }
         }

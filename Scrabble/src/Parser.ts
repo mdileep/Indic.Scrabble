@@ -22,7 +22,7 @@ export class Parser {
         var players: Contracts.iPlayers = Parser.ParsePlayers(JSON.Players);
         var infoBar: Contracts.iInfoBar = Parser.ParseInfoBar(JSON.InfoBar);
         var gameTable: Contracts.iGameTable = Parser.BuildGameTable(JSON.GameTable, cache);
-
+        var stats: Contracts.iBoardsStats = { EmptyCells: 0, Occupancy: 0, TotalWords: 0, UnUsed: 0 };
         GameActions.GameActions.RefreshTrays(cabinet.Trays, cache);
         GameActions.GameActions.RefreshCabinet(cabinet, cache);
 
@@ -38,6 +38,7 @@ export class Parser {
             ReadOnly: false,
             GameOver: false,
             Show: true,
+            Stats: stats,
             GameTable: gameTable
         };
         return gameState;

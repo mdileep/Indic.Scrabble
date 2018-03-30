@@ -19,6 +19,7 @@ namespace Scrabble
 	{
 		public string Direction;
 		public int Score;
+		public int WordsCount { get { return Words.Count; } }
 		public List<Word> Moves;
 		internal List<ProbableWord> Words;
 
