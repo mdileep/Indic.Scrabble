@@ -21,7 +21,6 @@
     <TargetFrameworkProfile />
   </PropertyGroup>
   <ItemGroup>
- 
     <Content Include="scrabble.aspx" />
     <Content Include="Index.html" />
     <Content Include="scripts\AskServer.js" />
@@ -44,7 +43,6 @@
     <Content Include="styles\ta.css" />
     <Content Include="styles\te.css" />
     <Content Include="API.ashx" />
-    <Content Include="bin\Scrabble.dll.config" />
     <Content Include="scripts\DragDropTouch.js" />
     <Content Include="scripts\GameTable.js" />
     <Content Include="styles\scrabble.css" />
@@ -59,10 +57,7 @@
       <DependentUpon>web.config</DependentUpon>
     </None>
     <Content Include="www.bbc.com.scrabble" />
-    <Content Include="www.bbc.com.words" />
     <Content Include="www.eenadu.net.scrabble" />
-    <Content Include="www.eenadu.net.words" />
-
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="src\AksharaSets.ts" />
@@ -163,16 +158,16 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
-  <ItemGroup>	
- <ProjectReference Include="..\Scrabble.Server\Scrabble.Server.csproj">	
-    <Project>{e3e5c9f0-0fb2-4e30-be88-50b98c65d709}</Project>	
-   <Name>Scrabble.Server</Name>	
-</ProjectReference>	
- </ItemGroup>	
- <ItemGroup>	
-  <Folder Include="bin\" />	
-   <Folder Include="obj\" />	
- </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Scrabble.Server\Scrabble.Server.csproj">
+      <Project>{e3e5c9f0-0fb2-4e30-be88-50b98c65d709}</Project>
+      <Name>Scrabble.Server</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="bin\" />
+    <Folder Include="obj\" />
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">12.0</VisualStudioVersion>
   </PropertyGroup>

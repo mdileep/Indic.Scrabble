@@ -7,6 +7,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scrabble", "Scrabble\Scrabb
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scrabble.Server", "Scrabble.Server\Scrabble.Server.csproj", "{E3E5C9F0-0FB2-4E30-BE88-50B98C65D709}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Words", "Words", "{4D21702C-A04F-4576-9B3B-E4837E5544DC}"
+	ProjectSection(SolutionItems) = preProject
+		Scrabble\www.bbc.com.words = Scrabble\www.bbc.com.words
+		Scrabble\www.eenadu.net.words = Scrabble\www.eenadu.net.words
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
