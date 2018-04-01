@@ -1,12 +1,12 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Target Name="BeforeBuild">
-    <Message Importance="High" Text="Before Building $(TargetName) $(OutputType)" />
+    <!--<Message Importance="High" Text="Before Building $(TargetName) $(OutputType)" />-->
   </Target>
   <Target Name="AfterBuild">
-    <Message Importance="High" Text="Project Directory:  $(ProjectDir)" />
+    <!--<Message Importance="High" Text="Project Directory:  $(ProjectDir)" />
     <Exec IgnoreExitCode="false" Command="lessc %(LessFiles.RootDir)%(LessFiles.Directory)%(LessFiles.Filename)%(LessFiles.Extension) %(LessFiles.RootDir)%(LessFiles.Directory)%(LessFiles.Filename).css" />
     <Exec IgnoreExitCode="false" Command="lessc %(LessFiles.RootDir)%(LessFiles.Directory)%(LessFiles.Filename)%(LessFiles.Extension) %(LessFiles.RootDir)%(LessFiles.Directory)%(LessFiles.Filename).min.css -x" />
     <Message Importance="High" Text="Merge: $(ProjectDir)\..\External\Worker.exe Merge $(ProjectDir)\MergeRules.ini" />
-    <Exec IgnoreExitCode="false" Command="$(ProjectDir)\..\External\Worker.exe Merge $(ProjectDir)\MergeRules.ini" />
+    <Exec IgnoreExitCode="false" Command="$(ProjectDir)\..\External\Worker.exe Merge $(ProjectDir)\MergeRules.ini" />-->
   </Target>
 </Project>
