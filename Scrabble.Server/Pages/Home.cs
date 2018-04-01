@@ -12,6 +12,7 @@
 
 using System;
 using System.Web.UI.HtmlControls;
+using Shared;
 
 namespace Scrabble.Server
 {
@@ -46,7 +47,37 @@ namespace Scrabble.Server
 
 		void _Init()
 		{
-			Lang = ServerUtil.GetLang(Request);
+			string query = ServerUtil.GetQuery(Request);
+			var parts = query.Split(':', ',');
+			Lang = parts.Length > 0 ? parts[0] : "";
+			if (!Config.Languages.Contains(Lang))
+			{
+				Lang = Config.DefaultLang;
+			}
+			var bot1 = Config.GetBot(parts.Length > 1 ? parts[1] : "", Lang);
+			var bot2 = Config.GetBot(parts.Length > 2 ? parts[2] : "", Lang);
+			SetPlayers(bot1, bot2);
+		}
+
+		void SetPlayers(Bot bot1, Bot bot2)
+		{
+			var player1 = GetPlayer(bot1);
+			var player2 = GetPlayer(bot2);
+			if (player1.Name == player2.Name)
+			{
+				player1.Name = string.Format(Config.Lang(Lang, "PlayerName"), player1.Name, 1);
+				player2.Name = string.Format(Config.Lang(Lang, "PlayerName"), player2.Name, 2);
+			}
+			ScriptManager SC = new ScriptManager();
+			SC.SetScriptVar("Players", new Player[] { player1, player2 });
+			Players.InnerHtml = SC.Go();
+		}
+
+		Player GetPlayer(Bot bot)
+		{
+			return bot != null ?
+				new Player { BotId = bot.Id, Name = bot.Name, IsBot = true } :
+				new Player { Name = Config.Lang(Lang, "Player"), IsBot = false };
 		}
 
 		protected HtmlMeta Keywords;
@@ -57,6 +88,7 @@ namespace Scrabble.Server
 		protected HtmlGenericControl H2;
 		protected HtmlLink LangStyle;
 		protected HtmlGenericControl Scripts;
+		protected HtmlGenericControl Players;
 		protected string Lang;
 	}
 }

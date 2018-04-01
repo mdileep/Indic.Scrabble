@@ -33,6 +33,18 @@ namespace Scrabble.Server
 			return stream.ReadToEnd();
 		}
 
+		internal static string GetQuery(HttpRequest request)
+		{
+			try
+			{
+				return request.QueryString.GetValues(0)[0];
+			}
+			catch
+			{
+				return null;
+			}
+		}
+
 		internal static string GetQuery(HttpRequest request, string key, List<string> valid, string defaultVal)
 		{
 			string val = "";

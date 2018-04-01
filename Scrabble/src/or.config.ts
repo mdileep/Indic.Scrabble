@@ -76,16 +76,7 @@ var InitState: any = {
             1, 3, 1, 3, 1, 3, 1, 3, 1, 3, 1,
             6, 1, 1, 1, 1, 1, 1, 1, 1, 1, 6,
         ]
-    },
-    Players:
-    {
-        Players:
-        [
-            { Name: "ଶର୍ଵାଣୀ" },
-            { Name: "ଶ୍ରୀଦୀପିକ" }
-        ]
-    },
-    InfoBar: {}
+    }
 };
 var Configuration: any = {
     Language: "or",

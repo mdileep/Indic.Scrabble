@@ -63,14 +63,7 @@ var InitState = {
             1, 3, 1, 3, 1, 3, 1, 3, 1, 3, 1,
             6, 1, 1, 1, 1, 1, 1, 1, 1, 1, 6,
         ]
-    },
-    Players: {
-        Players: [
-            { Name: "ಶರ್ವಾಣೀ" },
-            { Name: "ಶ್ರೀದೀಪಿಕ" }
-        ]
-    },
-    InfoBar: {}
+    }
 };
 var Configuration = {
     Language: "kn",

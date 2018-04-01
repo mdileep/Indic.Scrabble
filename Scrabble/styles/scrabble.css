@@ -330,6 +330,12 @@ body {
 .gameTable .message {
   color: rebeccapurple;
 }
+.list i {
+  color: red;
+}
+.list b {
+  color: green;
+}
 .footer {
   color: blue;
 }

@@ -41,14 +41,7 @@ namespace Scrabble.Server
 				s.Append("<script type=\"text/javascript\">");
 				foreach (KeyValuePair<string, object> KVP in dict)
 				{
-					if (KVP.Value.GetType() == typeof(int))
-					{
-						s.Append("var " + KVP.Key + "= " + KVP.Value + ";");
-					}
-					else if (KVP.Value.GetType() == typeof(string))
-					{
-						s.Append("var " + KVP.Key + "= '" + KVP.Value + "';");//Encoding may be done...
-					}
+					s.Append(string.Format("var {0} = {1};", KVP.Key, ParseUtil.ToJSON(KVP.Value)));
 				}
 				s.AppendLine("</script>");
 			}

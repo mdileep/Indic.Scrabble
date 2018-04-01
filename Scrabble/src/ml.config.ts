@@ -76,16 +76,7 @@ var InitState: any = {
             1, 3, 1, 3, 1, 3, 1, 3, 1, 3, 1,
             6, 1, 1, 1, 1, 1, 1, 1, 1, 1, 6,
         ]
-    },
-    Players:
-    {
-        Players:
-        [
-            { Name: "ശര്വാണീ" },
-            { Name: "ശ്രീദീപിക" }
-        ]
-    },
-    InfoBar: {}
+    }
 };
 var Configuration: any = {
     Language: "ml",

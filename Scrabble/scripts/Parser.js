@@ -7,7 +7,7 @@ define(["require", "exports", "GameActions", "Indic"], function (require, export
             var cabinet = Parser.ParseCabinet(JSON.Cabinet);
             var cache = Parser.BuildCache(cabinet);
             var board = Parser.ParseBoard(JSON.Board);
-            var players = Parser.ParsePlayers(JSON.Players);
+            var players = Parser.ParsePlayers(Players);
             var infoBar = Parser.ParseInfoBar(JSON.InfoBar);
             var gameTable = Parser.BuildGameTable(JSON.GameTable, cache);
             var stats = { EmptyCells: 0, Occupancy: 0, TotalWords: 0, UnUsed: 0 };
@@ -128,8 +128,8 @@ define(["require", "exports", "GameActions", "Indic"], function (require, export
             raw.Players = [];
             raw.CurrentPlayer = 0;
             raw.HasClaims = false;
-            for (var i = 0; i < players.Players.length; i++) {
-                var player = players.Players[i];
+            for (var i = 0; i < players.length; i++) {
+                var player = players[i];
                 player.CurrentTurn = (i == raw.CurrentPlayer);
                 player.Score = 0;
                 player.Unconfirmed = 0;

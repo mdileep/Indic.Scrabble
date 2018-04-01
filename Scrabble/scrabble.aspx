@@ -33,6 +33,7 @@
     <div class="" id="root"></div>
     <div class="footer"><span id="Author2" runat="server" class="author">~ Dileep Miriyala(దిలీపు మిరియాల)</span></div>
     <div id="Scripts" runat="server"></div>
+    <div id="Players" runat="server"></div>
     <script data-main="scripts/Index" src="scripts/require.js"></script>
 </body>
 </html>

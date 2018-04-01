@@ -63,14 +63,7 @@ var InitState = {
             1, 3, 1, 3, 1, 3, 1, 3, 1, 3, 1,
             6, 1, 1, 1, 1, 1, 1, 1, 1, 1, 6,
         ]
-    },
-    Players: {
-        Players: [
-            { Name: "ஶர்வாணீ" },
-            { Name: "ஶ்ரீதீபிக" }
-        ]
-    },
-    InfoBar: {}
+    }
 };
 var Configuration = {
     Language: "ta",

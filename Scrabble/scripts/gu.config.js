@@ -63,14 +63,7 @@ var InitState = {
             1, 3, 1, 3, 1, 3, 1, 3, 1, 3, 1,
             6, 1, 1, 1, 1, 1, 1, 1, 1, 1, 6,
         ]
-    },
-    Players: {
-        Players: [
-            { Name: "શર્વાણી" },
-            { Name: "શ્રીદીપિક" }
-        ]
-    },
-    InfoBar: {}
+    }
 };
 var Configuration = {
     Language: "gu",

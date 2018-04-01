@@ -1,11 +1,10 @@
-bin/*.pdb
-bin/Scrabble.dll
-bin/Scrabble.dll.config
-obj/Debug/*.*
+bin/
+obj/
 external/
 styles/less/*.css
 .vs/
 Backup/
+Less.targets
 *.csproj.user
 packages.config
 upgradelog.htm

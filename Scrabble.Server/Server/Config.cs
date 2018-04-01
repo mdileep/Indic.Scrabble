@@ -13,6 +13,7 @@
 
 using Shared;
 using System.Collections.Generic;
+using System;
 
 namespace Scrabble.Server
 {
@@ -58,7 +59,6 @@ namespace Scrabble.Server
 			return Sets;
 		}
 
-
 		static Dictionary<string, Bot> BuildBots()
 		{
 			string resouceName = string.Format("Scrabble.Server.Resources.Bots.json");
@@ -67,7 +67,9 @@ namespace Scrabble.Server
 			var Sets = new Dictionary<string, Bot>();
 			foreach (var KVP in dict)
 			{
-				Sets[KVP.Key] = ParseUtil.ConvertTo<Bot>(KVP.Value);
+				var bot= ParseUtil.ConvertTo<Bot>(KVP.Value);
+				bot.Id = KVP.Key;
+				Sets[KVP.Key] = bot;
 			}
 			return Sets;
 		}
@@ -142,6 +144,16 @@ namespace Scrabble.Server
 				return null;
 			}
 			return Bots[bot];
+		}
+
+		internal static Bot GetBot(string bot, string Lang)
+		{
+			var Bot = GetBot(bot);
+			if (Bot == null || Bot.Language != Lang)
+			{
+				return null;
+			}
+			return Bot;
 		}
 
 		internal static KnownBoard GetBoard(string name)

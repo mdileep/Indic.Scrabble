@@ -12,6 +12,7 @@
 import * as Contracts from 'Contracts';
 import * as GameActions from "GameActions";
 import * as Indic from "Indic";
+declare var Players: Contracts.iPlayer[];
 
 export class Parser {
     public static Parse(JSON: Contracts.iLoadState): Contracts.iGameState {
@@ -19,7 +20,7 @@ export class Parser {
         var cabinet: Contracts.iCabinetProps = Parser.ParseCabinet(JSON.Cabinet);
         var cache: Contracts.iCachedTile = Parser.BuildCache(cabinet);
         var board: Contracts.iBoardProps = Parser.ParseBoard(JSON.Board);
-        var players: Contracts.iPlayers = Parser.ParsePlayers(JSON.Players);
+        var players: Contracts.iPlayers = Parser.ParsePlayers(Players);
         var infoBar: Contracts.iInfoBar = Parser.ParseInfoBar(JSON.InfoBar);
         var gameTable: Contracts.iGameTable = Parser.BuildGameTable(JSON.GameTable, cache);
         var stats: Contracts.iBoardsStats = { EmptyCells: 0, Occupancy: 0, TotalWords: 0, UnUsed: 0 };
@@ -135,15 +136,15 @@ export class Parser {
         }
         return raw;
     }
-    public static ParsePlayers(players: Contracts.iPlayers): Contracts.iPlayers {
+    public static ParsePlayers(players: Contracts.iPlayer[]): Contracts.iPlayers {
         var raw: Contracts.iPlayers = ({} as any) as Contracts.iPlayers;
         raw.Id = "Players";
         raw.key = raw.Id;
         raw.Players = [];
         raw.CurrentPlayer = 0;
         raw.HasClaims = false;
-        for (var i = 0; i < players.Players.length; i++) {
-            var player: Contracts.iPlayer = players.Players[i];
+        for (var i = 0; i < players.length; i++) {
+            var player: Contracts.iPlayer = players[i] as Contracts.iPlayer;
             player.CurrentTurn = (i == raw.CurrentPlayer);
             player.Score = 0;
             player.Unconfirmed = 0;

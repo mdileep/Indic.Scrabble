@@ -777,7 +777,7 @@ define(["require", "exports", 'Messages', 'Indic', 'Util', 'AskServer'], functio
             var pickedConso = Util.Util.Draw(conso, maxConsos);
             return pickedConso;
         };
-        GameActions.NoWords = 3;
+        GameActions.NoWords = 5;
         GameActions.BotWait = 1000;
         return GameActions;
     }());

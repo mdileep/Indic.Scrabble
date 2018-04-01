@@ -10,7 +10,6 @@
 // </copyright>
 //---------------------------------------------------------------------------------------------
 
-
 using System.Collections.Generic;
 
 namespace Shared
@@ -27,9 +26,16 @@ namespace Shared
 	}
 	public class Bot
 	{
-		public string DisplayName;
+		public string Id;
+		public string Name;
 		public string Language;
 		public string Dictionary;
+	}
+	public class Player
+	{
+		public string BotId;
+		public string Name;
+		public bool IsBot;
 	}
 	public class KnownBoard
 	{

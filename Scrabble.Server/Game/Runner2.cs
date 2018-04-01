@@ -113,7 +113,6 @@ namespace Scrabble
 			var NonCornerProbables = ShortList(WordsDictionary, NonCornerPattern, NonCornerDict);  //Non Corner Probables
 			var SpeicalDict = GetSpecialDict(SpecialList);
 
-
 			if (EverySyllableOnBoard.Count > 0)
 			{
 				Thread t1 = new Thread(() =>
@@ -199,50 +198,53 @@ namespace Scrabble
 						string pattern = GetSyllablePattern2(CharSet, syllable.Tiles.Replace("(", "").Replace(")", ""), "(?<Center>.*?)", "(?<Pre>.*?)", "(?<Post>.*?)");
 						pattern = string.Format("^{0}$", pattern);
 						Regex R = new Regex(pattern, RegexOptions.Compiled);
-
-						foreach (Word probable in Probables)
+						Printer.PrintLine("\t\tPattern: " + pattern);
+						using (new Watcher("\t\t Match Syllable: "))
 						{
-							Match M = R.Match(probable.Tiles);
-							if (!M.Success)
+							foreach (Word probable in Probables)
 							{
-								continue;
-							}
+								Match M = R.Match(probable.Tiles);
+								if (!M.Success)
+								{
+									continue;
+								}
 
-							string Pre = MatchedString(M.Groups["Pre"], "");
-							string Center = MatchedString(M.Groups["Conso"], "");
-							string Post = MatchedString(M.Groups["Post"], "");
+								string Pre = MatchedString(M.Groups["Pre"], "");
+								string Center = MatchedString(M.Groups["Conso"], "");
+								string Post = MatchedString(M.Groups["Post"], "");
 
 
-							string[] Pres = Pre == "" ? new string[] { } : Pre.TrimEnd(',').Split(',');
-							string[] Centers = Center == "" ? new string[] { } : Center.Split(',');
-							string[] Posts = Post == "" ? new string[] { } : Post.TrimStart(',').Split(',');
+								string[] Pres = Pre == "" ? new string[] { } : Pre.TrimEnd(',').Split(',');
+								string[] Centers = Center == "" ? new string[] { } : Center.Split(',');
+								string[] Posts = Post == "" ? new string[] { } : Post.TrimStart(',').Split(',');
 
-							if (!Post.StartsWith(",") && Posts.Length > 0)
-							{
-								Centers = (Center + Posts[0]).Split(',');
-								Posts = Posts.Skip(1).ToArray();
-							}
+								if (!Post.StartsWith(",") && Posts.Length > 0)
+								{
+									Centers = (Center + Posts[0]).Split(',');
+									Posts = Posts.Skip(1).ToArray();
+								}
 
-							var Tiles = Movables.GetRange(0, Movables.Count);
-							bool res = Resolve(Pres, Centers, Posts, Tiles, SpeicalDict);
-							if (!res)
-							{
-								continue;
-							}
+								var Tiles = Movables.GetRange(0, Movables.Count);
+								bool res = Resolve(Pres, Centers, Posts, Tiles, SpeicalDict);
+								if (!res)
+								{
+									continue;
+								}
 
-							ProbableMove WH = TryHarizontal(Cells, size, syllable.Index, 0, Pres, Centers, Posts);
-							ProbableMove WV = TryVertical(Cells, size, syllable.Index, 0, Pres, Centers, Posts);
+								ProbableMove WH = TryHarizontal(Cells, size, syllable.Index, 0, Pres, Centers, Posts);
+								ProbableMove WV = TryVertical(Cells, size, syllable.Index, 0, Pres, Centers, Posts);
 
-							bool WHValid = Validate(WH, AllWords);
-							bool WVValid = Validate(WV, AllWords);
+								bool WHValid = Validate(WH, AllWords);
+								bool WVValid = Validate(WV, AllWords);
 
-							if (WHValid)
-							{
-								Moves.Add(WH);
-							}
-							if (WVValid)
-							{
-								Moves.Add(WV);
+								if (WHValid)
+								{
+									Moves.Add(WH);
+								}
+								if (WVValid)
+								{
+									Moves.Add(WV);
+								}
 							}
 						}
 					}
@@ -265,60 +267,63 @@ namespace Scrabble
 						string pattern = GenWordPattern(CharSet, wordOnBoard.Tiles, "(?<Center{0}>.*?)", "", "(?<Center{0}>.*?)", "(?<Pre>.*?)", "(?<Post>.*?)", true);
 						pattern = string.Format("^{0}$", pattern.TrimEnd('|'));
 						Regex R = new Regex(pattern, RegexOptions.Compiled);
-
-						foreach (Word word in AllWords)
+						Printer.PrintLine("\t\tPattern: " + pattern);
+						using (new Watcher("\t\t Match Syllable: "))
 						{
-							if (raw == word.Tiles)
+							foreach (Word word in AllWords)
 							{
-								continue;
-							}
-							Match M = R.Match(word.Tiles);
-							if (!M.Success)
-							{
-								continue;
-							}
-
-							string Pre = "";
-							string Post = "";
-							string Center = "";
-
-
-							Pre = MatchedString(M.Groups["Pre"], "");
-							for (int i = 0; i < word.Syllables; i++)
-							{
-								Center = Center + MatchedString(M.Groups["Center" + (i + 1)], ",") + ":";
-							}
-							Center = Center.TrimEnd(':');
-							Post = MatchedString(M.Groups["Post"], "");
-
-
-							string[] Pres = Pre == "" ? new string[] { } : Pre.TrimEnd(',').Split(',');
-							string[] Centers = Center.Split(':');
-							string[] Posts = Post == "" ? new string[] { } : Post.TrimStart(',').Split(',');
-							var Tiles = Movables.GetRange(0, Movables.Count);
-
-							bool res = Resolve(Pres, Centers, Posts, Tiles, SpeicalDict);
-							if (!res)
-							{
-								continue;
-							}
-
-							if (wordOnBoard.Position == "R")
-							{
-								ProbableMove WH = TryHarizontal(Cells, size, wordOnBoard.Index, wordOnBoard.Syllables - 1, Pres, Centers, Posts);
-								bool WHValid = Validate(WH, AllWords);
-								if (WHValid)
+								if (raw == word.Tiles)
 								{
-									Moves.Add(WH);
+									continue;
 								}
-							}
-							if (wordOnBoard.Position == "C")
-							{
-								ProbableMove WH = TryVertical(Cells, size, wordOnBoard.Index, wordOnBoard.Syllables - 1, Pres, Centers, Posts);
-								bool WHValid = Validate(WH, AllWords);
-								if (WHValid)
+								Match M = R.Match(word.Tiles);
+								if (!M.Success)
 								{
-									Moves.Add(WH);
+									continue;
+								}
+
+								string Pre = "";
+								string Post = "";
+								string Center = "";
+
+
+								Pre = MatchedString(M.Groups["Pre"], "");
+								for (int i = 0; i < word.Syllables; i++)
+								{
+									Center = Center + MatchedString(M.Groups["Center" + (i + 1)], ",") + ":";
+								}
+								Center = Center.TrimEnd(':');
+								Post = MatchedString(M.Groups["Post"], "");
+
+
+								string[] Pres = Pre == "" ? new string[] { } : Pre.TrimEnd(',').Split(',');
+								string[] Centers = Center.Split(':');
+								string[] Posts = Post == "" ? new string[] { } : Post.TrimStart(',').Split(',');
+								var Tiles = Movables.GetRange(0, Movables.Count);
+
+								bool res = Resolve(Pres, Centers, Posts, Tiles, SpeicalDict);
+								if (!res)
+								{
+									continue;
+								}
+
+								if (wordOnBoard.Position == "R")
+								{
+									ProbableMove WH = TryHarizontal(Cells, size, wordOnBoard.Index, wordOnBoard.Syllables - 1, Pres, Centers, Posts);
+									bool WHValid = Validate(WH, AllWords);
+									if (WHValid)
+									{
+										Moves.Add(WH);
+									}
+								}
+								if (wordOnBoard.Position == "C")
+								{
+									ProbableMove WH = TryVertical(Cells, size, wordOnBoard.Index, wordOnBoard.Syllables - 1, Pres, Centers, Posts);
+									bool WHValid = Validate(WH, AllWords);
+									if (WHValid)
+									{
+										Moves.Add(WH);
+									}
 								}
 							}
 						}
@@ -331,156 +336,151 @@ namespace Scrabble
 
 		static ProbableMove TryHarizontal(string[] Cells, int size, int Index, int offset, string[] Pre, string[] Centers, string[] Post)
 		{
+
+			List<Word> Moves = new List<Word>();
+			int PreCount = Pre.Length;
+			int PostCount = Post.Length;
+
+			string[] NewCells = (string[])Cells.Clone();
+			List<int> Impacted = new List<int>();
+
+
+			if (Pre.Length != 0)
 			{
-				List<Word> Moves = new List<Word>();
-				int PreCount = Pre.Length;
-				int PostCount = Post.Length;
-				//char Seperator = ',';
-
-
-				string[] NewCells = (string[])Cells.Clone();
-				List<int> Impacted = new List<int>();
-
-
-				if (Pre.Length != 0)
+				for (int x = Pre.Length - 1; x >= 0; x--)
 				{
-					for (int x = Pre.Length - 1; x >= 0; x--)
+					Neighbor n = BoardUtil.FindNeighbors(Index - x, size);
+					if (n.Left != -1)
 					{
-						Neighbor n = BoardUtil.FindNeighbors(Index - x, size);
-						if (n.Left != -1)
-						{
-							//string temp = Join(Pre[x], Seperator);
-							NewCells[n.Left] += Pre[x];
-							Impacted.Add(n.Left);
-							Moves.Add(new Word { Tiles = Pre[x], Index = n.Left });
-						}
-						else
-						{
-							return new ProbableMove { Words = new List<ProbableWord>(), Direction = "H", Moves = new List<Word>() };
-						}
+						//string temp = Join(Pre[x], Seperator);
+						NewCells[n.Left] += Pre[x];
+						Impacted.Add(n.Left);
+						Moves.Add(new Word { Tiles = Pre[x], Index = n.Left });
+					}
+					else
+					{
+						return new ProbableMove { Words = new List<ProbableWord>(), Direction = "H", Moves = new List<Word>() };
 					}
 				}
-				if (Centers.Length != 0)
-				{
-					for (int c = 0; c < Centers.Length; c++)
-					{
-						int cellIndex = Index + c;
-						if (cellIndex == -1 || Centers[c] == "")
-						{
-							continue;
-						}
-
-						//string temp = Join(Centers[c], Seperator);
-						NewCells[cellIndex] += Centers[c];
-						Impacted.Add(cellIndex);
-						Moves.Add(new Word { Tiles = Centers[c], Index = cellIndex });
-					}
-				}
-
-				if (Post.Length != 0)
-				{
-					for (int x = 0; x < Post.Length; x++)
-					{
-						Neighbor n = BoardUtil.FindNeighbors(Index + offset + x, size);
-						if (n.Right != -1)
-						{
-							//string temp = Join(Post[x], Seperator);
-							NewCells[n.Right] += Post[x];
-							Impacted.Add(n.Right);
-							Moves.Add(new Word { Tiles = Post[x], Index = n.Right });
-						}
-						else
-						{
-							return new ProbableMove { Words = new List<ProbableWord>(), Direction = "H", Moves = new List<Word>() };
-						}
-					}
-				}
-
-				List<ProbableWord> W = new List<ProbableWord>();
-				foreach (int index in Impacted)
-				{
-					W.AddRange(WordsAt(NewCells, size, index));
-				}
-				return new ProbableMove { Words = W, Moves = Moves, Direction = "H" };
 			}
+			if (Centers.Length != 0)
+			{
+				for (int c = 0; c < Centers.Length; c++)
+				{
+					int cellIndex = Index + c;
+					if (cellIndex == -1 || Centers[c] == "")
+					{
+						continue;
+					}
+
+					//string temp = Join(Centers[c], Seperator);
+					NewCells[cellIndex] += Centers[c];
+					Impacted.Add(cellIndex);
+					Moves.Add(new Word { Tiles = Centers[c], Index = cellIndex });
+				}
+			}
+
+			if (Post.Length != 0)
+			{
+				for (int x = 0; x < Post.Length; x++)
+				{
+					Neighbor n = BoardUtil.FindNeighbors(Index + offset + x, size);
+					if (n.Right != -1)
+					{
+						//string temp = Join(Post[x], Seperator);
+						NewCells[n.Right] += Post[x];
+						Impacted.Add(n.Right);
+						Moves.Add(new Word { Tiles = Post[x], Index = n.Right });
+					}
+					else
+					{
+						return new ProbableMove { Words = new List<ProbableWord>(), Direction = "H", Moves = new List<Word>() };
+					}
+				}
+			}
+
+			List<ProbableWord> W = new List<ProbableWord>();
+			foreach (int index in Impacted)
+			{
+				W.AddRange(WordsAt(NewCells, size, index));
+			}
+			return new ProbableMove { Words = W, Moves = Moves, Direction = "H" };
 		}
 		static ProbableMove TryVertical(string[] Cells, int size, int Index, int offset, string[] Pre, string[] Centers, string[] Post)
 		{
+			List<Word> Moves = new List<Word>();
+			int PreCount = Pre.Length;
+			int PostCount = Post.Length;
+
+			Point Pos = BoardUtil.Position(Index, size);
+
+			string[] NewCells = (string[])Cells.Clone();
+			List<int> Impacted = new List<int>();
+
+			if (Pre.Length != 0)
 			{
-				List<Word> Moves = new List<Word>();
-				int PreCount = Pre.Length;
-				int PostCount = Post.Length;
-				char Seperator = ',';
-
-				Point Pos = BoardUtil.Position(Index, size);
-
-				string[] NewCells = (string[])Cells.Clone();
-				List<int> Impacted = new List<int>();
-
-				if (Pre.Length != 0)
+				for (int x = Pre.Length - 1; x >= 0; x--)
 				{
-					for (int x = Pre.Length - 1; x >= 0; x--)
+					int cellIndex = BoardUtil.Abs(Pos.X - x, Pos.Y, size);
+					Neighbor n = BoardUtil.FindNeighbors(cellIndex, size);
+					if (n.Top != -1)
 					{
-						int cellIndex = BoardUtil.Abs(Pos.X - x, Pos.Y, size);
-						Neighbor n = BoardUtil.FindNeighbors(cellIndex, size);
-						if (n.Top != -1)
-						{
-							//string temp = Join(Pre[x], Seperator);
-							NewCells[n.Top] += Pre[x];
-							Impacted.Add(n.Top);
-							Moves.Add(new Word { Tiles = Pre[x], Index = n.Top });
-						}
-						else
-						{
-							return new ProbableMove { Words = new List<ProbableWord>(), Direction = "V", Moves = new List<Word>() };
-						}
+						//string temp = Join(Pre[x], Seperator);
+						NewCells[n.Top] += Pre[x];
+						Impacted.Add(n.Top);
+						Moves.Add(new Word { Tiles = Pre[x], Index = n.Top });
+					}
+					else
+					{
+						return new ProbableMove { Words = new List<ProbableWord>(), Direction = "V", Moves = new List<Word>() };
 					}
 				}
-
-				if (Centers.Length != 0)
-				{
-					for (int c = 0; c < Centers.Length; c++)
-					{
-						int cellIndex = BoardUtil.Abs(Pos.X + c, Pos.Y, size);
-						if (cellIndex == -1 || Centers[c] == "")
-						{
-							continue;
-						}
-						//string temp = Join(Centers[c], Seperator);
-						NewCells[cellIndex] += Centers[c];
-						Impacted.Add(cellIndex);
-						Moves.Add(new Word { Tiles = Centers[c], Index = cellIndex });
-					}
-				}
-
-				if (Post.Length != 0)
-				{
-					for (int x = 0; x < Post.Length; x++)
-					{
-						int cellIndex = BoardUtil.Abs(Pos.X + offset + x, Pos.Y, size);
-						Neighbor n = BoardUtil.FindNeighbors(cellIndex, size);
-						if (n.Bottom != -1)
-						{
-							//string temp = Join(Post[x], Seperator);
-							NewCells[n.Bottom] += Post[x];
-							Impacted.Add(n.Bottom);
-							Moves.Add(new Word { Tiles = Post[x], Index = n.Bottom });
-						}
-						else
-						{
-							return new ProbableMove { Words = new List<ProbableWord>(), Direction = "V", Moves = new List<Word>() };
-						}
-					}
-				}
-
-				List<ProbableWord> W = new List<ProbableWord>();
-				foreach (int index in Impacted)
-				{
-					W.AddRange(WordsAt(NewCells, size, index));
-				}
-				return new ProbableMove { Words = W, Moves = Moves, Direction = "V" };
 			}
+
+			if (Centers.Length != 0)
+			{
+				for (int c = 0; c < Centers.Length; c++)
+				{
+					int cellIndex = BoardUtil.Abs(Pos.X + c, Pos.Y, size);
+					if (cellIndex == -1 || Centers[c] == "")
+					{
+						continue;
+					}
+					//string temp = Join(Centers[c], Seperator);
+					NewCells[cellIndex] += Centers[c];
+					Impacted.Add(cellIndex);
+					Moves.Add(new Word { Tiles = Centers[c], Index = cellIndex });
+				}
+			}
+
+			if (Post.Length != 0)
+			{
+				for (int x = 0; x < Post.Length; x++)
+				{
+					int cellIndex = BoardUtil.Abs(Pos.X + offset + x, Pos.Y, size);
+					Neighbor n = BoardUtil.FindNeighbors(cellIndex, size);
+					if (n.Bottom != -1)
+					{
+						//string temp = Join(Post[x], Seperator);
+						NewCells[n.Bottom] += Post[x];
+						Impacted.Add(n.Bottom);
+						Moves.Add(new Word { Tiles = Post[x], Index = n.Bottom });
+					}
+					else
+					{
+						return new ProbableMove { Words = new List<ProbableWord>(), Direction = "V", Moves = new List<Word>() };
+					}
+				}
+			}
+
+			List<ProbableWord> W = new List<ProbableWord>();
+			foreach (int index in Impacted)
+			{
+				W.AddRange(WordsAt(NewCells, size, index));
+			}
+			return new ProbableMove { Words = W, Moves = Moves, Direction = "V" };
 		}
+
 		void RefreshScores(List<ProbableMove> Moves, int[] Weights, int size)
 		{
 			//using (new Watcher("\tRefresh Scores"))

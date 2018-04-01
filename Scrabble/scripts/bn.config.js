@@ -63,14 +63,7 @@ var InitState = {
             1, 3, 1, 3, 1, 3, 1, 3, 1, 3, 1,
             6, 1, 1, 1, 1, 1, 1, 1, 1, 1, 6,
         ]
-    },
-    Players: {
-        Players: [
-            { Name: "শর্঵াণী" },
-            { Name: "শ্রীদীপিক" }
-        ]
-    },
-    InfoBar: {}
+    }
 };
 var Configuration = {
     Language: "bn",

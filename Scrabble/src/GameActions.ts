@@ -17,7 +17,7 @@ import * as AskServer from 'AskServer';
 
 export class GameActions {
     //Move to Seperate Config File
-    static NoWords: number = 3;
+    static NoWords: number = 5;
     static BotWait: number = 1000;
 
     static Init(state: Contracts.iGameState, args: Contracts.iArgs): void {

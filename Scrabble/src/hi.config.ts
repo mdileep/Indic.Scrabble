@@ -76,16 +76,7 @@ var InitState: any = {
             1, 3, 1, 3, 1, 3, 1, 3, 1, 3, 1,
             6, 1, 1, 1, 1, 1, 1, 1, 1, 1, 6,
         ]
-    },
-    Players:
-        {
-            Players:
-                [
-                    { Name: "शर्वाणी" },
-                    { Name: "श्रीदीपिक" }
-                ]
-        },
-    InfoBar: {}
+    }
 };
 var Configuration: any = {
     Language: "hi",
