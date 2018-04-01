@@ -198,8 +198,9 @@ namespace Scrabble
 						string pattern = GetSyllablePattern2(CharSet, syllable.Tiles.Replace("(", "").Replace(")", ""), "(?<Center>.*?)", "(?<Pre>.*?)", "(?<Post>.*?)");
 						pattern = string.Format("^{0}$", pattern);
 						Regex R = new Regex(pattern, RegexOptions.Compiled);
-						Printer.PrintLine("\t\tPattern: " + pattern);
-						using (new Watcher("\t\t Match Syllable: "))
+
+						Printer.PrintLine("\t\t Syllable Pattern: " + pattern);
+						using (new Watcher("\t\t Match Syllable: ", true))
 						{
 							foreach (Word probable in Probables)
 							{
@@ -267,8 +268,9 @@ namespace Scrabble
 						string pattern = GenWordPattern(CharSet, wordOnBoard.Tiles, "(?<Center{0}>.*?)", "", "(?<Center{0}>.*?)", "(?<Pre>.*?)", "(?<Post>.*?)", true);
 						pattern = string.Format("^{0}$", pattern.TrimEnd('|'));
 						Regex R = new Regex(pattern, RegexOptions.Compiled);
-						Printer.PrintLine("\t\tPattern: " + pattern);
-						using (new Watcher("\t\t Match Syllable: "))
+
+						Printer.PrintLine("\t\t Word Pattern: " + pattern);
+						using (new Watcher("\t\t Match Word: ", true))
 						{
 							foreach (Word word in AllWords)
 							{

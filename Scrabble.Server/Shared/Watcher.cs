@@ -25,17 +25,27 @@ namespace Scrabble
 
 		public Watcher(string title)
 		{
-			Init(title, new string[] { });
+			Init(title, false, new string[] { });
 		}
 
 		public Watcher(string title, string[] args)
 		{
-			Init(title, args);
+			Init(title, false, args);
+		}
+
+		public Watcher(string title,bool onlyMetrics)
+		{
+			Init(title, onlyMetrics, new string[] { });
+		}
+
+		public Watcher(string title, bool onlyMetrics, string[] args)
+		{
+			Init(title, onlyMetrics, args);
 		}
 
 		public Watcher()
 		{
-			Init("", new string[] { });
+			Init("", false, new string[] { });
 		}
 
 		public string Elapsed()
@@ -48,12 +58,15 @@ namespace Scrabble
 			End();
 		}
 
-		private void Init(string title, string[] args)
+		private void Init(string title, bool onlyMetrics, string[] args)
 		{
 			stopWatch = new Stopwatch();
 			stopWatch.Start();
 			this.title = title;
-			Printer.PrintLine(string.Format("{0} : {1} {2}", title, "START", string.Join(",", args)));
+			if (!onlyMetrics)
+			{
+				Printer.PrintLine(string.Format("{0} : {1} {2}", title, "START", string.Join(",", args)));
+			}
 		}
 
 
