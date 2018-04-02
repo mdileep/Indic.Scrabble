@@ -199,8 +199,8 @@ namespace Scrabble
 						pattern = string.Format("^{0}$", pattern);
 						Regex R = new Regex(pattern, RegexOptions.Compiled);
 
-						Printer.PrintLine("\t\t Syllable Pattern: " + pattern);
-						using (new Watcher("\t\t Match Syllable: ", true))
+						//Printer.PrintLine("\t\t Syllable Pattern: " + pattern);
+						//using (new Watcher("\t\t Match Syllable: ", true))
 						{
 							foreach (Word probable in Probables)
 							{
@@ -269,8 +269,8 @@ namespace Scrabble
 						pattern = string.Format("^{0}$", pattern.TrimEnd('|'));
 						Regex R = new Regex(pattern, RegexOptions.Compiled);
 
-						Printer.PrintLine("\t\t Word Pattern: " + pattern);
-						using (new Watcher("\t\t Match Word: ", true))
+						//Printer.PrintLine("\t\t Word Pattern: " + pattern);
+						//using (new Watcher("\t\t Match Word: ", true))
 						{
 							foreach (Word word in AllWords)
 							{
@@ -335,7 +335,6 @@ namespace Scrabble
 				return Moves;
 			}
 		}
-
 		static ProbableMove TryHarizontal(string[] Cells, int size, int Index, int offset, string[] Pre, string[] Centers, string[] Post)
 		{
 

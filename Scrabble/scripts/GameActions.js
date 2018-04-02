@@ -601,7 +601,6 @@ define(["require", "exports", 'Messages', 'Indic', 'Util', 'AskServer'], functio
                         if ((claimsOnly && waiting) || !claimsOnly) {
                             Words.push(W);
                         }
-                        console.log(word + (W.Waiting ? " [YES]" : ""));
                     }
                     pending = "";
                     cnt = 0;
@@ -616,7 +615,6 @@ define(["require", "exports", 'Messages', 'Indic', 'Util', 'AskServer'], functio
                 if ((claimsOnly && waiting) || !claimsOnly) {
                     Words.push(W);
                 }
-                console.log(word + (W.Waiting ? " [YES]" : ""));
             }
             return Words;
         };

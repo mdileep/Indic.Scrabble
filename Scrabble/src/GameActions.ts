@@ -639,7 +639,6 @@ export class GameActions {
                     if ((claimsOnly && waiting) || !claimsOnly) {
                         Words.push(W);
                     }
-                    console.log(word + (W.Waiting ? " [YES]" : ""));
                 }
                 pending = "";
                 cnt = 0;
@@ -654,7 +653,6 @@ export class GameActions {
             if ((claimsOnly && waiting) || !claimsOnly) {
                 Words.push(W);
             }
-            console.log(word + (W.Waiting ? " [YES]" : ""));
         }
         return Words;
     }
