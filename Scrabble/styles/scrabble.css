@@ -11,6 +11,9 @@ body {
 .weight {
   font-size: 0.6em;
 }
+.message {
+  font-size: 0.8em;
+}
 .conditions {
   font-size: 0.8em;
 }
