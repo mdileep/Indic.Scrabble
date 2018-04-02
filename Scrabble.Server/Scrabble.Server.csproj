@@ -48,6 +48,7 @@
     <Compile Include="Actions\ScrabbleBoard.cs" />
     <Compile Include="Actions\ValidateAction.cs" />
     <Compile Include="Game\iRunner.cs" />
+    <Compile Include="Game\LoadWords.cs" />
     <Compile Include="Game\PerfTest.cs" />
     <Compile Include="Game\Runner2.cs" />
     <Compile Include="Game\WordUtil.cs" />

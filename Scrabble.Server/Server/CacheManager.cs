@@ -18,6 +18,17 @@ namespace Scrabble.Server
 {
 	class CacheManager
 	{
+		internal static T GetApppObject<T>(string Key, Func<object, T> callBack, object args)
+		{
+			if (HttpContext.Current.Application[Key] != null)
+			{
+				return (T)HttpContext.Current.Application[Key];
+			}
+			var obj = callBack(args);
+			HttpContext.Current.Application[Key] = obj;
+			return obj;
+		}
+
 		internal static T GetApppObject<T>(string Key, Func<T> callBack)
 		{
 			if (HttpContext.Current.Application[Key] != null)

@@ -106,7 +106,7 @@ namespace Scrabble
 			Dictionary<string, int> AllDict = GetCountDict(All);
 			Dictionary<string, int> NonCornerDict = GetCountDict(NonCornerTiles);
 
-			List<Word> WordsDictionary = LoadWords(file); //Large Set of Words
+			List<Word> WordsDictionary = WordLoader.Load(file); //Large Set of Words
 
 			WordsDictionary = ShortList(WordsDictionary, AllPattern, AllDict); // Probables 
 
@@ -550,25 +550,7 @@ namespace Scrabble
 				return Shortlisted;
 			}
 		}
-		List<Word> LoadWords(string file)
-		{
-			using (new Watcher("\tLoad Words"))
-			{
-				List<Word> List = new List<Word>();
-				string[] lines = File.ReadAllLines(file);
-				int cnt = 0;
-				foreach (string line in lines)
-				{
-					List.Add(new Word
-					{
-						Tiles = line,
-						Index = cnt++,
-						Syllables = line.Count(x => x == ',') + 1,
-					});
-				}
-				return List;
-			}
-		}
+
 
 		static bool Validate(ProbableMove WV, List<Word> AllWords)
 		{
