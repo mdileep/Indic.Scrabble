@@ -1,4 +1,4 @@
-define(["require", "exports", 'Messages', 'Indic', 'Util', 'AskServer'], function (require, exports, Messages, Indic, Util, AskServer) {
+define(["require", "exports", 'Messages', 'Indic', 'Util', 'AskBot'], function (require, exports, Messages, Indic, Util, AskBot) {
     "use strict";
     var GameActions = (function () {
         function GameActions() {
@@ -110,7 +110,7 @@ define(["require", "exports", 'Messages', 'Indic', 'Util', 'AskServer'], functio
                 return;
             }
             state.GameTable.Message = Util.Util.Format(Messages.Messages.Thinking, [players[currentPlayer].Name]);
-            setTimeout(AskServer.AskServer.NextMove, GameActions.BotWait);
+            setTimeout(AskBot.AskBot.NextMove, GameActions.BotWait);
         };
         GameActions.BotMoveResponse = function (state, response) {
             var result = response.Result;
@@ -187,7 +187,7 @@ define(["require", "exports", 'Messages', 'Indic', 'Util', 'AskServer'], functio
                 "Conso": Cosos.join(' '),
                 "Special": Special.join(' ')
             };
-            AskServer.AskServer.BotMove(post);
+            AskBot.AskBot.BotMove(post);
         };
         GameActions.SaveBoard = function (state) {
             for (var i = 0; i < state.Board.Cells.length; i++) {

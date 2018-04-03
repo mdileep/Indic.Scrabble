@@ -13,7 +13,7 @@ import * as Contracts from 'Contracts';
 import * as Messages from 'Messages';
 import * as Indic from 'Indic';
 import * as Util from 'Util';
-import * as AskServer from 'AskServer';
+import * as AskBot from 'AskBot';
 
 export class GameActions {
     //Move to Seperate Config File
@@ -129,7 +129,7 @@ export class GameActions {
             return;
         }
         state.GameTable.Message = Util.Util.Format(Messages.Messages.Thinking, [players[currentPlayer].Name]);
-        setTimeout(AskServer.AskServer.NextMove, GameActions.BotWait);
+        setTimeout(AskBot.AskBot.NextMove, GameActions.BotWait);
     }
     static BotMoveResponse(state: Contracts.iGameState, response: Contracts.iBotMoveResponse): void {
         var result = response.Result;
@@ -211,7 +211,7 @@ export class GameActions {
             "Conso": Cosos.join(' '),
             "Special": Special.join(' ')
         };
-        AskServer.AskServer.BotMove(post);
+        AskBot.AskBot.BotMove(post);
     }
     static SaveBoard(state: Contracts.iGameState): void {
         for (var i = 0; i < state.Board.Cells.length; i++) {

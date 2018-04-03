@@ -74,7 +74,26 @@ define(["require", "exports"], function (require, exports) {
             ret.sort();
             return ret;
         };
+        Util.IsNullOrEmpty = function (input) {
+            return input == null || input.trim().length == 0;
+        };
         return Util;
     }());
     exports.Util = Util;
+    String.prototype.Replace = function (needle, replacement) {
+        return this.replace(new RegExp(needle, 'g'), replacement);
+    };
+    String.prototype.TrimEnd = function (c) {
+        for (var i = this.length - 1; i >= 0 && this.charAt(i) == c; i--)
+            ;
+        return this.substring(0, i + 1);
+    };
+    String.prototype.TrimStart = function (c) {
+        for (var i = 0; i < this.length && this.charAt(i) == c; i++)
+            ;
+        return this.substring(i);
+    };
+    Array.prototype.Contains = function (item) {
+        return this.indexOf(item) > -1;
+    };
 });

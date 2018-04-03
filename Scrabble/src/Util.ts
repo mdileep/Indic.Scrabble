@@ -10,6 +10,7 @@
 // </copyright>
 //---------------------------------------------------------------------------------------------
 import * as Contracts from 'Contracts';
+
 export class Util {
     public static Format(s: string, args: any): string {
         var formatted = s;
@@ -80,6 +81,25 @@ export class Util {
             ret.push(available[indx]);
         }
         ret.sort();
+
         return ret;
     }
+
+    public static IsNullOrEmpty(input: string) {
+        return input == null || input.trim().length == 0;
+    }
 }
+String.prototype.Replace = function (needle: string, replacement: string): string {
+    return this.replace(new RegExp(needle, 'g'), replacement);
+};
+String.prototype.TrimEnd = function (c: string) {
+    for (var i = this.length - 1; i >= 0 && this.charAt(i) == c; i--);
+    return this.substring(0, i + 1);
+};
+String.prototype.TrimStart = function (c: string): string {
+    for (var i = 0; i < this.length && this.charAt(i) == c; i++);
+    return this.substring(i);
+};
+Array.prototype.Contains = function (item: any): boolean {
+    return this.indexOf(item) > -1;
+};

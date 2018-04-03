@@ -11,9 +11,7 @@
         // </copyright>
 //---------------------------------------------------------------------------------------------
 -->
-
 <%@ Page Language="C#" AutoEventWireup="true" Inherits="Scrabble.Server.Home" EnableViewState="false" %>
-
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="<%= Lang %>">
 <head runat="server" id="Head">
