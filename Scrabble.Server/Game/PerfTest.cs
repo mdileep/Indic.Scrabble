@@ -55,11 +55,11 @@ namespace Scrabble
 					var List = R.Probables();
 				}
 				
-				using (new Watcher("Original: Iteration#" + (i + 1)))
-				{
-					var R = new Runner(Board);
-					var List = R.Probables();
-				}
+				//using (new Watcher("Original: Iteration#" + (i + 1)))
+				//{
+				//	var R = new Runner(Board);
+				//	var List = R.Probables();
+				//}
 			}
 		}
 

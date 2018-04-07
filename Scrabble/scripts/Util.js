@@ -3,6 +3,21 @@ define(["require", "exports"], function (require, exports) {
     var Util = (function () {
         function Util() {
         }
+        Util.ElapsedTime = function (timeSpan) {
+            if (timeSpan < 1000) {
+                return Util.Format("{0}ms", [timeSpan.toFixed(2)]);
+            }
+            var totalSeconds = timeSpan / 1000;
+            if (totalSeconds < 60) {
+                return Util.Format("{0}sec", [totalSeconds.toFixed(2)]);
+            }
+            var totalMinutes = timeSpan / (1000 * 60);
+            if (totalMinutes < 60) {
+                return Util.Format("{0}min", [totalMinutes.toFixed(2)]);
+            }
+            var totalHours = timeSpan / (1000 * 60 * 60);
+            return Util.Format("{0}Hours", [totalHours.toFixed(2)]);
+        };
         Util.Format = function (s, args) {
             var formatted = s;
             for (var arg in args) {
@@ -80,20 +95,125 @@ define(["require", "exports"], function (require, exports) {
         return Util;
     }());
     exports.Util = Util;
-    String.prototype.Replace = function (needle, replacement) {
-        return this.replace(new RegExp(needle, 'g'), replacement);
-    };
-    String.prototype.TrimEnd = function (c) {
-        for (var i = this.length - 1; i >= 0 && this.charAt(i) == c; i--)
-            ;
-        return this.substring(0, i + 1);
-    };
-    String.prototype.TrimStart = function (c) {
-        for (var i = 0; i < this.length && this.charAt(i) == c; i++)
-            ;
-        return this.substring(i);
-    };
-    Array.prototype.Contains = function (item) {
-        return this.indexOf(item) > -1;
-    };
+    var DOMUtil = (function () {
+        function DOMUtil() {
+        }
+        DOMUtil.SelectedValue = function (id) {
+            var e = document.getElementById(id);
+            if (e == null) {
+                return "";
+            }
+            var value = e.options[e.selectedIndex].value;
+            if (value == null) {
+                return "";
+            }
+            return value;
+        };
+        DOMUtil.RegisterClick = function (id, elementEventListener) {
+            DOMUtil.RegisterEvent(document.getElementById(id), 'click', elementEventListener);
+        };
+        DOMUtil.RegisterEvent = function (E, eventName, elementEventListener) {
+            if (E == null) {
+                return;
+            }
+            if (E.addEventListener != null) {
+                E.addEventListener(eventName, elementEventListener, false);
+            }
+            else if (E.attachEvent != null) {
+                E.attachEvent('on' + eventName, elementEventListener);
+            }
+            else {
+                E['on' + eventName] = elementEventListener;
+            }
+        };
+        DOMUtil.ApplyTemplate = function (target, templateId, data) {
+            var template = document.getElementById(templateId).innerHTML;
+            var html = DOMUtil._ApplyTemplate(template, data);
+            document.getElementById(target).innerHTML = html;
+        };
+        DOMUtil._ApplyTemplate = function (html, data) {
+            var re = /<%([^%>]+)?%>/g, reExp = /(^( )?(if|for|else|switch|case|break|{|}))(.*)?/g, code = 'var r=[];\n', cursor = 0;
+            var add = function (line, js) {
+                js ? (code += line.match(reExp) ? line + '\n' : 'r.push(' + line + ');\n') :
+                    (code += line != '' ? 'r.push("' + line.replace(/"/g, '\\"') + '");\n' : '');
+                return add;
+            };
+            var match = null;
+            while (match = re.exec(html)) {
+                add(html.slice(cursor, match.index))(match[1], true);
+                cursor = match.index + match[0].length;
+            }
+            add(html.substr(cursor, html.length - cursor));
+            code += 'return r.join("");';
+            return new Function(code.replace(/[\r\t\n]/g, '')).apply(data);
+        };
+        return DOMUtil;
+    }());
+    exports.DOMUtil = DOMUtil;
+    Object.defineProperty(String.prototype, 'StartsWith', {
+        enumerable: false,
+        value: function (needle) {
+            return this.indexOf(needle) == 0;
+        }
+    });
+    Object.defineProperty(String.prototype, 'Replace', {
+        enumerable: false,
+        value: function (needle, replacement) {
+            return this.replace(new RegExp("\\" + needle, 'g'), replacement);
+        }
+    });
+    Object.defineProperty(String.prototype, 'TrimEnd', {
+        enumerable: false,
+        value: function (c) {
+            for (var i = this.length - 1; i >= 0 && this.charAt(i) == c; i--)
+                ;
+            return this.substring(0, i + 1);
+        }
+    });
+    Object.defineProperty(String.prototype, 'TrimStart', {
+        enumerable: false,
+        value: function (c) {
+            for (var i = 0; i < this.length && this.charAt(i) == c; i++)
+                ;
+            return this.substring(i);
+        }
+    });
+    Object.defineProperty(String.prototype, 'Trim', {
+        enumerable: false,
+        value: function (c) {
+            return this.TrimStart(c).TrimEnd(c);
+        }
+    });
+    Object.defineProperty(Array.prototype, 'Contains', {
+        enumerable: false,
+        value: function (item) {
+            return this.indexOf(item) > -1;
+        }
+    });
+    Object.defineProperty(Array.prototype, 'Remove', {
+        enumerable: false,
+        value: function (item) {
+            var indx = this.indexOf(item);
+            if (indx < 0) {
+                return;
+            }
+            delete this[indx];
+        }
+    });
+    Object.defineProperty(Array.prototype, 'Find', {
+        enumerable: false,
+        value: function (item) {
+            var indx = this.indexOf(item);
+            if (indx < 0) {
+                return;
+            }
+            return this[indx];
+        }
+    });
+    Object.defineProperty(Array.prototype, 'Clone', {
+        enumerable: false,
+        value: function () {
+            return [].concat(this);
+        }
+    });
 });

@@ -37,31 +37,19 @@ body {
   margin: 3px;
   padding: 3px;
 }
-.list li a {
-  text-decoration: none;
-  color: blue;
-  width: 100%;
-  display: block;
-}
-.list li a:hover {
-  text-decoration: underline;
-  color: blue;
-  width: 100%;
-  display: block;
+.list table {
+  width: 96%;
+  margin-left: 2%;
 }
 .title {
   width: 100%;
   min-width: 60px;
-  /*position: fixed;
-    top: 0px;
-    left: 0px;*/
 }
 .title .h2 {
   display: inline;
 }
 .game {
   width: 98%;
-  /*margin-top: 60px;*/
 }
 .gameTable {
   clear: both;
@@ -350,6 +338,9 @@ body {
 }
 .gameTable {
   text-align: right;
+}
+.list table {
+  text-align: center;
 }
 .tray .tile {
   text-align: center;

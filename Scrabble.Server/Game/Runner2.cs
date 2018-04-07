@@ -54,6 +54,7 @@ namespace Scrabble
 			conso = Board.Conso;
 			special = Board.Special;
 		}
+
 		public ProbableMove BestMove()
 		{
 			var Moves = Probables();
@@ -353,7 +354,6 @@ namespace Scrabble
 					Neighbor n = BoardUtil.FindNeighbors(Index - x, size);
 					if (n.Left != -1)
 					{
-						//string temp = Join(Pre[x], Seperator);
 						NewCells[n.Left] += Pre[x];
 						Impacted.Add(n.Left);
 						Moves.Add(new Word { Tiles = Pre[x], Index = n.Left });
@@ -374,7 +374,6 @@ namespace Scrabble
 						continue;
 					}
 
-					//string temp = Join(Centers[c], Seperator);
 					NewCells[cellIndex] += Centers[c];
 					Impacted.Add(cellIndex);
 					Moves.Add(new Word { Tiles = Centers[c], Index = cellIndex });
@@ -388,7 +387,6 @@ namespace Scrabble
 					Neighbor n = BoardUtil.FindNeighbors(Index + offset + x, size);
 					if (n.Right != -1)
 					{
-						//string temp = Join(Post[x], Seperator);
 						NewCells[n.Right] += Post[x];
 						Impacted.Add(n.Right);
 						Moves.Add(new Word { Tiles = Post[x], Index = n.Right });
@@ -549,7 +547,6 @@ namespace Scrabble
 				return Shortlisted;
 			}
 		}
-
 
 		static bool Validate(ProbableMove WV, List<Word> AllWords)
 		{

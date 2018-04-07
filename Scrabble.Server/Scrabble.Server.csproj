@@ -51,7 +51,6 @@
     <Compile Include="Game\LoadWords.cs" />
     <Compile Include="Game\PerfTest.cs" />
     <Compile Include="Game\Runner2.cs" />
-    <Compile Include="Game\WordUtil.cs" />
     <Compile Include="Shared\Printer.cs" />
     <Compile Include="Pages\APIHandler.cs" />
     <Compile Include="Game\BoardUtil.cs" />
@@ -60,7 +59,6 @@
     <Compile Include="Game\ProbableMove.cs" />
     <Compile Include="Game\ProbableWord.cs" />
     <Compile Include="Game\ProbableWordComparer.cs" />
-    <Compile Include="Game\Runner.cs" />
     <Compile Include="Game\SequenceExt.cs" />
     <Compile Include="Game\TargetCell.cs" />
     <Compile Include="Game\Word.cs" />

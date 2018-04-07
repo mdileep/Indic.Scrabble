@@ -26,13 +26,16 @@
     <Content Include="scripts\AskBot.js" />
     <Content Include="scripts\axios.js" />
     <Content Include="scripts\bn.config.js" />
+    <Content Include="scripts\Game.js" />
     <Content Include="scripts\gu.config.js" />
     <Content Include="scripts\hi.config.js" />
+    <Content Include="scripts\Index.js" />
     <Content Include="scripts\kn.config.js" />
     <Content Include="scripts\ml.config.js" />
     <Content Include="scripts\or.config.js" />
     <Content Include="scripts\pa.config.js" />
     <Content Include="scripts\ta.config.js" />
+    <Content Include="scripts\Words.js" />
     <Content Include="styles\bn.css" />
     <Content Include="styles\gu.css" />
     <Content Include="styles\hi.css" />
@@ -72,7 +75,7 @@
     <TypeScriptCompile Include="src\GameTable.ts" />
     <TypeScriptCompile Include="src\GameActions.ts" />
     <TypeScriptCompile Include="src\GameLoader.ts" />
-    <TypeScriptCompile Include="src\Index.ts" />
+    <TypeScriptCompile Include="src\Game.ts" />
     <TypeScriptCompile Include="src\Indic.ts" />
     <TypeScriptCompile Include="src\GamePlayers.ts" />
     <TypeScriptCompile Include="src\ml.config.ts" />
@@ -94,6 +97,7 @@
     <TypeScriptCompile Include="src\te.config.ts" />
   </ItemGroup>
   <ItemGroup>
+    <TypeScriptCompile Include="src\Words.ts" />
     <TypeScriptCompile Include="typings\axios.d.ts" />
     <TypeScriptCompile Include="typings\Custom.d.ts" />
     <TypeScriptCompile Include="typings\es6-promise.d.ts" />
@@ -114,7 +118,6 @@
     <Content Include="scripts\GamePlayers.js" />
     <Content Include="scripts\GameRoom.js" />
     <Content Include="scripts\GameState.js" />
-    <Content Include="scripts\Index.js" />
     <Content Include="scripts\Indic.js" />
     <Content Include="scripts\InfoBar.js" />
     <Content Include="scripts\Messages.js" />

@@ -28,10 +28,11 @@
     <div class="title">
         <h2 class="h2" runat="server" id="H2">పదకేళి</h2>
     </div>
-    <div class="" id="root"></div>
+    <div class="" id="root"> <h3> Loading... </h3></div>
     <div class="footer"><span id="Author2" runat="server" class="author">~ Dileep Miriyala(దిలీపు మిరియాల)</span></div>
+    <script type="text/javascript" src="scripts/Words.js"> </script>
     <div id="Scripts" runat="server"></div>
     <div id="Players" runat="server"></div>
-    <script data-main="scripts/Index" src="scripts/require.js"></script>
+    <script data-main="scripts/Game" src="scripts/require.js"></script>
 </body>
 </html>

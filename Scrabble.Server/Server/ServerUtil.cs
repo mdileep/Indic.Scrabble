@@ -37,11 +37,15 @@ namespace Scrabble.Server
 		{
 			try
 			{
+				if (request.QueryString.Count == 0)
+				{
+					return "";
+				}
 				return request.QueryString.GetValues(0)[0];
 			}
 			catch
 			{
-				return null;
+				return "";
 			}
 		}
 
