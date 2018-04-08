@@ -10,4 +10,6 @@
 // </copyright>
 //---------------------------------------------------------------------------------------------
 import * as GameLoader from 'GameLoader';
+//import * as AB from 'AskBot';
 GameLoader.GameLoader.Init();
+//AB.RunerTest.Go();

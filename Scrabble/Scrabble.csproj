@@ -70,6 +70,7 @@
     <TypeScriptCompile Include="src\DragDropTouch.ts" />
     <TypeScriptCompile Include="src\gu.config.ts" />
     <TypeScriptCompile Include="src\hi.config.ts" />
+    <TypeScriptCompile Include="src\Index.ts" />
     <TypeScriptCompile Include="src\kn.config.ts" />
     <TypeScriptCompile Include="src\Messages.ts" />
     <TypeScriptCompile Include="src\GameTable.ts" />

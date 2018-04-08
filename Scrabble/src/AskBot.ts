@@ -188,7 +188,7 @@ export class ProbableWordComparer {
         return Words;
     }
     public static Equals(x: ProbableWord, y: ProbableWord): boolean {
-        if (x.Cells.length == y.Cells.length) { return true; }
+        if (x.Cells.length != y.Cells.length) { return false; }
         for (var i: number = 0; i < x.Cells.length; i++) {
             if (x.Cells[i].Index != y.Cells[i].Index) {
                 return false;
@@ -462,8 +462,8 @@ export class Runner {
                 pattern = U.Util.Format("^{0}$", [pattern]);
                 var R = new RegExp(pattern);
                 {
-                    for (var indx in Probables) {
-                        var probable: Word = Probables[indx];
+                    for (var indx2 in Probables) {
+                        var probable: Word = Probables[indx2];
 
                         if (!R.test(probable.Tiles)) {
                             continue;
@@ -585,7 +585,6 @@ export class Runner {
             for (var x = Pre.length - 1; x >= 0; x--) {
                 var n = BoardUtil.FindNeighbors(Index - x, size);
                 if (n.Left != -1) {
-                    //string temp = Join(Pre[x], Seperator);
                     NewCells[n.Left] += Pre[x];
                     Impacted.push(n.Left);
                     Moves.push({ Tiles: Pre[x], Index: n.Left } as Word);
@@ -595,6 +594,7 @@ export class Runner {
                 }
             }
         }
+
         if (Centers.length != 0) {
             for (var c = 0; c < Centers.length; c++) {
                 var cellIndex = Index + c;
@@ -602,7 +602,6 @@ export class Runner {
                     continue;
                 }
 
-                //string temp = Join(Centers[c], Seperator);
                 NewCells[cellIndex] += Centers[c];
                 Impacted.push(cellIndex);
                 Moves.push({ Tiles: Centers[c], Index: cellIndex } as Word);
@@ -613,7 +612,6 @@ export class Runner {
             for (var x = 0; x < Post.length; x++) {
                 var n = BoardUtil.FindNeighbors(Index + offset + x, size);
                 if (n.Right != -1) {
-                    //string temp = Join(Post[x], Seperator);
                     NewCells[n.Right] += Post[x];
                     Impacted.push(n.Right);
                     Moves.push({ Tiles: Post[x], Index: n.Right } as Word);
@@ -625,8 +623,8 @@ export class Runner {
         }
 
         var W = [] as ProbableWord[];
-        for (var indx in Impacted) {
-            var index = Impacted[indx];
+        for (var i in Impacted) {
+            var index = Impacted[i];
             W = W.concat(Runner.WordsAt(NewCells, size, index));
         }
         return { Words: W, Moves: Moves, WordsCount: W.length, Direction: "H" } as ProbableMove;
@@ -644,7 +642,6 @@ export class Runner {
                 var cellIndex = BoardUtil.Abs(Pos.X - x, Pos.Y, size);
                 var n = BoardUtil.FindNeighbors(cellIndex, size);
                 if (n.Top != -1) {
-                    //string temp = Join(Pre[x], Seperator);
                     NewCells[n.Top] += Pre[x];
                     Impacted.push(n.Top);
                     Moves.push({ Tiles: Pre[x], Index: n.Top } as Word);
@@ -661,7 +658,6 @@ export class Runner {
                 if (cellIndex == -1 || Centers[c] == "") {
                     continue;
                 }
-                //string temp = Join(Centers[c], Seperator);
                 NewCells[cellIndex] += Centers[c];
                 Impacted.push(cellIndex);
                 Moves.push({ Tiles: Centers[c], Index: cellIndex } as Word);
@@ -673,7 +669,6 @@ export class Runner {
                 var cellIndex = BoardUtil.Abs(Pos.X + offset + x, Pos.Y, size);
                 var n = BoardUtil.FindNeighbors(cellIndex, size);
                 if (n.Bottom != -1) {
-                    //string temp = Join(Post[x], Seperator);
                     NewCells[n.Bottom] += Post[x];
                     Impacted.push(n.Bottom);
                     Moves.push({ Tiles: Post[x], Index: n.Bottom } as Word);
@@ -968,7 +963,7 @@ export class Runner {
                     }
                     else {
                         var X: Word[] = Words.filter(x => x.Tiles == word);
-                        if (X == null) {
+                        if (X == null || X.length == 0) {
                             var startIndex: number = Runner.GetStartIndex(option, r, i, size, cnt);
                             Words.push({ Tiles: word, Syllables: cnt, Position: option, Index: startIndex } as Word);
                         }
@@ -987,7 +982,7 @@ export class Runner {
             }
             else {
                 var X: Word[] = Words.filter(x => x.Tiles == word);
-                if (X == null) {
+                if (X == null || X.length == 0) {
                     var startIndex = Runner.GetStartIndex(option, r, size, size, cnt);
                     Words.push({ Tiles: word, Syllables: cnt, Position: option, Index: startIndex } as Word);
                 }
@@ -1516,29 +1511,29 @@ export class Runner {
 }
 //export class RunerTest {
 //    static Go(): void {
-//        for (var i = 0; i < 1; i++) {
-//            var Board =
-//                {
-//                    Reference: "281",
-//                    Name: "11x11",
-//                    Bot: "eenadu",
-//                    Cells: [
-//                        "", "", "", "", "", "", "", "", "", "", "",
-//                        "", "", "", "", "", "", "", "", "", "", "",
-//                        "", "", "", "", "", "", "", "", "", "", "",
-//                        "", "", "", "", "", "", "", "", "", "", "",
-//                        "", "", "", "", "", "క,ష", "", "", "", "", "",
-//                        "", "", "", "", "", "", "", "", "", "", "",
-//                        "", "", "", "", "", "", "", "", "", "", "",
-//                        "", "", "", "", "", "", "", "", "", "", "",
-//                        "", "", "", "", "", "", "", "", "", "", "",
-//                        "", "", "", "", "", "", "", "", "", "", "",
-//                        "", "", "", "", "", "", "", "", "", "", "",
-//                    ],
-//                    Vowels: "ఒ ఒ ౠ ౠ ఔ అ ః ఎ ఆ ం ఆ",
-//                    Conso: "భ డ ష ఱ థ ష హ ర",
-//                    Special: "(ల,ఉ) (క,ష) "
-//                } as ScrabbleBoard;
-//        }
+
+//        var Board =
+//            {
+//                Bot: "eenadu",
+//                Reference: "281",
+//                Name: "11x11",
+//                Cells: [
+//                    "",    "",    "",    "",    "",    "",    "","",    "",    "",    "",   
+//                    "",    "",    "",    "",    "",    "",    "","",    "",    "",    "",   
+//                    "",    "",    "",    "",    "",    "",    "","",    "శ",    "",    "",   
+//                    "",    "",    "",    "",    "",    "",    "", "క","స,ఇ",    "",    "",   
+//                    "",    "",    "",    "",    "",    "",    "గ","క",    "",    "",    "",   
+//                    "",    "",    "",    "",    "",    "శ",   "బ","శ",    "",    "",    "",   
+//                    "",    "",    "",    "",    "చ,ఆ","వ,ఇ","",    "",    "",    "",    "",   
+//                    "",    "",    "",    "",    "ల",   "",   "",    "",    "",    "",    "",   
+//                    "",    "",    "",    "",    "",    "",    "",    "",    "",    "",    "",   
+//                    "",    "",    "",    "",    "",    "",    "",    "",    "",    "",    "",   
+//                    "",    "",    "",    "",    "",    "",    "",    "",    "",    "",    "",   
+//                ],
+//                Conso: "క ఙ చ జ ప ల స",
+//                Special: "(ల,ఉ) ",
+//                Vowels: "అ ఆ ఈ ఉ ఉ ఎ ఏ ఓ"
+//            } as ScrabbleBoard;
+//        AskBot.BotMoveClient(Board);
 //    }
 //}

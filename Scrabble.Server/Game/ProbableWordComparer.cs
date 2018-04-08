@@ -19,7 +19,7 @@ namespace Scrabble
 	{
 		public bool Equals(ProbableWord x, ProbableWord y)
 		{
-			if (x.Cells.Count == y.Cells.Count) { return true; }
+			if (x.Cells.Count != y.Cells.Count) { return false; }
 			for (int i = 0; i < x.Cells.Count; i++)
 			{
 				if (x.Cells[i].Index != y.Cells[i].Index)

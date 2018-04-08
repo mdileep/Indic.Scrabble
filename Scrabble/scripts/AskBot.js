@@ -113,8 +113,8 @@ define(["require", "exports", 'axios', 'GameLoader', 'Contracts', 'Util'], funct
             return Words;
         };
         ProbableWordComparer.Equals = function (x, y) {
-            if (x.Cells.length == y.Cells.length) {
-                return true;
+            if (x.Cells.length != y.Cells.length) {
+                return false;
             }
             for (var i = 0; i < x.Cells.length; i++) {
                 if (x.Cells[i].Index != y.Cells[i].Index) {
@@ -253,6 +253,8 @@ define(["require", "exports", 'axios', 'GameLoader', 'Contracts', 'Util'], funct
         function Runner() {
         }
         Runner.prototype.BestMove = function (Board) {
+            console.log(Board);
+            debugger;
             var Moves = this.Probables(Board);
             if (Moves.length == 0) {
                 return null;
@@ -362,8 +364,8 @@ define(["require", "exports", 'axios', 'GameLoader', 'Contracts', 'Util'], funct
                     pattern = U.Util.Format("^{0}$", [pattern]);
                     var R = new RegExp(pattern);
                     {
-                        for (var indx in Probables) {
-                            var probable = Probables[indx];
+                        for (var indx2 in Probables) {
+                            var probable = Probables[indx2];
                             if (!R.test(probable.Tiles)) {
                                 continue;
                             }
@@ -502,8 +504,8 @@ define(["require", "exports", 'axios', 'GameLoader', 'Contracts', 'Util'], funct
                 }
             }
             var W = [];
-            for (var indx in Impacted) {
-                var index = Impacted[indx];
+            for (var i in Impacted) {
+                var index = Impacted[i];
                 W = W.concat(Runner.WordsAt(NewCells, size, index));
             }
             return { Words: W, Moves: Moves, WordsCount: W.length, Direction: "H" };
@@ -818,7 +820,7 @@ define(["require", "exports", 'axios', 'GameLoader', 'Contracts', 'Util'], funct
                         }
                         else {
                             var X = Words.filter(function (x) { return x.Tiles == word; });
-                            if (X == null) {
+                            if (X == null || X.length == 0) {
                                 var startIndex = Runner.GetStartIndex(option, r, i, size, cnt);
                                 Words.push({ Tiles: word, Syllables: cnt, Position: option, Index: startIndex });
                             }
@@ -837,7 +839,7 @@ define(["require", "exports", 'axios', 'GameLoader', 'Contracts', 'Util'], funct
                 }
                 else {
                     var X = Words.filter(function (x) { return x.Tiles == word; });
-                    if (X == null) {
+                    if (X == null || X.length == 0) {
                         var startIndex = Runner.GetStartIndex(option, r, size, size, cnt);
                         Words.push({ Tiles: word, Syllables: cnt, Position: option, Index: startIndex });
                     }
@@ -1305,4 +1307,34 @@ define(["require", "exports", 'axios', 'GameLoader', 'Contracts', 'Util'], funct
         return Runner;
     }());
     exports.Runner = Runner;
+    var RunerTest = (function () {
+        function RunerTest() {
+        }
+        RunerTest.Go = function () {
+            var Board = {
+                Bot: "eenadu",
+                Reference: "281",
+                Name: "11x11",
+                Cells: [
+                    "", "", "", "", "", "", "", "", "", "", "",
+                    "", "", "", "", "", "", "", "", "", "", "",
+                    "", "", "", "", "", "", "", "", "శ", "", "",
+                    "", "", "", "", "", "", "", "క", "స,ఇ", "", "",
+                    "", "", "", "", "", "", "గ", "క", "", "", "",
+                    "", "", "", "", "", "శ", "బ", "శ", "", "", "",
+                    "", "", "", "", "చ,ఆ", "వ,ఇ", "", "", "", "", "",
+                    "", "", "", "", "ల", "", "", "", "", "", "",
+                    "", "", "", "", "", "", "", "", "", "", "",
+                    "", "", "", "", "", "", "", "", "", "", "",
+                    "", "", "", "", "", "", "", "", "", "", "",
+                ],
+                Conso: "క ఙ చ జ ప ల స",
+                Special: "(ల,ఉ) ",
+                Vowels: "అ ఆ ఈ ఉ ఉ ఎ ఏ ఓ"
+            };
+            AskBot.BotMoveClient(Board);
+        };
+        return RunerTest;
+    }());
+    exports.RunerTest = RunerTest;
 });
