@@ -254,7 +254,6 @@ define(["require", "exports", 'axios', 'GameLoader', 'Contracts', 'Util'], funct
         }
         Runner.prototype.BestMove = function (Board) {
             console.log(Board);
-            debugger;
             var Moves = this.Probables(Board);
             if (Moves.length == 0) {
                 return null;
