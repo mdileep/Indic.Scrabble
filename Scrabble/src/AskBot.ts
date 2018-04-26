@@ -1386,7 +1386,7 @@ export class WordLoader {
         return [] as Word[];
     }
     static Load(file: string, rawResponse: string): void {
-        var words: string[] = rawResponse.split('\r\n');
+        var words: string[] = rawResponse.split('\n');
         var List = [] as Word[];
         var cnt = 0;
         for (var indx in words) {

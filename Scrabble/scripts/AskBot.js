@@ -1176,7 +1176,7 @@ define(["require", "exports", 'axios', 'GameLoader', 'Contracts', 'Util'], funct
             return [];
         };
         WordLoader.Load = function (file, rawResponse) {
-            var words = rawResponse.split('\r\n');
+            var words = rawResponse.split('\n');
             var List = [];
             var cnt = 0;
             for (var indx in words) {
