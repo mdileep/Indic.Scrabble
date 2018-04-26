@@ -43,7 +43,7 @@ namespace Scrabble
 				return;
 			}
 			//
-			file = ServerUtil.Path(bot.Dictionary);
+			file = ServerUtil.Path("bots\\" + bot.Dictionary);
 			CharSet = Config.GetCharSet(bot.Language);
 			//
 			size = board.Size;

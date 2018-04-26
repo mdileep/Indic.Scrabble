@@ -10,19 +10,19 @@
 // </copyright>
 //---------------------------------------------------------------------------------------------
 
-
 using Shared;
 using System.Collections.Generic;
-using System;
 
 namespace Scrabble.Server
 {
 	class Config
 	{
-		//Not yet Enabled: "bn", "pa", "gu", "or", "ta", "ml" 
 		public const string DefaultLang = "te";
-		public static readonly List<string> Languages = new List<string> { "te", "hi", "kn" };
+		public const string DefaultBoard = "11x11";
+
+		public static readonly List<string> Languages = new List<string> { "te"};
 		public static readonly List<string> Actions = new List<string> { ActionNames.Ping, ActionNames.Help, ActionNames.NextMove, ActionNames.Probables, ActionNames.Validate };
+		public static readonly List<string> BoardNames = new List<string> { "11x11" };
 
 		static Dictionary<string, object> Dictionary = null;
 		static Dictionary<string, CharSet> CharSets = null;
@@ -34,13 +34,13 @@ namespace Scrabble.Server
 			Load();
 		}
 
-		private static void Load()
+		static void Load()
 		{
 			if (Dictionary != null && CharSets != null)
 			{
 				return;
 			}
-			Dictionary = CacheManager.GetApppObject<Dictionary<string, object>>("Localize", BuildResources);
+			Dictionary = CacheManager.GetApppObject<Dictionary<string, object>>("Localization", BuildResources);
 			CharSets = CacheManager.GetApppObject<Dictionary<string, CharSet>>("CharSets", BuildCharSets);
 			Bots = CacheManager.GetApppObject<Dictionary<string, Bot>>("Bots", BuildBots);
 			Boards = CacheManager.GetApppObject<Dictionary<string, KnownBoard>>("Boards", BuildBoards);
@@ -48,7 +48,7 @@ namespace Scrabble.Server
 
 		static Dictionary<string, KnownBoard> BuildBoards()
 		{
-			string resouceName = string.Format("Scrabble.Server.Resources.Boards.json");
+			string resouceName = ResourceName("Boards");
 			var content = ServerUtil.ReadResource(resouceName);
 			var dict = ParseUtil.ParseJSON<Dictionary<string, object>>(content);
 			var Sets = new Dictionary<string, KnownBoard>();
@@ -61,13 +61,13 @@ namespace Scrabble.Server
 
 		static Dictionary<string, Bot> BuildBots()
 		{
-			string resouceName = string.Format("Scrabble.Server.Resources.Bots.json");
+			string resouceName = ResourceName("Bots");
 			var content = ServerUtil.ReadResource(resouceName);
 			var dict = ParseUtil.ParseJSON<Dictionary<string, object>>(content);
 			var Sets = new Dictionary<string, Bot>();
 			foreach (var KVP in dict)
 			{
-				var bot= ParseUtil.ConvertTo<Bot>(KVP.Value);
+				var bot = ParseUtil.ConvertTo<Bot>(KVP.Value);
 				bot.Id = KVP.Key;
 				Sets[KVP.Key] = bot;
 			}
@@ -76,7 +76,7 @@ namespace Scrabble.Server
 
 		static Dictionary<string, CharSet> BuildCharSets()
 		{
-			string resouceName = string.Format("Scrabble.Server.Resources.CharSets.json");
+			string resouceName = ResourceName("CharSets");
 			var content = ServerUtil.ReadResource(resouceName);
 			var dict = ParseUtil.ParseJSON<Dictionary<string, object>>(content);
 			var Sets = new Dictionary<string, CharSet>();
@@ -97,17 +97,28 @@ namespace Scrabble.Server
 		static Dictionary<string, object> BuildResources()
 		{
 			var Resources = new Dictionary<string, object>();
+			string resouceName = ResourceName("Localization");
+			var content = ServerUtil.ReadResource(resouceName);
+			var dict = ParseUtil.ParseJSON<Dictionary<string, object>>(content);
 			foreach (string lang in Languages)
 			{
-				string resouceName = string.Format("Scrabble.Server.Resources.{0}.json", lang);
-				var content = ServerUtil.ReadResource(resouceName);
-				var dict = ParseUtil.ParseJSON<Dictionary<string, object>>(content);
-				foreach (var item in dict)
+				var Messages = (Dictionary<string, object>)dict[lang];
+				foreach (var messages in Messages)
 				{
-					Resources[lang + ":" + item.Key] = item.Value;
+					Resources[lang + ":" + messages.Key] = messages.Value;
 				}
 			}
 			return Resources;
+		}
+
+		internal static Dictionary<string, object> GetMessages(string lang)
+		{
+			var Resources = new Dictionary<string, object>();
+			string resouceName = ResourceName("Localization");
+			var content = ServerUtil.ReadResource(resouceName);
+			var dict = ParseUtil.ParseJSON<Dictionary<string, object>>(content);
+			var Messages = (Dictionary<string, object>)dict[lang];
+			return Messages;
 		}
 
 		internal static string Lang(string lang, string key)
@@ -163,6 +174,11 @@ namespace Scrabble.Server
 				return null;
 			}
 			return Boards[name];
+		}
+
+		static string ResourceName(string name)
+		{
+			return string.Format("Scrabble.Server.Resources.{0}.json", name);
 		}
 	}
 }

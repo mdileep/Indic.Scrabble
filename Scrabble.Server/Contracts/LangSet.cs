@@ -17,11 +17,21 @@ namespace Shared
 	public class CharSet
 	{
 		public string Name = "";
+		public string Language = "";
 		public string[] SunnaSet = new string[] { };
 		public string[] Vowels = new string[] { };
 		public string[] Consonents = new string[] { };
-		public Dictionary<string, string> Synonyms = new Dictionary<string, string>();
 		public string Virama = "";
+		//
+		public string[] FullSpecialSet = new string[] { };
+		public string[] SpecialSet = new string[] { };
+		public Dictionary<string, string> Synonyms = new Dictionary<string, string>();
+		public Dictionary<string, string> Synonyms2 = new Dictionary<string, string>();
+		//
+		public Dictionary<string, string[]> SyllableTiles = new Dictionary<string, string[]>();
+		public Dictionary<string, string[]> SyllableChars = new Dictionary<string, string[]>();
+		public Dictionary<string, string> SyllableSynonym = new Dictionary<string, string>();
+		//
 		internal const char ZWNJ = (char)0x200C;
 	}
 	public class Bot
@@ -33,13 +43,31 @@ namespace Shared
 	}
 	public class Player
 	{
-		public string BotId;
 		public string Name;
+		//Consider using Bot Object itself..
 		public bool IsBot;
+		public string BotId;
+		public string Language;
+		public string Dictionary;
 	}
 	public class KnownBoard
 	{
+		public string Name;
 		public int Size;
 		public int[] Weights;
+		public GameTable GameTable;
+		public GameTray[] Trays;
+	}
+	public class GameTray
+	{
+		public string Id;
+		public string Title;
+		public bool Show;
+		public Dictionary<string, int>[] Set;
+	}
+	public class GameTable
+	{
+		public int MaxOnTable;
+		public int MaxVowels;
 	}
 }

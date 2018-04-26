@@ -3,19 +3,19 @@ define(["require", "exports", "GameActions", "Indic"], function (require, export
     var Parser = (function () {
         function Parser() {
         }
-        Parser.Parse = function (JSON) {
-            var cabinet = Parser.ParseCabinet(JSON.Cabinet);
+        Parser.Parse = function () {
+            var cabinet = Parser.ParseCabinet(Config.Board);
+            var board = Parser.ParseBoard(Config.Board);
+            var players = Parser.ParsePlayers(Config.Players);
             var cache = Parser.BuildCache(cabinet);
-            var board = Parser.ParseBoard(JSON.Board);
-            var players = Parser.ParsePlayers(Players);
-            var infoBar = Parser.ParseInfoBar(JSON.InfoBar);
-            var gameTable = Parser.BuildGameTable(JSON.GameTable, cache);
+            var infoBar = Parser.ParseInfoBar();
+            var gameTable = Parser.BuildGameTable(Config.Board.GameTable, cache);
             var stats = { EmptyCells: 0, Occupancy: 0, TotalWords: 0, UnUsed: 0 };
             GameActions.GameActions.RefreshTrays(cabinet.Trays, cache);
             GameActions.GameActions.RefreshCabinet(cabinet, cache);
             var gameState = {
-                Id: JSON.Id,
-                key: JSON.Id,
+                Id: Config.Board.Id,
+                key: Config.Board.Id,
                 className: "game",
                 Cache: cache,
                 Cabinet: cabinet,
@@ -140,11 +140,13 @@ define(["require", "exports", "GameActions", "Indic"], function (require, export
                 player.NoWords = 0;
                 player.IsBot = player.IsBot == null ? false : player.IsBot;
                 player.BotId = player.BotId;
+                player.Dictionary = player.Dictionary;
+                player.Name = player.Name;
                 raw.Players.push(player);
             }
             return raw;
         };
-        Parser.ParseInfoBar = function (infoBar) {
+        Parser.ParseInfoBar = function () {
             var raw = {};
             raw.key = "InfoBar";
             raw.Messages = [];

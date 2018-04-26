@@ -51,6 +51,7 @@
     <Compile Include="Game\LoadWords.cs" />
     <Compile Include="Game\PerfTest.cs" />
     <Compile Include="Game\Runner2.cs" />
+    <Compile Include="Pages\ConfigHandler.cs" />
     <Compile Include="Shared\Printer.cs" />
     <Compile Include="Pages\APIHandler.cs" />
     <Compile Include="Game\BoardUtil.cs" />
@@ -83,22 +84,12 @@
     <Compile Include="Shared\Watcher.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\te.json" />
-    <EmbeddedResource Include="Resources\gu.json" />
-    <EmbeddedResource Include="Resources\hi.json" />
-    <EmbeddedResource Include="Resources\kn.json" />
-    <EmbeddedResource Include="Resources\ml.json" />
-    <EmbeddedResource Include="Resources\or.json" />
-    <EmbeddedResource Include="Resources\pa.json" />
-    <EmbeddedResource Include="Resources\ta.json" />
-    <EmbeddedResource Include="Resources\bn.json" />
+    <EmbeddedResource Include="Resources\Boards.json" />
+    <EmbeddedResource Include="Resources\Bots.json" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\CharSets.json" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\Boards.json" />
-    <EmbeddedResource Include="Resources\Bots.json" />
+    <EmbeddedResource Include="Resources\Localization.json" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

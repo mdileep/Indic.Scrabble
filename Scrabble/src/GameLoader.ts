@@ -18,16 +18,19 @@ import * as Game from 'GameRoom';
 import * as Sets from 'AksharaSets';
 import * as M from 'Messages';
 import * as DragDropTouch from 'DragDropTouch';
+import * as GA from 'GameActions';
+import * as AskBot from 'AskBot';
+declare var Config: Contracts.iRawConfig;
 
 export class GameLoader {
     public static ConfigGame(): void {
         //No Validations..
         for (var key in Sets.AksharaSets) {
-            (Sets.AksharaSets as any)[key] = Configuration[key];
+            (Sets.AksharaSets as any)[key] = Config.CharSet[key];
         }
 
         for (var key in M.Messages) {
-            (M.Messages as any)[key] = Configuration.Messages[key];
+            (M.Messages as any)[key] = Config.Localization[key];
         }
     }
     public static OnDragOver(ev: Event) {
@@ -42,10 +45,47 @@ export class GameLoader {
     public static Init() {
         DragDropTouch.DragDropTouch._instance;
         GameLoader.ConfigGame();
+        GameLoader.LoadBots(Config.Players);
+    }
+    static LoadBots(players: Contracts.iPlayer[]): void {
+        var bots: string[] = [];
+        for (var i = 0; i < players.length; i++) {
+            var player: Contracts.iPlayer = players[i];
+            if (player.IsBot == null || !player.IsBot) {
+                continue;
+            }
+            if (bots.Contains(player.Dictionary)) {
+                continue;
+            }
+            bots.push(player.Dictionary);
+        }
+        for (var indx in bots) {
+            AskBot.WordLoader.Init(bots[indx]);
+        }
+    }
+    static BotLoaded(file: string): void {
+        var players: Contracts.iPlayer[] = Config.Players;
+        var cnt: number = 0;
+        for (var i = 0; i < players.length; i++) {
+            var player: Contracts.iPlayer = players[i];
+            if (player.IsBot == null || !player.IsBot || player.BotLoaded) {
+                cnt++;
+                continue;
+            }
+            if (player.Dictionary == file) {
+                player.BotLoaded = true;
+                cnt++;
+            }
+        }
+        if (cnt != players.length) {
+            return;
+        }
+
         GameLoader.store = Redux.createStore(Reducers)
         GameLoader.rootEl = document.getElementById('root');
         GameLoader.OnGameRender();
         GameLoader.store.subscribe(GameLoader.OnGameRender);
+        //All Bots Loaded
         GameLoader.store.dispatch({
             type: Contracts.Actions.Init,
             args: {

@@ -1,4 +1,8 @@
-﻿interface CSSStyleDeclaration {
+﻿interface GenericDict {
+    [key: string]: any;
+}
+
+interface CSSStyleDeclaration {
     [key: string]: any;
 }
 

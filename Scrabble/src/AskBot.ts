@@ -13,19 +13,22 @@ import * as axios from 'axios';
 import * as GameLoader from 'GameLoader';
 import * as Contracts from 'Contracts';
 import * as U from 'Util';
+declare var Config: any;
 
 export class AskBot {
+
     static NextMove(): void {
         GameLoader.GameLoader.store.dispatch({
             type: Contracts.Actions.BotMove,
-            args: {
-            }
+            args: {}
         });
     }
+
     static BotMove(post: any): void {
         //Decide between Server or Client
         AskBot.BotMoveClient(post);
     }
+
     static BotMoveServer(post: any): void {
         axios
             .post("/API.ashx?nextmove", post)
@@ -35,10 +38,11 @@ export class AskBot {
                     args: response.data
                 });
             })
-            .catch(error => { });
-
-        AskBot.BotMoveClient(post);
+            .catch(error => {
+                //TODO...
+            });
     }
+
     static BotMoveClient(post: any): void {
         setTimeout(function () {
 
@@ -57,6 +61,7 @@ export class AskBot {
                 type: Contracts.Actions.BotMoveResponse,
                 args: response
             });
+
         }, 10);
     }
 }
@@ -125,6 +130,7 @@ export interface KnownBoard {
     Size: number;
     Weights: number[];
 }
+//
 export class BoardUtil {
     public static FindNeighbors(index: number, size: number): Neighbor {
         var arr: Neighbor = ({ Right: -1, Left: -1, Top: -1, Bottom: -1 } as any) as Neighbor;
@@ -148,32 +154,6 @@ export class BoardUtil {
             return -1;
         }
         return (size * (X + 1)) + Y - size;
-    }
-}
-export class WordLoader {
-    static List: Word[] = null;
-    static LoadWords(file: string): Word[] {
-        if (WordLoader.List != null) {
-            return WordLoader.List;
-        }
-        WordLoader.List = [] as Word[];
-        var cnt = 0;
-        for (var indx in BigDict) {
-            var line = BigDict[indx];
-            WordLoader.List.push(
-                {
-                    Tiles: line,
-                    Index: cnt++,
-                    Syllables: line.split(',').length,
-                } as Word);
-        }
-        BigDict = []; //Kill it.
-        return WordLoader.List;
-    }
-    static Load(file: string): Word[] {
-        //TODO..
-        //Apply Cache or Read DB...
-        return WordLoader.LoadWords(file);
     }
 }
 export class ProbableWordComparer {
@@ -208,117 +188,6 @@ export class ProbableWordComparer {
         return false;
     }
 }
-export class Config2 {
-    static GetBot(bot: string): Bot {
-        //TODO..
-        return {
-            Id: "eenadu",
-            Name: "ఈనాడు",
-            Language: "te",
-            Dictionary: "www.eenadu.net.scrabble"
-        } as Bot;
-    }
-    static GetBoard(name: string): KnownBoard {
-        //TODO..
-        return {
-            Size: 11,
-            Weights: [
-                6, 1, 1, 1, 1, 1, 1, 1, 1, 1, 6,
-                1, 3, 1, 3, 1, 3, 1, 3, 1, 3, 1,
-                1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-                1, 3, 1, 4, 1, 4, 1, 4, 1, 3, 1,
-                1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-                6, 3, 1, 4, 1, 8, 1, 4, 1, 3, 6,
-                1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-                1, 3, 1, 4, 1, 4, 1, 4, 1, 3, 1,
-                1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-                1, 3, 1, 3, 1, 3, 1, 3, 1, 3, 1,
-                6, 1, 1, 1, 1, 1, 1, 1, 1, 1, 6
-            ]
-        } as KnownBoard;
-    }
-    static GetCharSet(lang: string): CharSet {
-        //TODO..
-        return {
-            Name: "te",
-            SunnaSet: [
-                "ం",
-                "ః"
-            ],
-            Vowels: [
-                "అ",
-                "ఆ",
-                "ఇ",
-                "ఈ",
-                "ఉ",
-                "ఊ",
-                "ఎ",
-                "ఏ",
-                "ఐ",
-                "ఒ",
-                "ఓ",
-                "ఔ",
-                "ఋ",
-                "ౠ"
-            ],
-            Consonents: [
-                "క",
-                "ఖ",
-                "గ",
-                "ఘ",
-                "ఙ",
-                "చ",
-                "ఛ",
-                "జ",
-                "ఝ",
-                "ఞ",
-                "ట",
-                "ఠ",
-                "డ",
-                "ఢ",
-                "ణ",
-                "త",
-                "థ",
-                "ద",
-                "ధ",
-                "న",
-                "ప",
-                "ఫ",
-                "బ",
-                "భ",
-                "మ",
-                "య",
-                "ర",
-                "ల",
-                "వ",
-                "శ",
-                "ష",
-                "స",
-                "హ",
-                "ళ",
-                "ఱ",
-                "క్ష",
-                "ము"
-            ],
-            Synonyms: {
-                "ా": "ఆ",
-                "ి": "ఇ",
-                "ీ": "ఈ",
-                "ు": "ఉ",
-                "ూ": "ఊ",
-                "ృ": "ఋ",
-                "ౄ": "ౠ",
-                "ె": "ఎ",
-                "ే": "ఏ",
-                "ై": "ఐ",
-                "ొ": "ఒ",
-                "ో": "ఓ",
-                "ౌ": "ఔ"
-            },
-            Virama: "్"
-        } as CharSet;
-    }
-}
 export class Runner {
     public BestMove(Board: ScrabbleBoard): ProbableMove {
         var Moves = this.Probables(Board);
@@ -334,18 +203,17 @@ export class Runner {
             return;
         }
 
-        var bot: Bot = Config2.GetBot(Board.Bot);
+        var bot: Bot = GameConfig.GetBot(Board.Bot);
         if (bot == null) {
             return;
         }
         //
-        var board: KnownBoard = Config2.GetBoard(Board.Name);
+        var board: KnownBoard = GameConfig.GetBoard(Board.Name);
         if (board == null) {
             return;
         }
         //
-
-        var CharSet = Config2.GetCharSet(bot.Language);
+        var CharSet = GameConfig.GetCharSet(bot.Language);
         //
         var size = board.Size;
         var weights = board.Weights;
@@ -391,7 +259,7 @@ export class Runner {
         var AllDict = this.GetCountDict(All);
         var NonCornerDict = this.GetCountDict(NonCornerTiles);
 
-        var WordsDictionary = WordLoader.Load(file); //Large Set of Words
+        var WordsDictionary = WordLoader.LoadWords(file); //Large Set of Words
 
         WordsDictionary = this.ShortList(WordsDictionary, AllPattern, AllDict); // Probables 
 
@@ -1509,31 +1377,60 @@ export class Runner {
         return maxIndex;
     }
 }
-//export class RunerTest {
-//    static Go(): void {
-
-//        var Board =
-//            {
-//                Bot: "eenadu",
-//                Reference: "281",
-//                Name: "11x11",
-//                Cells: [
-//                    "",    "",    "",    "",    "",    "",    "","",    "",    "",    "",   
-//                    "",    "",    "",    "",    "",    "",    "","",    "",    "",    "",   
-//                    "",    "",    "",    "",    "",    "",    "","",    "శ",    "",    "",   
-//                    "",    "",    "",    "",    "",    "",    "", "క","స,ఇ",    "",    "",   
-//                    "",    "",    "",    "",    "",    "",    "గ","క",    "",    "",    "",   
-//                    "",    "",    "",    "",    "",    "శ",   "బ","శ",    "",    "",    "",   
-//                    "",    "",    "",    "",    "చ,ఆ","వ,ఇ","",    "",    "",    "",    "",   
-//                    "",    "",    "",    "",    "ల",   "",   "",    "",    "",    "",    "",   
-//                    "",    "",    "",    "",    "",    "",    "",    "",    "",    "",    "",   
-//                    "",    "",    "",    "",    "",    "",    "",    "",    "",    "",    "",   
-//                    "",    "",    "",    "",    "",    "",    "",    "",    "",    "",    "",   
-//                ],
-//                Conso: "క ఙ చ జ ప ల స",
-//                Special: "(ల,ఉ) ",
-//                Vowels: "అ ఆ ఈ ఉ ఉ ఎ ఏ ఓ"
-//            } as ScrabbleBoard;
-//        AskBot.BotMoveClient(Board);
-//    }
-//}
+export class WordLoader {
+    static Lists: any = {};
+    static LoadWords(file: string): Word[] {
+        if (WordLoader.Lists != null && WordLoader.Lists[file] != null) {
+            return WordLoader.Lists[file];
+        }
+        return [] as Word[];
+    }
+    static Load(file: string, rawResponse: string): void {
+        var words: string[] = rawResponse.split('\r\n');
+        var List = [] as Word[];
+        var cnt = 0;
+        for (var indx in words) {
+            var line = words[indx];
+            List.push(
+                {
+                    Tiles: line,
+                    Index: cnt++,
+                    Syllables: line.split(',').length,
+                } as Word);
+        }
+        WordLoader.Lists[file] = List;
+        rawResponse = null;
+    }
+    static Init(file: string) {
+        axios
+            .get("/bots/" + file)
+            .then(response => {
+                WordLoader.Load(file, response.data as string);
+                GameLoader.GameLoader.BotLoaded(file);
+            })
+            .catch(error => {
+                //TODO...
+            });
+    }
+}
+export class GameConfig {
+    static GetBot(bot: string): Bot {
+        var players: Contracts.iPlayer[] = Config.Players;
+        for (var i = 0; i < players.length; i++) {
+            var player: Contracts.iPlayer = players[i];
+            if (player.IsBot == null || !player.IsBot) {
+                continue;
+            }
+            if (player.BotId == bot) {
+                return (player as any) as Bot;
+            }
+        }
+        return null;
+    }
+    static GetBoard(name: string): KnownBoard {
+        return Config.Board;
+    }
+    static GetCharSet(lang: string): CharSet {
+        return Config.CharSet;
+    }
+}

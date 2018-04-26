@@ -33,23 +33,32 @@ namespace Scrabble.Server
 		{
 			dict.Add(var, val);
 		}
-		internal string Go()
+		internal string Go(bool inline)
 		{
 			StringBuilder s = new StringBuilder();
 			if (dict.Keys.Count > 0)
 			{
-				s.Append("<script type=\"text/javascript\">");
+				if (inline)
+				{
+					s.Append("<script type=\"text/javascript\">");
+				}
 				foreach (KeyValuePair<string, object> KVP in dict)
 				{
 					s.Append(string.Format("var {0} = {1};", KVP.Key, ParseUtil.ToJSON(KVP.Value)));
 				}
-				s.AppendLine("</script>");
+				if (inline)
+				{
+					s.AppendLine("</script>");
+				}
 			}
-			foreach (string src in List)
+			if (inline)
 			{
-				s.Append("<script src=\"");
-				s.Append(src);
-				s.AppendLine("\" type=\"text/javascript\"></script>");
+				foreach (string src in List)
+				{
+					s.Append("<script src=\"");
+					s.Append(src);
+					s.AppendLine("\" type=\"text/javascript\"></script>");
+				}
 			}
 			return s.ToString();
 		}

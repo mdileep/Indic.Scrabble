@@ -21,24 +21,20 @@
     <TargetFrameworkProfile />
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="images\dice.svg" />
+    <Content Include="images\pick.svg" />
     <Content Include="scrabble.aspx" />
     <Content Include="Index.html" />
+    <Content Include="Config.ashx" />
     <Content Include="scripts\AskBot.js" />
     <Content Include="scripts\axios.js" />
-    <Content Include="scripts\bn.config.js" />
     <Content Include="scripts\Game.js" />
-    <Content Include="scripts\gu.config.js" />
-    <Content Include="scripts\hi.config.js" />
     <Content Include="scripts\Index.js" />
-    <Content Include="scripts\kn.config.js" />
-    <Content Include="scripts\ml.config.js" />
-    <Content Include="scripts\or.config.js" />
-    <Content Include="scripts\pa.config.js" />
-    <Content Include="scripts\ta.config.js" />
-    <Content Include="scripts\Words.js" />
     <Content Include="styles\bn.css" />
     <Content Include="styles\gu.css" />
     <Content Include="styles\hi.css" />
+    <Content Include="images\pass.svg" />
+    <Content Include="images\loading.svg" />
     <Content Include="styles\kn.css" />
     <Content Include="styles\ml.css" />
     <Content Include="styles\or.css" />
@@ -59,19 +55,16 @@
     <None Include="web.Release.config">
       <DependentUpon>web.config</DependentUpon>
     </None>
-    <Content Include="www.bbc.com.scrabble" />
-    <Content Include="www.eenadu.net.scrabble" />
+    <Content Include="bots\bbc.te.txt" />
+    <Content Include="bots\eenadu.txt" />
+    <Content Include="bots\temp.txt" />
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="src\AksharaSets.ts" />
     <TypeScriptCompile Include="src\AskBot.ts" />
-    <TypeScriptCompile Include="src\bn.config.ts" />
     <TypeScriptCompile Include="src\BoardCell.ts" />
     <TypeScriptCompile Include="src\DragDropTouch.ts" />
-    <TypeScriptCompile Include="src\gu.config.ts" />
-    <TypeScriptCompile Include="src\hi.config.ts" />
     <TypeScriptCompile Include="src\Index.ts" />
-    <TypeScriptCompile Include="src\kn.config.ts" />
     <TypeScriptCompile Include="src\Messages.ts" />
     <TypeScriptCompile Include="src\GameTable.ts" />
     <TypeScriptCompile Include="src\GameActions.ts" />
@@ -79,12 +72,9 @@
     <TypeScriptCompile Include="src\Game.ts" />
     <TypeScriptCompile Include="src\Indic.ts" />
     <TypeScriptCompile Include="src\GamePlayers.ts" />
-    <TypeScriptCompile Include="src\ml.config.ts" />
-    <TypeScriptCompile Include="src\or.config.ts" />
-    <TypeScriptCompile Include="src\pa.config.ts" />
     <TypeScriptCompile Include="src\Parser.ts" />
     <TypeScriptCompile Include="src\InfoBar.ts" />
-    <TypeScriptCompile Include="src\ta.config.ts" />
+    <TypeScriptCompile Include="src\Tests.ts" />
     <TypeScriptCompile Include="src\TrayRack.ts" />
     <TypeScriptCompile Include="src\Tray.ts" />
     <TypeScriptCompile Include="src\Cabinet.ts" />
@@ -95,10 +85,8 @@
     <TypeScriptCompile Include="src\Tile.ts" />
     <TypeScriptCompile Include="src\GameRoom.ts" />
     <TypeScriptCompile Include="src\GameState.ts" />
-    <TypeScriptCompile Include="src\te.config.ts" />
   </ItemGroup>
   <ItemGroup>
-    <TypeScriptCompile Include="src\Words.ts" />
     <TypeScriptCompile Include="typings\axios.d.ts" />
     <TypeScriptCompile Include="typings\Custom.d.ts" />
     <TypeScriptCompile Include="typings\es6-promise.d.ts" />
@@ -131,7 +119,6 @@
     <Content Include="scripts\redux.js" />
     <Content Include="scripts\Referee.js" />
     <Content Include="scripts\require.js" />
-    <Content Include="scripts\te.config.js" />
     <Content Include="scripts\Tile.js" />
     <Content Include="scripts\Tray.js" />
     <Content Include="scripts\TrayRack.js" />

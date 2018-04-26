@@ -11,6 +11,14 @@
 //---------------------------------------------------------------------------------------------
 
 export class Messages {
+    public static Title: string = "";
+    public static Name: string = "";
+    public static Keywords: string = "";
+    public static Description: string = "";
+    public static Author: string = "";
+    public static Author2: string = "";
+    public static Player: string = "";
+    public static PlayerName: string = "";
     public static InvalidMove: string = "";
     public static UseSynonym: string = "";
     public static Messages: string = "";

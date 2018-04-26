@@ -37,6 +37,7 @@ class GameRoom extends React.Component<Contracts.iGameState, Contracts.iGameStat
         var block = React.createElement('div',
             {
                 id: this.props.Id,
+                key: this.props.Id,
                 ref: this.props.Id,
                 className: "game",
                 title: "Scrabble",

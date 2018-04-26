@@ -2,11 +2,11 @@
   "eenadu": {
     "Name": "ఈనాడు",
     "Language": "te",
-    "Dictionary": "www.eenadu.net.scrabble"
+    "Dictionary": "eenadu.txt"
   },
   "bbc.te": {
-    "Name": "బీబీసీ తెలుగు",
+    "Name": "బీబీసీ",
     "Language": "te",
-    "Dictionary": "www.bbc.com.scrabble"
+    "Dictionary": "bbc.te.txt"
   }
 }

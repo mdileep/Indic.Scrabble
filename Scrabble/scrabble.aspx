@@ -28,11 +28,15 @@
     <div class="title">
         <h2 class="h2" runat="server" id="H2">పదకేళి</h2>
     </div>
-    <div class="" id="root"> <h3> Loading... </h3></div>
+    <div class="loading" id="root">
+        <h3>Loading...
+            <img width="64" height="80" alt="Loading..." src="images/loading.svg" /></h3>
+    </div>
     <div class="footer"><span id="Author2" runat="server" class="author">~ Dileep Miriyala(దిలీపు మిరియాల)</span></div>
     <script type="text/javascript" src="scripts/Words.js"> </script>
-    <div id="Scripts" runat="server"></div>
-    <div id="Players" runat="server"></div>
+    <script type="text/javascript" src="Config.ashx?<%= Query %>"> </script>
     <script data-main="scripts/Game" src="scripts/require.js"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-118249672-1"></script>
+    <script>window.dataLayer = window.dataLayer || []; function gtag() { dataLayer.push(arguments); } gtag('js', new Date()); gtag('config', 'UA-118249672-1');</script>
 </body>
 </html>

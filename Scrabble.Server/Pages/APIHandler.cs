@@ -41,7 +41,6 @@ namespace Scrabble.Server
 			string responseJSON = ParseUtil.ToJSON(response);
 			context.Response.Write(responseJSON);
 		}
-
 		public bool IsReusable
 		{
 			get
@@ -84,4 +83,4 @@ namespace Scrabble.Server
 			}
 		}
 	}
-	}
+}

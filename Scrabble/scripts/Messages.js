@@ -3,6 +3,14 @@ define(["require", "exports"], function (require, exports) {
     var Messages = (function () {
         function Messages() {
         }
+        Messages.Title = "";
+        Messages.Name = "";
+        Messages.Keywords = "";
+        Messages.Description = "";
+        Messages.Author = "";
+        Messages.Author2 = "";
+        Messages.Player = "";
+        Messages.PlayerName = "";
         Messages.InvalidMove = "";
         Messages.UseSynonym = "";
         Messages.Messages = "";

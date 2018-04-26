@@ -20,6 +20,7 @@ define(["require", "exports", "react", 'Cabinet', 'Board', 'InfoBar', 'GamePlaye
             var info = React.createElement(InfoBar.default, this.props.InfoBar);
             var block = React.createElement('div', {
                 id: this.props.Id,
+                key: this.props.Id,
                 ref: this.props.Id,
                 className: "game",
                 title: "Scrabble",

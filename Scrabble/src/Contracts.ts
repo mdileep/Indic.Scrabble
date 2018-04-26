@@ -60,6 +60,7 @@ export interface iInfoBar extends iComponent {
 }
 export interface iPlayer extends iComponent {
     Name: string;
+    Dictionary: string;
     Score: number;
     Unconfirmed: number;
     CurrentTurn: boolean;
@@ -68,6 +69,7 @@ export interface iPlayer extends iComponent {
     NoWords: number;
     IsBot: boolean;
     BotId: string;
+    BotLoaded: boolean;
 }
 export interface iGameTable extends iComponent {
     VowelTray: iTrayProps;
@@ -112,26 +114,24 @@ export class Actions {
 }
 //Load Schema is Differet from iGameState 
 //TODO: May use the Same Schema??
-export interface iLoadState {
+export interface iRawConfig {
+    Board: iRawBoard;
+    CharSet: any;
+    Localization:any;
+    Players: any;
+}
+export interface iRawBoard {
     Id: string;
     Lanaguage: string;
     GameTable: iRawGameTable;
-    Cabinet: iRawCabinet;
-    Board: iRawBoard;
-    Players: iPlayers;
-    InfoBar: iInfoBar;
+    Trays: iRawTray[];
+    Size: number;
+    Name: string;
+    Weights: number[];
 }
 export interface iRawGameTable {
     MaxOnTable: number;
     MaxVowels: number;
-}
-export interface iRawCabinet {
-    Trays: iRawTray[];
-}
-export interface iRawBoard {
-    Size: number;
-    Name: string;
-    Weights: number[];
 }
 export interface iRawTray {
     Id: string;

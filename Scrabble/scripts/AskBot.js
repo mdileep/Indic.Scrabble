@@ -21,8 +21,8 @@ define(["require", "exports", 'axios', 'GameLoader', 'Contracts', 'Util'], funct
                     args: response.data
                 });
             })
-                .catch(function (error) { });
-            AskBot.BotMoveClient(post);
+                .catch(function (error) {
+            });
         };
         AskBot.BotMoveClient = function (post) {
             setTimeout(function () {
@@ -72,33 +72,6 @@ define(["require", "exports", 'axios', 'GameLoader', 'Contracts', 'Util'], funct
         return BoardUtil;
     }());
     exports.BoardUtil = BoardUtil;
-    var WordLoader = (function () {
-        function WordLoader() {
-        }
-        WordLoader.LoadWords = function (file) {
-            if (WordLoader.List != null) {
-                return WordLoader.List;
-            }
-            WordLoader.List = [];
-            var cnt = 0;
-            for (var indx in BigDict) {
-                var line = BigDict[indx];
-                WordLoader.List.push({
-                    Tiles: line,
-                    Index: cnt++,
-                    Syllables: line.split(',').length,
-                });
-            }
-            BigDict = [];
-            return WordLoader.List;
-        };
-        WordLoader.Load = function (file) {
-            return WordLoader.LoadWords(file);
-        };
-        WordLoader.List = null;
-        return WordLoader;
-    }());
-    exports.WordLoader = WordLoader;
     var ProbableWordComparer = (function () {
         function ProbableWordComparer() {
         }
@@ -137,123 +110,10 @@ define(["require", "exports", 'axios', 'GameLoader', 'Contracts', 'Util'], funct
         return ProbableWordComparer;
     }());
     exports.ProbableWordComparer = ProbableWordComparer;
-    var Config2 = (function () {
-        function Config2() {
-        }
-        Config2.GetBot = function (bot) {
-            return {
-                Id: "eenadu",
-                Name: "ఈనాడు",
-                Language: "te",
-                Dictionary: "www.eenadu.net.scrabble"
-            };
-        };
-        Config2.GetBoard = function (name) {
-            return {
-                Size: 11,
-                Weights: [
-                    6, 1, 1, 1, 1, 1, 1, 1, 1, 1, 6,
-                    1, 3, 1, 3, 1, 3, 1, 3, 1, 3, 1,
-                    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-                    1, 3, 1, 4, 1, 4, 1, 4, 1, 3, 1,
-                    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-                    6, 3, 1, 4, 1, 8, 1, 4, 1, 3, 6,
-                    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-                    1, 3, 1, 4, 1, 4, 1, 4, 1, 3, 1,
-                    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-                    1, 3, 1, 3, 1, 3, 1, 3, 1, 3, 1,
-                    6, 1, 1, 1, 1, 1, 1, 1, 1, 1, 6
-                ]
-            };
-        };
-        Config2.GetCharSet = function (lang) {
-            return {
-                Name: "te",
-                SunnaSet: [
-                    "ం",
-                    "ః"
-                ],
-                Vowels: [
-                    "అ",
-                    "ఆ",
-                    "ఇ",
-                    "ఈ",
-                    "ఉ",
-                    "ఊ",
-                    "ఎ",
-                    "ఏ",
-                    "ఐ",
-                    "ఒ",
-                    "ఓ",
-                    "ఔ",
-                    "ఋ",
-                    "ౠ"
-                ],
-                Consonents: [
-                    "క",
-                    "ఖ",
-                    "గ",
-                    "ఘ",
-                    "ఙ",
-                    "చ",
-                    "ఛ",
-                    "జ",
-                    "ఝ",
-                    "ఞ",
-                    "ట",
-                    "ఠ",
-                    "డ",
-                    "ఢ",
-                    "ణ",
-                    "త",
-                    "థ",
-                    "ద",
-                    "ధ",
-                    "న",
-                    "ప",
-                    "ఫ",
-                    "బ",
-                    "భ",
-                    "మ",
-                    "య",
-                    "ర",
-                    "ల",
-                    "వ",
-                    "శ",
-                    "ష",
-                    "స",
-                    "హ",
-                    "ళ",
-                    "ఱ",
-                    "క్ష",
-                    "ము"
-                ],
-                Synonyms: {
-                    "ా": "ఆ",
-                    "ి": "ఇ",
-                    "ీ": "ఈ",
-                    "ు": "ఉ",
-                    "ూ": "ఊ",
-                    "ృ": "ఋ",
-                    "ౄ": "ౠ",
-                    "ె": "ఎ",
-                    "ే": "ఏ",
-                    "ై": "ఐ",
-                    "ొ": "ఒ",
-                    "ో": "ఓ",
-                    "ౌ": "ఔ"
-                },
-                Virama: "్"
-            };
-        };
-        return Config2;
-    }());
-    exports.Config2 = Config2;
     var Runner = (function () {
         function Runner() {
         }
         Runner.prototype.BestMove = function (Board) {
-            console.log(Board);
             var Moves = this.Probables(Board);
             if (Moves.length == 0) {
                 return null;
@@ -265,15 +125,15 @@ define(["require", "exports", 'axios', 'GameLoader', 'Contracts', 'Util'], funct
             if (Board == null) {
                 return;
             }
-            var bot = Config2.GetBot(Board.Bot);
+            var bot = GameConfig.GetBot(Board.Bot);
             if (bot == null) {
                 return;
             }
-            var board = Config2.GetBoard(Board.Name);
+            var board = GameConfig.GetBoard(Board.Name);
             if (board == null) {
                 return;
             }
-            var CharSet = Config2.GetCharSet(bot.Language);
+            var CharSet = GameConfig.GetCharSet(bot.Language);
             var size = board.Size;
             var weights = board.Weights;
             var cells = Board.Cells;
@@ -304,7 +164,7 @@ define(["require", "exports", 'axios', 'GameLoader', 'Contracts', 'Util'], funct
             NonCornerPattern = U.Util.Format("^(?<All>[{0},])*$", [this.GetFlatList2(NonCornerTiles)]);
             var AllDict = this.GetCountDict(All);
             var NonCornerDict = this.GetCountDict(NonCornerTiles);
-            var WordsDictionary = WordLoader.Load(file);
+            var WordsDictionary = WordLoader.LoadWords(file);
             WordsDictionary = this.ShortList(WordsDictionary, AllPattern, AllDict);
             var NonCornerProbables = this.ShortList(WordsDictionary, NonCornerPattern, NonCornerDict);
             var SpeicalDict = this.GetSpecialDict(CharSet, SpecialList);
@@ -1306,34 +1166,67 @@ define(["require", "exports", 'axios', 'GameLoader', 'Contracts', 'Util'], funct
         return Runner;
     }());
     exports.Runner = Runner;
-    var RunerTest = (function () {
-        function RunerTest() {
+    var WordLoader = (function () {
+        function WordLoader() {
         }
-        RunerTest.Go = function () {
-            var Board = {
-                Bot: "eenadu",
-                Reference: "281",
-                Name: "11x11",
-                Cells: [
-                    "", "", "", "", "", "", "", "", "", "", "",
-                    "", "", "", "", "", "", "", "", "", "", "",
-                    "", "", "", "", "", "", "", "", "శ", "", "",
-                    "", "", "", "", "", "", "", "క", "స,ఇ", "", "",
-                    "", "", "", "", "", "", "గ", "క", "", "", "",
-                    "", "", "", "", "", "శ", "బ", "శ", "", "", "",
-                    "", "", "", "", "చ,ఆ", "వ,ఇ", "", "", "", "", "",
-                    "", "", "", "", "ల", "", "", "", "", "", "",
-                    "", "", "", "", "", "", "", "", "", "", "",
-                    "", "", "", "", "", "", "", "", "", "", "",
-                    "", "", "", "", "", "", "", "", "", "", "",
-                ],
-                Conso: "క ఙ చ జ ప ల స",
-                Special: "(ల,ఉ) ",
-                Vowels: "అ ఆ ఈ ఉ ఉ ఎ ఏ ఓ"
-            };
-            AskBot.BotMoveClient(Board);
+        WordLoader.LoadWords = function (file) {
+            if (WordLoader.Lists != null && WordLoader.Lists[file] != null) {
+                return WordLoader.Lists[file];
+            }
+            return [];
         };
-        return RunerTest;
+        WordLoader.Load = function (file, rawResponse) {
+            var words = rawResponse.split('\r\n');
+            var List = [];
+            var cnt = 0;
+            for (var indx in words) {
+                var line = words[indx];
+                List.push({
+                    Tiles: line,
+                    Index: cnt++,
+                    Syllables: line.split(',').length,
+                });
+            }
+            WordLoader.Lists[file] = List;
+            rawResponse = null;
+        };
+        WordLoader.Init = function (file) {
+            axios
+                .get("/bots/" + file)
+                .then(function (response) {
+                WordLoader.Load(file, response.data);
+                GameLoader.GameLoader.BotLoaded(file);
+            })
+                .catch(function (error) {
+            });
+        };
+        WordLoader.Lists = {};
+        return WordLoader;
     }());
-    exports.RunerTest = RunerTest;
+    exports.WordLoader = WordLoader;
+    var GameConfig = (function () {
+        function GameConfig() {
+        }
+        GameConfig.GetBot = function (bot) {
+            var players = Config.Players;
+            for (var i = 0; i < players.length; i++) {
+                var player = players[i];
+                if (player.IsBot == null || !player.IsBot) {
+                    continue;
+                }
+                if (player.BotId == bot) {
+                    return player;
+                }
+            }
+            return null;
+        };
+        GameConfig.GetBoard = function (name) {
+            return Config.Board;
+        };
+        GameConfig.GetCharSet = function (lang) {
+            return Config.CharSet;
+        };
+        return GameConfig;
+    }());
+    exports.GameConfig = GameConfig;
 });

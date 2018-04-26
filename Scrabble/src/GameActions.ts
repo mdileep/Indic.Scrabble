@@ -22,7 +22,7 @@ export class GameActions {
 
     static Init(state: Contracts.iGameState, args: Contracts.iArgs): void {
         var players = state.Players.Players;
-        var currentPlayer = state.Players.CurrentPlayer
+        var currentPlayer = state.Players.CurrentPlayer;
         state.GameTable.Message = Util.Util.Format(Messages.Messages.YourTurn, [players[currentPlayer].Name]);
         GameActions.Think(state);
     }
@@ -700,7 +700,7 @@ export class GameActions {
         }
         return Words;
     }
-    //Consider re-writting the following. Lot of duplicate code.
+    //Consider re-writting the following. Duplicate code.
     static ReDraw(state: Contracts.iGameState, args: Contracts.iArgs): void {
         {
             var available: string[] = GameActions.DrawVowelTiles(state.Cache, state.GameTable.MaxVowels);
@@ -816,4 +816,5 @@ export class GameActions {
         var pickedConso = Util.Util.Draw(conso, maxConsos);
         return pickedConso;
     }
+    //
 }

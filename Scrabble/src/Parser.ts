@@ -12,24 +12,26 @@
 import * as Contracts from 'Contracts';
 import * as GameActions from "GameActions";
 import * as Indic from "Indic";
-declare var Players: Contracts.iPlayer[];
+declare var Config: Contracts.iRawConfig;
 
 export class Parser {
-    public static Parse(JSON: Contracts.iLoadState): Contracts.iGameState {
+    public static Parse(): Contracts.iGameState {
         //No Error Handling assuming clean -input
-        var cabinet: Contracts.iCabinetProps = Parser.ParseCabinet(JSON.Cabinet);
+        var cabinet: Contracts.iCabinetProps = Parser.ParseCabinet(Config.Board);
+        var board: Contracts.iBoardProps = Parser.ParseBoard(Config.Board);
+        var players: Contracts.iPlayers = Parser.ParsePlayers(Config.Players);
+        //
         var cache: Contracts.iCachedTile = Parser.BuildCache(cabinet);
-        var board: Contracts.iBoardProps = Parser.ParseBoard(JSON.Board);
-        var players: Contracts.iPlayers = Parser.ParsePlayers(Players);
-        var infoBar: Contracts.iInfoBar = Parser.ParseInfoBar(JSON.InfoBar);
-        var gameTable: Contracts.iGameTable = Parser.BuildGameTable(JSON.GameTable, cache);
+        var infoBar: Contracts.iInfoBar = Parser.ParseInfoBar();
+        var gameTable: Contracts.iGameTable = Parser.BuildGameTable(Config.Board.GameTable, cache);
         var stats: Contracts.iBoardsStats = { EmptyCells: 0, Occupancy: 0, TotalWords: 0, UnUsed: 0 };
+        //
         GameActions.GameActions.RefreshTrays(cabinet.Trays, cache);
         GameActions.GameActions.RefreshCabinet(cabinet, cache);
-
+        //
         var gameState: Contracts.iGameState = {
-            Id: JSON.Id,
-            key: JSON.Id,
+            Id: Config.Board.Id,
+            key: Config.Board.Id,
             className: "game",
             Cache: cache,
             Cabinet: cabinet,
@@ -63,7 +65,7 @@ export class Parser {
         raw.ConsoTray = cTray;
         return raw;
     }
-    public static ParseCabinet(JSON: Contracts.iRawCabinet): Contracts.iCabinetProps {
+    public static ParseCabinet(JSON: Contracts.iRawBoard): Contracts.iCabinetProps {
         var raw: Contracts.iCabinetProps = ({} as any) as Contracts.iCabinetProps;
         raw.key = "Cabinet";
         raw.Trays = [];
@@ -154,12 +156,16 @@ export class Parser {
             player.key = player.Id;
             player.NoWords = 0;
             player.IsBot = player.IsBot == null ? false : player.IsBot;
+            //Following are Obvious..!!
             player.BotId = player.BotId;
+            player.Dictionary = player.Dictionary; 
+            player.Name = player.Name;
+            //
             raw.Players.push(player);
         }
         return raw;
     }
-    public static ParseInfoBar(infoBar: Contracts.iInfoBar): Contracts.iInfoBar {
+    public static ParseInfoBar(): Contracts.iInfoBar {
         var raw: Contracts.iInfoBar = ({} as any) as Contracts.iInfoBar;
         raw.key = "InfoBar";
         raw.Messages = [];
