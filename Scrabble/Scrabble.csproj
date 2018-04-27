@@ -49,14 +49,20 @@
     <Content Include="web.config" />
     <Content Include="log.txt" />
     <Content Include="API.aspx" />
+    <Content Include="bots\hi.bbc.txt" />
+    <Content Include="bots\te.gallery.eenadu.txt" />
+    <Content Include="bots\te.kinige.txt" />
+    <Content Include="bots\te.veeven.txt" />
+    <Content Include="bots\kn.vijaykarnataka.txt" />
+    <Content Include="bots\te.andhrajyothy.txt" />
+    <Content Include="bots\te.bbc.txt" />
+    <Content Include="bots\te.eenadu.txt" />
     <None Include="web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>
     <None Include="web.Release.config">
       <DependentUpon>web.config</DependentUpon>
     </None>
-    <Content Include="bots\bbc.te.txt" />
-    <Content Include="bots\eenadu.txt" />
     <Content Include="bots\temp.txt" />
   </ItemGroup>
   <ItemGroup>
