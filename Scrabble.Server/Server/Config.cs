@@ -20,7 +20,7 @@ namespace Scrabble.Server
 		public const string DefaultLang = "te";
 		public const string DefaultBoard = "11x11";
 
-		public static readonly List<string> Languages = new List<string> { "te"};
+		public static readonly List<string> Languages = new List<string> { "te","kn"};
 		public static readonly List<string> Actions = new List<string> { ActionNames.Ping, ActionNames.Help, ActionNames.NextMove, ActionNames.Probables, ActionNames.Validate };
 		public static readonly List<string> BoardNames = new List<string> { "11x11" };
 

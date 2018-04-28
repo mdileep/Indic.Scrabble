@@ -32,9 +32,19 @@ export class Index {
                     bots: [
                         { id: "eenadu", name: "ఈనాడు: Eenadu" },
                         { id: "bbc.te", name: "బీబీసీ తెలుగు: BBC Telugu" }]
-                }]
+                }, {
+                        lang: "kn",
+                        name: "ಕನ್ನಡ ~ Kannada",
+                        player: "Player(You)",
+                        vs: "vs",
+                        play: "Play",
+                        bot: "Bot",
+                        bots: [
+                            { id: "vijay", name: "ವಿಜಯ ಕರ್ನಾಟಕ: Vijay Karnataka" }]
+                    }]
             });
         Util.DOMUtil.RegisterClick('te.Play', function (e) { Index.Play('te'); });
+        Util.DOMUtil.RegisterClick('kn.Play', function (e) { Index.Play('kn'); });
     }
 }
 Index.Register();

@@ -8,5 +8,10 @@
     "Name": "బీబీసీ",
     "Language": "te",
     "Dictionary": "te.bbc.txt"
+  },
+  "vijay": {
+    "Name": "ವಿಜಯ",
+    "Language": "kn",
+    "Dictionary": "kn.vijaykarnataka.txt"
   }
 }

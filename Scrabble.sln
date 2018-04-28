@@ -9,8 +9,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scrabble.Server", "Scrabble
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Words", "Words", "{4D21702C-A04F-4576-9B3B-E4837E5544DC}"
 	ProjectSection(SolutionItems) = preProject
-		Scrabble\www.bbc.com.words = Scrabble\www.bbc.com.words
-		Scrabble\www.eenadu.net.words = Scrabble\www.eenadu.net.words
+		Scrabble\words\hi.bbc.words = Scrabble\words\hi.bbc.words
+		Scrabble\words\kn.vijaykarnataka.com.words = Scrabble\words\kn.vijaykarnataka.com.words
+		Scrabble\words\te.andhrajyothy.words = Scrabble\words\te.andhrajyothy.words
+		Scrabble\words\te.bbc.words = Scrabble\words\te.bbc.words
+		Scrabble\words\te.eenadu.words = Scrabble\words\te.eenadu.words
+		Scrabble\words\te.gallery.eenadu.words = Scrabble\words\te.gallery.eenadu.words
+		Scrabble\words\te.kinige.com.words = Scrabble\words\te.kinige.com.words
+		Scrabble\words\te.veeven.words = Scrabble\words\te.veeven.words
 	EndProjectSection
 EndProject
 Global
