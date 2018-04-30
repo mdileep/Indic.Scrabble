@@ -26,10 +26,14 @@
     <Content Include="scrabble.aspx" />
     <Content Include="Index.html" />
     <Content Include="Config.ashx" />
+    <Content Include="scripts\Alert.js" />
+    <Content Include="scripts\AlertDialog.js" />
     <Content Include="scripts\AskBot.js" />
     <Content Include="scripts\axios.js" />
     <Content Include="scripts\Game.js" />
     <Content Include="scripts\Index.js" />
+    <Content Include="scripts\_AlertDialog.js" />
+    <Content Include="scripts\_OverlayDialog.js" />
     <Content Include="styles\bn.css" />
     <Content Include="styles\gu.css" />
     <Content Include="styles\hi.css" />
