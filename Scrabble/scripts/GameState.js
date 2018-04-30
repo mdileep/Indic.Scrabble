@@ -43,6 +43,11 @@ define(["require", "exports", 'Contracts', 'Parser', "GameActions"], function (r
                     console.log("Bot Responded");
                 GameActions.GameActions.BotMoveResponse(state, args);
                 return state;
+            case Contracts.Actions.AlertDismiss:
+                if (console)
+                    console.log("Dismiss Alert");
+                GameActions.GameActions.AlertDismiss(state, args);
+                return state;
             default:
                 return state;
         }

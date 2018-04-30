@@ -9,6 +9,7 @@
 //       _._        | <TODO>                   |   <TODO>                  | <TODO>
 // </copyright>
 //---------------------------------------------------------------------------------------------
+
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as Redux from 'redux';
@@ -19,6 +20,7 @@ import * as Board from 'Board';
 import * as InfoBar from 'InfoBar';
 import * as GamePlayers from 'GamePlayers';
 import * as GameTable from 'GameTable';
+import * as Alert from 'AlertDialog';
 import * as Indic from 'Indic';
 import * as Util from 'Util';
 
@@ -34,6 +36,8 @@ class GameRoom extends React.Component<Contracts.iGameState, Contracts.iGameStat
         var cabinet = React.createElement(((Cabinet.default as any) as React.ComponentClass<Contracts.iCabinetProps>), this.props.Cabinet);
         var board = React.createElement(((Board.default as any) as React.ComponentClass<Contracts.iBoardProps>), this.props.Board);
         var info = React.createElement(((InfoBar.default as any) as React.ComponentClass<Contracts.iInfoBar>), this.props.InfoBar);
+        var alert = React.createElement(((Alert.default as any) as React.ComponentClass<Contracts.iAlert>), Util.Util.Merge(this.props.Alert, { OnConfirm: Alert.default.OnConfirm }));
+
         var block = React.createElement('div',
             {
                 id: this.props.Id,
@@ -41,7 +45,8 @@ class GameRoom extends React.Component<Contracts.iGameState, Contracts.iGameStat
                 ref: this.props.Id,
                 className: "game",
                 title: "Scrabble",
-            }, [scores, gameTable, board, words, cabinet, info]);
+            }, [scores, gameTable, board, words, cabinet, info, alert]);
+
         return block;
     }
 }

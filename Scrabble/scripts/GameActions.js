@@ -775,6 +775,9 @@ define(["require", "exports", 'Messages', 'Indic', 'Util', 'AskBot'], function (
             var pickedConso = Util.Util.Draw(conso, maxConsos);
             return pickedConso;
         };
+        GameActions.AlertDismiss = function (state, args) {
+            state.Alert.Show = false;
+        };
         GameActions.NoWords = 5;
         GameActions.BotWait = 1000;
         return GameActions;

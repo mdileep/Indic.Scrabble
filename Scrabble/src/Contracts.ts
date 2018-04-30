@@ -88,6 +88,25 @@ export interface iGameState extends iComponent {
     Cache: iCachedTile;
     Stats: iBoardsStats;
     GameOver: boolean;
+    Alert: iAlert;
+}
+export interface iOverlayDialog extends iComponent {
+    Title: string;
+    ConfirmText: string;
+    CancelText: string;
+    ShowConfirm: boolean;
+    ShowClose: boolean;
+    OnConfirm: () => void;
+    OnCancel: () => void;
+}
+export interface _iAlertDialog extends iOverlayDialog {
+    Title: string;
+    Message: string;
+}
+export interface iAlert extends iComponent{
+    Title: string;
+    Message: string;
+    OnConfirm?: () => void;
 }
 export interface iActionArgs {
     type: number;
@@ -111,13 +130,14 @@ export class Actions {
     public static Approve: number = 6;
     public static BotMove: number = 7;
     public static BotMoveResponse: number = 8;
+    public static AlertDismiss: number = 9;
 }
 //Load Schema is Differet from iGameState 
 //TODO: May use the Same Schema??
 export interface iRawConfig {
     Board: iRawBoard;
     CharSet: any;
-    Localization:any;
+    Localization: any;
     Players: any;
 }
 export interface iRawBoard {
@@ -190,3 +210,4 @@ export interface iBotMoveResponse {
     Reference: string;
     Result: iBotMoveResult;
 }
+

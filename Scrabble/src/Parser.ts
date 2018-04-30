@@ -29,6 +29,9 @@ export class Parser {
         GameActions.GameActions.RefreshTrays(cabinet.Trays, cache);
         GameActions.GameActions.RefreshCabinet(cabinet, cache);
         //
+        var Alert: Contracts.iAlert = Parser.ParseAlert();
+
+        //
         var gameState: Contracts.iGameState = {
             Id: Config.Board.Id,
             key: Config.Board.Id,
@@ -42,7 +45,8 @@ export class Parser {
             GameOver: false,
             Show: true,
             Stats: stats,
-            GameTable: gameTable
+            GameTable: gameTable,
+            Alert: Alert
         };
         return gameState;
     }
@@ -158,7 +162,7 @@ export class Parser {
             player.IsBot = player.IsBot == null ? false : player.IsBot;
             //Following are Obvious..!!
             player.BotId = player.BotId;
-            player.Dictionary = player.Dictionary; 
+            player.Dictionary = player.Dictionary;
             player.Name = player.Name;
             //
             raw.Players.push(player);
@@ -170,6 +174,21 @@ export class Parser {
         raw.key = "InfoBar";
         raw.Messages = [];
         return raw;
+    }
+    public static ParseAlert(): Contracts.iAlert {
+        var id: string = "Alert";
+        var Alert: Contracts.iAlert =
+            {
+                Id: id,
+                key: id,
+                Show: false,
+                ReadOnly: false,
+                className: "",
+                //
+                Title: "Title",
+                Message: "Sample",
+            };
+        return Alert;
     }
     public static RefreshCache(cache: Contracts.iCachedTile, prop: any): void {
         var text = prop.Text;
@@ -195,4 +214,5 @@ export class Parser {
             };
         return;
     }
+
 }

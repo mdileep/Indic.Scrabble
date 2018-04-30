@@ -78,9 +78,12 @@
     <TypeScriptCompile Include="src\Game.ts" />
     <TypeScriptCompile Include="src\Indic.ts" />
     <TypeScriptCompile Include="src\GamePlayers.ts" />
+    <TypeScriptCompile Include="src\AlertDialog.ts" />
+    <TypeScriptCompile Include="src\_AlertDialog.ts" />
     <TypeScriptCompile Include="src\Parser.ts" />
     <TypeScriptCompile Include="src\InfoBar.ts" />
     <TypeScriptCompile Include="src\Tests.ts" />
+    <TypeScriptCompile Include="src\_OverlayDialog.ts" />
     <TypeScriptCompile Include="src\TrayRack.ts" />
     <TypeScriptCompile Include="src\Tray.ts" />
     <TypeScriptCompile Include="src\Cabinet.ts" />
@@ -141,6 +144,7 @@
     <LessFiles Include="styles\less\4.colors.less" />
     <LessFiles Include="styles\less\5.misc.less" />
     <LessFiles Include="styles\less\scrabble.less" />
+    <LessFiles Include="styles\less\99.Notification.less" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

@@ -55,6 +55,11 @@ export default (state: Contracts.iGameState = Parser.Parser.Parse(), action: Con
             GameActions.GameActions.BotMoveResponse(state, args as Contracts.iBotMoveResponse);
             return state;
 
+        case Contracts.Actions.AlertDismiss:
+            if (console) console.log("Dismiss Alert");
+            GameActions.GameActions.AlertDismiss(state, args );
+            return state;
+
         default:
             return state
     }

@@ -817,4 +817,8 @@ export class GameActions {
         return pickedConso;
     }
     //
+    static AlertDismiss(state: Contracts.iGameState, args: Contracts.iArgs): void {
+        state.Alert.Show = false;
+    }
+
 }

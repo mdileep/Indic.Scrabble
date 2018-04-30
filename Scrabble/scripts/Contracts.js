@@ -12,6 +12,7 @@ define(["require", "exports"], function (require, exports) {
         Actions.Approve = 6;
         Actions.BotMove = 7;
         Actions.BotMoveResponse = 8;
+        Actions.AlertDismiss = 9;
         return Actions;
     }());
     exports.Actions = Actions;

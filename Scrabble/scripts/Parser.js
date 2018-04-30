@@ -13,6 +13,7 @@ define(["require", "exports", "GameActions", "Indic"], function (require, export
             var stats = { EmptyCells: 0, Occupancy: 0, TotalWords: 0, UnUsed: 0 };
             GameActions.GameActions.RefreshTrays(cabinet.Trays, cache);
             GameActions.GameActions.RefreshCabinet(cabinet, cache);
+            var Alert = Parser.ParseAlert();
             var gameState = {
                 Id: Config.Board.Id,
                 key: Config.Board.Id,
@@ -26,7 +27,8 @@ define(["require", "exports", "GameActions", "Indic"], function (require, export
                 GameOver: false,
                 Show: true,
                 Stats: stats,
-                GameTable: gameTable
+                GameTable: gameTable,
+                Alert: Alert
             };
             return gameState;
         };
@@ -151,6 +153,19 @@ define(["require", "exports", "GameActions", "Indic"], function (require, export
             raw.key = "InfoBar";
             raw.Messages = [];
             return raw;
+        };
+        Parser.ParseAlert = function () {
+            var id = "Alert";
+            var Alert = {
+                Id: id,
+                key: id,
+                Show: false,
+                ReadOnly: false,
+                className: "",
+                Title: "Title",
+                Message: "Sample",
+            };
+            return Alert;
         };
         Parser.RefreshCache = function (cache, prop) {
             var text = prop.Text;
