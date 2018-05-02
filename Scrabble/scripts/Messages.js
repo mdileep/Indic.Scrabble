@@ -31,6 +31,9 @@ define(["require", "exports"], function (require, exports) {
         Messages.WhyGameOver = "";
         Messages.NoWordsAdded = "";
         Messages.Stats = "";
+        Messages.OK = "";
+        Messages.Yes = "";
+        Messages.No = "";
         return Messages;
     }());
     exports.Messages = Messages;

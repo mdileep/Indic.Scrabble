@@ -8,7 +8,7 @@ html,body{height:100%;width:100%;margin:0;padding:0}.list{list-style:none}.list 
 /* */
 .h2,.title{text-align:center}.gameTable{text-align:right}.list table{text-align:center}.tray .tile{text-align:center;vertical-align:bottom}.tray .count{text-align:left;vertical-align:top}.board .weight{text-align:right;vertical-align:bottom;z-index:1}.board .text{z-index:2}.board .cell{white-space:pre-wrap}.players .player{text-align:center}.players .player .score{text-align:center}.players .player .wordsList{text-align:left;list-style-type:decimal}.infoBar .h2{color:black}.footer{text-align:right}.draggable{cursor:move}
 /* */
-.Notification .oBackGround {
+.olDialog .oBackGround {
   position: fixed;
   left: 0;
   top: 0;
@@ -21,9 +21,9 @@ html,body{height:100%;width:100%;margin:0;padding:0}.list{list-style:none}.list 
   -moz-opacity: 0.5;
   background-color: black;
 }
-.Notification .oForeGround {
-  border: 1px solid Green;
-  box-shadow: 0px 0px 1em Green;
+.olDialog .oForeGround {
+  border: 1px solid white;
+  box-shadow: 0px 0px 1em white;
   background-color: white;
   left: 20%;
   top: 10%;
@@ -31,42 +31,32 @@ html,body{height:100%;width:100%;margin:0;padding:0}.list{list-style:none}.list 
   width: 60%;
   position: fixed;
   z-index: 1001;
-  border-radius: 26px;
   min-height: 100px;
   height: auto;
 }
-.Notification .oFTitle {
-  color: Green;
-  float: left;
-  margin-left: 40px;
-  margin-top: 40px;
-  font-size: 2.0em;
+.olDialog .oFTitle {
+  color: green;
 }
-.Notification .oFContent {
+.olDialog .oFContent {
   clear: both;
   text-align: left;
-  margin-left: 40px;
-  margin-top: 100px;
+  margin-left: 10%;
   font-size: 0.8em;
-  line-height: 24px;
-  height: 220px;
-  overflow: auto;
 }
-.Notification .oFCloseButtonHolder {
+.olDialog .oFCloseButtonHolder {
   float: right;
   margin-right: 10px;
   cursor: pointer;
   color: Red;
-  margin-left: 40px;
-  margin-top: 40px;
   font-size: 2.0em;
 }
-.Notification .oFButtonHolder {
+.olDialog .oFButtonHolder {
   clear: both;
   float: right;
   margin: 10px;
 }
-.Notification .oFButtonHolder input {
+.olDialog .oFButtonHolder input,
+.olDialog .oFButtonHolder button {
   margin: 5px;
 }
 

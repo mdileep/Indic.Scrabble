@@ -43,7 +43,7 @@ export class GameActions {
             return;
         }
 
-        var isValid: boolean = GameActions.ValidateWords(state);
+        var isValid: boolean = AskBot.AskReferee.ValidateWords(state.Board);
         if (!isValid) {
             return;
         }
@@ -290,10 +290,6 @@ export class GameActions {
         var player: Contracts.iPlayer = state.Players.Players[playerId];
         player.Awarded = player.Awarded.concat(Claims);
         player.Claimed = [];
-    }
-    static ValidateWords(state: Contracts.iGameState): boolean {
-        //Actual Word Verification against Word Database
-        return true;
     }
     static HasDuplicates(state: Contracts.iGameState, Src: Contracts.iWord[], Compare: Contracts.iWord[]): boolean {
         var res: boolean = false;
@@ -700,7 +696,6 @@ export class GameActions {
         }
         return Words;
     }
-    //Consider re-writting the following. Duplicate code.
     static ReDraw(state: Contracts.iGameState, args: Contracts.iArgs): void {
         {
             var available: string[] = GameActions.DrawVowelTiles(state.Cache, state.GameTable.MaxVowels);
@@ -816,9 +811,4 @@ export class GameActions {
         var pickedConso = Util.Util.Draw(conso, maxConsos);
         return pickedConso;
     }
-    //
-    static AlertDismiss(state: Contracts.iGameState, args: Contracts.iArgs): void {
-        state.Alert.Show = false;
-    }
-
 }

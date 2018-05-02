@@ -3,7 +3,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", "react", 'Contracts', '_AlertDialog', 'Util', 'GameLoader'], function (require, exports, React, Contracts, _AlertDialog, Util, GameLoader) {
+define(["require", "exports", "react", '_AlertDialog', 'Util', 'Messages'], function (require, exports, React, _AlertDialog, Util, Messages) {
     "use strict";
     var AlertDialog = (function (_super) {
         __extends(AlertDialog, _super);
@@ -21,15 +21,9 @@ define(["require", "exports", "react", 'Contracts', '_AlertDialog', 'Util', 'Gam
                 Show: this.props.Show,
                 ReadOnly: false,
                 ShowClose: false,
-                ConfirmText: "OK", ShowConfirm: true,
+                ConfirmText: Messages.Messages.OK, ShowConfirm: true,
                 OnConfirm: this.props.OnConfirm,
             }));
-        };
-        AlertDialog.OnConfirm = function () {
-            GameLoader.GameLoader.store.dispatch({
-                type: Contracts.Actions.AlertDismiss,
-                args: {}
-            });
         };
         return AlertDialog;
     }(React.Component));

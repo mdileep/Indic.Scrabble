@@ -66,6 +66,13 @@ export class AskBot {
     }
 }
 
+export class AskReferee {
+    static ValidateWords(state: Contracts.iBoardProps): boolean {
+        //Actual Word Verification against Word Database
+        return true;
+    }
+}
+
 //Port of C# : Game Server
 export interface Neighbor {
     Left: number;
@@ -115,6 +122,7 @@ export interface ScrabbleBoard {
 export interface Bot {
     Id: string;
     Name: string;
+    FullName: string;
     Language: string;
     Dictionary: string;
 }

@@ -14,6 +14,7 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as Contracts from 'Contracts';
 
+
 class _OverlayDialog<P extends Contracts.iOverlayDialog, S extends Contracts.iOverlayDialog> extends React.Component<P, S> {
 
     constructor(props: P) {
@@ -38,7 +39,7 @@ class _OverlayDialog<P extends Contracts.iOverlayDialog, S extends Contracts.iOv
         var elem = React.createElement('div',
             {
                 key: this.props.Id,
-                className: "Notification"
+                className: "olDialog"
             }, childs);
         return elem;
     }
@@ -46,10 +47,10 @@ class _OverlayDialog<P extends Contracts.iOverlayDialog, S extends Contracts.iOv
     renderForeground(content: React.ReactElement<Contracts.iProps>) {
         var childs: React.ReactElement<Contracts.iProps>[] = [];
 
-        var title = React.createElement('h1',
+        var title = React.createElement('h2',
             {
                 key: "title_" + this.props.Id,
-                className: "oFTitle"
+                className: "h2 oFTitle"
             }, this.props.Title);
         childs.push(title);
 

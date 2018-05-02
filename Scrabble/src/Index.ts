@@ -10,29 +10,7 @@
 // </copyright>
 //---------------------------------------------------------------------------------------------
 import * as Util from 'Util';
-var Config: any = {
-    boards: [{ id: "11x11", name: "11x11" }],
-    langs: [{
-        lang: "te",
-        name: "తెలుగు ~ Telugu",
-        player: "ఆటగాడు(మీరు) : Player(You)",
-        vs: "తో : vs",
-        play: "ఆడదాం: Play",
-        bot: "యంత్రుడు: Bot",
-        bots: [
-            { id: "eenadu", name: "ఈనాడు: Eenadu" },
-            { id: "bbc.te", name: "బీబీసీ తెలుగు: BBC Telugu" }]
-    }, {
-            lang: "kn",
-            name: "ಕನ್ನಡ ~ Kannada",
-            player: "Player(You)",
-            vs: "vs",
-            play: "Play",
-            bot: "Bot",
-            bots: [
-                { id: "vijay", name: "ವಿಜಯ ಕರ್ನಾಟಕ: Vijay Karnataka" }]
-        }]
-};
+declare var Config: any;
 export class Index {
     public static Play(lang: string): void {
         var player1 = Util.DOMUtil.SelectedValue(lang + ".player1");
@@ -43,7 +21,7 @@ export class Index {
     public static Register(): void {
         Util.DOMUtil.ApplyTemplate("list", 'langTemplate', Config);
         for (var indx in Config.langs) {
-            var lang: string = Config.langs[indx].lang;
+            var lang: string = Config.langs[indx];
             Util.DOMUtil.RegisterClick(lang + '.Play', function (e) {
                 var lang = (e.currentTarget as HTMLElement).getAttribute("-lang");
                 Index.Play(lang);

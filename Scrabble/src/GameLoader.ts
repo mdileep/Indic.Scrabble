@@ -46,9 +46,19 @@ export class GameLoader {
     public static Init() {
         DragDropTouch.DragDropTouch._instance;
         GameLoader.ConfigGame();
-        GameLoader.LoadBots(Config.Players);
+        var bots = GameLoader.GetBots(Config.Players);
+        if (bots.length == 0) {
+            GameLoader.Begin();
+            return;
+        }
+        GameLoader.LoadBots(bots);
     }
-    static LoadBots(players: Contracts.iPlayer[]): void {
+    static LoadBots(bots: string[]): void {
+        for (var indx in bots) {
+            AskBot.WordLoader.Init(bots[indx]);
+        }
+    }
+    static GetBots(players: Contracts.iPlayer[]): string[] {
         var bots: string[] = [];
         for (var i = 0; i < players.length; i++) {
             var player: Contracts.iPlayer = players[i];
@@ -60,9 +70,7 @@ export class GameLoader {
             }
             bots.push(player.Dictionary);
         }
-        for (var indx in bots) {
-            AskBot.WordLoader.Init(bots[indx]);
-        }
+        return bots;
     }
     static BotLoaded(file: string): void {
         var players: Contracts.iPlayer[] = Config.Players;
@@ -81,7 +89,9 @@ export class GameLoader {
         if (cnt != players.length) {
             return;
         }
-
+        GameLoader.Begin();
+    }
+    public static Begin(): void {
         GameLoader.store = Redux.createStore(Reducers)
         GameLoader.rootEl = document.getElementById('root');
         GameLoader.OnGameRender();

@@ -25,9 +25,19 @@ define(["require", "exports", "react", "react-dom", 'redux', 'GameState', 'Contr
         GameLoader.Init = function () {
             DragDropTouch.DragDropTouch._instance;
             GameLoader.ConfigGame();
-            GameLoader.LoadBots(Config.Players);
+            var bots = GameLoader.GetBots(Config.Players);
+            if (bots.length == 0) {
+                GameLoader.Begin();
+                return;
+            }
+            GameLoader.LoadBots(bots);
         };
-        GameLoader.LoadBots = function (players) {
+        GameLoader.LoadBots = function (bots) {
+            for (var indx in bots) {
+                AskBot.WordLoader.Init(bots[indx]);
+            }
+        };
+        GameLoader.GetBots = function (players) {
             var bots = [];
             for (var i = 0; i < players.length; i++) {
                 var player = players[i];
@@ -39,9 +49,7 @@ define(["require", "exports", "react", "react-dom", 'redux', 'GameState', 'Contr
                 }
                 bots.push(player.Dictionary);
             }
-            for (var indx in bots) {
-                AskBot.WordLoader.Init(bots[indx]);
-            }
+            return bots;
         };
         GameLoader.BotLoaded = function (file) {
             var players = Config.Players;
@@ -60,6 +68,9 @@ define(["require", "exports", "react", "react-dom", 'redux', 'GameState', 'Contr
             if (cnt != players.length) {
                 return;
             }
+            GameLoader.Begin();
+        };
+        GameLoader.Begin = function () {
             GameLoader.store = Redux.createStore(GameState_1.default);
             GameLoader.rootEl = document.getElementById('root');
             GameLoader.OnGameRender();

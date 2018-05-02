@@ -43,6 +43,15 @@ define(["require", "exports", 'axios', 'GameLoader', 'Contracts', 'Util'], funct
         return AskBot;
     }());
     exports.AskBot = AskBot;
+    var AskReferee = (function () {
+        function AskReferee() {
+        }
+        AskReferee.ValidateWords = function (state) {
+            return true;
+        };
+        return AskReferee;
+    }());
+    exports.AskReferee = AskReferee;
     var BoardUtil = (function () {
         function BoardUtil() {
         }

@@ -25,7 +25,7 @@ define(["require", "exports", 'Messages', 'Indic', 'Util', 'AskBot'], function (
                 state.InfoBar.Messages.push(Messages.Messages.HasIslands);
                 return;
             }
-            var isValid = GameActions.ValidateWords(state);
+            var isValid = AskBot.AskReferee.ValidateWords(state.Board);
             if (!isValid) {
                 return;
             }
@@ -266,9 +266,6 @@ define(["require", "exports", 'Messages', 'Indic', 'Util', 'AskBot'], function (
             var player = state.Players.Players[playerId];
             player.Awarded = player.Awarded.concat(Claims);
             player.Claimed = [];
-        };
-        GameActions.ValidateWords = function (state) {
-            return true;
         };
         GameActions.HasDuplicates = function (state, Src, Compare) {
             var res = false;
@@ -774,9 +771,6 @@ define(["require", "exports", 'Messages', 'Indic', 'Util', 'AskBot'], function (
             var conso = GameActions.AvailableConso(cache);
             var pickedConso = Util.Util.Draw(conso, maxConsos);
             return pickedConso;
-        };
-        GameActions.AlertDismiss = function (state, args) {
-            state.Alert.Show = false;
         };
         GameActions.NoWords = 5;
         GameActions.BotWait = 1000;

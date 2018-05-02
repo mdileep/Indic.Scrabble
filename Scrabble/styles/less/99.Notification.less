@@ -1,4 +1,4 @@
-﻿.Notification {
+﻿.olDialog {
 
     .oBackGround {
         position: fixed;
@@ -15,8 +15,8 @@
     }
 
     .oForeGround {
-        border: 1px solid Green;
-        box-shadow: 0px 0px 1em Green;
+        border: 1px solid white;
+        box-shadow: 0px 0px 1em white;
         background-color: white;
         left: 20%;
         top: 10%;
@@ -24,28 +24,19 @@
         width: 60%;
         position: fixed;
         z-index: 1001;
-        border-radius: 26px;
         min-height: 100px;
         height: auto;
     }
 
     .oFTitle {
-        color: Green;
-        float: left;
-        margin-left: 40px;
-        margin-top: 40px;
-        font-size: 2.0em;
+        color: green;
     }
 
     .oFContent {
         clear: both;
         text-align: left;
-        margin-left: 40px;
-        margin-top: 100px;
+        margin-left:10%;
         font-size: 0.8em;
-        line-height: 24px;
-        height: 220px;
-        overflow: auto;
     }
 
     .oFCloseButtonHolder {
@@ -53,8 +44,6 @@
         margin-right: 10px;
         cursor: pointer;
         color: Red;
-        margin-left: 40px;
-        margin-top: 40px;
         font-size: 2.0em;
     }
 
@@ -64,7 +53,7 @@
         margin: 10px;
     }
 
-    .oFButtonHolder input {
+    .oFButtonHolder input,.oFButtonHolder button {
         margin: 5px;
     }
 }

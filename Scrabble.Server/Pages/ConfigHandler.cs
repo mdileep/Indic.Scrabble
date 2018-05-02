@@ -17,6 +17,69 @@ using System.Web;
 
 namespace Scrabble.Server
 {
+
+	public class IndexConfigHandler : IHttpHandler
+	{
+		public void ProcessRequest(HttpContext context)
+		{
+			Dictionary<string, object> response = BuildConfig(context.Request);
+			context.Response.ContentType = "application/json";
+			ScriptManager SC = new ScriptManager();
+			SC.SetScriptVar("Config", response);
+			context.Response.Write(SC.Go(false));
+		}
+
+		Dictionary<string, object> BuildConfig(HttpRequest Request)
+		{
+			Dictionary<string, object> Dict = new Dictionary<string, object>();
+			Dict["langs"] = GetLangs();
+			Dict["boards"] = GetBoards();
+			Dict["bots"] = GetBots();
+			Dict["strings"] = GetStrings();
+			return Dict;
+		}
+
+		object GetStrings()
+		{
+			Dictionary<string, object> Dict = new Dictionary<string, object>();
+			foreach (string lang in Config.Languages)
+			{
+				Dict[lang] = Config.Messages(lang, new string[]
+				{
+					"LangName", "PlayerFull","Against","Play","Bot"
+				});
+			}
+			return Dict;
+		}
+
+		object GetBots()
+		{
+			Dictionary<string, object> Dict = new Dictionary<string, object>();
+			foreach (string lang in Config.Languages)
+			{
+				Dict[lang] = Config.BotsByLang(lang);
+			}
+			return Dict;
+		}
+
+		string[] GetLangs()
+		{
+			return Config.Languages.ToArray();
+		}
+
+		private object GetBoards()
+		{
+			return Config.BoardNames.ToArray();
+		}
+
+		public bool IsReusable
+		{
+			get
+			{
+				return false;
+			}
+		}
+	}
 	public class ConfigHandler : IHttpHandler
 	{
 		public void ProcessRequest(HttpContext context)

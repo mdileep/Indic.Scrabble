@@ -21,14 +21,17 @@ import * as InfoBar from 'InfoBar';
 import * as GamePlayers from 'GamePlayers';
 import * as GameTable from 'GameTable';
 import * as Alert from 'AlertDialog';
+import * as Confirm from 'ConfirmDialog';
 import * as Indic from 'Indic';
 import * as Util from 'Util';
+import * as GA from 'GenericActions';
 
 class GameRoom extends React.Component<Contracts.iGameState, Contracts.iGameState> {
     constructor(props: Contracts.iGameState) {
         super(props);
         this.state = props;
     }
+
     render() {
         var scores = React.createElement(((GamePlayers.default as any) as React.ComponentClass<Contracts.iPlayers>), Util.Util.Merge(this.props.Players, { key: "scores", showScores: true, showWordsList: false }));
         var words = React.createElement(((GamePlayers.default as any) as React.ComponentClass<Contracts.iPlayers>), Util.Util.Merge(this.props.Players, { key: "words", Id: "WordBoard", showScores: false, showWordsList: true }));
@@ -36,7 +39,12 @@ class GameRoom extends React.Component<Contracts.iGameState, Contracts.iGameStat
         var cabinet = React.createElement(((Cabinet.default as any) as React.ComponentClass<Contracts.iCabinetProps>), this.props.Cabinet);
         var board = React.createElement(((Board.default as any) as React.ComponentClass<Contracts.iBoardProps>), this.props.Board);
         var info = React.createElement(((InfoBar.default as any) as React.ComponentClass<Contracts.iInfoBar>), this.props.InfoBar);
-        var alert = React.createElement(((Alert.default as any) as React.ComponentClass<Contracts.iAlert>), Util.Util.Merge(this.props.Alert, { OnConfirm: Alert.default.OnConfirm }));
+
+        var dialog = React.createElement(((Confirm.default as any) as React.ComponentClass<Contracts.iAlert>), Util.Util.Merge(this.props.Dialog,
+            {
+                OnConfirm: GA.GenericActions.OnDismissDialog,
+                OnDismiss: GA.GenericActions.OnDismissDialog,
+            }));
 
         var block = React.createElement('div',
             {
@@ -45,8 +53,7 @@ class GameRoom extends React.Component<Contracts.iGameState, Contracts.iGameStat
                 ref: this.props.Id,
                 className: "game",
                 title: "Scrabble",
-            }, [scores, gameTable, board, words, cabinet, info, alert]);
-
+            }, [scores, gameTable, board, words, cabinet, info, dialog]);
         return block;
     }
 }

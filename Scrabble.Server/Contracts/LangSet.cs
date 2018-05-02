@@ -38,6 +38,7 @@ namespace Shared
 	{
 		public string Id;
 		public string Name;
+		public string FullName;
 		public string Language;
 		public string Dictionary;
 	}

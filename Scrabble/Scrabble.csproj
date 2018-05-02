@@ -30,9 +30,13 @@
     <Content Include="scripts\AlertDialog.js" />
     <Content Include="scripts\AskBot.js" />
     <Content Include="scripts\axios.js" />
+    <Content Include="scripts\ConfirmDialog.js" />
     <Content Include="scripts\Game.js" />
+    <Content Include="scripts\GenericActions.js" />
     <Content Include="scripts\Index.js" />
+    <Content Include="scripts\OverlayDialog.js" />
     <Content Include="scripts\_AlertDialog.js" />
+    <Content Include="scripts\_ConfirmDialog.js" />
     <Content Include="scripts\_OverlayDialog.js" />
     <Content Include="styles\bn.css" />
     <Content Include="styles\gu.css" />
@@ -54,13 +58,14 @@
     <Content Include="log.txt" />
     <Content Include="API.aspx" />
     <Content Include="bots\hi.bbc.txt" />
-    <Content Include="bots\te.gallery.eenadu.txt" />
+    <Content Include="bots\te.gallery.txt" />
     <Content Include="bots\te.kinige.txt" />
     <Content Include="bots\te.veeven.txt" />
     <Content Include="bots\kn.vijaykarnataka.txt" />
     <Content Include="bots\te.andhrajyothy.txt" />
     <Content Include="bots\te.bbc.txt" />
     <Content Include="bots\te.eenadu.txt" />
+    <Content Include="IndexConfig.ashx" />
     <None Include="web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>
@@ -71,9 +76,11 @@
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="src\AksharaSets.ts" />
+    <TypeScriptCompile Include="src\ConfirmDialog.ts" />
     <TypeScriptCompile Include="src\AskBot.ts" />
     <TypeScriptCompile Include="src\BoardCell.ts" />
     <TypeScriptCompile Include="src\DragDropTouch.ts" />
+    <TypeScriptCompile Include="src\GenericActions.ts" />
     <TypeScriptCompile Include="src\Index.ts" />
     <TypeScriptCompile Include="src\Messages.ts" />
     <TypeScriptCompile Include="src\GameTable.ts" />
@@ -83,6 +90,7 @@
     <TypeScriptCompile Include="src\Indic.ts" />
     <TypeScriptCompile Include="src\GamePlayers.ts" />
     <TypeScriptCompile Include="src\AlertDialog.ts" />
+    <TypeScriptCompile Include="src\_ConfirmDialog.ts" />
     <TypeScriptCompile Include="src\_AlertDialog.ts" />
     <TypeScriptCompile Include="src\Parser.ts" />
     <TypeScriptCompile Include="src\InfoBar.ts" />

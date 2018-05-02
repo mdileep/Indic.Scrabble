@@ -1,4 +1,4 @@
-define(["require", "exports", 'Contracts', 'Parser', "GameActions"], function (require, exports, Contracts, Parser, GameActions) {
+define(["require", "exports", 'Contracts', 'Parser', "GameActions", "GenericActions"], function (require, exports, Contracts, Parser, GameActions, GenericActions) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.default = function (state, action) {
@@ -43,12 +43,12 @@ define(["require", "exports", 'Contracts', 'Parser', "GameActions"], function (r
                     console.log("Bot Responded");
                 GameActions.GameActions.BotMoveResponse(state, args);
                 return state;
-            case Contracts.Actions.AlertDismiss:
-                if (console)
-                    console.log("Dismiss Alert");
-                GameActions.GameActions.AlertDismiss(state, args);
-                return state;
             default:
+                return state;
+            case Contracts.Actions.DismissDialog:
+                if (console)
+                    console.log("Dismiss Dialog");
+                GenericActions.GenericActions.DismissDialog(state.Dialog, args);
                 return state;
         }
     };

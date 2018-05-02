@@ -22,6 +22,7 @@
     <link rel="shortcut icon" href="Miriyam.ico" />
     <link href="styles/te.css" type="text/css" rel="stylesheet" />
     <link href="styles/scrabble.css" type="text/css" rel="stylesheet" />
+    <script src="IndexConfig.ashx"></script>
 </head>
 <body>
     <div class="title"><h2 class="h2">padakaeLi ~ పదకేళి</h2></div>
@@ -38,7 +39,7 @@
                             <th>
                                 <select id="boards" class="list">
                                     <%for(var index in this.boards) {%>
-                                    <option value="<%this.boards[index].id%>"><%this.boards[index].name%></option>
+                                    <option value="<%this.boards[index]%>"><%this.boards[index]%></option>
                                     <%}%>
                                 </select>
                             </th>
@@ -48,29 +49,29 @@
             </li>
             <%for(var indx in this.langs) {%>
             <li>
-                <h3><%this.langs[indx].name%></h3>
+                <h3><%this.strings[this.langs[indx]].LangName%></h3>
                 <table>
                     <thead>
                         <tr>
                             <th>
-                                <select id="<%this.langs[indx].lang%>.player1" class="list">
-                                    <option value="player" selected="selected"><%this.langs[indx].player%></option>
-                                    <optgroup label="<%this.langs[indx].bot%>">
-                                        <%for(var index in this.langs[indx].bots) {%>
-                                        <option value="<%this.langs[indx].bots[index].id%>"><%this.langs[indx].bots[index].name%></option>
+                                <select id="<%this.langs[indx]%>.player1" class="list">
+                                    <option value="player" selected="selected"><%this.strings[this.langs[indx]].PlayerFull%></option>
+                                    <optgroup label="<%this.strings[this.langs[indx]].Bot%>">
+                                        <%for(var index in this.bots[this.langs[indx]]) {%>
+                                        <option value="<%this.bots[this.langs[indx]][index].Id%>"><%this.bots[this.langs[indx]][index].FullName%></option>
                                         <%}%>
                                     </optgroup>
                                 </select>
                             </th>
                         </tr>
-                        <tr><th><%this.langs[indx].vs%></th></tr>
+                        <tr><th><%this.strings[this.langs[indx]].Against%></th></tr>
                         <tr>
                             <th>
-                                <select id="<%this.langs[indx].lang%>.player2" class="list">
-                                    <option value="player" selected="selected"><%this.langs[indx].player%></option>
-                                    <optgroup label="<%this.langs[indx].bot%>">
-                                        <%for(var index in this.langs[indx].bots) {%>
-                                        <option value="<%this.langs[indx].bots[index].id%>"  <%if(index==0){%>selected="selected"<%}%>><%this.langs[indx].bots[index].name%></option>
+                                <select id="<%this.langs[indx]%>.player2" class="list">
+                                    <option value="player" selected="selected"><%this.strings[this.langs[indx]].PlayerFull%></option>
+                                    <optgroup label="<%this.strings[this.langs[indx]].Bot%>">
+                                        <%for(var index in this.bots[this.langs[indx]]) {%>
+                                        <option value="<%this.bots[this.langs[indx]][index].Id%>"  <%if(index==0){%>selected="selected"<%}%>><%this.bots[this.langs[indx]][index].FullName%></option>
                                         <%}%>
                                     </optgroup>
                                 </select>
@@ -78,7 +79,7 @@
                         </tr>
                         <tr>
                             <th>
-                                <button -lang="<%this.langs[indx].lang%>" id="<%this.langs[indx].lang%>.Play"><%this.langs[indx].play%></button>
+                                <button -lang="<%this.langs[indx]%>" id="<%this.langs[indx]%>.Play"><%this.strings[this.langs[indx]].Play%></button>
                             </th>
                         </tr>
                     </thead>
@@ -90,6 +91,6 @@
     <div class="footer"><span class="author">~ Dileep Miriyala(దిలీపు మిరియాల)</span></div>
     <script data-main="scripts/Index" src="scripts/require.js"></script>
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-118249672-1"></script>
-    <script>window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'UA-118249672-1');</script>
+    <script>window.dataLayer = window.dataLayer || []; function gtag() { dataLayer.push(arguments); } gtag('js', new Date()); gtag('config', 'UA-118249672-1');</script>
 </body>
 </html>

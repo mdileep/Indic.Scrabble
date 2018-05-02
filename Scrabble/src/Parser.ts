@@ -9,6 +9,7 @@
 //       _._        | <TODO>                   |   <TODO>                  | <TODO>
 // </copyright>
 //---------------------------------------------------------------------------------------------
+
 import * as Contracts from 'Contracts';
 import * as GameActions from "GameActions";
 import * as Indic from "Indic";
@@ -22,14 +23,14 @@ export class Parser {
         var players: Contracts.iPlayers = Parser.ParsePlayers(Config.Players);
         //
         var cache: Contracts.iCachedTile = Parser.BuildCache(cabinet);
-        var infoBar: Contracts.iInfoBar = Parser.ParseInfoBar();
+        var infoBar: Contracts.iInfoBar = Parser.BuildInfoBar();
         var gameTable: Contracts.iGameTable = Parser.BuildGameTable(Config.Board.GameTable, cache);
         var stats: Contracts.iBoardsStats = { EmptyCells: 0, Occupancy: 0, TotalWords: 0, UnUsed: 0 };
         //
         GameActions.GameActions.RefreshTrays(cabinet.Trays, cache);
         GameActions.GameActions.RefreshCabinet(cabinet, cache);
         //
-        var Alert: Contracts.iAlert = Parser.ParseAlert();
+        var dialog: Contracts.iAlert = Parser.BuildDialog();
 
         //
         var gameState: Contracts.iGameState = {
@@ -46,7 +47,7 @@ export class Parser {
             Show: true,
             Stats: stats,
             GameTable: gameTable,
-            Alert: Alert
+            Dialog: dialog
         };
         return gameState;
     }
@@ -122,6 +123,7 @@ export class Parser {
     }
     public static ParseBoard(JSON: Contracts.iRawBoard): Contracts.iBoardProps {
         var raw: Contracts.iBoardProps = ({} as any) as Contracts.iBoardProps;
+        raw.Id = "Board";
         raw.key = "Board";
         raw.Size = JSON.Size;
         raw.Name = JSON.Name;
@@ -169,15 +171,15 @@ export class Parser {
         }
         return raw;
     }
-    public static ParseInfoBar(): Contracts.iInfoBar {
+    public static BuildInfoBar(): Contracts.iInfoBar {
         var raw: Contracts.iInfoBar = ({} as any) as Contracts.iInfoBar;
         raw.key = "InfoBar";
         raw.Messages = [];
         return raw;
     }
-    public static ParseAlert(): Contracts.iAlert {
-        var id: string = "Alert";
-        var Alert: Contracts.iAlert =
+    public static BuildDialog(): Contracts.iDialog {
+        var id: string = "Dialog";
+        var dialog: Contracts.iAlert =
             {
                 Id: id,
                 key: id,
@@ -188,7 +190,7 @@ export class Parser {
                 Title: "Title",
                 Message: "Sample",
             };
-        return Alert;
+        return dialog;
     }
     public static RefreshCache(cache: Contracts.iCachedTile, prop: any): void {
         var text = prop.Text;
@@ -214,5 +216,4 @@ export class Parser {
             };
         return;
     }
-
 }

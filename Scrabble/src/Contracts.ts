@@ -87,8 +87,8 @@ export interface iGameState extends iComponent {
     GameTable: iGameTable;
     Cache: iCachedTile;
     Stats: iBoardsStats;
+    Dialog: iDialog;
     GameOver: boolean;
-    Alert: iAlert;
 }
 export interface iOverlayDialog extends iComponent {
     Title: string;
@@ -103,10 +103,20 @@ export interface _iAlertDialog extends iOverlayDialog {
     Title: string;
     Message: string;
 }
-export interface iAlert extends iComponent{
+export interface _iConfirmDialog extends _iAlertDialog {
+    Title: string;
+    Message: string;
+}
+export interface iDialog extends iComponent {
     Title: string;
     Message: string;
     OnConfirm?: () => void;
+}
+export interface iAlert extends iDialog {
+
+}
+export interface iConfirm extends iAlert {
+    OnDismiss?: () => void;
 }
 export interface iActionArgs {
     type: number;
@@ -130,7 +140,7 @@ export class Actions {
     public static Approve: number = 6;
     public static BotMove: number = 7;
     public static BotMoveResponse: number = 8;
-    public static AlertDismiss: number = 9;
+    public static DismissDialog: number = 9;
 }
 //Load Schema is Differet from iGameState 
 //TODO: May use the Same Schema??

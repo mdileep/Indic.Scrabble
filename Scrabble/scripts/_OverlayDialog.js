@@ -26,15 +26,15 @@ define(["require", "exports", "react"], function (require, exports, React) {
             }
             var elem = React.createElement('div', {
                 key: this.props.Id,
-                className: "Notification"
+                className: "olDialog"
             }, childs);
             return elem;
         };
         _OverlayDialog.prototype.renderForeground = function (content) {
             var childs = [];
-            var title = React.createElement('h1', {
+            var title = React.createElement('h2', {
                 key: "title_" + this.props.Id,
-                className: "oFTitle"
+                className: "h2 oFTitle"
             }, this.props.Title);
             childs.push(title);
             if (content != null) {

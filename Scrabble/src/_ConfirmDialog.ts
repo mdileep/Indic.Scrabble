@@ -1,5 +1,5 @@
 ﻿//---------------------------------------------------------------------------------------------
-// <copyright file="AlertDialog.ts" company="Chandam-ఛందం">
+// <copyright file="_ConfirmDialog.ts" company="Chandam-ఛందం">
 //    Copyright © 2013 - 2018 'Chandam-ఛందం' : http://chandam.apphb.com
 //    Original Author : Dileep Miriyala (m.dileep@gmail.com)
 //    Last Updated    : 30-Apr-2018 20:10EST
@@ -10,36 +10,29 @@
 // </copyright>
 //---------------------------------------------------------------------------------------------
 
+
+
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as Contracts from 'Contracts';
-import * as _AlertDialog from '_AlertDialog';
+import * as OverlayDialog from '_OverlayDialog';
 import * as Util from 'Util';
-import * as GameLoader from 'GameLoader';
-import * as Messages from 'Messages';
 
-class AlertDialog extends React.Component<Contracts.iAlert, Contracts.iAlert>
+class _ConfirmDialog extends OverlayDialog.default<Contracts._iConfirmDialog, Contracts._iConfirmDialog>
 {
-    constructor(props: Contracts.iAlert) {
+    constructor(props: Contracts._iConfirmDialog) {
         super(props);
         this.state = props;
     }
 
     render() {
-        var id: string = "AlertDialog";
-        return React.createElement(((_AlertDialog.default as any) as React.ComponentClass<Contracts.iAlert>), Util.Util.Merge(this.props,
+        var message = React.createElement('div',
             {
-                Id: id,
-                key: id,
-                ref: id,
-                className: id,
-                Show: this.props.Show,
-                ReadOnly: false,
-                //
-                ShowClose: false,
-                ConfirmText: Messages.Messages.OK, ShowConfirm: true,
-                OnConfirm: this.props.OnConfirm,
-            }));
+                key: "msg_" + this.props.Id,
+                className: "oFContent"
+            }, this.props.Message);
+
+        return this.renderDialog(message);
     }
 }
-export default AlertDialog;
+export default _ConfirmDialog;

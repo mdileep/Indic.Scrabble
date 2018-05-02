@@ -1,8 +1,8 @@
 ﻿//---------------------------------------------------------------------------------------------
-// <copyright file="AlertDialog.ts" company="Chandam-ఛందం">
+// <copyright file="ConfirmDialog.ts" company="Chandam-ఛందం">
 //    Copyright © 2013 - 2018 'Chandam-ఛందం' : http://chandam.apphb.com
 //    Original Author : Dileep Miriyala (m.dileep@gmail.com)
-//    Last Updated    : 30-Apr-2018 20:10EST
+//    Last Updated    : 30-Apr-2018 20:09EST
 //    Revisions:
 //       Version    | Author                   | Email                     | Remarks
 //       1.0        | Dileep Miriyala          | m.dileep@gmail.com        | Initial Commit
@@ -13,21 +13,21 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as Contracts from 'Contracts';
-import * as _AlertDialog from '_AlertDialog';
+import * as _ConfirmDialog from '_ConfirmDialog';
 import * as Util from 'Util';
 import * as GameLoader from 'GameLoader';
 import * as Messages from 'Messages';
 
-class AlertDialog extends React.Component<Contracts.iAlert, Contracts.iAlert>
+class ConfirmDialog extends React.Component<Contracts.iConfirm, Contracts.iConfirm>
 {
-    constructor(props: Contracts.iAlert) {
+    constructor(props: Contracts.iConfirm) {
         super(props);
         this.state = props;
     }
 
     render() {
-        var id: string = "AlertDialog";
-        return React.createElement(((_AlertDialog.default as any) as React.ComponentClass<Contracts.iAlert>), Util.Util.Merge(this.props,
+        var id: string = "ConfrimDialog";
+        return React.createElement(((_ConfirmDialog.default as any) as React.ComponentClass<Contracts.iConfirm>), Util.Util.Merge(this.props,
             {
                 Id: id,
                 key: id,
@@ -36,10 +36,11 @@ class AlertDialog extends React.Component<Contracts.iAlert, Contracts.iAlert>
                 Show: this.props.Show,
                 ReadOnly: false,
                 //
-                ShowClose: false,
-                ConfirmText: Messages.Messages.OK, ShowConfirm: true,
+                ConfirmText: Messages.Messages.Yes, ShowConfirm: true,
+                CancelText: Messages.Messages.No, ShowClose: true,
                 OnConfirm: this.props.OnConfirm,
+                OnDismiss: this.props.OnDismiss,
             }));
     }
 }
-export default AlertDialog;
+export default ConfirmDialog;

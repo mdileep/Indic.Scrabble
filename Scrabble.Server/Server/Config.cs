@@ -12,15 +12,17 @@
 
 using Shared;
 using System.Collections.Generic;
+using System;
 
 namespace Scrabble.Server
 {
 	class Config
 	{
 		public const string DefaultLang = "te";
+		public const string NeutralLang = "en";
 		public const string DefaultBoard = "11x11";
 
-		public static readonly List<string> Languages = new List<string> { "te","kn"};
+		public static readonly List<string> Languages = new List<string> { "te", "kn" };
 		public static readonly List<string> Actions = new List<string> { ActionNames.Ping, ActionNames.Help, ActionNames.NextMove, ActionNames.Probables, ActionNames.Validate };
 		public static readonly List<string> BoardNames = new List<string> { "11x11" };
 
@@ -44,6 +46,20 @@ namespace Scrabble.Server
 			CharSets = CacheManager.GetApppObject<Dictionary<string, CharSet>>("CharSets", BuildCharSets);
 			Bots = CacheManager.GetApppObject<Dictionary<string, Bot>>("Bots", BuildBots);
 			Boards = CacheManager.GetApppObject<Dictionary<string, KnownBoard>>("Boards", BuildBoards);
+		}
+
+		internal static Bot[] BotsByLang(string lang)
+		{
+			List<Bot> bots = new List<Shared.Bot>();
+			foreach (var KV in Bots)
+			{
+				if (KV.Value.Language != lang)
+				{
+					continue;
+				}
+				bots.Add(KV.Value);
+			}
+			return bots.ToArray();
 		}
 
 		static Dictionary<string, KnownBoard> BuildBoards()
@@ -102,13 +118,19 @@ namespace Scrabble.Server
 			var dict = ParseUtil.ParseJSON<Dictionary<string, object>>(content);
 			foreach (string lang in Languages)
 			{
-				var Messages = (Dictionary<string, object>)dict[lang];
-				foreach (var messages in Messages)
-				{
-					Resources[lang + ":" + messages.Key] = messages.Value;
-				}
+				SetResources(lang, dict, Resources);
 			}
+			SetResources(NeutralLang, dict, Resources);
 			return Resources;
+		}
+
+		static void SetResources(string lang, Dictionary<string, object> dict, Dictionary<string, object> Resources)
+		{
+			var Messages = (Dictionary<string, object>)dict[lang];
+			foreach (var messages in Messages)
+			{
+				Resources[lang + ":" + messages.Key] = messages.Value;
+			}
 		}
 
 		internal static Dictionary<string, object> GetMessages(string lang)
@@ -117,15 +139,43 @@ namespace Scrabble.Server
 			string resouceName = ResourceName("Localization");
 			var content = ServerUtil.ReadResource(resouceName);
 			var dict = ParseUtil.ParseJSON<Dictionary<string, object>>(content);
-			var Messages = (Dictionary<string, object>)dict[lang];
-			return Messages;
+			var neutral = (Dictionary<string, object>)dict[NeutralLang];
+			var localized = (Dictionary<string, object>)dict[lang];
+			Merge(neutral, localized);
+			return localized;
+		}
+
+		static void Merge(Dictionary<string, object> neutral, Dictionary<string, object> localized)
+		{
+			foreach (var KV in neutral)
+			{
+				if (localized.ContainsKey(KV.Key))
+				{
+					continue;
+				}
+				localized[KV.Key] = neutral[KV.Key];
+			}
+		}
+
+		internal static Dictionary<string, string> Messages(string lang, string[] keys)
+		{
+			Dictionary<string, string> Dict = new Dictionary<string, string>();
+			foreach (string key in keys)
+			{
+				Dict[key] = Lang(lang, key);
+			}
+			return Dict;
 		}
 
 		internal static string Lang(string lang, string key)
 		{
 			if (!Dictionary.ContainsKey(lang + ":" + key))
 			{
-				return null;
+				if (lang == NeutralLang)
+				{
+					return null;
+				}
+				return Lang(NeutralLang, key);
 			}
 			return Dictionary[lang + ":" + key].ToString();
 		}
@@ -134,7 +184,11 @@ namespace Scrabble.Server
 		{
 			if (!Dictionary.ContainsKey(lang + ":" + key))
 			{
-				return null;
+				if (lang == NeutralLang)
+				{
+					return null;
+				}
+				return ResourceKey(NeutralLang, key);
 			}
 			return Dictionary[lang + ":" + key];
 		}

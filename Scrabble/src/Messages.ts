@@ -39,4 +39,7 @@ export class Messages {
     public static WhyGameOver: string = "";
     public static NoWordsAdded: string = "";
     public static Stats: string = "";
+    public static OK: string = "";
+    public static Yes: string = "";
+    public static No: string = "";
 }

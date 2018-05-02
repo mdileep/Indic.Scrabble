@@ -8,12 +8,12 @@ define(["require", "exports", "GameActions", "Indic"], function (require, export
             var board = Parser.ParseBoard(Config.Board);
             var players = Parser.ParsePlayers(Config.Players);
             var cache = Parser.BuildCache(cabinet);
-            var infoBar = Parser.ParseInfoBar();
+            var infoBar = Parser.BuildInfoBar();
             var gameTable = Parser.BuildGameTable(Config.Board.GameTable, cache);
             var stats = { EmptyCells: 0, Occupancy: 0, TotalWords: 0, UnUsed: 0 };
             GameActions.GameActions.RefreshTrays(cabinet.Trays, cache);
             GameActions.GameActions.RefreshCabinet(cabinet, cache);
-            var Alert = Parser.ParseAlert();
+            var dialog = Parser.BuildDialog();
             var gameState = {
                 Id: Config.Board.Id,
                 key: Config.Board.Id,
@@ -28,7 +28,7 @@ define(["require", "exports", "GameActions", "Indic"], function (require, export
                 Show: true,
                 Stats: stats,
                 GameTable: gameTable,
-                Alert: Alert
+                Dialog: dialog
             };
             return gameState;
         };
@@ -102,6 +102,7 @@ define(["require", "exports", "GameActions", "Indic"], function (require, export
         };
         Parser.ParseBoard = function (JSON) {
             var raw = {};
+            raw.Id = "Board";
             raw.key = "Board";
             raw.Size = JSON.Size;
             raw.Name = JSON.Name;
@@ -148,15 +149,15 @@ define(["require", "exports", "GameActions", "Indic"], function (require, export
             }
             return raw;
         };
-        Parser.ParseInfoBar = function () {
+        Parser.BuildInfoBar = function () {
             var raw = {};
             raw.key = "InfoBar";
             raw.Messages = [];
             return raw;
         };
-        Parser.ParseAlert = function () {
-            var id = "Alert";
-            var Alert = {
+        Parser.BuildDialog = function () {
+            var id = "Dialog";
+            var dialog = {
                 Id: id,
                 key: id,
                 Show: false,
@@ -165,7 +166,7 @@ define(["require", "exports", "GameActions", "Indic"], function (require, export
                 Title: "Title",
                 Message: "Sample",
             };
-            return Alert;
+            return dialog;
         };
         Parser.RefreshCache = function (cache, prop) {
             var text = prop.Text;
