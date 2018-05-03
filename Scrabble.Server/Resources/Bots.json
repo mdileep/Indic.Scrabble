@@ -1,37 +1,43 @@
 ﻿{
   "eenadu": {
     "Name": "ఈనాడు",
-    "FullName":"ఈనాడు: Eenadu",
+    "FullName":"ఈనాడు",
     "Language": "te",
     "Dictionary": "te.eenadu.txt"
   },
   "bbc.te": {
     "Name": "బీబీసీ",
-    "FullName":"బీబీసీ తెలుగు: BBC Telugu",
+    "FullName":"బీబీసీ తెలుగు",
     "Language": "te",
     "Dictionary": "te.bbc.txt"
   },
+  "andhrajyothy":{
+    "Name": "ఆంధ్రజ్యోతి",
+    "FullName":"ఆంధ్రజ్యోతి",
+    "Language": "te",
+    "Dictionary": "te.andhrajyothy.txt"
+  },
   "kinige":{
     "Name": "కినిగె",
-    "FullName":"కినిగె: Kinige",
+    "FullName":"కినిగె",
     "Language": "te",
     "Dictionary": "te.kinige.txt"
   },
   "gallery":{
     "Name": "వసారా",
-    "FullName":"వసారా: Galery",
+    "FullName":"వసారా",
     "Language": "te",
     "Dictionary": "te.gallery.txt"
   },
   "veeven":{
     "Name": "వీవెనుడు",
-    "FullName":"వీవెనుడు: Veeven",
+    "FullName":"వీవెన్",
     "Language": "te",
     "Dictionary":  "te.veeven.txt"
   },
   "vijay": {
     "Name": "ವಿಜಯ",
-    "FullName":"ವಿಜಯ ಕರ್ನಾಟಕ: Vijay Karnataka",
+    "FullName":"ವಿಜಯ ಕರ್ನಾಟಕ",
     "Language": "kn",
     "Dictionary": "kn.vijaykarnataka.txt"
   }

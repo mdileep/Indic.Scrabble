@@ -3,7 +3,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", "react", 'Contracts', 'Tray', 'TrayRack', 'GameLoader', 'Util'], function (require, exports, React, Contracts, Tray, TrayRack, GameLoader, Util) {
+define(["require", "exports", "react", 'Contracts', 'Tray', 'TrayRack', 'Util', 'GameStore'], function (require, exports, React, Contracts, Tray, TrayRack, Util, GS) {
     "use strict";
     var Cabinet = (function (_super) {
         __extends(Cabinet, _super);
@@ -68,7 +68,7 @@ define(["require", "exports", "react", 'Contracts', 'Tray', 'TrayRack', 'GameLoa
             ev.preventDefault();
             var text = ev.dataTransfer.getData("text");
             var data = JSON.parse(text);
-            GameLoader.GameLoader.store.dispatch({
+            GS.GameStore.Dispatch({
                 type: Contracts.Actions.ToTray,
                 args: { Origin: data.Origin, Src: data.Src, SrcCell: data.SrcCell }
             });

@@ -10,16 +10,17 @@
 // </copyright>
 //---------------------------------------------------------------------------------------------
 import * as axios from 'axios';
-import * as GameLoader from 'GameLoader';
-import * as Contracts from 'Contracts';
+import * as GS from 'GameStore';
+import * as GA from 'GameActions';
+import * as C from 'Contracts';
 import * as U from 'Util';
 declare var Config: any;
 
 export class AskBot {
 
     static NextMove(): void {
-        GameLoader.GameLoader.store.dispatch({
-            type: Contracts.Actions.BotMove,
+        GS.GameStore.Dispatch({
+            type: C.Actions.BotMove,
             args: {}
         });
     }
@@ -33,8 +34,8 @@ export class AskBot {
         axios
             .post("/API.ashx?nextmove", post)
             .then(response => {
-                GameLoader.GameLoader.store.dispatch({
-                    type: Contracts.Actions.BotMoveResponse,
+                GS.GameStore.Dispatch({
+                    type: C.Actions.BotMoveResponse,
                     args: response.data
                 });
             })
@@ -57,8 +58,8 @@ export class AskBot {
                     Effort: effort
                 };
 
-            GameLoader.GameLoader.store.dispatch({
-                type: Contracts.Actions.BotMoveResponse,
+            GS.GameStore.Dispatch({
+                type: C.Actions.BotMoveResponse,
                 args: response
             });
 
@@ -67,93 +68,27 @@ export class AskBot {
 }
 
 export class AskReferee {
-    static ValidateWords(state: Contracts.iBoardProps): boolean {
+    static ValidateWords(state: C.iBoardProps): boolean {
         //Actual Word Verification against Word Database
         return true;
     }
 }
-
-//Port of C# : Game Server
-export interface Neighbor {
-    Left: number;
-    Right: number;
-    Top: number;
-    Bottom: number;
-}
-export interface Point {
-    X: number;
-    Y: number;
-}
-export interface Word {
-    Index: number;
-    Tiles: string;
-    Syllables: number;
-    Position: string;
-}
-export interface ProbableMove {
-    Direction: string;
-    Score: number;
-    Moves: Word[];
-    WordsCount: number;
-    Words: ProbableWord[];
-}
-export interface ProbableWord {
-    Cells: TargetCell[];
-    Display: string;
-    String: string;
-    Score: number;
-}
-export interface TargetCell {
-    Index: number;
-    Target: string;
-    Score: number;
-}
-export interface ScrabbleBoard {
-    Name: string;
-    Bot: string;
-    //
-    Reference: string;
-    //Dynamic
-    Cells: string[];
-    Vowels: string;
-    Conso: string;
-    Special: string;
-}
-export interface Bot {
-    Id: string;
-    Name: string;
-    FullName: string;
-    Language: string;
-    Dictionary: string;
-}
-export interface CharSet {
-    Name: string;
-    SunnaSet: string[];
-    Vowels: string[];
-    Consonents: string[];
-    Synonyms: any;
-    Virama: string;
-}
-export interface KnownBoard {
-    Size: number;
-    Weights: number[];
-}
 //
 export class BoardUtil {
-    public static FindNeighbors(index: number, size: number): Neighbor {
-        var arr: Neighbor = ({ Right: -1, Left: -1, Top: -1, Bottom: -1 } as any) as Neighbor;
+    public static FindNeighbors(index: number, size: number): C.Neighbor {
+        var arr: C.Neighbor = ({ Right: -1, Left: -1, Top: -1, Bottom: -1 } as any) as C.Neighbor;
         var pos = BoardUtil.Position(index, size);
         var bottom = BoardUtil.Abs(pos.X + 1, pos.Y, size);
         var top = BoardUtil.Abs(pos.X - 1, pos.Y, size);
         var left = BoardUtil.Abs(pos.X, pos.Y - 1, size);
         var right = BoardUtil.Abs(pos.X, pos.Y + 1, size);
-        arr = ({ Right: right, Left: left, Top: top, Bottom: bottom } as any) as Neighbor;
+        arr = ({ Right: right, Left: left, Top: top, Bottom: bottom } as any) as C.Neighbor;
         return arr;
     }
-    public static Position(N: number, size: number): Point {
+    public static Position(N: number, size: number): C.Point {
         var X = Math.floor(N / size);
         var Y = (N % size);
-        return ({ X: X, Y: Y } as any) as Point;
+        return ({ X: X, Y: Y } as any) as C.Point;
     }
     public static Abs(X: number, Y: number, size: number): number {
         var min = 0;
@@ -165,8 +100,8 @@ export class BoardUtil {
     }
 }
 export class ProbableWordComparer {
-    static Distinct(_Words: ProbableWord[]): ProbableWord[] {
-        var Words: ProbableWord[] = [];
+    static Distinct(_Words: C.ProbableWord[]): C.ProbableWord[] {
+        var Words: C.ProbableWord[] = [];
         for (var indx in _Words) {
             if (ProbableWordComparer.Contains(Words, _Words[indx])) {
                 continue;
@@ -175,7 +110,7 @@ export class ProbableWordComparer {
         }
         return Words;
     }
-    public static Equals(x: ProbableWord, y: ProbableWord): boolean {
+    public static Equals(x: C.ProbableWord, y: C.ProbableWord): boolean {
         if (x.Cells.length != y.Cells.length) { return false; }
         for (var i: number = 0; i < x.Cells.length; i++) {
             if (x.Cells[i].Index != y.Cells[i].Index) {
@@ -187,7 +122,7 @@ export class ProbableWordComparer {
         }
         return true;
     }
-    public static Contains(Words: ProbableWord[], Word: ProbableWord): boolean {
+    public static Contains(Words: C.ProbableWord[], Word: C.ProbableWord): boolean {
         for (var indx in Words) {
             if (ProbableWordComparer.Equals(Words[indx], Word)) {
                 return true;
@@ -197,26 +132,26 @@ export class ProbableWordComparer {
     }
 }
 export class Runner {
-    public BestMove(Board: ScrabbleBoard): ProbableMove {
+    public BestMove(Board: C.ScrabbleBoard): C.ProbableMove {
         var Moves = this.Probables(Board);
         if (Moves.length == 0) {
             return null;
         }
         return Moves[0];
     }
-    public Probables(Board: ScrabbleBoard): ProbableMove[] {
-        var Moves = [] as ProbableMove[];
+    public Probables(Board: C.ScrabbleBoard): C.ProbableMove[] {
+        var Moves = [] as C.ProbableMove[];
 
         if (Board == null) {
             return;
         }
 
-        var bot: Bot = GameConfig.GetBot(Board.Bot);
+        var bot: C.Bot = GameConfig.GetBot(Board.Bot);
         if (bot == null) {
             return;
         }
         //
-        var board: KnownBoard = GameConfig.GetBoard(Board.Name);
+        var board: C.KnownBoard = GameConfig.GetBoard(Board.Name);
         if (board == null) {
             return;
         }
@@ -287,11 +222,11 @@ export class Runner {
         return Moves;
     }
 
-    static EmptyExtensions(Cells: string[], size: number, CharSet: CharSet, maxIndex: number, AllWords: Word[], Movables: string[], SpeicalDict: any): ProbableMove[] {
-        var Moves = [] as ProbableMove[];
+    static EmptyExtensions(Cells: string[], size: number, CharSet: C.CharSet, maxIndex: number, AllWords: C.Word[], Movables: string[], SpeicalDict: any): C.ProbableMove[] {
+        var Moves = [] as C.ProbableMove[];
         {
             for (var indx in AllWords) {
-                var word: Word = AllWords[indx];
+                var word: C.Word = AllWords[indx];
                 var Pre = "";
                 var Center = "";
                 var Post = "";
@@ -327,9 +262,9 @@ export class Runner {
         }
         return Moves;
     }
-    static SyllableExtensions(Cells: string[], size: number, CharSet: CharSet, AllWords: Word[], Probables: Word[], Movables: string[], SpeicalDict: any): ProbableMove[] {
+    static SyllableExtensions(Cells: string[], size: number, CharSet: C.CharSet, AllWords: C.Word[], Probables: C.Word[], Movables: string[], SpeicalDict: any): C.ProbableMove[] {
 
-        var Moves = [] as ProbableMove[];
+        var Moves = [] as C.ProbableMove[];
         {
             var All = Runner.GetSyllableList2(Cells, size, false, true);
             for (var indx in All) {
@@ -339,7 +274,7 @@ export class Runner {
                 var R = new RegExp(pattern);
                 {
                     for (var indx2 in Probables) {
-                        var probable: Word = Probables[indx2];
+                        var probable: C.Word = Probables[indx2];
 
                         if (!R.test(probable.Tiles)) {
                             continue;
@@ -383,12 +318,12 @@ export class Runner {
         return Moves;
 
     }
-    static WordExtensions(Cells: string[], size: number, CharSet: CharSet, AllWords: Word[], Movables: string[], SpeicalDict: any): ProbableMove[] {
-        var Moves = [] as ProbableMove[];
+    static WordExtensions(Cells: string[], size: number, CharSet: C.CharSet, AllWords: C.Word[], Movables: string[], SpeicalDict: any): C.ProbableMove[] {
+        var Moves = [] as C.ProbableMove[];
         {
             var WordsOnBoard = Runner.GetWordsOnBoard(Cells, size, false);
             for (var indx in WordsOnBoard) {
-                var wordOnBoard: Word = WordsOnBoard[indx];
+                var wordOnBoard: C.Word = WordsOnBoard[indx];
                 var raw = wordOnBoard.Tiles.Replace("(", "").Replace(")", "").Replace(",", "").Replace("|", ",");
 
                 var pattern = Runner.GenWordPattern(CharSet, wordOnBoard.Tiles, "(?<Center{0}>.*?)", "", "(?<Center{0}>.*?)", "(?<Pre>.*?)", "(?<Post>.*?)", true);
@@ -396,7 +331,7 @@ export class Runner {
                 var R = new RegExp(pattern);
                 {
                     for (var indx2 in AllWords) {
-                        var word: Word = AllWords[indx2];
+                        var word: C.Word = AllWords[indx2];
                         if (raw == word.Tiles) {
                             continue;
                         }
@@ -450,8 +385,8 @@ export class Runner {
         return Moves;
     }
 
-    static TryHarizontal(Cells: string[], size: number, Index: number, offset: number, Pre: string[], Centers: string[], Post: string[]): ProbableMove {
-        var Moves: Word[] = [] as Word[];
+    static TryHarizontal(Cells: string[], size: number, Index: number, offset: number, Pre: string[], Centers: string[], Post: string[]): C.ProbableMove {
+        var Moves: C.Word[] = [] as C.Word[];
         var PreCount = Pre.length;
         var PostCount = Post.length;
         var NewCells: string[] = Cells.Clone();
@@ -463,10 +398,10 @@ export class Runner {
                 if (n.Left != -1) {
                     NewCells[n.Left] += Pre[x];
                     Impacted.push(n.Left);
-                    Moves.push({ Tiles: Pre[x], Index: n.Left } as Word);
+                    Moves.push({ Tiles: Pre[x], Index: n.Left } as C.Word);
                 }
                 else {
-                    return { Words: [] as ProbableWord[], Direction: "H", WordsCount: 0, Moves: [] as Word[] } as ProbableMove;
+                    return { Words: [] as C.ProbableWord[], Direction: "H", WordsCount: 0, Moves: [] as C.Word[] } as C.ProbableMove;
                 }
             }
         }
@@ -480,7 +415,7 @@ export class Runner {
 
                 NewCells[cellIndex] += Centers[c];
                 Impacted.push(cellIndex);
-                Moves.push({ Tiles: Centers[c], Index: cellIndex } as Word);
+                Moves.push({ Tiles: Centers[c], Index: cellIndex } as C.Word);
             }
         }
 
@@ -490,26 +425,26 @@ export class Runner {
                 if (n.Right != -1) {
                     NewCells[n.Right] += Post[x];
                     Impacted.push(n.Right);
-                    Moves.push({ Tiles: Post[x], Index: n.Right } as Word);
+                    Moves.push({ Tiles: Post[x], Index: n.Right } as C.Word);
                 }
                 else {
-                    return { Words: [] as ProbableWord[], Direction: "H", WordsCount: 0, Moves: [] as Word[] } as ProbableMove;
+                    return { Words: [] as C.ProbableWord[], Direction: "H", WordsCount: 0, Moves: [] as C.Word[] } as C.ProbableMove;
                 }
             }
         }
 
-        var W = [] as ProbableWord[];
+        var W = [] as C.ProbableWord[];
         for (var i in Impacted) {
             var index = Impacted[i];
             W = W.concat(Runner.WordsAt(NewCells, size, index));
         }
-        return { Words: W, Moves: Moves, WordsCount: W.length, Direction: "H" } as ProbableMove;
+        return { Words: W, Moves: Moves, WordsCount: W.length, Direction: "H" } as C.ProbableMove;
     }
-    static TryVertical(Cells: string[], size: number, Index: number, offset: number, Pre: string[], Centers: string[], Post: string[]): ProbableMove {
-        var Moves = [] as Word[];
+    static TryVertical(Cells: string[], size: number, Index: number, offset: number, Pre: string[], Centers: string[], Post: string[]): C.ProbableMove {
+        var Moves = [] as C.Word[];
         var PreCount = Pre.length;
         var PostCount = Post.length;
-        var Pos: Point = BoardUtil.Position(Index, size);
+        var Pos: C.Point = BoardUtil.Position(Index, size);
         var NewCells = Cells.Clone();
         var Impacted = [] as number[];
 
@@ -520,10 +455,10 @@ export class Runner {
                 if (n.Top != -1) {
                     NewCells[n.Top] += Pre[x];
                     Impacted.push(n.Top);
-                    Moves.push({ Tiles: Pre[x], Index: n.Top } as Word);
+                    Moves.push({ Tiles: Pre[x], Index: n.Top } as C.Word);
                 }
                 else {
-                    return { Words: [] as ProbableWord[], Direction: "V", WordsCount: 0, Moves: [] as Word[] } as ProbableMove;
+                    return { Words: [] as C.ProbableWord[], Direction: "V", WordsCount: 0, Moves: [] as C.Word[] } as C.ProbableMove;
                 }
             }
         }
@@ -536,7 +471,7 @@ export class Runner {
                 }
                 NewCells[cellIndex] += Centers[c];
                 Impacted.push(cellIndex);
-                Moves.push({ Tiles: Centers[c], Index: cellIndex } as Word);
+                Moves.push({ Tiles: Centers[c], Index: cellIndex } as C.Word);
             }
         }
 
@@ -547,23 +482,23 @@ export class Runner {
                 if (n.Bottom != -1) {
                     NewCells[n.Bottom] += Post[x];
                     Impacted.push(n.Bottom);
-                    Moves.push({ Tiles: Post[x], Index: n.Bottom } as Word);
+                    Moves.push({ Tiles: Post[x], Index: n.Bottom } as C.Word);
                 }
                 else {
-                    return { Words: [] as ProbableWord[], Direction: "V", WordsCount: 0, Moves: [] as Word[] } as ProbableMove;
+                    return { Words: [] as C.ProbableWord[], Direction: "V", WordsCount: 0, Moves: [] as C.Word[] } as C.ProbableMove;
                 }
             }
         }
 
-        var W: ProbableWord[] = [] as ProbableWord[];
+        var W: C.ProbableWord[] = [] as C.ProbableWord[];
         for (var i in Impacted) {
             var index = Impacted[i];
             W = W.concat(Runner.WordsAt(NewCells, size, index));
         }
-        return { Words: W, Moves: Moves, WordsCount: W.length, Direction: "V" } as ProbableMove;
+        return { Words: W, Moves: Moves, WordsCount: W.length, Direction: "V" } as C.ProbableMove;
     }
 
-    RefreshScores(Moves: ProbableMove[], Weights: number[], size: number): void {
+    RefreshScores(Moves: C.ProbableMove[], Weights: number[], size: number): void {
         for (var indx in Moves) {
             var Move = Moves[indx];
             var score: number = 0;
@@ -581,22 +516,22 @@ export class Runner {
             }
             Move.Score = score;
         }
-        Moves.sort(function (x: ProbableMove, y: ProbableMove) { return x.Score - y.Score; });
+        Moves.sort(function (x: C.ProbableMove, y: C.ProbableMove) { return x.Score - y.Score; });
         Moves.reverse();
     }
 
-    ShortList(Words: Word[], NonCornerPattern: string, Dict: any): Word[] {
+    ShortList(Words: C.Word[], NonCornerPattern: string, Dict: any): C.Word[] {
         if (U.Util.IsNullOrEmpty(NonCornerPattern)) {
-            return [] as Word[];
+            return [] as C.Word[];
         }
 
         var R = RegExp(NonCornerPattern);
 
         var Matches = this.MatchedWords(Words, NonCornerPattern);
-        var Shortlisted = [] as Word[];
+        var Shortlisted = [] as C.Word[];
         {
             for (var indx in Matches) {
-                var word: Word = Matches[indx];
+                var word: C.Word = Matches[indx];
                 if (word.Syllables == 1) {
                     continue;
                 }
@@ -614,7 +549,7 @@ export class Runner {
         return Shortlisted;
     }
 
-    static Validate3(WV: ProbableMove, AllWords: Word[]): boolean {
+    static Validate3(WV: C.ProbableMove, AllWords: C.Word[]): boolean {
         WV.Words = ProbableWordComparer.Distinct(WV.Words);
         WV.WordsCount = WV.Words.length;
         if (WV.Words.length == 0 || WV.Moves.length == 0) {
@@ -622,10 +557,10 @@ export class Runner {
         }
         return Runner.Validate2(WV.Words, AllWords);
     }
-    static Validate2(WV: ProbableWord[], AllWords: Word[]): boolean {
+    static Validate2(WV: C.ProbableWord[], AllWords: C.Word[]): boolean {
         for (var indx in WV) {
-            var w: ProbableWord = WV[indx];
-            var v = AllWords.filter(function (x: Word) { return x.Tiles == w.String });
+            var w: C.ProbableWord = WV[indx];
+            var v = AllWords.filter(function (x: C.Word) { return x.Tiles == w.String });
             if (v == null || v.length == 0) {
                 return false;
             }
@@ -778,9 +713,9 @@ export class Runner {
         return true;
     }
 
-    MatchedWords(words: Word[], Pattern: string): Word[] {
+    MatchedWords(words: C.Word[], Pattern: string): C.Word[] {
         var r = RegExp(Pattern);
-        var List = words.filter(function (s: Word) { return r.test(s.Tiles); });
+        var List = words.filter(function (s: C.Word) { return r.test(s.Tiles); });
         console.log("\t\t\t" + List.length + " of " + words.length + " found: " + Pattern);
         return List;
 
@@ -800,8 +735,8 @@ export class Runner {
         return ret;
     }
 
-    static GetWordsOnBoard(Cells: string[], size: number, includeDuplicates: boolean): Word[] {
-        var Words: Word[] = [] as Word[];
+    static GetWordsOnBoard(Cells: string[], size: number, includeDuplicates: boolean): C.Word[] {
+        var Words: C.Word[] = [] as C.Word[];
         for (var i = 0; i < size; i++) {
             var R = Runner.GetWords(Cells, "R", i, size, includeDuplicates);
             var C = Runner.GetWords(Cells, "C", i, size, includeDuplicates);
@@ -810,8 +745,8 @@ export class Runner {
         }
         return Words;
     }
-    static GetWords(Cells: string[], option: string, r: number, size: number, includeDuplicates: boolean): Word[] {
-        var Words: Word[] = [] as Word[];
+    static GetWords(Cells: string[], option: string, r: number, size: number, includeDuplicates: boolean): C.Word[] {
+        var Words: C.Word[] = [] as C.Word[];
         var pending = "";
         var cnt = 0;
         for (var i = 0; i < size; i++) {
@@ -835,13 +770,13 @@ export class Runner {
                     var word = pending.TrimEnd('|');
                     if (includeDuplicates) {
                         var startIndex: number = Runner.GetStartIndex(option, r, i, size, cnt);
-                        Words.push({ Tiles: word, Syllables: cnt, Position: option, Index: startIndex } as Word);
+                        Words.push({ Tiles: word, Syllables: cnt, Position: option, Index: startIndex } as C.Word);
                     }
                     else {
-                        var X: Word[] = Words.filter(x => x.Tiles == word);
+                        var X: C.Word[] = Words.filter(x => x.Tiles == word);
                         if (X == null || X.length == 0) {
                             var startIndex: number = Runner.GetStartIndex(option, r, i, size, cnt);
-                            Words.push({ Tiles: word, Syllables: cnt, Position: option, Index: startIndex } as Word);
+                            Words.push({ Tiles: word, Syllables: cnt, Position: option, Index: startIndex } as C.Word);
                         }
                     }
                 }
@@ -854,33 +789,33 @@ export class Runner {
             var word = pending.TrimEnd('|');
             if (includeDuplicates) {
                 var startIndex = Runner.GetStartIndex(option, r, size, size, cnt);
-                Words.push({ Tiles: word, Syllables: cnt, Position: option, Index: startIndex } as Word);
+                Words.push({ Tiles: word, Syllables: cnt, Position: option, Index: startIndex } as C.Word);
             }
             else {
-                var X: Word[] = Words.filter(x => x.Tiles == word);
+                var X: C.Word[] = Words.filter(x => x.Tiles == word);
                 if (X == null || X.length == 0) {
                     var startIndex = Runner.GetStartIndex(option, r, size, size, cnt);
-                    Words.push({ Tiles: word, Syllables: cnt, Position: option, Index: startIndex } as Word);
+                    Words.push({ Tiles: word, Syllables: cnt, Position: option, Index: startIndex } as C.Word);
                 }
             }
         }
         return Words;
     }
-    static WordsAt(Cells: string[], size: number, index: number): ProbableWord[] {
-        var List: ProbableWord[] = [] as ProbableWord[];
-        var Neighbor: Neighbor = BoardUtil.FindNeighbors(index, size);
+    static WordsAt(Cells: string[], size: number, index: number): C.ProbableWord[] {
+        var List: C.ProbableWord[] = [] as C.ProbableWord[];
+        var Neighbor: C.Neighbor = BoardUtil.FindNeighbors(index, size);
 
         var r = Neighbor.Right != -1 ? Cells[Neighbor.Right] : "";
         var l = Neighbor.Left != -1 ? Cells[Neighbor.Left] : "";
         var t = Neighbor.Top != -1 ? Cells[Neighbor.Top] : "";
         var b = Neighbor.Bottom != -1 ? Cells[Neighbor.Bottom] : "";
 
-        var Lefties: Word[] = [] as Word[];
-        var Righties: Word[] = [] as Word[];
+        var Lefties: C.Word[] = [] as C.Word[];
+        var Righties: C.Word[] = [] as C.Word[];
 
         if (r != "") {
             //Move Right..
-            Righties.push({ Tiles: r, Index: Neighbor.Right } as Word);
+            Righties.push({ Tiles: r, Index: Neighbor.Right } as C.Word);
             var index_: number = Neighbor.Right;
             var flg: boolean = true;
             while (flg) {
@@ -890,34 +825,34 @@ export class Runner {
                     flg = false;
                     break;
                 }
-                Righties.push({ Tiles: r_, Index: n.Right } as Word);
+                Righties.push({ Tiles: r_, Index: n.Right } as C.Word);
                 index_ = n.Right;
             }
         }
         if (l != "") {
             //Move Left..
-            Lefties.push({ Tiles: l, Index: Neighbor.Left } as Word);
+            Lefties.push({ Tiles: l, Index: Neighbor.Left } as C.Word);
 
             var index_ = Neighbor.Left;
             var flg: boolean = true;
             while (flg) {
-                var n: Neighbor = BoardUtil.FindNeighbors(index_, size);
+                var n: C.Neighbor = BoardUtil.FindNeighbors(index_, size);
                 var l_ = n.Left != -1 ? Cells[n.Left] : "";
                 if (l_ == "") {
                     flg = false;
                     break;
                 }
-                Lefties.push({ Tiles: l_, Index: n.Left } as Word);
+                Lefties.push({ Tiles: l_, Index: n.Left } as C.Word);
                 index_ = n.Left;
             }
         }
 
-        var Topies: Word[] = [] as Word[];
-        var Downies: Word[] = [] as Word[];
+        var Topies: C.Word[] = [] as C.Word[];
+        var Downies: C.Word[] = [] as C.Word[];
 
         if (t != "") {
             //Move Top..
-            Topies.push({ Tiles: t, Index: Neighbor.Top } as Word);
+            Topies.push({ Tiles: t, Index: Neighbor.Top } as C.Word);
             var index_ = Neighbor.Top;
             var flg = true;
             while (flg) {
@@ -927,14 +862,14 @@ export class Runner {
                     flg = false;
                     break;
                 }
-                Topies.push({ Tiles: t_, Index: n.Top } as Word);
+                Topies.push({ Tiles: t_, Index: n.Top } as C.Word);
                 index_ = n.Top;
             }
         }
 
         if (b != "") {
             //Move Bottom..
-            Downies.push({ Tiles: b, Index: Neighbor.Bottom } as Word);
+            Downies.push({ Tiles: b, Index: Neighbor.Bottom } as C.Word);
             var index_ = Neighbor.Bottom;
             var flg = true;
             while (flg) {
@@ -944,7 +879,7 @@ export class Runner {
                     flg = false;
                     break;
                 }
-                Downies.push({ Tiles: d_, Index: n.Bottom } as Word);
+                Downies.push({ Tiles: d_, Index: n.Bottom } as C.Word);
                 index_ = n.Bottom;
             }
         }
@@ -953,34 +888,34 @@ export class Runner {
         Lefties.reverse();
 
         if (Topies.length + Downies.length > 0) {
-            var Vertical = Runner.MakeAWord(Topies, { Tiles: Cells[index], Index: index } as Word, Downies);
+            var Vertical = Runner.MakeAWord(Topies, { Tiles: Cells[index], Index: index } as C.Word, Downies);
             List.push(Vertical);
         }
         if (Lefties.length + Righties.length > 0) {
-            var Harizontal = Runner.MakeAWord(Lefties, { Tiles: Cells[index], Index: index } as Word, Righties);
+            var Harizontal = Runner.MakeAWord(Lefties, { Tiles: Cells[index], Index: index } as C.Word, Righties);
             List.push(Harizontal);
         }
         return List;
     }
-    static MakeAWord(F1: Word[], C: Word, F2: Word[]): ProbableWord {
-        var W = {} as ProbableWord;
-        var List: TargetCell[] = [] as TargetCell[];
+    static MakeAWord(F1: C.Word[], C: C.Word, F2: C.Word[]): C.ProbableWord {
+        var W = {} as C.ProbableWord;
+        var List: C.TargetCell[] = [] as C.TargetCell[];
         var ret: string = "";
         for (var indx in F1) {
             var s = F1[indx];
             ret = ret + s.Tiles.Replace(",", "") + ",";
-            var Cell: TargetCell = { Target: s.Tiles, Index: s.Index } as TargetCell;
+            var Cell: C.TargetCell = { Target: s.Tiles, Index: s.Index } as C.TargetCell;
             List.push(Cell);
         }
         {
             ret = ret + C.Tiles.Replace(",", "") + ",";
-            var Cell: TargetCell = { Target: C.Tiles, Index: C.Index } as TargetCell;
+            var Cell: C.TargetCell = { Target: C.Tiles, Index: C.Index } as C.TargetCell;
             List.push(Cell);
         }
         for (var indx in F2) {
             var s = F2[indx];
             ret = ret + s.Tiles.Replace(",", "") + ",";
-            var Cell: TargetCell = { Target: s.Tiles, Index: s.Index } as TargetCell;
+            var Cell: C.TargetCell = { Target: s.Tiles, Index: s.Index } as C.TargetCell;
             List.push(Cell);
         }
         ret = ret.Trim(',');
@@ -1000,8 +935,8 @@ export class Runner {
         return -1;
     }
 
-    static GetSyllableList2(Cells: string[], size: number, filter: boolean, free: boolean): Word[] {
-        var List: Word[] = [] as Word[];
+    static GetSyllableList2(Cells: string[], size: number, filter: boolean, free: boolean): C.Word[] {
+        var List: C.Word[] = [] as C.Word[];
         for (var index: number = 0; index < Cells.length; index++) {
             var cell: string = Cells[index];
             if (cell == "") {
@@ -1019,12 +954,12 @@ export class Runner {
                 }
                 else {
                     var x = free ? cell : "(" + cell + ")";
-                    List.push({ Tiles: x, Index: index } as Word);
+                    List.push({ Tiles: x, Index: index } as C.Word);
                 }
             }
             else {
                 var x = free ? cell : "(" + cell + ")";
-                List.push({ Tiles: x, Index: index } as Word);
+                List.push({ Tiles: x, Index: index } as C.Word);
             }
         }
         return List;
@@ -1036,7 +971,7 @@ export class Runner {
             if (cell == "") {
                 continue;
             }
-            var Neighbor: Neighbor = BoardUtil.FindNeighbors(index, size);
+            var Neighbor: C.Neighbor = BoardUtil.FindNeighbors(index, size);
 
             var r: string = Neighbor.Right != -1 ? Cells[Neighbor.Right] : "";
             var l: string = Neighbor.Left != -1 ? Cells[Neighbor.Left] : "";
@@ -1063,7 +998,7 @@ export class Runner {
         }
         return List;
     }
-    static GetSpecialSyllablePattern2(CharSet: CharSet, specialOptions: string): string {
+    static GetSpecialSyllablePattern2(CharSet: C.CharSet, specialOptions: string): string {
         if (U.Util.IsNullOrEmpty(specialOptions)) {
             return "";
         }
@@ -1107,7 +1042,7 @@ export class Runner {
         }
         return ret;
     }
-    static GetSyllablePattern(CharSet: CharSet, syllable: string, consoPatternNoComma: string, sunnaPattern: string, allPatternNoComma: string): string {
+    static GetSyllablePattern(CharSet: C.CharSet, syllable: string, consoPatternNoComma: string, sunnaPattern: string, allPatternNoComma: string): string {
         var temp: string = "";
         var Consos: string[] = [] as string[];
         var Vowels: string[] = [] as string[];
@@ -1157,7 +1092,7 @@ export class Runner {
         }
         return temp;
     }
-    static GetSyllablePattern2(CharSet: CharSet, syllable: string, consoPatternNoComma: string, prePattern: string, PostPattern: string): string {
+    static GetSyllablePattern2(CharSet: C.CharSet, syllable: string, consoPatternNoComma: string, prePattern: string, PostPattern: string): string {
         var temp: string = "";
         var Consos: string[] = [] as string[];
         var Vowels: string[] = [] as string[];
@@ -1228,10 +1163,10 @@ export class Runner {
         ret = ret.TrimEnd(Seperator);
         return ret;
     }
-    GetFlatList3(List: Word[], Seperator: string): string {
+    GetFlatList3(List: C.Word[], Seperator: string): string {
         var ret: string = "";
         for (var indx in List) {
-            var s: Word = List[indx];
+            var s: C.Word = List[indx];
             ret = ret + s.Tiles + Seperator;
         }
         ret = ret.TrimEnd(Seperator);
@@ -1289,7 +1224,7 @@ export class Runner {
         return Dict;
     }
 
-    static Classify(CharSet: CharSet, syllable: string, Consos: string[], Vowels: string[]): void {
+    static Classify(CharSet: C.CharSet, syllable: string, Consos: string[], Vowels: string[]): void {
         var Sunna = [] as string[];
         var arr = syllable.split(',');
         for (var indx in arr) {
@@ -1311,7 +1246,7 @@ export class Runner {
         }
         Vowels = Vowels.concat(Sunna);
     }
-    static Classify2(CharSet: CharSet, syllable: string, Consos: string[], Vowels: string[]): void {
+    static Classify2(CharSet: C.CharSet, syllable: string, Consos: string[], Vowels: string[]): void {
         var Sunna = [] as string[];
         for (var indx = 0; indx < syllable.length; indx++) {
             var c = syllable[indx];
@@ -1333,7 +1268,7 @@ export class Runner {
         Vowels = Vowels.concat(Sunna);
     }
 
-    static GenWordPattern(CharSet: CharSet, word: string, consoPatternNoComma: string, sunnaPattern: string, allPatternNoComma: string, prePattern: string, postPattern: string, useSyllableIndex: boolean): string {
+    static GenWordPattern(CharSet: C.CharSet, word: string, consoPatternNoComma: string, sunnaPattern: string, allPatternNoComma: string, prePattern: string, postPattern: string, useSyllableIndex: boolean): string {
         var temp: string = "";
         var arr = word.split('|');
         for (var i = 0; i < arr.length; i++) {
@@ -1361,7 +1296,7 @@ export class Runner {
         return temp;
     }
 
-    GetSpecialDict(CharSet: CharSet, SpecialList: string[]): any {
+    GetSpecialDict(CharSet: C.CharSet, SpecialList: string[]): any {
         var SpeicalDict = {} as any;
         for (var indx in SpecialList) {
             var sp = SpecialList[indx];
@@ -1387,15 +1322,15 @@ export class Runner {
 }
 export class WordLoader {
     static Lists: any = {};
-    static LoadWords(file: string): Word[] {
+    static LoadWords(file: string): C.Word[] {
         if (WordLoader.Lists != null && WordLoader.Lists[file] != null) {
             return WordLoader.Lists[file];
         }
-        return [] as Word[];
+        return [] as C.Word[];
     }
     static Load(file: string, rawResponse: string): void {
         var words: string[] = rawResponse.split('\n');
-        var List = [] as Word[];
+        var List = [] as C.Word[];
         var cnt = 0;
         for (var indx in words) {
             var line = words[indx];
@@ -1404,7 +1339,7 @@ export class WordLoader {
                     Tiles: line,
                     Index: cnt++,
                     Syllables: line.split(',').length,
-                } as Word);
+                } as C.Word);
         }
         WordLoader.Lists[file] = List;
         rawResponse = null;
@@ -1414,7 +1349,7 @@ export class WordLoader {
             .get("/bots/" + file)
             .then(response => {
                 WordLoader.Load(file, response.data as string);
-                GameLoader.GameLoader.BotLoaded(file);
+                GA.GameActions.BotLoaded(file);
             })
             .catch(error => {
                 //TODO...
@@ -1422,23 +1357,23 @@ export class WordLoader {
     }
 }
 export class GameConfig {
-    static GetBot(bot: string): Bot {
-        var players: Contracts.iPlayer[] = Config.Players;
+    static GetBot(bot: string): C.Bot {
+        var players: C.iPlayer[] = Config.Players;
         for (var i = 0; i < players.length; i++) {
-            var player: Contracts.iPlayer = players[i];
+            var player: C.iPlayer = players[i];
             if (player.IsBot == null || !player.IsBot) {
                 continue;
             }
             if (player.BotId == bot) {
-                return (player as any) as Bot;
+                return (player as any) as C.Bot;
             }
         }
         return null;
     }
-    static GetBoard(name: string): KnownBoard {
+    static GetBoard(name: string): C.KnownBoard {
         return Config.Board;
     }
-    static GetCharSet(lang: string): CharSet {
+    static GetCharSet(lang: string): C.CharSet {
         return Config.CharSet;
     }
 }

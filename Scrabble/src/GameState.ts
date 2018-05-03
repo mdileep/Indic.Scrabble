@@ -13,12 +13,19 @@ import * as Contracts from 'Contracts';
 import * as Parser from 'Parser';
 import * as GameActions from "GameActions";
 import * as GenericActions from "GenericActions";
+import * as Redux from 'redux';
 
 export default (state: Contracts.iGameState = Parser.Parser.Parse(), action: Contracts.iActionArgs) => {
     var args = action.args;
     switch (action.type) {
+
         case Contracts.Actions.Init:
             GameActions.GameActions.Init(state, args);
+            return state;
+
+        case Contracts.Actions.PunchAndPick:
+            if (console) console.log("Player picked the Board");
+            GameActions.GameActions.PunchAndPick(state, args);
             return state;
 
         case Contracts.Actions.ToBoard:

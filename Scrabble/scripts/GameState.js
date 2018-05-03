@@ -8,6 +8,11 @@ define(["require", "exports", 'Contracts', 'Parser', "GameActions", "GenericActi
             case Contracts.Actions.Init:
                 GameActions.GameActions.Init(state, args);
                 return state;
+            case Contracts.Actions.PunchAndPick:
+                if (console)
+                    console.log("Player picked the Board");
+                GameActions.GameActions.PunchAndPick(state, args);
+                return state;
             case Contracts.Actions.ToBoard:
                 if (console)
                     console.log("Moving Tile from Tray to Board.");

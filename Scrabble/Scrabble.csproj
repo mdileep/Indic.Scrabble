@@ -32,6 +32,7 @@
     <Content Include="scripts\axios.js" />
     <Content Include="scripts\ConfirmDialog.js" />
     <Content Include="scripts\Game.js" />
+    <Content Include="scripts\GameStore.js" />
     <Content Include="scripts\GenericActions.js" />
     <Content Include="scripts\Index.js" />
     <Content Include="scripts\OverlayDialog.js" />
@@ -80,6 +81,7 @@
     <TypeScriptCompile Include="src\AskBot.ts" />
     <TypeScriptCompile Include="src\BoardCell.ts" />
     <TypeScriptCompile Include="src\DragDropTouch.ts" />
+    <TypeScriptCompile Include="src\GameStore.ts" />
     <TypeScriptCompile Include="src\GenericActions.ts" />
     <TypeScriptCompile Include="src\Index.ts" />
     <TypeScriptCompile Include="src\Messages.ts" />
@@ -156,7 +158,7 @@
     <LessFiles Include="styles\less\4.colors.less" />
     <LessFiles Include="styles\less\5.misc.less" />
     <LessFiles Include="styles\less\scrabble.less" />
-    <LessFiles Include="styles\less\99.Notification.less" />
+    <LessFiles Include="styles\less\99.Dialog.less" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

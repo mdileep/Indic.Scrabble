@@ -15,6 +15,7 @@ import * as Contracts from 'Contracts';
 import * as GameLoader from 'GameLoader';
 import * as Tray from 'Tray';
 import * as Util from 'Util';
+import * as GS from 'GameStore';
 
 class GameTable extends React.Component<Contracts.iGameTable, Contracts.iGameTable> {
     constructor(props: Contracts.iGameTable) {
@@ -102,7 +103,7 @@ class GameTable extends React.Component<Contracts.iGameTable, Contracts.iGameTab
     }
 
     public OnPass(ev: MouseEvent) {
-        GameLoader.GameLoader.store.dispatch({
+        GS.GameStore.Dispatch({
             type: Contracts.Actions.Pass,
             args: {
             }
@@ -110,7 +111,7 @@ class GameTable extends React.Component<Contracts.iGameTable, Contracts.iGameTab
     }
 
     public OnReDraw(ev: MouseEvent) {
-        GameLoader.GameLoader.store.dispatch({
+        GS.GameStore.Dispatch({
             type: Contracts.Actions.ReDraw,
             args: {
             }
@@ -127,7 +128,7 @@ class GameTable extends React.Component<Contracts.iGameTable, Contracts.iGameTab
         var text = ev.dataTransfer.getData("text");
         var data: Contracts.iArgs = JSON.parse(text);
         //
-        GameLoader.GameLoader.store.dispatch({
+        GS.GameStore.Dispatch({
             type: Contracts.Actions.ToTray,
             args: { Origin: data.Origin, Src: data.Src, SrcCell: data.SrcCell }
         });

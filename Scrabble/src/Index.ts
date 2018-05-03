@@ -10,7 +10,9 @@
 // </copyright>
 //---------------------------------------------------------------------------------------------
 import * as Util from 'Util';
-declare var Config: any;
+import * as Contracts from 'Contracts';
+declare var Config: Contracts.iIndexConfig;
+
 export class Index {
     public static Play(lang: string): void {
         var player1 = Util.DOMUtil.SelectedValue(lang + ".player1");
@@ -20,8 +22,8 @@ export class Index {
     }
     public static Register(): void {
         Util.DOMUtil.ApplyTemplate("list", 'langTemplate', Config);
-        for (var indx in Config.langs) {
-            var lang: string = Config.langs[indx];
+        for (var indx in Config.Langs) {
+            var lang: string = Config.Langs[indx];
             Util.DOMUtil.RegisterClick(lang + '.Play', function (e) {
                 var lang = (e.currentTarget as HTMLElement).getAttribute("-lang");
                 Index.Play(lang);

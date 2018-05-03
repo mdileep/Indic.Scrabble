@@ -9,24 +9,92 @@
 //       _._        | <TODO>                   |   <TODO>                  | <TODO>
 // </copyright>
 //---------------------------------------------------------------------------------------------
+
+import * as React from "react";
+import * as ReactDOM from "react-dom";
 import * as Contracts from 'Contracts';
 import * as Messages from 'Messages';
 import * as Indic from 'Indic';
 import * as Util from 'Util';
 import * as AskBot from 'AskBot';
+import * as GS from 'GameStore';
+import * as Game from 'GameRoom';
+declare var Config: Contracts.iRawConfig;
 
 export class GameActions {
     //Move to Seperate Config File
     static NoWords: number = 5;
     static BotWait: number = 1000;
+    static PinchWait: number = 300;
 
     static Init(state: Contracts.iGameState, args: Contracts.iArgs): void {
+        GameActions.Render();
         var players = state.Players.Players;
         var currentPlayer = state.Players.CurrentPlayer;
         state.GameTable.Message = Util.Util.Format(Messages.Messages.YourTurn, [players[currentPlayer].Name]);
-        GameActions.Think(state);
+        setTimeout(GameActions.PinchPlayer, GameActions.PinchWait);
     }
+
+    static PinchPlayer(): void {
+        //Play Misic May be..
+        GS.GameStore.Dispatch({
+            type: Contracts.Actions.PunchAndPick,
+            args: {
+            }
+        });
+    }
+
+    static PunchAndPick(state: Contracts.iGameState, args: Contracts.iArgs): void {
+        if (state.GameOver) {
+            return;
+        }
+        var players = state.Players.Players;
+        var currentPlayer = state.Players.CurrentPlayer;
+        var isBot: boolean = players[currentPlayer].IsBot;
+        state.GameTable.ReadOnly = isBot;
+        if (!isBot) {
+            return;
+        }
+        state.GameTable.Message = Util.Util.Format(Messages.Messages.Thinking, [players[currentPlayer].Name]);
+        //
+        setTimeout(AskBot.AskBot.NextMove, GameActions.BotWait);
+    }
+
+    public static Render(): any {
+        if (console) { console.log("OnGameRender"); }
+        var rootEl = document.getElementById('root');
+        var state: any = GS.GameStore.GetState();
+        var left = React.createElement(((Game.default as any) as React.ComponentClass<Contracts.iGameState>), state);
+        return ReactDOM.render(left, rootEl);
+    }
+
+    static BotLoaded(file: string): void {
+        var players: Contracts.iPlayer[] = Config.Players;
+        var cnt: number = 0;
+        for (var i = 0; i < players.length; i++) {
+            var player: Contracts.iPlayer = players[i];
+            if (player.IsBot == null || !player.IsBot || player.BotLoaded) {
+                cnt++;
+                continue;
+            }
+            if (player.Dictionary == file) {
+                player.BotLoaded = true;
+                cnt++;
+            }
+        }
+        if (cnt != players.length) {
+            return;
+        }
+
+        GS.GameStore.Dispatch({
+            type: Contracts.Actions.Init,
+            args: {
+            }
+        });
+    }
+
     static Pass(state: Contracts.iGameState, args: Contracts.iArgs): void {
+
         var isValidMove: boolean = GameActions.ValidateMove(state.Board);
         if (!isValidMove) {
             state.InfoBar.Messages.push(Messages.Messages.CrossCells);
@@ -51,15 +119,15 @@ export class GameActions {
         GameActions.ResetTable(state);
         GameActions.AwardClaims(state);
         GameActions.SetScores(state);
-        GameActions.SwitchTurn(state);
         GameActions.SaveBoard(state);
+        GameActions.SwitchTurn(state);
         GameActions.Refresh(state);
         GameActions.SetStats(state);
         if (state.GameOver) {
             GameActions.SetWinner(state);
             return;
         }
-        GameActions.Think(state);
+        setTimeout(GameActions.PinchPlayer, GameActions.PinchWait);
     }
     static SetWinner(state: Contracts.iGameState) {
         state.ReadOnly = true;
@@ -119,18 +187,7 @@ export class GameActions {
         }
         return state.Players.Players[winnerIndex];
     }
-    static Think(state: Contracts.iGameState): void {
-        var players = state.Players.Players;
-        var currentPlayer = state.Players.CurrentPlayer;
-        var isBot: boolean = players[currentPlayer].IsBot;
-        state.GameTable.ReadOnly = isBot;
-        //Ideally should trigger after completion of Rendering..!!
-        if (!isBot) {
-            return;
-        }
-        state.GameTable.Message = Util.Util.Format(Messages.Messages.Thinking, [players[currentPlayer].Name]);
-        setTimeout(AskBot.AskBot.NextMove, GameActions.BotWait);
-    }
+
     static BotMoveResponse(state: Contracts.iGameState, response: Contracts.iBotMoveResponse): void {
         var result = response.Result;
         var player: Contracts.iPlayer = state.Players.Players[state.Players.CurrentPlayer];

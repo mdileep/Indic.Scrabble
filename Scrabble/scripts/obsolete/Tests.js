@@ -1,4 +1,4 @@
-define(["require", "exports", './AskBot'], function (require, exports, AB) {
+define(["require", "exports", 'AskBot'], function (require, exports, AB) {
     "use strict";
     var RunerTest = (function () {
         function RunerTest() {

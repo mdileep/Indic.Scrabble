@@ -3,7 +3,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", "react", 'Contracts', 'GameLoader', 'Tray', 'Util'], function (require, exports, React, Contracts, GameLoader, Tray, Util) {
+define(["require", "exports", "react", 'Contracts', 'Tray', 'Util', 'GameStore'], function (require, exports, React, Contracts, Tray, Util, GS) {
     "use strict";
     var GameTable = (function (_super) {
         __extends(GameTable, _super);
@@ -80,13 +80,13 @@ define(["require", "exports", "react", 'Contracts', 'GameLoader', 'Tray', 'Util'
             return pass;
         };
         GameTable.prototype.OnPass = function (ev) {
-            GameLoader.GameLoader.store.dispatch({
+            GS.GameStore.Dispatch({
                 type: Contracts.Actions.Pass,
                 args: {}
             });
         };
         GameTable.prototype.OnReDraw = function (ev) {
-            GameLoader.GameLoader.store.dispatch({
+            GS.GameStore.Dispatch({
                 type: Contracts.Actions.ReDraw,
                 args: {}
             });
@@ -98,7 +98,7 @@ define(["require", "exports", "react", 'Contracts', 'GameLoader', 'Tray', 'Util'
             ev.preventDefault();
             var text = ev.dataTransfer.getData("text");
             var data = JSON.parse(text);
-            GameLoader.GameLoader.store.dispatch({
+            GS.GameStore.Dispatch({
                 type: Contracts.Actions.ToTray,
                 args: { Origin: data.Origin, Src: data.Src, SrcCell: data.SrcCell }
             });

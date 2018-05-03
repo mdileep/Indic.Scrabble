@@ -14,6 +14,7 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as Contracts from 'Contracts';
 import * as GameLoader from 'GameLoader';
+import * as GS from 'GameStore';
 
 class BoardCell extends React.Component<Contracts.iCellProps, Contracts.iCellProps> {
     constructor(props: Contracts.iCellProps) {
@@ -118,7 +119,7 @@ class BoardCell extends React.Component<Contracts.iCellProps, Contracts.iCellPro
         var text = ev.dataTransfer.getData("text");
         var data = JSON.parse(text) as Contracts.iArgs;
         //
-        GameLoader.GameLoader.store.dispatch({
+        GS.GameStore.Dispatch({
             type: Contracts.Actions.ToBoard,
             args: {
                 TargetCell: this.props.Index,

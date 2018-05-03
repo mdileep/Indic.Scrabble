@@ -14,6 +14,7 @@ import * as ReactDOM from "react-dom";
 import * as Tray from 'Tray';
 import * as Contracts from 'Contracts';
 import * as GameLoader from 'GameLoader';
+import * as GS from 'GameStore';
 
 class TrayRack extends React.Component<Contracts.iTrayProps, Contracts.iTrayProps> {
     constructor(props: Contracts.iTrayProps) {
@@ -47,7 +48,7 @@ class TrayRack extends React.Component<Contracts.iTrayProps, Contracts.iTrayProp
     }
 
     public OpenClose(evt: MouseEvent) {
-        GameLoader.GameLoader.store.dispatch({
+        GS.GameStore.Dispatch({
             type: Contracts.Actions.OpenOrClose,
             args: { TrayIndex: this.props.Index }
         });

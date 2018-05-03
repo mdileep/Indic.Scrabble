@@ -132,15 +132,26 @@ export interface iArgs {
 }
 export class Actions {
     public static Init: number = 0;
-    public static ToBoard: number = 1;
-    public static ToTray: number = 2;
-    public static OpenOrClose: number = 3;
-    public static Pass: number = 4;
-    public static ReDraw: number = 5;
-    public static Approve: number = 6;
-    public static BotMove: number = 7;
-    public static BotMoveResponse: number = 8;
-    public static DismissDialog: number = 9;
+
+    public static ToBoard: number = 20;
+    public static ToTray: number = 21;
+    public static OpenOrClose: number = 30;
+
+    public static Pass: number = 40;
+    public static ReDraw: number = 41;
+    public static PunchAndPick: number = 42;
+    //
+    public static BotMove: number = 50;
+    public static BotMoveResponse: number = 51;
+    //
+    public static Approve: number = 60;
+    public static DismissDialog: number = 90;
+}
+export interface iIndexConfig {
+    Langs: string[];
+    Boards: string[];
+    Bots: Bot[];
+    Strings: any;
 }
 //Load Schema is Differet from iGameState 
 //TODO: May use the Same Schema??
@@ -204,6 +215,10 @@ export interface iPlayersView extends iPlayers {
     showWordsList: boolean;
 }
 //
+export interface iAction {
+    type: number;
+    args: any;
+}
 export interface iBotMove {
     Index: number;
     Tiles: string;
@@ -220,4 +235,68 @@ export interface iBotMoveResponse {
     Reference: string;
     Result: iBotMoveResult;
 }
-
+//Following Contracts for  Game Server
+export interface Neighbor {
+    Left: number;
+    Right: number;
+    Top: number;
+    Bottom: number;
+}
+export interface Point {
+    X: number;
+    Y: number;
+}
+export interface Word {
+    Index: number;
+    Tiles: string;
+    Syllables: number;
+    Position: string;
+}
+export interface ProbableMove {
+    Direction: string;
+    Score: number;
+    Moves: Word[];
+    WordsCount: number;
+    Words: ProbableWord[];
+}
+export interface ProbableWord {
+    Cells: TargetCell[];
+    Display: string;
+    String: string;
+    Score: number;
+}
+export interface TargetCell {
+    Index: number;
+    Target: string;
+    Score: number;
+}
+export interface ScrabbleBoard {
+    Name: string;
+    Bot: string;
+    //
+    Reference: string;
+    //Dynamic
+    Cells: string[];
+    Vowels: string;
+    Conso: string;
+    Special: string;
+}
+export interface Bot {
+    Id: string;
+    Name: string;
+    FullName: string;
+    Language: string;
+    Dictionary: string;
+}
+export interface CharSet {
+    Name: string;
+    SunnaSet: string[];
+    Vowels: string[];
+    Consonents: string[];
+    Synonyms: any;
+    Virama: string;
+}
+export interface KnownBoard {
+    Size: number;
+    Weights: number[];
+}

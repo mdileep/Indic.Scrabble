@@ -4,15 +4,16 @@ define(["require", "exports"], function (require, exports) {
         function Actions() {
         }
         Actions.Init = 0;
-        Actions.ToBoard = 1;
-        Actions.ToTray = 2;
-        Actions.OpenOrClose = 3;
-        Actions.Pass = 4;
-        Actions.ReDraw = 5;
-        Actions.Approve = 6;
-        Actions.BotMove = 7;
-        Actions.BotMoveResponse = 8;
-        Actions.DismissDialog = 9;
+        Actions.ToBoard = 20;
+        Actions.ToTray = 21;
+        Actions.OpenOrClose = 30;
+        Actions.Pass = 40;
+        Actions.ReDraw = 41;
+        Actions.PunchAndPick = 42;
+        Actions.BotMove = 50;
+        Actions.BotMoveResponse = 51;
+        Actions.Approve = 60;
+        Actions.DismissDialog = 90;
         return Actions;
     }());
     exports.Actions = Actions;

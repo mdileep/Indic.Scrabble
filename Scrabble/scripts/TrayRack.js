@@ -3,7 +3,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", "react", 'Contracts', 'GameLoader'], function (require, exports, React, Contracts, GameLoader) {
+define(["require", "exports", "react", 'Contracts', 'GameStore'], function (require, exports, React, Contracts, GS) {
     "use strict";
     var TrayRack = (function (_super) {
         __extends(TrayRack, _super);
@@ -36,7 +36,7 @@ define(["require", "exports", "react", 'Contracts', 'GameLoader'], function (req
             return elem;
         };
         TrayRack.prototype.OpenClose = function (evt) {
-            GameLoader.GameLoader.store.dispatch({
+            GS.GameStore.Dispatch({
                 type: Contracts.Actions.OpenOrClose,
                 args: { TrayIndex: this.props.Index }
             });

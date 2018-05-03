@@ -1,10 +1,10 @@
-define(["require", "exports", 'Contracts', 'GameLoader'], function (require, exports, Contracts, GameLoader) {
+define(["require", "exports", 'Contracts', 'GameStore'], function (require, exports, Contracts, GS) {
     "use strict";
     var GenericActions = (function () {
         function GenericActions() {
         }
         GenericActions.OnDismissDialog = function () {
-            GameLoader.GameLoader.store.dispatch({
+            GS.GameStore.Dispatch({
                 type: Contracts.Actions.DismissDialog,
                 args: {}
             });

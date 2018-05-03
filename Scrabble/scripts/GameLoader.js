@@ -1,4 +1,4 @@
-define(["require", "exports", "react", "react-dom", 'redux', 'GameState', 'Contracts', 'GameRoom', 'AksharaSets', 'Messages', 'DragDropTouch', 'AskBot'], function (require, exports, React, ReactDOM, Redux, GameState_1, Contracts, Game, Sets, M, DragDropTouch, AskBot) {
+define(["require", "exports", 'Contracts', 'AksharaSets', 'Messages', 'DragDropTouch', 'GameActions', 'GameStore', 'AskBot'], function (require, exports, Contracts, Sets, M, DragDropTouch, GA, GS, AskBot) {
     "use strict";
     var GameLoader = (function () {
         function GameLoader() {
@@ -11,23 +11,20 @@ define(["require", "exports", "react", "react-dom", 'redux', 'GameState', 'Contr
                 M.Messages[key] = Config.Localization[key];
             }
         };
-        GameLoader.OnDragOver = function (ev) {
-            ev.preventDefault();
-        };
-        GameLoader.OnGameRender = function () {
-            if (console) {
-                console.log("OnGameRender");
-            }
-            var state = GameLoader.store.getState();
-            var left = React.createElement(Game.default, state);
-            return ReactDOM.render(left, GameLoader.rootEl);
-        };
         GameLoader.Init = function () {
             DragDropTouch.DragDropTouch._instance;
             GameLoader.ConfigGame();
+            GS.GameStore.CreateStore();
+            GS.GameStore.Subscribe(GA.GameActions.Render);
+            GameLoader.PreparePlayers();
+        };
+        GameLoader.PreparePlayers = function () {
             var bots = GameLoader.GetBots(Config.Players);
             if (bots.length == 0) {
-                GameLoader.Begin();
+                GS.GameStore.Dispatch({
+                    type: Contracts.Actions.Init,
+                    args: {}
+                });
                 return;
             }
             GameLoader.LoadBots(bots);
@@ -50,35 +47,6 @@ define(["require", "exports", "react", "react-dom", 'redux', 'GameState', 'Contr
                 bots.push(player.Dictionary);
             }
             return bots;
-        };
-        GameLoader.BotLoaded = function (file) {
-            var players = Config.Players;
-            var cnt = 0;
-            for (var i = 0; i < players.length; i++) {
-                var player = players[i];
-                if (player.IsBot == null || !player.IsBot || player.BotLoaded) {
-                    cnt++;
-                    continue;
-                }
-                if (player.Dictionary == file) {
-                    player.BotLoaded = true;
-                    cnt++;
-                }
-            }
-            if (cnt != players.length) {
-                return;
-            }
-            GameLoader.Begin();
-        };
-        GameLoader.Begin = function () {
-            GameLoader.store = Redux.createStore(GameState_1.default);
-            GameLoader.rootEl = document.getElementById('root');
-            GameLoader.OnGameRender();
-            GameLoader.store.subscribe(GameLoader.OnGameRender);
-            GameLoader.store.dispatch({
-                type: Contracts.Actions.Init,
-                args: {}
-            });
         };
         return GameLoader;
     }());

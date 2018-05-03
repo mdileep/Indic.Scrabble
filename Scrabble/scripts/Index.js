@@ -11,8 +11,8 @@ define(["require", "exports", 'Util'], function (require, exports, Util) {
         };
         Index.Register = function () {
             Util.DOMUtil.ApplyTemplate("list", 'langTemplate', Config);
-            for (var indx in Config.langs) {
-                var lang = Config.langs[indx];
+            for (var indx in Config.Langs) {
+                var lang = Config.Langs[indx];
                 Util.DOMUtil.RegisterClick(lang + '.Play', function (e) {
                     var lang = e.currentTarget.getAttribute("-lang");
                     Index.Play(lang);

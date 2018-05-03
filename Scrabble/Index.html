@@ -38,8 +38,8 @@
                         <tr>
                             <th>
                                 <select id="boards" class="list">
-                                    <%for(var index in this.boards) {%>
-                                    <option value="<%this.boards[index]%>"><%this.boards[index]%></option>
+                                    <%for(var index in this.Boards) {%>
+                                    <option value="<%this.Boards[index]%>"><%this.Boards[index]%></option>
                                     <%}%>
                                 </select>
                             </th>
@@ -47,31 +47,31 @@
                     </thead>
                 </table>
             </li>
-            <%for(var indx in this.langs) {%>
+            <%for(var indx in this.Langs) {%>
             <li>
-                <h3><%this.strings[this.langs[indx]].LangName%></h3>
+                <h3><%this.Strings[this.Langs[indx]].LangName%></h3>
                 <table>
                     <thead>
                         <tr>
                             <th>
-                                <select id="<%this.langs[indx]%>.player1" class="list">
-                                    <option value="player" selected="selected"><%this.strings[this.langs[indx]].PlayerFull%></option>
-                                    <optgroup label="<%this.strings[this.langs[indx]].Bot%>">
-                                        <%for(var index in this.bots[this.langs[indx]]) {%>
-                                        <option value="<%this.bots[this.langs[indx]][index].Id%>"><%this.bots[this.langs[indx]][index].FullName%></option>
+                                <select id="<%this.Langs[indx]%>.player1" class="list">
+                                    <option value="player" selected="selected"><%this.Strings[this.Langs[indx]].PlayerFull%></option>
+                                    <optgroup label="<%this.Strings[this.Langs[indx]].Bots%>">
+                                        <%for(var index in this.Bots[this.Langs[indx]]) {%>
+                                        <option value="<%this.Bots[this.Langs[indx]][index].Id%>"><%this.Bots[this.Langs[indx]][index].FullName%></option>
                                         <%}%>
                                     </optgroup>
                                 </select>
                             </th>
                         </tr>
-                        <tr><th><%this.strings[this.langs[indx]].Against%></th></tr>
+                        <tr><th><%this.Strings[this.Langs[indx]].Against%></th></tr>
                         <tr>
                             <th>
-                                <select id="<%this.langs[indx]%>.player2" class="list">
-                                    <option value="player" selected="selected"><%this.strings[this.langs[indx]].PlayerFull%></option>
-                                    <optgroup label="<%this.strings[this.langs[indx]].Bot%>">
-                                        <%for(var index in this.bots[this.langs[indx]]) {%>
-                                        <option value="<%this.bots[this.langs[indx]][index].Id%>"  <%if(index==0){%>selected="selected"<%}%>><%this.bots[this.langs[indx]][index].FullName%></option>
+                                <select id="<%this.Langs[indx]%>.player2" class="list">
+                                    <option value="player" selected="selected"><%this.Strings[this.Langs[indx]].PlayerFull%></option>
+                                    <optgroup label="<%this.Strings[this.Langs[indx]].Bots%>">
+                                        <%for(var index in this.Bots[this.Langs[indx]]) {%>
+                                        <option value="<%this.Bots[this.Langs[indx]][index].Id%>"  <%if(index==0){%>selected="selected"<%}%>><%this.Bots[this.Langs[indx]][index].FullName%></option>
                                         <%}%>
                                     </optgroup>
                                 </select>
@@ -79,7 +79,7 @@
                         </tr>
                         <tr>
                             <th>
-                                <button -lang="<%this.langs[indx]%>" id="<%this.langs[indx]%>.Play"><%this.strings[this.langs[indx]].Play%></button>
+                                <button -lang="<%this.Langs[indx]%>" id="<%this.Langs[indx]%>.Play"><%this.Strings[this.Langs[indx]].Play%></button>
                             </th>
                         </tr>
                     </thead>

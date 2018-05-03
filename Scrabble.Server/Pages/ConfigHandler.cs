@@ -32,10 +32,10 @@ namespace Scrabble.Server
 		Dictionary<string, object> BuildConfig(HttpRequest Request)
 		{
 			Dictionary<string, object> Dict = new Dictionary<string, object>();
-			Dict["langs"] = GetLangs();
-			Dict["boards"] = GetBoards();
-			Dict["bots"] = GetBots();
-			Dict["strings"] = GetStrings();
+			Dict["Langs"] = GetLangs();
+			Dict["Boards"] = GetBoards();
+			Dict["Bots"] = GetBots();
+			Dict["Strings"] = GetStrings();
 			return Dict;
 		}
 
@@ -46,7 +46,7 @@ namespace Scrabble.Server
 			{
 				Dict[lang] = Config.Messages(lang, new string[]
 				{
-					"LangName", "PlayerFull","Against","Play","Bot"
+					"LangName", "PlayerFull","Against","Play","Bots"
 				});
 			}
 			return Dict;

@@ -1,5 +1,6 @@
-﻿import * as AB from 'AskBot';
-import * as U from 'Util';
+﻿import * as AB from './AskBot';
+import * as U from './Util';
+import * as C from './Contracts';
 
 export class RunerTest {
     static Go(): void {
@@ -24,7 +25,7 @@ export class RunerTest {
                 Conso: "క ఙ చ జ ప ల స",
                 Special: "(ల,ఉ) ",
                 Vowels: "అ ఆ ఈ ఉ ఉ ఎ ఏ ఓ"
-            } as AB.ScrabbleBoard;
+            } as C.ScrabbleBoard;
         AB.AskBot.BotMoveClient(Board);
     }
 }

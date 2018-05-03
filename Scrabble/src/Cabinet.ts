@@ -16,6 +16,7 @@ import * as Tray from 'Tray';
 import * as TrayRack from 'TrayRack';
 import * as GameLoader from 'GameLoader';
 import * as Util from 'Util';
+import * as GS from 'GameStore';
 
 class Cabinet extends React.Component<Contracts.iCabinetProps, Contracts.iCabinetProps> {
     constructor(props: Contracts.iCabinetProps) {
@@ -88,7 +89,7 @@ class Cabinet extends React.Component<Contracts.iCabinetProps, Contracts.iCabine
         var text = ev.dataTransfer.getData("text");
         var data: Contracts.iArgs = JSON.parse(text);
         //
-        GameLoader.GameLoader.store.dispatch({
+        GS.GameStore.Dispatch({
             type: Contracts.Actions.ToTray,
             args: { Origin: data.Origin, Src: data.Src, SrcCell: data.SrcCell }
         });

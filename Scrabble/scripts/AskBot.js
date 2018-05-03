@@ -1,11 +1,11 @@
-define(["require", "exports", 'axios', 'GameLoader', 'Contracts', 'Util'], function (require, exports, axios, GameLoader, Contracts, U) {
+define(["require", "exports", 'axios', 'GameStore', 'GameActions', 'Contracts', 'Util'], function (require, exports, axios, GS, GA, C, U) {
     "use strict";
     var AskBot = (function () {
         function AskBot() {
         }
         AskBot.NextMove = function () {
-            GameLoader.GameLoader.store.dispatch({
-                type: Contracts.Actions.BotMove,
+            GS.GameStore.Dispatch({
+                type: C.Actions.BotMove,
                 args: {}
             });
         };
@@ -16,8 +16,8 @@ define(["require", "exports", 'axios', 'GameLoader', 'Contracts', 'Util'], funct
             axios
                 .post("/API.ashx?nextmove", post)
                 .then(function (response) {
-                GameLoader.GameLoader.store.dispatch({
-                    type: Contracts.Actions.BotMoveResponse,
+                GS.GameStore.Dispatch({
+                    type: C.Actions.BotMoveResponse,
                     args: response.data
                 });
             })
@@ -34,8 +34,8 @@ define(["require", "exports", 'axios', 'GameLoader', 'Contracts', 'Util'], funct
                     Result: move,
                     Effort: effort
                 };
-                GameLoader.GameLoader.store.dispatch({
-                    type: Contracts.Actions.BotMoveResponse,
+                GS.GameStore.Dispatch({
+                    type: C.Actions.BotMoveResponse,
                     args: response
                 });
             }, 10);
@@ -1204,7 +1204,7 @@ define(["require", "exports", 'axios', 'GameLoader', 'Contracts', 'Util'], funct
                 .get("/bots/" + file)
                 .then(function (response) {
                 WordLoader.Load(file, response.data);
-                GameLoader.GameLoader.BotLoaded(file);
+                GA.GameActions.BotLoaded(file);
             })
                 .catch(function (error) {
             });

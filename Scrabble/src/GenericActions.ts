@@ -11,12 +11,13 @@
 //---------------------------------------------------------------------------------------------
 import * as Contracts from 'Contracts';
 import * as GameLoader from 'GameLoader';
+import * as GS from 'GameStore';
 
 export class GenericActions {
 
     public static OnDismissDialog() {
         //Ideally It should work Independently..!!
-        GameLoader.GameLoader.store.dispatch({
+        GS.GameStore.Dispatch({
             type: Contracts.Actions.DismissDialog,
             args: {
             }

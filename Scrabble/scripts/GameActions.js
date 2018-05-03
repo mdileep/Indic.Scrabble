@@ -1,13 +1,65 @@
-define(["require", "exports", 'Messages', 'Indic', 'Util', 'AskBot'], function (require, exports, Messages, Indic, Util, AskBot) {
+define(["require", "exports", "react", "react-dom", 'Contracts', 'Messages', 'Indic', 'Util', 'AskBot', 'GameStore', 'GameRoom'], function (require, exports, React, ReactDOM, Contracts, Messages, Indic, Util, AskBot, GS, Game) {
     "use strict";
     var GameActions = (function () {
         function GameActions() {
         }
         GameActions.Init = function (state, args) {
+            GameActions.Render();
             var players = state.Players.Players;
             var currentPlayer = state.Players.CurrentPlayer;
             state.GameTable.Message = Util.Util.Format(Messages.Messages.YourTurn, [players[currentPlayer].Name]);
-            GameActions.Think(state);
+            setTimeout(GameActions.PinchPlayer, GameActions.PinchWait);
+        };
+        GameActions.PinchPlayer = function () {
+            GS.GameStore.Dispatch({
+                type: Contracts.Actions.PunchAndPick,
+                args: {}
+            });
+        };
+        GameActions.PunchAndPick = function (state, args) {
+            if (state.GameOver) {
+                return;
+            }
+            var players = state.Players.Players;
+            var currentPlayer = state.Players.CurrentPlayer;
+            var isBot = players[currentPlayer].IsBot;
+            state.GameTable.ReadOnly = isBot;
+            if (!isBot) {
+                return;
+            }
+            state.GameTable.Message = Util.Util.Format(Messages.Messages.Thinking, [players[currentPlayer].Name]);
+            setTimeout(AskBot.AskBot.NextMove, GameActions.BotWait);
+        };
+        GameActions.Render = function () {
+            if (console) {
+                console.log("OnGameRender");
+            }
+            var rootEl = document.getElementById('root');
+            var state = GS.GameStore.GetState();
+            var left = React.createElement(Game.default, state);
+            return ReactDOM.render(left, rootEl);
+        };
+        GameActions.BotLoaded = function (file) {
+            var players = Config.Players;
+            var cnt = 0;
+            for (var i = 0; i < players.length; i++) {
+                var player = players[i];
+                if (player.IsBot == null || !player.IsBot || player.BotLoaded) {
+                    cnt++;
+                    continue;
+                }
+                if (player.Dictionary == file) {
+                    player.BotLoaded = true;
+                    cnt++;
+                }
+            }
+            if (cnt != players.length) {
+                return;
+            }
+            GS.GameStore.Dispatch({
+                type: Contracts.Actions.Init,
+                args: {}
+            });
         };
         GameActions.Pass = function (state, args) {
             var isValidMove = GameActions.ValidateMove(state.Board);
@@ -32,15 +84,15 @@ define(["require", "exports", 'Messages', 'Indic', 'Util', 'AskBot'], function (
             GameActions.ResetTable(state);
             GameActions.AwardClaims(state);
             GameActions.SetScores(state);
-            GameActions.SwitchTurn(state);
             GameActions.SaveBoard(state);
+            GameActions.SwitchTurn(state);
             GameActions.Refresh(state);
             GameActions.SetStats(state);
             if (state.GameOver) {
                 GameActions.SetWinner(state);
                 return;
             }
-            GameActions.Think(state);
+            setTimeout(GameActions.PinchPlayer, GameActions.PinchWait);
         };
         GameActions.SetWinner = function (state) {
             state.ReadOnly = true;
@@ -100,17 +152,6 @@ define(["require", "exports", 'Messages', 'Indic', 'Util', 'AskBot'], function (
                 }
             }
             return state.Players.Players[winnerIndex];
-        };
-        GameActions.Think = function (state) {
-            var players = state.Players.Players;
-            var currentPlayer = state.Players.CurrentPlayer;
-            var isBot = players[currentPlayer].IsBot;
-            state.GameTable.ReadOnly = isBot;
-            if (!isBot) {
-                return;
-            }
-            state.GameTable.Message = Util.Util.Format(Messages.Messages.Thinking, [players[currentPlayer].Name]);
-            setTimeout(AskBot.AskBot.NextMove, GameActions.BotWait);
         };
         GameActions.BotMoveResponse = function (state, response) {
             var result = response.Result;
@@ -774,6 +815,7 @@ define(["require", "exports", 'Messages', 'Indic', 'Util', 'AskBot'], function (
         };
         GameActions.NoWords = 5;
         GameActions.BotWait = 1000;
+        GameActions.PinchWait = 300;
         return GameActions;
     }());
     exports.GameActions = GameActions;
