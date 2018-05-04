@@ -32,6 +32,7 @@
     <Content Include="scripts\AskBot.js" />
     <Content Include="scripts\axios.js" />
     <Content Include="scripts\ConfirmDialog.js" />
+    <Content Include="scripts\ConsentForm.js" />
     <Content Include="scripts\Game.js" />
     <Content Include="scripts\GameStore.js" />
     <Content Include="scripts\GenericActions.js" />
