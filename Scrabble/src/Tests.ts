@@ -26,6 +26,6 @@ export class RunerTest {
                 Special: "(ల,ఉ) ",
                 Vowels: "అ ఆ ఈ ఉ ఉ ఎ ఏ ఓ"
             } as C.ScrabbleBoard;
-        AB.AskBot.BotMoveClient(Board);
+        AB.AskServer.BotMoveClient(Board);
     }
 }

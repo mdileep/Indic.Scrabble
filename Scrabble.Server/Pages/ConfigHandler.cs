@@ -14,11 +14,11 @@
 using Shared;
 using System.Collections.Generic;
 using System.Web;
+using System;
 
 namespace Scrabble.Server
 {
-
-	public class IndexConfigHandler : IHttpHandler
+	public class ConfigHandler : IHttpHandler
 	{
 		public void ProcessRequest(HttpContext context)
 		{
@@ -30,6 +30,50 @@ namespace Scrabble.Server
 		}
 
 		Dictionary<string, object> BuildConfig(HttpRequest Request)
+		{
+			string Query = ServerUtil.GetQuery(Request);
+			var parts = Query.Split(':', ',', '-');
+			if (parts.Length == 1)
+			{
+				string key = parts[0];
+				switch (key)
+				{
+					default:
+					case "Home":
+						return BuildHomeConfig();
+				}
+			}
+			return BuildGameConfig(parts);
+		}
+
+		Dictionary<string, object> BuildGameConfig(string[] parts)
+		{
+			string Lang = parts.Length > 0 ? parts[0] : "";
+			if (!Config.Languages.Contains(Lang))
+			{
+				Lang = Config.DefaultLang;
+			}
+			var boardName = parts[1].ToLower();
+			if (!Config.BoardNames.Contains(boardName))
+			{
+				boardName = Config.DefaultBoard;
+			}
+			var board = Config.GetBoard(Lang + "." + boardName);
+			var bot1 = Config.GetBot(parts.Length > 1 ? parts[2] : "", Lang);
+			var bot2 = Config.GetBot(parts.Length > 2 ? parts[3] : "", Lang);
+			var charSet = Config.GetCharSet(Lang);
+			var messages = Config.GetMessages(Lang);
+			var players = GetPlayers(Lang, bot1, bot2);
+
+			Dictionary<string, object> Dict = new Dictionary<string, object>();
+			Dict["Board"] = board;
+			Dict["CharSet"] = charSet;
+			Dict["Localization"] = messages;
+			Dict["Players"] = players;
+			return Dict;
+		}
+
+		Dictionary<string, object> BuildHomeConfig()
 		{
 			Dictionary<string, object> Dict = new Dictionary<string, object>();
 			Dict["Langs"] = GetLangs();
@@ -67,57 +111,9 @@ namespace Scrabble.Server
 			return Config.Languages.ToArray();
 		}
 
-		private object GetBoards()
+		object GetBoards()
 		{
 			return Config.BoardNames.ToArray();
-		}
-
-		public bool IsReusable
-		{
-			get
-			{
-				return false;
-			}
-		}
-	}
-	public class ConfigHandler : IHttpHandler
-	{
-		public void ProcessRequest(HttpContext context)
-		{
-			Dictionary<string, object> response = BuildConfig(context.Request);
-			context.Response.ContentType = "application/json";
-			ScriptManager SC = new ScriptManager();
-			SC.SetScriptVar("Config", response);
-			context.Response.Write(SC.Go(false));
-		}
-
-		Dictionary<string, object> BuildConfig(HttpRequest Request)
-		{
-			string Query = ServerUtil.GetQuery(Request);
-			var parts = Query.Split(':', ',', '-');
-			string Lang = parts.Length > 0 ? parts[0] : "";
-			if (!Config.Languages.Contains(Lang))
-			{
-				Lang = Config.DefaultLang;
-			}
-			var boardName = parts[1].ToLower();
-			if (!Config.BoardNames.Contains(boardName))
-			{
-				boardName = Config.DefaultBoard;
-			}
-			var board = Config.GetBoard(Lang + "." + boardName);
-			var bot1 = Config.GetBot(parts.Length > 1 ? parts[2] : "", Lang);
-			var bot2 = Config.GetBot(parts.Length > 2 ? parts[3] : "", Lang);
-			var charSet = Config.GetCharSet(Lang);
-			var messages = Config.GetMessages(Lang);
-			var players = GetPlayers(Lang, bot1, bot2);
-
-			Dictionary<string, object> Dict = new Dictionary<string, object>();
-			Dict["Board"] = board;
-			Dict["CharSet"] = charSet;
-			Dict["Localization"] = messages;
-			Dict["Players"] = players;
-			return Dict;
 		}
 
 		Player[] GetPlayers(string Lang, Bot bot1, Bot bot2)

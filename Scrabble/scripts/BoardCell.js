@@ -112,9 +112,6 @@ define(["require", "exports", "react", 'Contracts', 'GameStore'], function (requ
             });
         };
         BoardCell.prototype.OnDragStart = function (ev) {
-            if (console) {
-                console.log("Attempting to Move a Tile back to Tray");
-            }
             var last = this.props.Waiting[this.props.Waiting.length - 1];
             var elem = ev.target;
             var data = {

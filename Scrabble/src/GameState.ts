@@ -24,51 +24,77 @@ export default (state: Contracts.iGameState = Parser.Parser.Parse(), action: Con
             return state;
 
         case Contracts.Actions.PunchAndPick:
-            if (console) console.log("Player picked the Board");
+            //if (console) { console.log("Player picked the Board"); }
             GameActions.GameActions.PunchAndPick(state, args);
             return state;
 
         case Contracts.Actions.ToBoard:
-            if (console) console.log("Moving Tile from Tray to Board.");
+            //if (console) { console.log("Moving Tile from Tray to Board."); }
             GameActions.GameActions.ToBoard(state, args);
             return state;
 
         case Contracts.Actions.ToTray:
-            if (console) console.log("Moving back to Tray.");
+            //if (console) {   console.log("Moving back to Tray.");}
             GameActions.GameActions.ToTray(state, args);
             return state;
 
         case Contracts.Actions.OpenOrClose:
-            if (console) console.log("Opening Tray");
+            //if (console) { console.log("Opening Tray"); }
             GameActions.GameActions.OpenClose(state, args);
             return state;
 
         case Contracts.Actions.Pass:
-            if (console) console.log("Passing the Turn");
+            //if (console) { console.log("Passing the Turn"); }
             GameActions.GameActions.Pass(state, args);
             return state;
 
         case Contracts.Actions.ReDraw:
-            if (console) console.log("ReDraw Tiles");
+            //if (console) { console.log("ReDraw Tiles"); }
             GameActions.GameActions.ReDraw(state, args);
             return state;
 
         case Contracts.Actions.BotMove:
-            if (console) console.log("Bot is Thinking");
+            //if (console) { console.log("Bot is Thinking"); }
             GameActions.GameActions.BotMove(state, args);
             return state;
 
         case Contracts.Actions.BotMoveResponse:
-            if (console) console.log("Bot Responded");
+            //if (console) {  console.log("Bot Responded"); }
             GameActions.GameActions.BotMoveResponse(state, args as Contracts.iBotMoveResponse);
             return state;
+
+        case Contracts.Actions.Award:
+            //if (console) { console.log("Award Words"); }
+            GameActions.GameActions.Award(state, args);
+            return state;
+
+        case Contracts.Actions.ResolveWords:
+            //if (console) { console.log("Resolve Words"); }
+            GameActions.GameActions.ResolveWords(state, args);
+            return state;
+
+        case Contracts.Actions.TakeConsent:
+            //if (console) { console.log("Take Consent"); }
+            GameActions.GameActions.TakeConsent(state, args as string[]);
+            return state;
+
+        case Contracts.Actions.WordResolved:
+            //if (console) { console.log("Resolve Word"); }
+            GameActions.GameActions.ResolveWord(state, args as string);
+            return state;
+
+        case Contracts.Actions.WordRejected:
+            //if (console) { console.log("Reject Word"); }
+            GameActions.GameActions.RejectWord(state, args as string);
+            return state;
+
 
         default:
             return state;
 
         //Following may be moved to different store ..
         case Contracts.Actions.DismissDialog:
-            if (console) console.log("Dismiss Dialog");
+            //if (console) { console.log("Dismiss Dialog"); }
             GenericActions.GenericActions.DismissDialog(state.Dialog, args);
             return state;
     }

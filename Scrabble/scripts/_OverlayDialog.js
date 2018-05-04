@@ -10,8 +10,8 @@ define(["require", "exports", "react"], function (require, exports, React) {
         function _OverlayDialog(props) {
             _super.call(this, props);
             this.state = props;
-            this.OnOK = this.OnOK.bind(this);
-            this.OnCancel = this.OnCancel.bind(this);
+            this.OnConfirm = this.OnConfirm.bind(this);
+            this.OnDismiss = this.OnDismiss.bind(this);
         }
         _OverlayDialog.prototype.render = function () {
             return this.renderDialog(null);
@@ -53,7 +53,7 @@ define(["require", "exports", "react"], function (require, exports, React) {
                 var ok = React.createElement('button', {
                     key: "ok_" + this.props.Id,
                     className: "oOK",
-                    onClick: this.OnOK
+                    onClick: this.OnConfirm
                 }, [], this.props.ConfirmText);
                 childs.push(ok);
             }
@@ -61,7 +61,7 @@ define(["require", "exports", "react"], function (require, exports, React) {
                 var cancel = React.createElement('button', {
                     key: "cancel_" + this.props.Id,
                     className: "oCancel",
-                    onClick: this.OnCancel
+                    onClick: this.OnDismiss
                 }, [], this.props.CancelText);
                 childs.push(cancel);
             }
@@ -76,17 +76,17 @@ define(["require", "exports", "react"], function (require, exports, React) {
                 className: "oBackGround"
             });
         };
-        _OverlayDialog.prototype.OnOK = function (ev) {
+        _OverlayDialog.prototype.OnConfirm = function (ev) {
             if (this.props.OnConfirm == null) {
                 return;
             }
             this.props.OnConfirm();
         };
-        _OverlayDialog.prototype.OnCancel = function (ev) {
-            if (this.props.OnCancel == null) {
+        _OverlayDialog.prototype.OnDismiss = function (ev) {
+            if (this.props.OnDismiss == null) {
                 return;
             }
-            this.props.OnCancel();
+            this.props.OnDismiss();
         };
         return _OverlayDialog;
     }(React.Component));

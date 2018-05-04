@@ -23,7 +23,7 @@ define(["require", "exports", "react", '_ConfirmDialog', 'Util', 'Messages'], fu
                 ConfirmText: Messages.Messages.Yes, ShowConfirm: true,
                 CancelText: Messages.Messages.No, ShowClose: true,
                 OnConfirm: this.props.OnConfirm,
-                OnDismiss: this.props.OnDismiss,
+                OnCancel: this.props.OnDismiss,
             }));
         };
         return ConfirmDialog;

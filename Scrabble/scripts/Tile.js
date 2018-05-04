@@ -70,9 +70,6 @@ define(["require", "exports", "react"], function (require, exports, React) {
             return blank;
         };
         Tile.prototype.OnDragStart = function (ev) {
-            if (console) {
-                console.log("Attempting to Move a Tile back to Board");
-            }
             var elem = ev.target;
             var data = {
                 Src: this.props.Text,

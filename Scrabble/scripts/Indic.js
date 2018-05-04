@@ -3,9 +3,66 @@ define(["require", "exports", 'AksharaSets'], function (require, exports, AS) {
     var Indic = (function () {
         function Indic() {
         }
+        Indic.ToWord = function (Cells) {
+            var res = "";
+            for (var indx in Cells) {
+                var cell = Cells[indx];
+                var tiles = cell.split('');
+                if (tiles.length == 1) {
+                    res = res + Indic.ToString(tiles);
+                    continue;
+                }
+                for (var indx2 in tiles) {
+                    var tile = tiles[indx2];
+                    var alt = Indic.GetSynonym(tile);
+                    if (alt != null) {
+                        tiles[indx2] = alt;
+                    }
+                }
+                res = res + Indic.ToString(tiles);
+            }
+            return res;
+        };
+        Indic.ToScrabble = function (word) {
+            var res = "";
+            var Syllables = word.split(',');
+            for (var indx in Syllables) {
+                var Syllable = Syllables[indx];
+                var s = "";
+                for (var i = 0; i < Syllable.length; i++) {
+                    var C = Syllable[i];
+                    if (Indic.IsVirama(C)) {
+                        if (i == Syllable.length - 1) {
+                            s = s + C;
+                        }
+                        continue;
+                    }
+                    if (Indic.IsZWNJ(C)) {
+                        continue;
+                    }
+                    if (C.length == 0) {
+                        continue;
+                    }
+                    if (Indic.IsSpecialSet(C)) {
+                        s = s + Indic.GetSynonym(C);
+                    }
+                    else {
+                        s = s + C;
+                    }
+                }
+                res = res + s + ",";
+            }
+            res = res.TrimEnd(',');
+            res = res.TrimStart(',');
+            res = res.Replace(",,", ",");
+            return res;
+        };
         Indic.IsValid = function (original) {
             var arr = Indic.ToChars(original);
             if (arr.length == 1 && Indic.IsFullSpecialSet(arr[0])) {
+                return false;
+            }
+            if (arr.length == 1 && Indic.IsSunnaSet(arr[0])) {
                 return false;
             }
             var special = 0;
@@ -86,6 +143,12 @@ define(["require", "exports", 'AksharaSets'], function (require, exports, AS) {
         };
         Indic.IsSpecialSet = function (char) {
             return Indic.Contains(AS.AksharaSets.SpecialSet, char);
+        };
+        Indic.IsZWNJ = function (char) {
+            return char == String.fromCharCode(0x200C);
+        };
+        Indic.IsVirama = function (char) {
+            return char == AS.AksharaSets.Virama;
         };
         Indic.IsFullSpecialSet = function (char) {
             return Indic.Contains(AS.AksharaSets.FullSpecialSet, char);

@@ -39,7 +39,7 @@ class ConfirmDialog extends React.Component<Contracts.iConfirm, Contracts.iConfi
                 ConfirmText: Messages.Messages.Yes, ShowConfirm: true,
                 CancelText: Messages.Messages.No, ShowClose: true,
                 OnConfirm: this.props.OnConfirm,
-                OnDismiss: this.props.OnDismiss,
+                OnCancel: this.props.OnDismiss,
             }));
     }
 }

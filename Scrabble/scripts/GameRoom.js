@@ -3,7 +3,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", "react", 'Cabinet', 'Board', 'InfoBar', 'GamePlayers', 'GameTable', 'ConfirmDialog', 'Util', 'GenericActions'], function (require, exports, React, Cabinet, Board, InfoBar, GamePlayers, GameTable, Confirm, Util, GA) {
+define(["require", "exports", "react", 'Cabinet', 'Board', 'InfoBar', 'GamePlayers', 'GameTable', 'ConfirmDialog', 'Util', 'GenericActions', 'ConsentForm'], function (require, exports, React, Cabinet, Board, InfoBar, GamePlayers, GameTable, Confirm, Util, GA, ConsentForm) {
     "use strict";
     var GameRoom = (function (_super) {
         __extends(GameRoom, _super);
@@ -12,23 +12,33 @@ define(["require", "exports", "react", 'Cabinet', 'Board', 'InfoBar', 'GamePlaye
             this.state = props;
         }
         GameRoom.prototype.render = function () {
+            var childs = [];
             var scores = React.createElement(GamePlayers.default, Util.Util.Merge(this.props.Players, { key: "scores", showScores: true, showWordsList: false }));
-            var words = React.createElement(GamePlayers.default, Util.Util.Merge(this.props.Players, { key: "words", Id: "WordBoard", showScores: false, showWordsList: true }));
+            childs.push(scores);
             var gameTable = React.createElement(GameTable.default, this.props.GameTable);
-            var cabinet = React.createElement(Cabinet.default, this.props.Cabinet);
+            childs.push(gameTable);
             var board = React.createElement(Board.default, this.props.Board);
+            childs.push(board);
+            var words = React.createElement(GamePlayers.default, Util.Util.Merge(this.props.Players, { key: "words", Id: "WordBoard", showScores: false, showWordsList: true }));
+            childs.push(words);
+            var cabinet = React.createElement(Cabinet.default, this.props.Cabinet);
+            childs.push(cabinet);
             var info = React.createElement(InfoBar.default, this.props.InfoBar);
+            childs.push(info);
             var dialog = React.createElement(Confirm.default, Util.Util.Merge(this.props.Dialog, {
                 OnConfirm: GA.GenericActions.OnDismissDialog,
                 OnDismiss: GA.GenericActions.OnDismissDialog,
             }));
+            childs.push(dialog);
+            var consent = React.createElement(ConsentForm.default, this.props.Consent);
+            childs.push(consent);
             var block = React.createElement('div', {
                 id: this.props.Id,
                 key: this.props.Id,
                 ref: this.props.Id,
                 className: "game",
                 title: "Scrabble",
-            }, [scores, gameTable, board, words, cabinet, info, dialog]);
+            }, childs);
             return block;
         };
         return GameRoom;

@@ -131,7 +131,7 @@ class BoardCell extends React.Component<Contracts.iCellProps, Contracts.iCellPro
     }
 
     public OnDragStart(ev: DragEvent) {
-        if (console) { console.log("Attempting to Move a Tile back to Tray"); }
+        //if (console) { console.log("Attempting to Move a Tile back to Tray"); }
         //
         var last = this.props.Waiting[this.props.Waiting.length - 1];
         var elem = ev.target as HTMLElement;

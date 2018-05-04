@@ -1,6 +1,7 @@
 ﻿{
   "te": {
   "Language": "te",
+  "Dictionary":"te.txt",
   "SunnaSet": ["ం", "ః"],
   "Vowels": [
       "అ", "ఆ",
@@ -99,9 +100,9 @@
       "కష": "క్ష"}
 },
   "kn": {
-    "SunnaSet": [
-      "ಂ","ಃ"
-    ],
+    "Language": "kn",
+    "Dictionary":"kn.txt",
+    "SunnaSet": ["ಂ","ಃ"],
     "Vowels": [
       "ಅ","ಆ",
       "ಇ","ಈ",
@@ -140,8 +141,7 @@
       "ೆ", "ೇ",
       "ೈ",
       "ೊ", "ೋ",
-      "ೌ"
-  ],
+      "ೌ"],
   "Synonyms": {
     "ಆ": "ಾ",
     "ಇ": "ಿ",

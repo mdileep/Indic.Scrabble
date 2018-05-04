@@ -25,6 +25,7 @@ export class Parser {
         var cache: Contracts.iCachedTile = Parser.BuildCache(cabinet);
         var infoBar: Contracts.iInfoBar = Parser.BuildInfoBar();
         var gameTable: Contracts.iGameTable = Parser.BuildGameTable(Config.Board.GameTable, cache);
+        var consent: Contracts.iConsent = Parser.BuildConsent();
         var stats: Contracts.iBoardsStats = { EmptyCells: 0, Occupancy: 0, TotalWords: 0, UnUsed: 0 };
         //
         GameActions.GameActions.RefreshTrays(cabinet.Trays, cache);
@@ -37,17 +38,20 @@ export class Parser {
             Id: Config.Board.Id,
             key: Config.Board.Id,
             className: "game",
+            ReadOnly: false,
+            Show: true,
+            //
             Cache: cache,
             Cabinet: cabinet,
             Board: board,
             Players: players,
             InfoBar: infoBar,
-            ReadOnly: false,
-            GameOver: false,
-            Show: true,
+            Consent: consent,
             Stats: stats,
             GameTable: gameTable,
-            Dialog: dialog
+            Dialog: dialog,
+
+            GameOver: false,
         };
         return gameState;
     }
@@ -191,6 +195,21 @@ export class Parser {
                 Message: "Sample",
             };
         return dialog;
+    }
+    public static BuildConsent(): Contracts.iConsent {
+        var id: string = "Consent";
+        var consent: Contracts.iConsent =
+            {
+                Id: id,
+                key: id,
+                Show: false,
+                ReadOnly: false,
+                className: "",
+                //
+                Pending: [],
+                UnResolved: []
+            };
+        return consent;
     }
     public static RefreshCache(cache: Contracts.iCachedTile, prop: any): void {
         var text = prop.Text;

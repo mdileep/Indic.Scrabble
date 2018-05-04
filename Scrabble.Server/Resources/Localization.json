@@ -37,7 +37,10 @@
     "Yes": "అవును",
     "No": " కాదు",
     "Pass": "Pass",
-    "ReDraw": "Redraw"
+    "ReDraw": "Redraw",
+    "LookupDict":"పర్యవేక్షకుడు {0} పేర్చిన పదాలను పరిశీలిస్తున్నారు.",
+    "ResolveWord":"'{0}'ను పదకేళి గుర్తించలేదు. అనుమతించదలిచారా?",
+    "ApproveWord":"పదకేళి: పదం అనుమతించండి."
   },
   "kn": {
     "LangName": "ಕನ್ನಡ ~ Kannada",
@@ -95,6 +98,9 @@
     "Yes": "Yes",
     "No": " No",
     "Pass": "Pass",
-    "ReDraw": "Redraw"
+    "ReDraw": "Redraw",
+    "LookupDict":"Referee is validating the words tiled by {0}",
+    "ResolveWord":"The Word {0} not found in our dictionary, Do you want to Allow?",
+    "ApproveWord":"Approve Word"
   }
 }

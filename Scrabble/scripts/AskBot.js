@@ -1,18 +1,18 @@
-define(["require", "exports", 'axios', 'GameStore', 'GameActions', 'Contracts', 'Util'], function (require, exports, axios, GS, GA, C, U) {
+define(["require", "exports", 'axios', 'GameStore', 'GameActions', 'Contracts', 'Util', 'Messages', 'Indic'], function (require, exports, axios, GS, GA, C, U, M, Indic) {
     "use strict";
-    var AskBot = (function () {
-        function AskBot() {
+    var AskServer = (function () {
+        function AskServer() {
         }
-        AskBot.NextMove = function () {
+        AskServer.NextMove = function () {
             GS.GameStore.Dispatch({
                 type: C.Actions.BotMove,
                 args: {}
             });
         };
-        AskBot.BotMove = function (post) {
-            AskBot.BotMoveClient(post);
+        AskServer.BotMove = function (post) {
+            AskServer.BotMoveClient(post);
         };
-        AskBot.BotMoveServer = function (post) {
+        AskServer.BotMoveServer = function (post) {
             axios
                 .post("/API.ashx?nextmove", post)
                 .then(function (response) {
@@ -24,7 +24,7 @@ define(["require", "exports", 'axios', 'GameStore', 'GameActions', 'Contracts', 
                 .catch(function (error) {
             });
         };
-        AskBot.BotMoveClient = function (post) {
+        AskServer.BotMoveClient = function (post) {
             setTimeout(function () {
                 var st = performance.now();
                 var move = new Runner().BestMove(post);
@@ -38,16 +38,203 @@ define(["require", "exports", 'axios', 'GameStore', 'GameActions', 'Contracts', 
                     type: C.Actions.BotMoveResponse,
                     args: response
                 });
-            }, 10);
+            }, AskServer.WaitTime);
         };
-        return AskBot;
+        AskServer.Validate = function (words) {
+            GS.GameStore.Dispatch({
+                type: C.Actions.ResolveWords,
+                args: {}
+            });
+        };
+        AskServer.Resolve = function (words) {
+            AskServer.ResolveClient(words);
+        };
+        AskServer.ResolveServer = function (words) {
+        };
+        AskServer.ResolveClient = function (words) {
+            setTimeout(function () {
+                var st = performance.now();
+                var invalid = WordLoader.Resolve(words);
+                var effort = U.Util.ElapsedTime(performance.now() - st);
+                var response = {
+                    Action: "resolve",
+                    Result: invalid,
+                    Effort: effort
+                };
+                GS.GameStore.Dispatch({
+                    type: response.Result.length == 0 ?
+                        C.Actions.Award :
+                        C.Actions.TakeConsent,
+                    args: response.Result
+                });
+            }, AskServer.WaitTime);
+        };
+        AskServer.WaitTime = 100;
+        return AskServer;
     }());
-    exports.AskBot = AskBot;
+    exports.AskServer = AskServer;
     var AskReferee = (function () {
         function AskReferee() {
         }
-        AskReferee.ValidateWords = function (state) {
-            return true;
+        AskReferee.Validate = function (state, args) {
+            var isValidMove = AskReferee.ValidateMove(state.Board);
+            if (!isValidMove) {
+                state.InfoBar.Messages.push(M.Messages.CrossCells);
+                return;
+            }
+            var hasOrphans = AskReferee.HasOrphans(state);
+            if (hasOrphans) {
+                state.InfoBar.Messages.push(M.Messages.HasOraphans);
+                return;
+            }
+            var hasClusters = AskReferee.HasClusters(state);
+            if (hasClusters) {
+                state.InfoBar.Messages.push(M.Messages.HasIslands);
+                return;
+            }
+            var player = state.Players.Players[state.Players.CurrentPlayer];
+            state.GameTable.Message = U.Util.Format(M.Messages.LookupDict, [player.Name]);
+            state.GameTable.ReadOnly = true;
+            setTimeout(AskServer.Validate, 100);
+        };
+        AskReferee.ValidateMove = function (Board) {
+            var Cells = Board.Cells;
+            var size = Board.Size;
+            var cnt = 0;
+            var rows = 0;
+            var columns = 0;
+            var First = {};
+            for (var i = 0; i < size * size; i++) {
+                var C = Cells[i];
+                if (C.Waiting.length == 0) {
+                    continue;
+                }
+                if (C.Confirmed.length + C.Waiting.length == 0) {
+                    continue;
+                }
+                if (cnt == 0) {
+                    First = U.Util.Position(i, size);
+                    cnt++;
+                    continue;
+                }
+                var Current = U.Util.Position(i, size);
+                if (Current.X != First.X) {
+                    rows++;
+                }
+                if (Current.Y != First.Y) {
+                    columns++;
+                }
+            }
+            if (rows == 0 || columns == 0) {
+                return true;
+            }
+            return false;
+        };
+        AskReferee.HasOrphans = function (state) {
+            var orphans = AskReferee.OrphanCells(state.Board);
+            for (var i = 0; i < orphans.length; i++) {
+                var orphan = orphans[i];
+                var P = U.Util.Position(orphan, state.Board.Size);
+                var N = state.Board.Cells[orphan];
+                state.InfoBar.Messages.push(U.Util.Format(M.Messages.OrphanCell, [(P.X + 1), (P.Y + 1), N.Current]));
+            }
+            return orphans.length > 0;
+        };
+        AskReferee.OrphanCells = function (Board) {
+            var oraphans = [];
+            for (var i = 0; i < Board.Cells.length; i++) {
+                var Cell = Board.Cells[i];
+                if (Cell.Waiting.length + Cell.Confirmed.length == 0) {
+                    continue;
+                }
+                var neighors = U.Util.FindNeighbors(i, Board.Size);
+                var valid = false;
+                for (var j = 0; j < neighors.length; j++) {
+                    var neighbor = neighors[j];
+                    var N = Board.Cells[neighbor];
+                    if (N.Waiting.length + N.Confirmed.length != 0) {
+                        valid = true;
+                    }
+                }
+                if (!valid) {
+                    if (oraphans.indexOf(i) >= 0) {
+                        continue;
+                    }
+                    oraphans.push(i);
+                }
+            }
+            return oraphans;
+        };
+        AskReferee.HasClusters = function (state) {
+            var Board = state.Board;
+            var Clustered = [];
+            var clusters = 0;
+            while (true) {
+                var first = AskReferee.FirstNonEmpty(Board.Cells, Clustered, Board.Size);
+                if (first == -1) {
+                    break;
+                }
+                var List = AskReferee.ClusterCells(Board.Cells, first, Board.Size);
+                Clustered = Clustered.concat(List);
+                clusters++;
+            }
+            return (clusters > 1);
+        };
+        AskReferee.ClusterCells = function (Cells, first, size) {
+            var List = [];
+            List.push(first);
+            {
+                var P = U.Util.Position(first, size);
+                var C = Cells[first];
+            }
+            var curr = 0;
+            var found = true;
+            while (found) {
+                if (curr >= List.length) {
+                    break;
+                }
+                found = false;
+                var neighors = U.Util.FindNeighbors(List[curr], size);
+                for (var i = 0; i < neighors.length; i++) {
+                    var neighbor = neighors[i];
+                    if (List.indexOf(neighbor) >= 0) {
+                        continue;
+                    }
+                    found = true;
+                    var C = Cells[neighbor];
+                    if (C.Confirmed.length + C.Waiting.length == 0) {
+                        continue;
+                    }
+                    var P = U.Util.Position(neighbor, size);
+                    List.push(neighbor);
+                }
+                curr++;
+            }
+            return List;
+        };
+        AskReferee.FirstNonEmpty = function (Cells, Clustered, size) {
+            var first = -1;
+            for (var i = 0; i < size * size; i++) {
+                if (Clustered.indexOf(i) >= 0) {
+                    continue;
+                }
+                if (Cells[i].Confirmed.length + Cells[i].Waiting.length == 0) {
+                    continue;
+                }
+                first = i;
+                break;
+            }
+            return first;
+        };
+        AskReferee.ExtractWords = function (board) {
+            var Words = GA.GameActions.WordsOnBoard(board, true, true);
+            var sWords = [];
+            for (var indx in Words) {
+                var word = Words[indx].Text;
+                word = Indic.Indic.ToScrabble(word);
+                sWords.push(word);
+            }
+            return sWords;
         };
         return AskReferee;
     }());
@@ -267,7 +454,6 @@ define(["require", "exports", 'axios', 'GameStore', 'GameActions', 'Contracts', 
                     }
                 }
             }
-            console.log("\t\t Moves found: " + Moves.length);
             return Moves;
         };
         Runner.WordExtensions = function (Cells, size, CharSet, AllWords, Movables, SpeicalDict) {
@@ -325,7 +511,6 @@ define(["require", "exports", 'axios', 'GameStore', 'GameActions', 'Contracts', 
                     }
                 }
             }
-            console.log("\t\t Moves found: " + Moves.length);
             return Moves;
         };
         Runner.TryHarizontal = function (Cells, size, Index, offset, Pre, Centers, Post) {
@@ -472,7 +657,6 @@ define(["require", "exports", 'axios', 'GameStore', 'GameActions', 'Contracts', 
                     }
                     Shortlisted.push(word);
                 }
-                console.log("\t\t\t Shortlisted: " + Shortlisted.length + "  of " + Matches.length);
             }
             return Shortlisted;
         };
@@ -632,7 +816,6 @@ define(["require", "exports", 'axios', 'GameStore', 'GameActions', 'Contracts', 
         Runner.prototype.MatchedWords = function (words, Pattern) {
             var r = RegExp(Pattern);
             var List = words.filter(function (s) { return r.test(s.Tiles); });
-            console.log("\t\t\t" + List.length + " of " + words.length + " found: " + Pattern);
             return List;
         };
         Runner.MatchedString = function (group, seperator) {
@@ -1197,6 +1380,7 @@ define(["require", "exports", 'axios', 'GameStore', 'GameActions', 'Contracts', 
                 });
             }
             WordLoader.Lists[file] = List;
+            WordLoader.Lists.Loaded++;
             rawResponse = null;
         };
         WordLoader.Init = function (file) {
@@ -1204,12 +1388,39 @@ define(["require", "exports", 'axios', 'GameStore', 'GameActions', 'Contracts', 
                 .get("/bots/" + file)
                 .then(function (response) {
                 WordLoader.Load(file, response.data);
-                GA.GameActions.BotLoaded(file);
+                GA.GameActions.VocabularyLoaded(file);
             })
                 .catch(function (error) {
             });
         };
-        WordLoader.Lists = {};
+        WordLoader.Resolve = function (words) {
+            var unResolved = [];
+            for (var indx in words) {
+                var word = words[indx];
+                var isValid = WordLoader.IsValid(word);
+                if (!isValid) {
+                    unResolved.push(word);
+                }
+            }
+            return unResolved;
+        };
+        WordLoader.IsValid = function (word) {
+            var res = false;
+            for (var indx in WordLoader.Lists) {
+                var List = WordLoader.Lists[indx];
+                for (var indx2 in List) {
+                    var Word = List[indx2];
+                    if (word == Word.Tiles) {
+                        if (console) {
+                            console.log(Word.Tiles);
+                        }
+                        return true;
+                    }
+                }
+            }
+            return res;
+        };
+        WordLoader.Lists = { Loaded: 0, Total: 0 };
         return WordLoader;
     }());
     exports.WordLoader = WordLoader;

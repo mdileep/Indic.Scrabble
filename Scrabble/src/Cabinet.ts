@@ -24,7 +24,6 @@ class Cabinet extends React.Component<Contracts.iCabinetProps, Contracts.iCabine
         this.state = props;
     }
     render() {
-        if (console) { console.log("Rendering Cabinet"); }
         var childs: React.ReactElement<Contracts.iProps>[] = [];
 
         var groupContainer = this.renderContainer();

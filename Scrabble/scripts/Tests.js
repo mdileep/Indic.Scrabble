@@ -25,7 +25,7 @@ define(["require", "exports", './AskBot'], function (require, exports, AB) {
                 Special: "(ల,ఉ) ",
                 Vowels: "అ ఆ ఈ ఉ ఉ ఎ ఏ ఓ"
             };
-            AB.AskBot.BotMoveClient(Board);
+            AB.AskServer.BotMoveClient(Board);
         };
         return RunerTest;
     }());

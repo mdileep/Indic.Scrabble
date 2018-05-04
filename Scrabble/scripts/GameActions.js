@@ -28,32 +28,16 @@ define(["require", "exports", "react", "react-dom", 'Contracts', 'Messages', 'In
                 return;
             }
             state.GameTable.Message = Util.Util.Format(Messages.Messages.Thinking, [players[currentPlayer].Name]);
-            setTimeout(AskBot.AskBot.NextMove, GameActions.BotWait);
+            setTimeout(AskBot.AskServer.NextMove, GameActions.BotWait);
         };
         GameActions.Render = function () {
-            if (console) {
-                console.log("OnGameRender");
-            }
             var rootEl = document.getElementById('root');
             var state = GS.GameStore.GetState();
             var left = React.createElement(Game.default, state);
             return ReactDOM.render(left, rootEl);
         };
-        GameActions.BotLoaded = function (file) {
-            var players = Config.Players;
-            var cnt = 0;
-            for (var i = 0; i < players.length; i++) {
-                var player = players[i];
-                if (player.IsBot == null || !player.IsBot || player.BotLoaded) {
-                    cnt++;
-                    continue;
-                }
-                if (player.Dictionary == file) {
-                    player.BotLoaded = true;
-                    cnt++;
-                }
-            }
-            if (cnt != players.length) {
+        GameActions.VocabularyLoaded = function (file) {
+            if (AskBot.WordLoader.Lists.Loaded != AskBot.WordLoader.Lists.Total) {
                 return;
             }
             GS.GameStore.Dispatch({
@@ -62,25 +46,48 @@ define(["require", "exports", "react", "react-dom", 'Contracts', 'Messages', 'In
             });
         };
         GameActions.Pass = function (state, args) {
-            var isValidMove = GameActions.ValidateMove(state.Board);
-            if (!isValidMove) {
-                state.InfoBar.Messages.push(Messages.Messages.CrossCells);
+            AskBot.AskReferee.Validate(state, args);
+        };
+        GameActions.TakeConsent = function (state, words) {
+            state.Consent.Pending = GameActions.BuildWordPairs(words);
+            state.Consent.UnResolved = [];
+            state.GameTable.ReadOnly = true;
+            var player = state.Players.Players[state.Players.CurrentPlayer];
+            state.GameTable.Message = Util.Util.Format(Messages.Messages.YourTurn, [player.Name]);
+        };
+        GameActions.ResolveWord = function (state, args) {
+            state.Consent.Pending.pop();
+            if (state.Consent.UnResolved.length == 0) {
+                GameActions.Award(state, args);
+            }
+        };
+        GameActions.BuildWordPairs = function (words) {
+            var list = [];
+            for (var indx in words) {
+                var readable = Indic.Indic.ToWord(words[indx].split(','));
+                list.push({ Scrabble: words[indx], Readble: readable });
+            }
+            return list;
+        };
+        GameActions.RejectWord = function (state, args) {
+            if (state.Consent.Pending.length > 0) {
+                var word = state.Consent.Pending[0];
+                state.Consent.Pending.pop();
+                state.Consent.UnResolved.push(word);
+            }
+            if (state.Consent.Pending.length == 0) {
+                state.GameTable.ReadOnly = false;
+            }
+            if (state.Consent.UnResolved.length == 0) {
+                GameActions.Award(state, args);
                 return;
             }
-            var hasOrphans = GameActions.HasOrphans(state);
-            if (hasOrphans) {
-                state.InfoBar.Messages.push(Messages.Messages.HasOraphans);
-                return;
-            }
-            var hasClusters = GameActions.HasClusters(state);
-            if (hasClusters) {
-                state.InfoBar.Messages.push(Messages.Messages.HasIslands);
-                return;
-            }
-            var isValid = AskBot.AskReferee.ValidateWords(state.Board);
-            if (!isValid) {
-                return;
-            }
+        };
+        GameActions.ResolveWords = function (state, args) {
+            var words = AskBot.AskReferee.ExtractWords(state.Board);
+            AskBot.AskServer.Resolve(words);
+        };
+        GameActions.Award = function (state, args) {
             GameActions.ResetTable(state);
             GameActions.AwardClaims(state);
             GameActions.SetScores(state);
@@ -228,7 +235,7 @@ define(["require", "exports", "react", "react-dom", 'Contracts', 'Messages', 'In
                 "Conso": Cosos.join(' '),
                 "Special": Special.join(' ')
             };
-            AskBot.AskBot.BotMove(post);
+            AskBot.AskServer.BotMove(post);
         };
         GameActions.SaveBoard = function (state) {
             for (var i = 0; i < state.Board.Cells.length; i++) {
@@ -243,7 +250,7 @@ define(["require", "exports", "react", "react-dom", 'Contracts', 'Messages', 'In
             GameActions.RefreshClaims(state);
         };
         GameActions.RefreshClaims = function (state) {
-            var Claims = GameActions.WordsOnBoard(state.Board, true);
+            var Claims = GameActions.WordsOnBoard(state.Board, true, false);
             var playerId = state.Players.CurrentPlayer;
             var player = state.Players.Players[playerId];
             player.Claimed = Claims;
@@ -294,7 +301,7 @@ define(["require", "exports", "react", "react-dom", 'Contracts', 'Messages', 'In
             }
         };
         GameActions.AwardClaims = function (state) {
-            var Claims = GameActions.WordsOnBoard(state.Board, true);
+            var Claims = GameActions.WordsOnBoard(state.Board, true, false);
             var Awarded = GameActions.AwardedWords(state);
             for (var key in Claims) {
                 var word = Claims[key];
@@ -503,115 +510,19 @@ define(["require", "exports", "react", "react-dom", 'Contracts', 'Messages', 'In
             var synonym = Indic.Indic.GetSynonym(text);
             cache[synonym].Remaining = cache[synonym].Remaining + incBy;
         };
-        GameActions.FirstNonEmpty = function (Cells, Clustered, size) {
-            var first = -1;
-            for (var i = 0; i < size * size; i++) {
-                if (Clustered.indexOf(i) >= 0) {
-                    continue;
-                }
-                if (Cells[i].Confirmed.length + Cells[i].Waiting.length == 0) {
-                    continue;
-                }
-                first = i;
-                break;
-            }
-            return first;
+        GameActions.WordsOnColumn = function (Board, i, claimsOnly, asSyllables) {
+            return GameActions.FindWords(Board, 'C', i, claimsOnly, asSyllables);
         };
-        GameActions.ClusterCells = function (Cells, first, size) {
-            var List = [];
-            List.push(first);
-            {
-                var P = Util.Util.Position(first, size);
-                var C = Cells[first];
-            }
-            var curr = 0;
-            var found = true;
-            while (found) {
-                if (curr >= List.length) {
-                    break;
-                }
-                found = false;
-                var neighors = Util.Util.FindNeighbors(List[curr], size);
-                for (var i = 0; i < neighors.length; i++) {
-                    var neighbor = neighors[i];
-                    if (List.indexOf(neighbor) >= 0) {
-                        continue;
-                    }
-                    found = true;
-                    var C = Cells[neighbor];
-                    if (C.Confirmed.length + C.Waiting.length == 0) {
-                        continue;
-                    }
-                    var P = Util.Util.Position(neighbor, size);
-                    List.push(neighbor);
-                }
-                curr++;
-            }
-            return List;
+        GameActions.WordsOnRow = function (Board, i, claimsOnly, asSyllables) {
+            return GameActions.FindWords(Board, 'R', i, claimsOnly, asSyllables);
         };
-        GameActions.HasClusters = function (state) {
-            var Board = state.Board;
-            var Clustered = [];
-            var clusters = 0;
-            while (true) {
-                var first = GameActions.FirstNonEmpty(Board.Cells, Clustered, Board.Size);
-                if (first == -1) {
-                    break;
-                }
-                var List = GameActions.ClusterCells(Board.Cells, first, Board.Size);
-                Clustered = Clustered.concat(List);
-                clusters++;
-            }
-            console.log("Clusters found: " + clusters);
-            return (clusters > 1);
-        };
-        GameActions.HasOrphans = function (state) {
-            var orphans = GameActions.OrphanCells(state.Board);
-            for (var i = 0; i < orphans.length; i++) {
-                var orphan = orphans[i];
-                var P = Util.Util.Position(orphan, state.Board.Size);
-                var N = state.Board.Cells[orphan];
-                state.InfoBar.Messages.push(Util.Util.Format(Messages.Messages.OrphanCell, [(P.X + 1), (P.Y + 1), N.Current]));
-            }
-            return orphans.length > 0;
-        };
-        GameActions.OrphanCells = function (Board) {
-            var oraphans = [];
-            for (var i = 0; i < Board.Cells.length; i++) {
-                var Cell = Board.Cells[i];
-                if (Cell.Waiting.length + Cell.Confirmed.length == 0) {
-                    continue;
-                }
-                var neighors = Util.Util.FindNeighbors(i, Board.Size);
-                var valid = false;
-                for (var j = 0; j < neighors.length; j++) {
-                    var neighbor = neighors[j];
-                    var N = Board.Cells[neighbor];
-                    if (N.Waiting.length + N.Confirmed.length != 0) {
-                        valid = true;
-                    }
-                }
-                if (!valid) {
-                    if (oraphans.indexOf(i) >= 0) {
-                        continue;
-                    }
-                    oraphans.push(i);
-                }
-            }
-            return oraphans;
-        };
-        GameActions.WordsOnColumn = function (Board, i, claimsOnly) {
-            return GameActions.FindWords(Board, 'C', i, claimsOnly);
-        };
-        GameActions.WordsOnRow = function (Board, i, claimsOnly) {
-            return GameActions.FindWords(Board, 'R', i, claimsOnly);
-        };
-        GameActions.FindWords = function (Board, option, r, claimsOnly) {
+        GameActions.FindWords = function (Board, option, r, claimsOnly, asSyllables) {
             var Words = [];
             var pending = "";
             var cnt = 0;
             var waiting = false;
             var score = 0;
+            var seperator = asSyllables ? "," : "";
             for (var i = 0; i < Board.Size; i++) {
                 var index = -1;
                 switch (option) {
@@ -624,7 +535,7 @@ define(["require", "exports", "react", "react-dom", 'Contracts', 'Messages', 'In
                 }
                 var cell = Board.Cells[index];
                 if (cell.Waiting.length + cell.Confirmed.length != 0) {
-                    pending += cell.Current;
+                    pending += cell.Current + seperator;
                     cnt++;
                     if (cell.Waiting.length > 0) {
                         waiting = true;
@@ -634,7 +545,8 @@ define(["require", "exports", "react", "react-dom", 'Contracts', 'Messages', 'In
                 }
                 if (pending != "" && cell.Waiting.length + cell.Confirmed.length == 0) {
                     if (cnt > 1) {
-                        var word = pending + cell.Current;
+                        var word = (pending + seperator + cell.Current);
+                        word = word.TrimEnd(' ').TrimEnd(seperator);
                         var W = { Text: word, Waiting: waiting, Score: score };
                         if ((claimsOnly && waiting) || !claimsOnly) {
                             Words.push(W);
@@ -649,6 +561,7 @@ define(["require", "exports", "react", "react-dom", 'Contracts', 'Messages', 'In
             }
             if (cnt > 1) {
                 var word = pending;
+                word = word.TrimEnd(' ').TrimEnd(seperator);
                 var W = { Text: word, Waiting: waiting, Score: score };
                 if ((claimsOnly && waiting) || !claimsOnly) {
                     Words.push(W);
@@ -656,44 +569,11 @@ define(["require", "exports", "react", "react-dom", 'Contracts', 'Messages', 'In
             }
             return Words;
         };
-        GameActions.ValidateMove = function (Board) {
-            var Cells = Board.Cells;
-            var size = Board.Size;
-            var cnt = 0;
-            var rows = 0;
-            var columns = 0;
-            var First = {};
-            for (var i = 0; i < size * size; i++) {
-                var C = Cells[i];
-                if (C.Waiting.length == 0) {
-                    continue;
-                }
-                if (C.Confirmed.length + C.Waiting.length == 0) {
-                    continue;
-                }
-                if (cnt == 0) {
-                    First = Util.Util.Position(i, size);
-                    cnt++;
-                    continue;
-                }
-                var Current = Util.Util.Position(i, size);
-                if (Current.X != First.X) {
-                    rows++;
-                }
-                if (Current.Y != First.Y) {
-                    columns++;
-                }
-            }
-            if (rows == 0 || columns == 0) {
-                return true;
-            }
-            return false;
-        };
-        GameActions.WordsOnBoard = function (Board, claimsOnly) {
+        GameActions.WordsOnBoard = function (Board, claimsOnly, asSyllables) {
             var Words = [];
             for (var i = 0; i < Board.Size; i++) {
-                var R = GameActions.WordsOnRow(Board, i, claimsOnly);
-                var C = GameActions.WordsOnColumn(Board, i, claimsOnly);
+                var R = GameActions.WordsOnRow(Board, i, claimsOnly, asSyllables);
+                var C = GameActions.WordsOnColumn(Board, i, claimsOnly, asSyllables);
                 Words = Words.concat(R);
                 Words = Words.concat(C);
             }

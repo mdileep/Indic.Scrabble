@@ -83,12 +83,11 @@ class Tile extends React.Component<Contracts.iTileProps, Contracts.iTileProps> {
         return blank;
     }
     public OnDragStart(ev: DragEvent) {
-        if (console) { console.log("Attempting to Move a Tile back to Board"); }
-        //
+        //if (console) { console.log("Attempting to Move a Tile back to Board"); }
         var elem = ev.target as HTMLElement;
         var data: Contracts.iArgs = {
             Src: this.props.Text,
-            Origin:"Tile"
+            Origin: "Tile"
         };
         ev.dataTransfer.setData("text", JSON.stringify(data));
     }

@@ -13,9 +13,6 @@ define(["require", "exports", "react", 'Contracts', 'Tray', 'TrayRack', 'Util', 
         }
         Cabinet.prototype.render = function () {
             var _this = this;
-            if (console) {
-                console.log("Rendering Cabinet");
-            }
             var childs = [];
             var groupContainer = this.renderContainer();
             childs.push(groupContainer);

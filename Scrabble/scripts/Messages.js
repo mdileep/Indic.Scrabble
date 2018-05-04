@@ -31,6 +31,9 @@ define(["require", "exports"], function (require, exports) {
         Messages.WhyGameOver = "";
         Messages.NoWordsAdded = "";
         Messages.Stats = "";
+        Messages.LookupDict = "";
+        Messages.ResolveWord = "";
+        Messages.ApproveWord = "";
         Messages.OK = "";
         Messages.Yes = "";
         Messages.No = "";

@@ -20,8 +20,8 @@ class _OverlayDialog<P extends Contracts.iOverlayDialog, S extends Contracts.iOv
     constructor(props: P) {
         super(props);
         this.state = (props as any) as S;
-        this.OnOK = this.OnOK.bind(this);
-        this.OnCancel = this.OnCancel.bind(this);
+        this.OnConfirm = this.OnConfirm.bind(this);
+        this.OnDismiss = this.OnDismiss.bind(this);
     }
 
     render() {
@@ -76,7 +76,7 @@ class _OverlayDialog<P extends Contracts.iOverlayDialog, S extends Contracts.iOv
                 {
                     key: "ok_" + this.props.Id,
                     className: "oOK",
-                    onClick: this.OnOK
+                    onClick: this.OnConfirm
                 }, [], this.props.ConfirmText);
             childs.push(ok);
         }
@@ -86,7 +86,7 @@ class _OverlayDialog<P extends Contracts.iOverlayDialog, S extends Contracts.iOv
                 {
                     key: "cancel_" + this.props.Id,
                     className: "oCancel",
-                    onClick: this.OnCancel
+                    onClick: this.OnDismiss
                 }, [], this.props.CancelText);
             childs.push(cancel);
         }
@@ -106,18 +106,18 @@ class _OverlayDialog<P extends Contracts.iOverlayDialog, S extends Contracts.iOv
             });
     }
 
-    public OnOK(ev: MouseEvent) {
+    public OnConfirm(ev: MouseEvent) {
         if (this.props.OnConfirm == null) {
             return;
         }
         this.props.OnConfirm();
     }
 
-    public OnCancel(ev: MouseEvent) {
-        if (this.props.OnCancel == null) {
+    public OnDismiss(ev: MouseEvent) {
+        if (this.props.OnDismiss == null) {
             return;
         }
-        this.props.OnCancel();
+        this.props.OnDismiss();
     }
 }
 export default _OverlayDialog;

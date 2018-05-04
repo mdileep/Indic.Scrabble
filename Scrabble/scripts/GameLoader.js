@@ -16,37 +16,41 @@ define(["require", "exports", 'Contracts', 'AksharaSets', 'Messages', 'DragDropT
             GameLoader.ConfigGame();
             GS.GameStore.CreateStore();
             GS.GameStore.Subscribe(GA.GameActions.Render);
-            GameLoader.PreparePlayers();
+            GameLoader.Prepare();
         };
-        GameLoader.PreparePlayers = function () {
-            var bots = GameLoader.GetBots(Config.Players);
-            if (bots.length == 0) {
+        GameLoader.Prepare = function () {
+            var list = GameLoader.Vocabularies(Config.Players);
+            if (list.length == 0) {
+                list.push(Config.CharSet.Dictionary);
+            }
+            AskBot.WordLoader.Lists.Total = list.length;
+            if (list.length == 0) {
                 GS.GameStore.Dispatch({
                     type: Contracts.Actions.Init,
                     args: {}
                 });
                 return;
             }
-            GameLoader.LoadBots(bots);
+            GameLoader.LoadVocabularies(list);
         };
-        GameLoader.LoadBots = function (bots) {
-            for (var indx in bots) {
-                AskBot.WordLoader.Init(bots[indx]);
+        GameLoader.LoadVocabularies = function (list) {
+            for (var indx in list) {
+                AskBot.WordLoader.Init(list[indx]);
             }
         };
-        GameLoader.GetBots = function (players) {
-            var bots = [];
+        GameLoader.Vocabularies = function (players) {
+            var dicts = [];
             for (var i = 0; i < players.length; i++) {
                 var player = players[i];
                 if (player.IsBot == null || !player.IsBot) {
                     continue;
                 }
-                if (bots.Contains(player.Dictionary)) {
+                if (dicts.Contains(player.Dictionary)) {
                     continue;
                 }
-                bots.push(player.Dictionary);
+                dicts.push(player.Dictionary);
             }
-            return bots;
+            return dicts;
         };
         return GameLoader;
     }());

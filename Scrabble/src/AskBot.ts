@@ -14,9 +14,12 @@ import * as GS from 'GameStore';
 import * as GA from 'GameActions';
 import * as C from 'Contracts';
 import * as U from 'Util';
+import * as M from 'Messages';
+import * as Indic from 'Indic';
 declare var Config: any;
 
-export class AskBot {
+export class AskServer {
+    static WaitTime: number = 100;
 
     static NextMove(): void {
         GS.GameStore.Dispatch({
@@ -27,7 +30,7 @@ export class AskBot {
 
     static BotMove(post: any): void {
         //Decide between Server or Client
-        AskBot.BotMoveClient(post);
+        AskServer.BotMoveClient(post);
     }
 
     static BotMoveServer(post: any): void {
@@ -48,7 +51,7 @@ export class AskBot {
         setTimeout(function () {
 
             var st = performance.now();
-            var move = new Runner().BestMove(post);
+            var move: C.ProbableMove = new Runner().BestMove(post);
             var effort = U.Util.ElapsedTime(performance.now() - st);
 
             var response =
@@ -63,14 +66,213 @@ export class AskBot {
                 args: response
             });
 
-        }, 10);
+        }, AskServer.WaitTime);
+    }
+
+    static Validate(words: string[]): void {
+        GS.GameStore.Dispatch({
+            type: C.Actions.ResolveWords,
+            args: {}
+        });
+    }
+
+    static Resolve(words: string[]): void {
+        //Decide between Server or Client
+        AskServer.ResolveClient(words);
+    }
+
+    static ResolveServer(words: string[]): void {
+        //TODO...
+    }
+
+    static ResolveClient(words: string[]): void {
+        setTimeout(function () {
+
+            var st = performance.now();
+            var invalid = WordLoader.Resolve(words);
+            var effort = U.Util.ElapsedTime(performance.now() - st);
+
+            var response =
+                {
+                    Action: "resolve",
+                    Result: invalid,
+                    Effort: effort
+                };
+
+            GS.GameStore.Dispatch
+                ({
+                    type: response.Result.length == 0 ?
+                        C.Actions.Award :
+                        C.Actions.TakeConsent,
+                    args: response.Result
+                });
+
+        }, AskServer.WaitTime);
     }
 }
 
 export class AskReferee {
-    static ValidateWords(state: C.iBoardProps): boolean {
-        //Actual Word Verification against Word Database
-        return true;
+    static Validate(state: C.iGameState, args: C.iArgs): void {
+        var isValidMove: boolean = AskReferee.ValidateMove(state.Board);
+        if (!isValidMove) {
+            state.InfoBar.Messages.push(M.Messages.CrossCells);
+            return;
+        }
+        var hasOrphans: boolean = AskReferee.HasOrphans(state);
+        if (hasOrphans) {
+            state.InfoBar.Messages.push(M.Messages.HasOraphans);
+            return;
+        }
+        var hasClusters: boolean = AskReferee.HasClusters(state);
+        if (hasClusters) {
+            state.InfoBar.Messages.push(M.Messages.HasIslands);
+            return;
+        }
+        var player: C.iPlayer = state.Players.Players[state.Players.CurrentPlayer];
+        state.GameTable.Message = U.Util.Format(M.Messages.LookupDict, [player.Name]);
+        state.GameTable.ReadOnly = true;
+        setTimeout(AskServer.Validate, 100);
+    }
+    static ValidateMove(Board: C.iBoardProps): boolean {
+        var Cells: C.iCellProps[] = Board.Cells;
+        var size: number = Board.Size;
+        var cnt = 0;
+        var rows = 0;
+        var columns = 0;
+        var First: C.iPosition = {} as C.iPosition;
+        for (var i = 0; i < size * size; i++) {
+            var C = Cells[i];
+            if (C.Waiting.length == 0) {
+                continue;
+            }
+            if (C.Confirmed.length + C.Waiting.length == 0) {
+                continue;
+            }
+            if (cnt == 0) {
+                First = U.Util.Position(i, size);
+                cnt++;
+                continue;
+            }
+            var Current = U.Util.Position(i, size);
+            if (Current.X != First.X) {
+                rows++;
+            }
+            if (Current.Y != First.Y) {
+                columns++;
+            }
+        }
+
+        if (rows == 0 || columns == 0) {
+            return true;
+        }
+        return false;
+    }
+    static HasOrphans(state: C.iGameState): boolean {
+        var orphans: number[] = AskReferee.OrphanCells(state.Board);
+        for (var i = 0; i < orphans.length; i++) {
+            var orphan: number = orphans[i];
+            var P: C.iPosition = U.Util.Position(orphan, state.Board.Size);
+            var N: C.iCellProps = state.Board.Cells[orphan];
+            state.InfoBar.Messages.push(U.Util.Format(M.Messages.OrphanCell, [(P.X + 1), (P.Y + 1), N.Current]));
+        }
+        return orphans.length > 0;
+    }
+    static OrphanCells(Board: C.iBoardProps): number[] {
+        var oraphans: number[] = [];
+        for (var i = 0; i < Board.Cells.length; i++) {
+            var Cell: C.iCellProps = Board.Cells[i];
+            if (Cell.Waiting.length + Cell.Confirmed.length == 0) {
+                continue;
+            }
+            var neighors: number[] = U.Util.FindNeighbors(i, Board.Size);
+            var valid: boolean = false;
+            for (var j = 0; j < neighors.length; j++) {
+                var neighbor: number = neighors[j];
+                var N: C.iCellProps = Board.Cells[neighbor];
+                if (N.Waiting.length + N.Confirmed.length != 0) {
+                    valid = true;
+                }
+            }
+            if (!valid) {
+                if (oraphans.indexOf(i) >= 0) {
+                    continue;
+                }
+                oraphans.push(i);
+            }
+        }
+        return oraphans;
+    }
+    static HasClusters(state: C.iGameState): boolean {
+        var Board: C.iBoardProps = state.Board;
+        var Clustered: number[] = [];
+        var clusters = 0;
+        while (true) {
+            var first = AskReferee.FirstNonEmpty(Board.Cells, Clustered, Board.Size);
+            if (first == -1) {
+                break;
+            }
+            var List = AskReferee.ClusterCells(Board.Cells, first, Board.Size);
+            Clustered = Clustered.concat(List);
+            clusters++;
+        }
+        //if (console) { console.log("Clusters found: " + clusters); }
+        return (clusters > 1);
+    }
+    static ClusterCells(Cells: C.iCellProps[], first: number, size: number): number[] {
+        var List: number[] = [];
+        List.push(first);
+        {
+            var P: C.iPosition = U.Util.Position(first, size);
+            var C: C.iCellProps = Cells[first];
+        }
+        var curr = 0;
+        var found: boolean = true;
+        while (found) {
+            if (curr >= List.length) {
+                break;
+            }
+            found = false;
+            var neighors = U.Util.FindNeighbors(List[curr], size);
+            for (var i = 0; i < neighors.length; i++) {
+                var neighbor = neighors[i];
+                if (List.indexOf(neighbor) >= 0) {
+                    continue;
+                }
+                found = true;
+                var C = Cells[neighbor];
+                if (C.Confirmed.length + C.Waiting.length == 0) {
+                    continue;
+                }
+                var P = U.Util.Position(neighbor, size);
+                List.push(neighbor);
+            }
+            curr++;
+        }
+        return List;
+    }
+    static FirstNonEmpty(Cells: C.iCellProps[], Clustered: number[], size: number): number {
+        var first: number = -1;
+        for (var i = 0; i < size * size; i++) {
+            if (Clustered.indexOf(i) >= 0) {
+                continue;
+            }
+            if (Cells[i].Confirmed.length + Cells[i].Waiting.length == 0) {
+                continue;
+            }
+            first = i;
+            break;
+        }
+        return first;
+    }
+    static ExtractWords(board: C.iBoardProps): string[] {
+        var Words = GA.GameActions.WordsOnBoard(board, true, true);
+        var sWords: string[] = [];
+        for (var indx in Words) {
+            var word: string = Words[indx].Text;
+            word = Indic.Indic.ToScrabble(word);
+            sWords.push(word);
+        }
+        return sWords;
     }
 }
 //
@@ -314,7 +516,7 @@ export class Runner {
                 }
             }
         }
-        console.log("\t\t Moves found: " + Moves.length);
+        //if (console) { console.log("\t\t Moves found: " + Moves.length); }
         return Moves;
 
     }
@@ -381,7 +583,7 @@ export class Runner {
                 }
             }
         }
-        console.log("\t\t Moves found: " + Moves.length);
+        //if (console) { console.log("\t\t Moves found: " + Moves.length); }
         return Moves;
     }
 
@@ -544,7 +746,7 @@ export class Runner {
 
                 Shortlisted.push(word);
             }
-            console.log("\t\t\t Shortlisted: " + Shortlisted.length + "  of " + Matches.length);
+            //if (console) { console.log("\t\t\t Shortlisted: " + Shortlisted.length + "  of " + Matches.length); }
         }
         return Shortlisted;
     }
@@ -716,7 +918,7 @@ export class Runner {
     MatchedWords(words: C.Word[], Pattern: string): C.Word[] {
         var r = RegExp(Pattern);
         var List = words.filter(function (s: C.Word) { return r.test(s.Tiles); });
-        console.log("\t\t\t" + List.length + " of " + words.length + " found: " + Pattern);
+        //if (console) { console.log("\t\t\t" + List.length + " of " + words.length + " found: " + Pattern); }
         return List;
 
     }
@@ -1321,7 +1523,7 @@ export class Runner {
     }
 }
 export class WordLoader {
-    static Lists: any = {};
+    static Lists: any = { Loaded: 0, Total: 0 };
     static LoadWords(file: string): C.Word[] {
         if (WordLoader.Lists != null && WordLoader.Lists[file] != null) {
             return WordLoader.Lists[file];
@@ -1342,6 +1544,7 @@ export class WordLoader {
                 } as C.Word);
         }
         WordLoader.Lists[file] = List;
+        WordLoader.Lists.Loaded++;
         rawResponse = null;
     }
     static Init(file: string) {
@@ -1349,11 +1552,37 @@ export class WordLoader {
             .get("/bots/" + file)
             .then(response => {
                 WordLoader.Load(file, response.data as string);
-                GA.GameActions.BotLoaded(file);
+                GA.GameActions.VocabularyLoaded(file);
             })
             .catch(error => {
                 //TODO...
             });
+    }
+    static Resolve(words: string[]): string[] {
+        var unResolved: string[] = [];
+        for (var indx in words) {
+            var word: string = words[indx];
+            var isValid: boolean = WordLoader.IsValid(word);
+            if (!isValid) {
+                unResolved.push(word);
+            }
+        }
+        return unResolved;
+    }
+
+    static IsValid(word: string): boolean {
+        var res = false;
+        for (var indx in WordLoader.Lists) {
+            var List: C.Word[] = WordLoader.Lists[indx];
+            for (var indx2 in List) {
+                var Word: C.Word = List[indx2];
+                if (word == Word.Tiles) {
+                    if (console) { console.log(Word.Tiles); }
+                    return true;
+                }
+            }
+        }
+        return res;
     }
 }
 export class GameConfig {

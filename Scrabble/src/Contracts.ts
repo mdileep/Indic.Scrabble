@@ -69,7 +69,6 @@ export interface iPlayer extends iComponent {
     NoWords: number;
     IsBot: boolean;
     BotId: string;
-    BotLoaded: boolean;
 }
 export interface iGameTable extends iComponent {
     VowelTray: iTrayProps;
@@ -79,6 +78,14 @@ export interface iGameTable extends iComponent {
     MaxVowels: number;
     Message: string;
 }
+export interface iConsent extends iComponent {
+    Pending: iWordPair[];
+    UnResolved: iWordPair[];
+}
+export interface iWordPair {
+    Scrabble: string;
+    Readble: string;
+}
 export interface iGameState extends iComponent {
     Cabinet: iCabinetProps;
     Board: iBoardProps;
@@ -86,6 +93,7 @@ export interface iGameState extends iComponent {
     InfoBar: iInfoBar;
     GameTable: iGameTable;
     Cache: iCachedTile;
+    Consent: iConsent;
     Stats: iBoardsStats;
     Dialog: iDialog;
     GameOver: boolean;
@@ -97,7 +105,7 @@ export interface iOverlayDialog extends iComponent {
     ShowConfirm: boolean;
     ShowClose: boolean;
     OnConfirm: () => void;
-    OnCancel: () => void;
+    OnDismiss: () => void;
 }
 export interface _iAlertDialog extends iOverlayDialog {
     Title: string;
@@ -136,7 +144,7 @@ export class Actions {
     public static ToBoard: number = 20;
     public static ToTray: number = 21;
     public static OpenOrClose: number = 30;
-
+    //
     public static Pass: number = 40;
     public static ReDraw: number = 41;
     public static PunchAndPick: number = 42;
@@ -144,7 +152,13 @@ export class Actions {
     public static BotMove: number = 50;
     public static BotMoveResponse: number = 51;
     //
-    public static Approve: number = 60;
+    public static Award: number = 60;
+    public static ResolveWords: number = 65;
+    public static TakeConsent: number = 62;
+    public static WordResolved: number = 63;
+    public static WordRejected: number = 64;
+
+    //
     public static DismissDialog: number = 90;
 }
 export interface iIndexConfig {
@@ -235,6 +249,12 @@ export interface iBotMoveResponse {
     Reference: string;
     Result: iBotMoveResult;
 }
+export interface iResolveResponse {
+    Action: string;
+    Effort: string;
+    Reference: string;
+    Result: string[];
+}
 //Following Contracts for  Game Server
 export interface Neighbor {
     Left: number;
@@ -290,6 +310,8 @@ export interface Bot {
 }
 export interface CharSet {
     Name: string;
+    Language: string;
+    Dictionary: string;
     SunnaSet: string[];
     Vowels: string[];
     Consonents: string[];

@@ -25,6 +25,7 @@ import * as Confirm from 'ConfirmDialog';
 import * as Indic from 'Indic';
 import * as Util from 'Util';
 import * as GA from 'GenericActions';
+import * as ConsentForm from 'ConsentForm';
 
 class GameRoom extends React.Component<Contracts.iGameState, Contracts.iGameState> {
     constructor(props: Contracts.iGameState) {
@@ -33,18 +34,36 @@ class GameRoom extends React.Component<Contracts.iGameState, Contracts.iGameStat
     }
 
     render() {
+        var childs: React.ReactElement<Contracts.iProps>[] = [];
+
         var scores = React.createElement(((GamePlayers.default as any) as React.ComponentClass<Contracts.iPlayers>), Util.Util.Merge(this.props.Players, { key: "scores", showScores: true, showWordsList: false }));
-        var words = React.createElement(((GamePlayers.default as any) as React.ComponentClass<Contracts.iPlayers>), Util.Util.Merge(this.props.Players, { key: "words", Id: "WordBoard", showScores: false, showWordsList: true }));
+        childs.push(scores);
+
+
         var gameTable = React.createElement(((GameTable.default as any) as React.ComponentClass<Contracts.iGameTable>), this.props.GameTable);
-        var cabinet = React.createElement(((Cabinet.default as any) as React.ComponentClass<Contracts.iCabinetProps>), this.props.Cabinet);
+        childs.push(gameTable);
+
         var board = React.createElement(((Board.default as any) as React.ComponentClass<Contracts.iBoardProps>), this.props.Board);
+        childs.push(board);
+
+        var words = React.createElement(((GamePlayers.default as any) as React.ComponentClass<Contracts.iPlayers>), Util.Util.Merge(this.props.Players, { key: "words", Id: "WordBoard", showScores: false, showWordsList: true }));
+        childs.push(words);
+
+        var cabinet = React.createElement(((Cabinet.default as any) as React.ComponentClass<Contracts.iCabinetProps>), this.props.Cabinet);
+        childs.push(cabinet);
+
         var info = React.createElement(((InfoBar.default as any) as React.ComponentClass<Contracts.iInfoBar>), this.props.InfoBar);
+        childs.push(info);
 
         var dialog = React.createElement(((Confirm.default as any) as React.ComponentClass<Contracts.iAlert>), Util.Util.Merge(this.props.Dialog,
             {
                 OnConfirm: GA.GenericActions.OnDismissDialog,
                 OnDismiss: GA.GenericActions.OnDismissDialog,
             }));
+        childs.push(dialog);
+
+        var consent = React.createElement(((ConsentForm.default as any) as React.ComponentClass<Contracts.iConsent>), this.props.Consent);
+        childs.push(consent);
 
         var block = React.createElement('div',
             {
@@ -53,7 +72,7 @@ class GameRoom extends React.Component<Contracts.iGameState, Contracts.iGameStat
                 ref: this.props.Id,
                 className: "game",
                 title: "Scrabble",
-            }, [scores, gameTable, board, words, cabinet, info, dialog]);
+            }, childs);
         return block;
     }
 }

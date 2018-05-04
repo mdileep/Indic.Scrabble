@@ -12,9 +12,71 @@
 import * as AS from 'AksharaSets';
 
 export class Indic {
+    public static ToWord(Cells: string[]): string {
+        var res = "";
+        for (var indx in Cells) {
+            var cell = Cells[indx];
+            var tiles = cell.split('');
+            if (tiles.length == 1) {
+                res = res + Indic.ToString(tiles);
+                continue;
+            }
+            for (var indx2 in tiles) {
+                var tile = tiles[indx2];
+                var alt = Indic.GetSynonym(tile);
+                if (alt != null) {
+                    tiles[indx2] = alt;
+                }
+            }
+            res = res + Indic.ToString(tiles);
+        }
+        return res;
+    }
+    public static ToScrabble(word: string): string {
+        //Expecting to have Syllables seperated by comma
+        //To Extract Syllables from general
+        var res: string = "";
+        var Syllables: string[] = word.split(',');
+        for (var indx in Syllables) {
+            var Syllable: string = Syllables[indx];
+            var s = "";
+            for (var i = 0; i < Syllable.length; i++) {
+                var C = Syllable[i];
+
+                if (Indic.IsVirama(C)) {
+                    if (i == Syllable.length - 1) {
+                        s = s + C;
+                    }
+                    continue;
+                }
+
+                if (Indic.IsZWNJ(C)) {
+                    continue;
+                }
+
+                if (C.length == 0) {
+                    continue;
+                }
+                if (Indic.IsSpecialSet(C)) {
+                    s = s + Indic.GetSynonym(C);
+                }
+                else {
+                    s = s + C;
+                }
+            }
+            res = res + s + ",";
+        }
+        res = res.TrimEnd(',');
+        res = res.TrimStart(',');
+        res = res.Replace(",,", ",");
+        return res;
+    }
     public static IsValid(original: string[]): boolean {
         var arr: string[] = Indic.ToChars(original);
         if (arr.length == 1 && Indic.IsFullSpecialSet(arr[0])) {
+            return false;
+        }
+        if (arr.length == 1 && Indic.IsSunnaSet(arr[0])) {
             return false;
         }
         var special: number = 0;
@@ -96,6 +158,12 @@ export class Indic {
     }
     public static IsSpecialSet(char: string): boolean {
         return Indic.Contains(AS.AksharaSets.SpecialSet, char);
+    }
+    public static IsZWNJ(char: string): boolean {
+        return char == String.fromCharCode(0x200C);
+    }
+    public static IsVirama(char: string): boolean {
+        return char == AS.AksharaSets.Virama;
     }
     public static IsFullSpecialSet(char: string): boolean {
         return Indic.Contains(AS.AksharaSets.FullSpecialSet, char);

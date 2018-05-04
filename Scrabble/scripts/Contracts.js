@@ -12,7 +12,11 @@ define(["require", "exports"], function (require, exports) {
         Actions.PunchAndPick = 42;
         Actions.BotMove = 50;
         Actions.BotMoveResponse = 51;
-        Actions.Approve = 60;
+        Actions.Award = 60;
+        Actions.ResolveWords = 65;
+        Actions.TakeConsent = 62;
+        Actions.WordResolved = 63;
+        Actions.WordRejected = 64;
         Actions.DismissDialog = 90;
         return Actions;
     }());
