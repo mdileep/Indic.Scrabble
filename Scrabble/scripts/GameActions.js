@@ -84,8 +84,14 @@ define(["require", "exports", "react", "react-dom", 'Contracts', 'Messages', 'In
             }
         };
         GameActions.ResolveWords = function (state, args) {
-            var words = AskBot.AskReferee.ExtractWords(state.Board);
-            AskBot.AskServer.Resolve(words);
+            var player = state.Players.Players[state.Players.CurrentPlayer];
+            if (player.IsBot) {
+                GameActions.Award(state, args);
+            }
+            else {
+                var words = AskBot.AskReferee.ExtractWords(state.Board);
+                AskBot.AskServer.Resolve(words);
+            }
         };
         GameActions.Award = function (state, args) {
             GameActions.ResetTable(state);

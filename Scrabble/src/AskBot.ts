@@ -69,7 +69,7 @@ export class AskServer {
         }, AskServer.WaitTime);
     }
 
-    static Validate(words: string[]): void {
+    static Validate(): void {
         GS.GameStore.Dispatch({
             type: C.Actions.ResolveWords,
             args: {}

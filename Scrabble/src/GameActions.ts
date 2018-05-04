@@ -119,8 +119,14 @@ export class GameActions {
     }
 
     static ResolveWords(state: Contracts.iGameState, args: Contracts.iArgs): void {
-        var words: string[] = AskBot.AskReferee.ExtractWords(state.Board);
-        AskBot.AskServer.Resolve(words);
+        var player = state.Players.Players[state.Players.CurrentPlayer];
+        if (player.IsBot) {
+            GameActions.Award(state, args);
+        }
+        else {
+            var words: string[] = AskBot.AskReferee.ExtractWords(state.Board);
+            AskBot.AskServer.Resolve(words);
+        }
     }
 
     static Award(state: Contracts.iGameState, args: Contracts.iArgs): void {

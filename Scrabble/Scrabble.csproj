@@ -21,6 +21,7 @@
     <TargetFrameworkProfile />
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="bots\kn.txt" />
     <Content Include="images\dice.svg" />
     <Content Include="images\pick.svg" />
     <Content Include="scrabble.aspx" />

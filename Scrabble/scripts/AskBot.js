@@ -40,7 +40,7 @@ define(["require", "exports", 'axios', 'GameStore', 'GameActions', 'Contracts', 
                 });
             }, AskServer.WaitTime);
         };
-        AskServer.Validate = function (words) {
+        AskServer.Validate = function () {
             GS.GameStore.Dispatch({
                 type: C.Actions.ResolveWords,
                 args: {}
