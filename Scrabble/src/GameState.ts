@@ -80,12 +80,12 @@ export default (state: Contracts.iGameState = Parser.Parser.Parse(), action: Con
 
         case Contracts.Actions.WordResolved:
             //if (console) { console.log("Resolve Word"); }
-            GameActions.GameActions.ResolveWord(state, args as string);
+            GameActions.GameActions.ResolveWord(state, args);
             return state;
 
         case Contracts.Actions.WordRejected:
             //if (console) { console.log("Reject Word"); }
-            GameActions.GameActions.RejectWord(state, args as string);
+            GameActions.GameActions.RejectWord(state, args);
             return state;
 
 

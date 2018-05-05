@@ -3,7 +3,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", "react", 'Cabinet', 'Board', 'InfoBar', 'GamePlayers', 'GameTable', 'ConfirmDialog', 'Util', 'GenericActions', 'ConsentForm'], function (require, exports, React, Cabinet, Board, InfoBar, GamePlayers, GameTable, Confirm, Util, GA, ConsentForm) {
+define(["require", "exports", "react", 'Cabinet', 'Board', 'InfoBar', 'GamePlayers', 'GameTable', 'AlertDialog', 'Util', 'GenericActions', 'ConsentForm'], function (require, exports, React, Cabinet, Board, InfoBar, GamePlayers, GameTable, Alert, Util, GA, ConsentForm) {
     "use strict";
     var GameRoom = (function (_super) {
         __extends(GameRoom, _super);
@@ -25,9 +25,8 @@ define(["require", "exports", "react", 'Cabinet', 'Board', 'InfoBar', 'GamePlaye
             childs.push(cabinet);
             var info = React.createElement(InfoBar.default, this.props.InfoBar);
             childs.push(info);
-            var dialog = React.createElement(Confirm.default, Util.Util.Merge(this.props.Dialog, {
+            var dialog = React.createElement(Alert.default, Util.Util.Merge(this.props.Dialog, {
                 OnConfirm: GA.GenericActions.OnDismissDialog,
-                OnDismiss: GA.GenericActions.OnDismissDialog,
             }));
             childs.push(dialog);
             var consent = React.createElement(ConsentForm.default, this.props.Consent);

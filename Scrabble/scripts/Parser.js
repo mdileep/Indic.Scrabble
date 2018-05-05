@@ -165,8 +165,8 @@ define(["require", "exports", "GameActions", "Indic"], function (require, export
                 Show: false,
                 ReadOnly: false,
                 className: "",
-                Title: "Title",
-                Message: "Sample",
+                Title: "",
+                Message: "",
             };
             return dialog;
         };

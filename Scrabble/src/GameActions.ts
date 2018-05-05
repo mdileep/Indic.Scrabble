@@ -90,9 +90,26 @@ export class GameActions {
     }
 
     static ResolveWord(state: Contracts.iGameState, args: Contracts.iArgs): void {
-        state.Consent.Pending.pop();
-        if (state.Consent.UnResolved.length == 0) {
-            GameActions.Award(state, args);
+        var word: Contracts.iWordPair = state.Consent.Pending.pop();
+        AskBot.WordLoader.AddWord(word.Scrabble);
+        GameActions.PostConsent(state, args);
+    }
+
+    static RejectWord(state: Contracts.iGameState, args: Contracts.iArgs): void {
+        if (state.Consent.Pending.length > 0) {
+            var word: Contracts.iWordPair = state.Consent.Pending.pop();
+            state.Consent.UnResolved.push(word);
+        }
+        GameActions.PostConsent(state, args);
+    }
+
+    static PostConsent(state: Contracts.iGameState, args: Contracts.iArgs): void {
+        state.GameTable.ReadOnly = false;
+        if (state.Consent.Pending.length == 0) {
+            if (state.Consent.UnResolved.length == 0) {
+                GameActions.Award(state, args);
+                return;
+            }
         }
     }
     static BuildWordPairs(words: string[]): Contracts.iWordPair[] {
@@ -102,20 +119,6 @@ export class GameActions {
             list.push({ Scrabble: words[indx], Readble: readable });
         }
         return list;
-    }
-    static RejectWord(state: Contracts.iGameState, args: Contracts.iArgs): void {
-        if (state.Consent.Pending.length > 0) {
-            var word: Contracts.iWordPair = state.Consent.Pending[0];
-            state.Consent.Pending.pop();
-            state.Consent.UnResolved.push(word);
-        }
-        if (state.Consent.Pending.length == 0) {
-            state.GameTable.ReadOnly = false;
-        }
-        if (state.Consent.UnResolved.length == 0) {
-            GameActions.Award(state, args);
-            return;
-        }
     }
 
     static ResolveWords(state: Contracts.iGameState, args: Contracts.iArgs): void {

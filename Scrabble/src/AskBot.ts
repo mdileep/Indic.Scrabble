@@ -115,23 +115,29 @@ export class AskReferee {
     static Validate(state: C.iGameState, args: C.iArgs): void {
         var isValidMove: boolean = AskReferee.ValidateMove(state.Board);
         if (!isValidMove) {
-            state.InfoBar.Messages.push(M.Messages.CrossCells);
+            AskReferee.Announce(state, M.Messages.CrossCells);
             return;
         }
         var hasOrphans: boolean = AskReferee.HasOrphans(state);
         if (hasOrphans) {
-            state.InfoBar.Messages.push(M.Messages.HasOraphans);
+            AskReferee.Announce(state, M.Messages.HasOraphans);
             return;
         }
         var hasClusters: boolean = AskReferee.HasClusters(state);
         if (hasClusters) {
-            state.InfoBar.Messages.push(M.Messages.HasIslands);
+            AskReferee.Announce(state, M.Messages.HasIslands);
             return;
         }
         var player: C.iPlayer = state.Players.Players[state.Players.CurrentPlayer];
         state.GameTable.Message = U.Util.Format(M.Messages.LookupDict, [player.Name]);
         state.GameTable.ReadOnly = true;
         setTimeout(AskServer.Validate, 100);
+    }
+    static Announce(state: C.iGameState, message: string) {
+        state.InfoBar.Messages.push(M.Messages.HasIslands);
+        state.Dialog.Title = M.Messages.Name;
+        state.Dialog.Message = message;
+        state.Dialog.Show = true;
     }
     static ValidateMove(Board: C.iBoardProps): boolean {
         var Cells: C.iCellProps[] = Board.Cells;
@@ -1523,12 +1529,20 @@ export class Runner {
     }
 }
 export class WordLoader {
-    static Lists: any = { Loaded: 0, Total: 0 };
+    static Lists: any = { Loaded: 0, Total: 0, Custom: [] };
     static LoadWords(file: string): C.Word[] {
         if (WordLoader.Lists != null && WordLoader.Lists[file] != null) {
             return WordLoader.Lists[file];
         }
         return [] as C.Word[];
+    }
+    static AddWord(word: string): void {
+        var cnt = WordLoader.Lists["Custom"].length;
+        WordLoader.Lists["Custom"].push({
+            Tiles: word,
+            Index: cnt++,
+            Syllables: word.split(',').length,
+        } as C.Word);
     }
     static Load(file: string, rawResponse: string): void {
         var words: string[] = rawResponse.split('\n');

@@ -55,10 +55,9 @@ class GameRoom extends React.Component<Contracts.iGameState, Contracts.iGameStat
         var info = React.createElement(((InfoBar.default as any) as React.ComponentClass<Contracts.iInfoBar>), this.props.InfoBar);
         childs.push(info);
 
-        var dialog = React.createElement(((Confirm.default as any) as React.ComponentClass<Contracts.iAlert>), Util.Util.Merge(this.props.Dialog,
+        var dialog = React.createElement(((Alert.default as any) as React.ComponentClass<Contracts.iAlert>), Util.Util.Merge(this.props.Dialog,
             {
                 OnConfirm: GA.GenericActions.OnDismissDialog,
-                OnDismiss: GA.GenericActions.OnDismissDialog,
             }));
         childs.push(dialog);
 

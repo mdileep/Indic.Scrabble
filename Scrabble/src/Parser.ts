@@ -191,8 +191,8 @@ export class Parser {
                 ReadOnly: false,
                 className: "",
                 //
-                Title: "Title",
-                Message: "Sample",
+                Title: "",
+                Message: "",
             };
         return dialog;
     }

@@ -56,9 +56,24 @@ define(["require", "exports", "react", "react-dom", 'Contracts', 'Messages', 'In
             state.GameTable.Message = Util.Util.Format(Messages.Messages.YourTurn, [player.Name]);
         };
         GameActions.ResolveWord = function (state, args) {
-            state.Consent.Pending.pop();
-            if (state.Consent.UnResolved.length == 0) {
-                GameActions.Award(state, args);
+            var word = state.Consent.Pending.pop();
+            AskBot.WordLoader.AddWord(word.Scrabble);
+            GameActions.PostConsent(state, args);
+        };
+        GameActions.RejectWord = function (state, args) {
+            if (state.Consent.Pending.length > 0) {
+                var word = state.Consent.Pending.pop();
+                state.Consent.UnResolved.push(word);
+            }
+            GameActions.PostConsent(state, args);
+        };
+        GameActions.PostConsent = function (state, args) {
+            state.GameTable.ReadOnly = false;
+            if (state.Consent.Pending.length == 0) {
+                if (state.Consent.UnResolved.length == 0) {
+                    GameActions.Award(state, args);
+                    return;
+                }
             }
         };
         GameActions.BuildWordPairs = function (words) {
@@ -68,20 +83,6 @@ define(["require", "exports", "react", "react-dom", 'Contracts', 'Messages', 'In
                 list.push({ Scrabble: words[indx], Readble: readable });
             }
             return list;
-        };
-        GameActions.RejectWord = function (state, args) {
-            if (state.Consent.Pending.length > 0) {
-                var word = state.Consent.Pending[0];
-                state.Consent.Pending.pop();
-                state.Consent.UnResolved.push(word);
-            }
-            if (state.Consent.Pending.length == 0) {
-                state.GameTable.ReadOnly = false;
-            }
-            if (state.Consent.UnResolved.length == 0) {
-                GameActions.Award(state, args);
-                return;
-            }
         };
         GameActions.ResolveWords = function (state, args) {
             var player = state.Players.Players[state.Players.CurrentPlayer];

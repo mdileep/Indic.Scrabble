@@ -18,6 +18,7 @@ namespace Shared
 	{
 		public string Name = "";
 		public string Language = "";
+		public string Dictionary = "";
 		public string[] SunnaSet = new string[] { };
 		public string[] Vowels = new string[] { };
 		public string[] Consonents = new string[] { };

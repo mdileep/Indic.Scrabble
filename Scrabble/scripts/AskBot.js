@@ -79,23 +79,29 @@ define(["require", "exports", 'axios', 'GameStore', 'GameActions', 'Contracts', 
         AskReferee.Validate = function (state, args) {
             var isValidMove = AskReferee.ValidateMove(state.Board);
             if (!isValidMove) {
-                state.InfoBar.Messages.push(M.Messages.CrossCells);
+                AskReferee.Announce(state, M.Messages.CrossCells);
                 return;
             }
             var hasOrphans = AskReferee.HasOrphans(state);
             if (hasOrphans) {
-                state.InfoBar.Messages.push(M.Messages.HasOraphans);
+                AskReferee.Announce(state, M.Messages.HasOraphans);
                 return;
             }
             var hasClusters = AskReferee.HasClusters(state);
             if (hasClusters) {
-                state.InfoBar.Messages.push(M.Messages.HasIslands);
+                AskReferee.Announce(state, M.Messages.HasIslands);
                 return;
             }
             var player = state.Players.Players[state.Players.CurrentPlayer];
             state.GameTable.Message = U.Util.Format(M.Messages.LookupDict, [player.Name]);
             state.GameTable.ReadOnly = true;
             setTimeout(AskServer.Validate, 100);
+        };
+        AskReferee.Announce = function (state, message) {
+            state.InfoBar.Messages.push(M.Messages.HasIslands);
+            state.Dialog.Title = M.Messages.Name;
+            state.Dialog.Message = message;
+            state.Dialog.Show = true;
         };
         AskReferee.ValidateMove = function (Board) {
             var Cells = Board.Cells;
@@ -1367,6 +1373,14 @@ define(["require", "exports", 'axios', 'GameStore', 'GameActions', 'Contracts', 
             }
             return [];
         };
+        WordLoader.AddWord = function (word) {
+            var cnt = WordLoader.Lists["Custom"].length;
+            WordLoader.Lists["Custom"].push({
+                Tiles: word,
+                Index: cnt++,
+                Syllables: word.split(',').length,
+            });
+        };
         WordLoader.Load = function (file, rawResponse) {
             var words = rawResponse.split('\n');
             var List = [];
@@ -1420,7 +1434,7 @@ define(["require", "exports", 'axios', 'GameStore', 'GameActions', 'Contracts', 
             }
             return res;
         };
-        WordLoader.Lists = { Loaded: 0, Total: 0 };
+        WordLoader.Lists = { Loaded: 0, Total: 0, Custom: [] };
         return WordLoader;
     }());
     exports.WordLoader = WordLoader;

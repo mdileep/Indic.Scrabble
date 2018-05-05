@@ -14,9 +14,10 @@ define(["require", "exports", "react", 'Contracts', 'ConfirmDialog', 'Util', 'Me
         ConsentForm.prototype.render = function () {
             var childs = [];
             if (this.props.Pending.length > 0) {
-                var word = this.props.Pending[0].Readble;
+                var word = this.props.Pending[this.props.Pending.length - 1].Readble;
                 var dialog = React.createElement(Confirm.default, Util.Util.Merge({}, {
                     Show: true,
+                    key: "_" + this.props.Id,
                     OnConfirm: ConsentForm.Resolve,
                     OnDismiss: ConsentForm.Reject,
                     Title: Messages.Messages.ApproveWord,
