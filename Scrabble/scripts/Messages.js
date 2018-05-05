@@ -33,7 +33,7 @@ define(["require", "exports"], function (require, exports) {
         Messages.Stats = "";
         Messages.LookupDict = "";
         Messages.ResolveWord = "";
-        Messages.ApproveWord = "";
+        Messages.Referee = "";
         Messages.OK = "";
         Messages.Yes = "";
         Messages.No = "";

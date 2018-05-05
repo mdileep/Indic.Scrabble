@@ -38,9 +38,9 @@
     "No": " కాదు",
     "Pass": "Pass",
     "ReDraw": "Redraw",
-    "LookupDict":"{0} పేర్చిన పదాలు పరిశీలిస్తున్నాం.",
-    "ResolveWord":"'{0}'ను పదకేళి గుర్తించలేదు. మీకు తెలుసా?",
-    "ApproveWord":"పదకేళి"
+    "LookupDict":"పదాలు పరిశీలిస్తున్నాం.",
+    "ResolveWord":"'{0}'ను మీ ప్రత్యర్ధి గుర్తించలేదు. మీరు అనుమతించదలిచారా?",
+    "Referee":"పర్యవేక్షకుడు"
   },
   "kn": {
     "LangName": "ಕನ್ನಡ ~ Kannada",
@@ -99,8 +99,8 @@
     "No": " No",
     "Pass": "Pass",
     "ReDraw": "Redraw",
-    "LookupDict":"Referee is validating the words tiled by {0}",
-    "ResolveWord":"The Word {0} not found in our dictionary, Do you want to Allow?",
-    "ApproveWord":"Approve Word"
+    "LookupDict":"Validating words",
+    "ResolveWord":"The word {0} recognized by your opponent, Do you want to allow?",
+    "Referee":"Referee"
   }
 }

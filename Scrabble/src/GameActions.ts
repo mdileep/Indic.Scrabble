@@ -76,11 +76,9 @@ export class GameActions {
             }
         });
     }
-
     static Pass(state: Contracts.iGameState, args: Contracts.iArgs): void {
         AskBot.AskReferee.Validate(state, args);
     }
-
     static TakeConsent(state: Contracts.iGameState, words: string[]): void {
         state.Consent.Pending = GameActions.BuildWordPairs(words);
         state.Consent.UnResolved = [];
@@ -88,13 +86,11 @@ export class GameActions {
         var player: Contracts.iPlayer = state.Players.Players[state.Players.CurrentPlayer];
         state.GameTable.Message = Util.Util.Format(Messages.Messages.YourTurn, [player.Name]);
     }
-
     static ResolveWord(state: Contracts.iGameState, args: Contracts.iArgs): void {
         var word: Contracts.iWordPair = state.Consent.Pending.pop();
         AskBot.WordLoader.AddWord(word.Scrabble);
         GameActions.PostConsent(state, args);
     }
-
     static RejectWord(state: Contracts.iGameState, args: Contracts.iArgs): void {
         if (state.Consent.Pending.length > 0) {
             var word: Contracts.iWordPair = state.Consent.Pending.pop();
@@ -102,7 +98,6 @@ export class GameActions {
         }
         GameActions.PostConsent(state, args);
     }
-
     static PostConsent(state: Contracts.iGameState, args: Contracts.iArgs): void {
         state.GameTable.ReadOnly = false;
         if (state.Consent.Pending.length == 0) {
@@ -120,7 +115,6 @@ export class GameActions {
         }
         return list;
     }
-
     static ResolveWords(state: Contracts.iGameState, args: Contracts.iArgs): void {
         var player = state.Players.Players[state.Players.CurrentPlayer];
         if (player.IsBot) {
@@ -131,7 +125,6 @@ export class GameActions {
             AskBot.AskServer.Resolve(words);
         }
     }
-
     static Award(state: Contracts.iGameState, args: Contracts.iArgs): void {
         GameActions.ResetTable(state);
         GameActions.AwardClaims(state);

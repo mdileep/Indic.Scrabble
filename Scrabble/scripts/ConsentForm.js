@@ -20,7 +20,7 @@ define(["require", "exports", "react", 'Contracts', 'ConfirmDialog', 'Util', 'Me
                     key: "_" + this.props.Id,
                     OnConfirm: ConsentForm.Resolve,
                     OnDismiss: ConsentForm.Reject,
-                    Title: Messages.Messages.ApproveWord,
+                    Title: Messages.Messages.Referee,
                     Message: Util.Util.Format(Messages.Messages.ResolveWord, [word])
                 }));
                 childs.push(dialog);

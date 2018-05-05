@@ -41,7 +41,7 @@ export class Messages {
     public static Stats: string = "";
     public static LookupDict: string = "";
     public static ResolveWord: string = "";
-    public static ApproveWord: string = "";
+    public static Referee: string = "";
     public static OK: string = "";
     public static Yes: string = "";
     public static No: string = "";
