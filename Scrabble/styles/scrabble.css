@@ -349,6 +349,11 @@ body {
   background-color: white;
   cursor: pointer;
 }
+.gameTable button:disabled,
+.gameTable button[disabled] {
+  background-color: #DDDDDD;
+  cursor: auto;
+}
 .gameTable .pass {
   background-image: url(/images/pass.svg);
 }
