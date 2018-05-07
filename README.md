@@ -1,22 +1,21 @@
 # Indic Scrabble 
 
 *Scrabble* is a popular word game originally designed for Latin (English) Languages. Later it was adopted by many other languages.
-Multiple attempts were made in the past to bring the Scrabble to Indian Languages targeted to work on mobiles and tablets. But the attempts were not successful and were not widely populared.
+This an attempt to bring the Scrabble to Indian Languages targeted to work on mobiles and tablets. But the attempts were not successful and were not widely populared.
 This project is another attempt to build Scrabble for Indian Languages by customizing some of the rules.
 
 ## Dynamic Nature of Scripts
 
 * Indian Language scripts are dynamic in nature.
 * Scripts of Indic Languages are very dynamic i
-* *Telugu* is a South Indian Language which has around around *100milion* Native speakers.
+* For an instance *Telugu* is a South Indian Language which has around *100milion* Native speakers.
 * It consists of 16 vowels and 38 Consonants and 2 Modifiers i.e. Total 56 Letters.
-* 56 Letters
-* When each Consonant combined with a Vowel it take a new form i.e. 38*16 = 608 Glyphs
-* Each Consonant also have a subscript Form i.e. additional 38 Glyphs
+* When a Consonant combined with a Vowel it take a new glyph form i.e. 38*16 = 608 Glyphs
+* Each Consonant also has a subscript Form i.e. additional 38 Glyphs
 * The subscript form is assumed by a consonant when it is combined with another consonant.
-* Roughly around 56 + 608 + 38=702Gyphs (or Tiles) are needed to build Scrabble for Telugu (or for any other Indian Languages).
+* Roughly around 56 + 608 + 38=702Gyphs (or Tiles) are needed to build Scrabble for Telugu (or for any other Indian Language).
 
-## Syllables and Tiles
+## Rules
 
 * Syllable (Aksharam) is the writing unit for Indic Languages. A Syllable is a set of Letters.
 * Logically it makes sense to choose a valid Syllable as a tile. 
@@ -25,6 +24,7 @@ This project is another attempt to build Scrabble for Indian Languages by custom
     * A tile placed on the board can be *altered* by adding new *tile(s)* to form a new Syllable.
     * Total of 14 tiles would be used with 7 Consonants and 7 Vowels + Modifiers instead of 7 tiles. Since Combining Consonants with Vowels and Modifiers is very frequent and in fact most of the Syllables ends with one of the vowels or modifiers.
 * Rest of the Scrabble rules to stay as it is.
+* Note: All the rules and scoring system is not yet implemented.
 
 ## Languages
 

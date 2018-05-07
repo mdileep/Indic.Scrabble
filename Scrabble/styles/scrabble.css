@@ -1,5 +1,6 @@
 body {
   font-size: 1.4em;
+  font-family: 'Noto Serif', serif;
 }
 .h2,
 .currentTurn,
@@ -338,6 +339,21 @@ body {
 }
 .gameTable {
   text-align: right;
+}
+.gameTable button {
+  text-indent: -9999px;
+  width: 42px;
+  height: 32px;
+  background-size: 36px 32px;
+  background-repeat: no-repeat;
+  background-color: white;
+  cursor: pointer;
+}
+.gameTable .pass {
+  background-image: url(/images/pass.svg);
+}
+.gameTable .redraw {
+  background-image: url(/images/pick.svg);
 }
 .list table {
   text-align: center;

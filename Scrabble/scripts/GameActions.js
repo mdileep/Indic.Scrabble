@@ -58,16 +58,16 @@ define(["require", "exports", "react", "react-dom", 'Contracts', 'Messages', 'In
         GameActions.ResolveWord = function (state, args) {
             var word = state.Consent.Pending.pop();
             AskBot.WordLoader.AddWord(word.Scrabble);
-            GameActions.PostConsent(state, args);
+            GameActions.ConsentRecieved(state, args);
         };
         GameActions.RejectWord = function (state, args) {
             if (state.Consent.Pending.length > 0) {
                 var word = state.Consent.Pending.pop();
                 state.Consent.UnResolved.push(word);
             }
-            GameActions.PostConsent(state, args);
+            GameActions.ConsentRecieved(state, args);
         };
-        GameActions.PostConsent = function (state, args) {
+        GameActions.ConsentRecieved = function (state, args) {
             state.GameTable.ReadOnly = false;
             if (state.Consent.Pending.length == 0) {
                 if (state.Consent.UnResolved.length == 0) {
@@ -117,6 +117,8 @@ define(["require", "exports", "react", "react-dom", 'Contracts', 'Messages', 'In
             else {
                 state.GameTable.Message = Util.Util.Format(Messages.Messages.Winner, [winner.Name]);
             }
+            state.Dialog.Message = state.GameTable.Message;
+            state.Dialog.Show = true;
             state.InfoBar.Messages.push(Util.Util.Format(Messages.Messages.Stats, [state.Stats.EmptyCells, state.Stats.Occupancy.toFixed(2), state.Stats.TotalWords, state.Stats.UnUsed.toFixed(2)]));
             state.InfoBar.Messages.push(Messages.Messages.GameOver);
             state.InfoBar.Messages.push(state.GameTable.Message);
