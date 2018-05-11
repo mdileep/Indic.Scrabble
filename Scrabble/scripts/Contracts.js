@@ -4,6 +4,7 @@ define(["require", "exports"], function (require, exports) {
         function Actions() {
         }
         Actions.Init = 0;
+        Actions.ReRender = 1;
         Actions.ToBoard = 20;
         Actions.ToTray = 21;
         Actions.OpenOrClose = 30;

@@ -117,7 +117,7 @@ export class DOMUtil {
         DOMUtil.RegisterEvent(document.getElementById(id), 'click', elementEventListener);
     }
 
-    public static RegisterEvent = function (E: HTMLElement, eventName: string, elementEventListener: EventListener) {
+    public static RegisterEvent = function (E: HTMLElement | Window, eventName: string, elementEventListener: EventListener) {
         if (E == null) {
             return;
         }

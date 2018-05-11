@@ -20,6 +20,7 @@ export default (state: Contracts.iGameState = Parser.Parser.Parse(), action: Con
     switch (action.type) {
 
         case Contracts.Actions.Init:
+             //if (console) { console.log("Initizlizin the Game Room"); }
             GameActions.GameActions.Init(state, args);
             return state;
 

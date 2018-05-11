@@ -96,6 +96,7 @@ export interface iGameState extends iComponent {
     Consent: iConsent;
     Stats: iBoardsStats;
     Dialog: iDialog;
+
     GameOver: boolean;
 }
 export interface iOverlayDialog extends iComponent {
@@ -140,6 +141,7 @@ export interface iArgs {
 }
 export class Actions {
     public static Init: number = 0;
+    public static ReRender: number = 1;
 
     public static ToBoard: number = 20;
     public static ToTray: number = 21;

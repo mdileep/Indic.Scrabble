@@ -36,7 +36,7 @@ define(["require", "exports", "react", 'Cabinet', 'Board', 'InfoBar', 'GamePlaye
                 key: this.props.Id,
                 ref: this.props.Id,
                 className: "game",
-                title: "Scrabble",
+                title: "Scrabble"
             }, childs);
             return block;
         };

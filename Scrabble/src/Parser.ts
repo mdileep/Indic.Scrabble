@@ -50,8 +50,7 @@ export class Parser {
             Stats: stats,
             GameTable: gameTable,
             Dialog: dialog,
-
-            GameOver: false,
+            GameOver: false
         };
         return gameState;
     }

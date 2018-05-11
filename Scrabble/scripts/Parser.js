@@ -30,7 +30,7 @@ define(["require", "exports", "GameActions", "Indic"], function (require, export
                 Stats: stats,
                 GameTable: gameTable,
                 Dialog: dialog,
-                GameOver: false,
+                GameOver: false
             };
             return gameState;
         };
