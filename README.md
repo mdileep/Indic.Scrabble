@@ -39,7 +39,7 @@ This project is another attempt to build Scrabble for Indian Languages by custom
 
 ## Bots and Dictionaries
 
-* Artificial Intelligence Bot framework was developed for users to play against Bots
+* AI Agent based planned to develop for users to play against Bots.Current Bot Framework is State Based.
 * All the Bots uses the same intelligence but have different vocabularies.
 * Bots uses the browser resources to think But it is allowed to configure bots to have their own intelligence distributed.
 * Average response time of the Bot is between 80ms to 8sec. Bots take more time as the size of vocabulary and open ends of the board.

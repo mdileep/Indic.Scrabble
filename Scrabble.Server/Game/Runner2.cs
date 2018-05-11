@@ -13,6 +13,7 @@
 
 using Scrabble.Server;
 using Shared;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -265,6 +266,7 @@ namespace Scrabble
 					foreach (Word wordOnBoard in WordsOnBoard)
 					{
 						string raw = wordOnBoard.Tiles.Replace("(", "").Replace(")", "").Replace(",", "").Replace("|", ",");
+						int len = raw.Split(',').Length;
 
 						string pattern = GenWordPattern(CharSet, wordOnBoard.Tiles, "(?<Center{0}>.*?)", "", "(?<Center{0}>.*?)", "(?<Pre>.*?)", "(?<Post>.*?)", true);
 						pattern = string.Format("^{0}$", pattern.TrimEnd('|'));
@@ -298,10 +300,24 @@ namespace Scrabble
 								Center = Center.TrimEnd(':');
 								Post = MatchedString(M.Groups["Post"], "");
 
-
 								string[] Pres = Pre == "" ? new string[] { } : Pre.TrimEnd(',').Split(',');
 								string[] Centers = Center.Split(':');
 								string[] Posts = Post == "" ? new string[] { } : Post.TrimStart(',').Split(',');
+
+								if (Centers.Length != len)
+								{
+									if (Centers.Length != len - 1)
+									{
+										Debugger.Break();
+									}
+									Array.Resize(ref Centers, len);
+									if (!Post.StartsWith(",") && Posts.Length > 0)
+									{
+										Centers[len - 1] = Posts[0];
+										Posts = Posts.Skip(1).ToArray();
+									}
+								}
+
 								var Tiles = Movables.GetRange(0, Movables.Count);
 
 								bool res = Resolve(Pres, Centers, Posts, Tiles, SpeicalDict);

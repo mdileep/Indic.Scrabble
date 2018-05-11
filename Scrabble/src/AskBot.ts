@@ -533,6 +533,7 @@ export class Runner {
             for (var indx in WordsOnBoard) {
                 var wordOnBoard: C.Word = WordsOnBoard[indx];
                 var raw = wordOnBoard.Tiles.Replace("(", "").Replace(")", "").Replace(",", "").Replace("|", ",");
+                var len: number = raw.split(',').length;
 
                 var pattern = Runner.GenWordPattern(CharSet, wordOnBoard.Tiles, "(?<Center{0}>.*?)", "", "(?<Center{0}>.*?)", "(?<Pre>.*?)", "(?<Post>.*?)", true);
                 pattern = U.Util.Format("^{0}$", [pattern.TrimEnd('|')]);
@@ -553,7 +554,6 @@ export class Runner {
                         var Post = "";
                         var Center = "";
 
-
                         Pre = Runner.MatchedString(M.groups["Pre"], "");
                         for (var i = 0; i < word.Syllables; i++) {
                             Center = Center + Runner.MatchedString(M.groups["Center" + (i + 1)], ",") + ":";
@@ -563,8 +563,20 @@ export class Runner {
 
 
                         var Pres = Pre == "" ? [] as string[] : Pre.TrimEnd(',').split(',');
-                        var Centers = Center.split(':');
+                        var Centers: string[] = Center.split(':');
                         var Posts = Post == "" ? [] as string[] : Post.TrimStart(',').split(',');
+
+                        if (Centers.length != len) {
+                            if (Centers.length != len - 1) {
+                                //Shouldn't reach here..
+                                debugger;
+                            }
+                            if (!Post.StartsWith(",") && Posts.length > 0) {
+                                Centers.push(Posts[0]);
+                                Posts = Posts.slice(1);
+                            }
+                        }
+
                         var Tiles = Movables.slice(0, Movables.length);
                         var res = Runner.Resolve(Pres, Centers, Posts, Tiles, SpeicalDict);
                         if (!res) {

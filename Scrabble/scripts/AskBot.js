@@ -469,6 +469,7 @@ define(["require", "exports", 'axios', 'GameStore', 'GameActions', 'Contracts', 
                 for (var indx in WordsOnBoard) {
                     var wordOnBoard = WordsOnBoard[indx];
                     var raw = wordOnBoard.Tiles.Replace("(", "").Replace(")", "").Replace(",", "").Replace("|", ",");
+                    var len = raw.split(',').length;
                     var pattern = Runner.GenWordPattern(CharSet, wordOnBoard.Tiles, "(?<Center{0}>.*?)", "", "(?<Center{0}>.*?)", "(?<Pre>.*?)", "(?<Post>.*?)", true);
                     pattern = U.Util.Format("^{0}$", [pattern.TrimEnd('|')]);
                     var R = new RegExp(pattern);
@@ -494,6 +495,15 @@ define(["require", "exports", 'axios', 'GameStore', 'GameActions', 'Contracts', 
                             var Pres = Pre == "" ? [] : Pre.TrimEnd(',').split(',');
                             var Centers = Center.split(':');
                             var Posts = Post == "" ? [] : Post.TrimStart(',').split(',');
+                            if (Centers.length != len) {
+                                if (Centers.length != len - 1) {
+                                    debugger;
+                                }
+                                if (!Post.StartsWith(",") && Posts.length > 0) {
+                                    Centers.push(Posts[0]);
+                                    Posts = Posts.slice(1);
+                                }
+                            }
                             var Tiles = Movables.slice(0, Movables.length);
                             var res = Runner.Resolve(Pres, Centers, Posts, Tiles, SpeicalDict);
                             if (!res) {
