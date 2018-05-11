@@ -144,7 +144,7 @@ body {
 }
 .players .player {
   float: left;
-  width: 42vmin;
+  width: 38vmin;
 }
 .players .player .score {
   display: block;
