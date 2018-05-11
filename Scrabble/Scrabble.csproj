@@ -45,6 +45,7 @@
     <Content Include="styles\hi.css" />
     <Content Include="images\pass.svg" />
     <Content Include="images\loading.svg" />
+    <Content Include="styles\Index.css" />
     <Content Include="styles\kn.css" />
     <Content Include="styles\ml.css" />
     <Content Include="styles\or.css" />
