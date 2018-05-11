@@ -1,5 +1,6 @@
 ﻿@h: 1vh;
 @cells: 11vmin;
+@tiles: 10vmin;
 
 html, body {
     height: 100%;
@@ -26,7 +27,7 @@ html, body {
     float: left;
     width: 100%;
     height: 24*@h;
-    min-height: 26vmin;
+    min-height: 32vmin;
     position: fixed;
     bottom: 0;
     left: 0;
@@ -85,8 +86,8 @@ html, body {
     }
 
     .tile {
-        width: floor(100vmin/(@cells+2));
-        height: floor(100vmin/(@cells+2));
+        width: floor(100vmin/(@tiles+2));
+        height: floor(100vmin/(@tiles+2));
         position: relative;
         display: block;
         float: left;
@@ -98,14 +99,6 @@ html, body {
         overflow: hidden;
         text-overflow: clip;
         display: block;
-    }
-
-    .content {
-        margin: 3vmin;
-    }
-
-    .count {
-        margin: 1vmin;
     }
 }
 
@@ -134,7 +127,8 @@ html, body {
     }
 
     .text {
-        margin: 3vmin;
+        left: 4vmin;
+        top: 2vmin;
     }
 
     .weight {
@@ -157,12 +151,18 @@ html, body {
 
     .player {
         float: left;
-        width: 38vmin;
+        width: 42vmin;
 
         .score {
             display: block;
             width: 100%;
         }
+    }
+
+    .wordsList {
+        text-overflow: clip;
+        overflow: hidden;
+        white-space: nowrap;
     }
 
     .conditions {
