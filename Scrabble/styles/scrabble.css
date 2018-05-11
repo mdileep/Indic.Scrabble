@@ -1,25 +1,23 @@
 body {
-  font-size: 1.4em;
+  font-size: 3vmin;
   font-family: 'Noto Serif', serif;
 }
-.h2,
-.currentTurn,
+.title,
+.h2 {
+  font-size: 6vmin;
+}
+currentTurn,
 .noTurn,
 .label {
-  font-size: 1em;
+  font-size: 3vmin;
+}
+.text,
+.tile {
+  font-size: 4vmin;
 }
 .count,
 .weight {
-  font-size: 0.6em;
-}
-.message {
-  font-size: 0.8em;
-}
-.conditions {
-  font-size: 0.8em;
-}
-.footer {
-  font-size: 0.8em;
+  font-size: 2vmin;
 }
 
 /* */
@@ -30,21 +28,8 @@ body {
   margin: 0;
   padding: 0;
 }
-.list {
-  list-style: none;
-}
-.list li {
-  border: 1px solid #EEEEEE;
-  margin: 3px;
-  padding: 3px;
-}
-.list table {
-  width: 96%;
-  margin-left: 2%;
-}
 .title {
   width: 100%;
-  min-width: 60px;
 }
 .title .h2 {
   display: inline;
@@ -56,14 +41,30 @@ body {
   clear: both;
   float: left;
   width: 100%;
-  height: 156px;
+  height: 24vh;
+  min-height: 26vmin;
   position: fixed;
-  bottom: 0px;
-  left: 0px;
+  bottom: 0;
+  left: 0;
+}
+.gameTable .actions {
+  height: 8vh;
+}
+.gameTable .message {
+  overflow: hidden;
+  text-overflow: clip;
+  max-width: 80vw;
+  display: block;
+  float: left;
+}
+.gameTable button {
+  cursor: pointer;
+  width: 42px;
+  height: 32px;
 }
 .footer {
   clear: both;
-  margin-bottom: 156px;
+  margin-bottom: 24vh;
 }
 .cabinet {
   clear: both;
@@ -73,8 +74,6 @@ body {
 .cabinet .remaining {
   float: right;
   display: none;
-  min-width: 32px;
-  min-height: 32px;
 }
 .cabinet .hide {
   display: none;
@@ -90,47 +89,49 @@ body {
   display: block;
 }
 .tray .tile {
+  width: 7vmin;
+  height: 7vmin;
+  position: relative;
   display: block;
   float: left;
-  min-width: 24px;
-  min-height: 24px;
-  width: 10%;
+}
+.tray .tile span {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  overflow: hidden;
+  text-overflow: clip;
+  display: block;
+}
+.tray .content {
+  margin: 3vmin;
 }
 .tray .count {
-  display: inline-block;
-  float: left;
+  margin: 1vmin;
 }
 .board {
+  clear: both;
   float: left;
-  width: 98%;
 }
-.board .table {
-  width: 98%;
-  height: 100%;
-}
-.board .cell {
-  min-width: 24px;
-  min-height: 24px;
-}
-.board .cellContainer {
+.board .square {
+  width: 7vmin;
+  height: 7vmin;
   position: relative;
+}
+.board .square span {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  overflow: hidden;
+  text-overflow: clip;
+  display: block;
 }
 .board .text {
-  display: block;
-  clear: both;
-  border: 1px dotted white;
-  position: relative;
+  margin: 3vmin;
 }
 .board .weight {
-  display: block;
-  clear: both;
-  position: absolute;
-  right: 0px;
-  bottom: 0px;
+  margin: 1vmin;
 }
 .players {
   float: left;
-  width: 100%;
 }
 .players .currentTurn {
   width: 100%;
@@ -142,12 +143,11 @@ body {
 }
 .players .player {
   float: left;
-  width: 45%;
+  width: 38vmin;
 }
 .players .player .score {
   display: block;
   width: 100%;
-  height: 40px;
 }
 .players .conditions {
   clear: both;
@@ -164,6 +164,18 @@ body {
 .infoBar .h2 {
   clear: both;
 }
+.list {
+  list-style: none;
+}
+.list li {
+  border: 1px solid #EEEEEE;
+  margin: 3px;
+  padding: 3px;
+}
+.list table {
+  width: 96%;
+  margin-left: 2%;
+}
 .hide {
   display: none;
 }
@@ -175,41 +187,33 @@ body {
 .gameTable .actions {
   text-align: right;
 }
+.gameTable .message {
+  margin-left: 3vw;
+}
 .gameTable button {
-  margin: 3px;
+  margin: 1vw;
 }
 .cabinet {
-  margin: 3px;
-  padding: 3px;
-}
-.game {
-  padding: 1%;
+  margin: 3vmin;
 }
 .tray {
-  margin: 2px;
-  margin-left: 1%;
-  margin-right: 1%;
+  margin: 0;
 }
 .tray .tile {
-  margin: 0.5%;
-  padding: 0%;
+  margin: 1vmin;
+  padding: 0;
 }
 .board {
-  margin: 1%;
+  margin: 4vmin;
 }
-.board .table {
-  margin: 1%;
-}
-.board .weight,
-.board .weightEmpty {
-  margin-right: 2px;
+.players {
+  margin: 2vmin;
 }
 .players .player {
-  margin: 2%;
+  margin: 2vmin;
 }
 .infoBar {
-  margin: 2px;
-  padding: 2px;
+  margin: 4vmin;
 }
 .infoBar .ul {
   max-height: 150px;
@@ -241,9 +245,6 @@ body {
 }
 .tray .readonly {
   color: gray;
-}
-.board {
-  border: 1px solid #EEEEEE;
 }
 .board .table {
   border: 1px solid gray;
@@ -342,12 +343,9 @@ body {
 }
 .gameTable button {
   text-indent: -9999px;
-  width: 42px;
-  height: 32px;
   background-size: 36px 32px;
   background-repeat: no-repeat;
   background-color: white;
-  cursor: pointer;
 }
 .gameTable button:disabled,
 .gameTable button[disabled] {

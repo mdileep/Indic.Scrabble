@@ -22,7 +22,6 @@ class BoardCell extends React.Component<Contracts.iCellProps, Contracts.iCellPro
         this.state = props;
     }
     render() {
-        var className: string = this.getClass();
         var childs: React.ReactElement<Contracts.iProps>[] = [];
         var textId = "text_" + this.props.Id;
         var text = this.props.Current.length == 0 ? " " : this.props.Current;
@@ -43,10 +42,11 @@ class BoardCell extends React.Component<Contracts.iCellProps, Contracts.iCellPro
                 id: cellId,
                 ref: cellId,
                 key: cellId,
-                className: "cellContainer",
+                className: "square",
                 title: text
             }, childs);
 
+        var className: string = this.getClass();
         var elem = React.createElement('td',
             {
                 id: this.props.Id,
@@ -58,40 +58,28 @@ class BoardCell extends React.Component<Contracts.iCellProps, Contracts.iCellPro
                 onDragStart: (evt: DragEvent) => { this.OnDragStart(evt); },
                 onDragOver: this.OnDragOver,
                 onDrop: (evt: DragEvent) => { this.OnDrop(evt); }
-            }, [container]);
+            }, container);
         return elem;
     }
     isDragable(): boolean {
         return this.props.Waiting.length != 0;
     }
     getClass(): string {
-        var className: string = (this.props.Waiting.length + this.props.Confirmed.length == 0) ? "cell" : "cell filled";
+        var classList: string[] = [];
+        classList.push("cell");
+        if (this.props.Waiting.length + this.props.Confirmed.length != 0) {
+            classList.push("filled");
+        }
         var confirmed = (this.props.Waiting.length == 0 && this.props.Confirmed.length != 0);
         var draggable: boolean = this.isDragable();
-        if (confirmed) { className += " confirmed"; }
-        if (draggable) { className += " draggable"; }
+        if (confirmed) { classList.push("confirmed"); }
+        if (draggable) { classList.push("draggable"); }
 
         if (confirmed || this.props.Waiting.length != 0) {
-            return className;
+            return classList.join(' ');
         }
-
-        switch (this.props.Weight) {
-            case 3:
-                className += " w3";
-                break;
-            case 4:
-                className += " w4";
-                break;
-            case 6:
-                className += " w6";
-                break;
-            case 8:
-                className += " w8";
-                break;
-            default:
-                break;
-        }
-        return className;
+        classList.push("w" + this.props.Weight);
+        return classList.join(' ');
     }
 
     public renderWeight(): React.ReactElement<Contracts.iProps> {

@@ -13,7 +13,6 @@ define(["require", "exports", "react", 'Contracts', 'GameStore'], function (requ
         }
         BoardCell.prototype.render = function () {
             var _this = this;
-            var className = this.getClass();
             var childs = [];
             var textId = "text_" + this.props.Id;
             var text = this.props.Current.length == 0 ? " " : this.props.Current;
@@ -31,9 +30,10 @@ define(["require", "exports", "react", 'Contracts', 'GameStore'], function (requ
                 id: cellId,
                 ref: cellId,
                 key: cellId,
-                className: "cellContainer",
+                className: "square",
                 title: text
             }, childs);
+            var className = this.getClass();
             var elem = React.createElement('td', {
                 id: this.props.Id,
                 ref: this.props.Id,
@@ -44,42 +44,31 @@ define(["require", "exports", "react", 'Contracts', 'GameStore'], function (requ
                 onDragStart: function (evt) { _this.OnDragStart(evt); },
                 onDragOver: this.OnDragOver,
                 onDrop: function (evt) { _this.OnDrop(evt); }
-            }, [container]);
+            }, container);
             return elem;
         };
         BoardCell.prototype.isDragable = function () {
             return this.props.Waiting.length != 0;
         };
         BoardCell.prototype.getClass = function () {
-            var className = (this.props.Waiting.length + this.props.Confirmed.length == 0) ? "cell" : "cell filled";
+            var classList = [];
+            classList.push("cell");
+            if (this.props.Waiting.length + this.props.Confirmed.length != 0) {
+                classList.push("filled");
+            }
             var confirmed = (this.props.Waiting.length == 0 && this.props.Confirmed.length != 0);
             var draggable = this.isDragable();
             if (confirmed) {
-                className += " confirmed";
+                classList.push("confirmed");
             }
             if (draggable) {
-                className += " draggable";
+                classList.push("draggable");
             }
             if (confirmed || this.props.Waiting.length != 0) {
-                return className;
+                return classList.join(' ');
             }
-            switch (this.props.Weight) {
-                case 3:
-                    className += " w3";
-                    break;
-                case 4:
-                    className += " w4";
-                    break;
-                case 6:
-                    className += " w6";
-                    break;
-                case 8:
-                    className += " w8";
-                    break;
-                default:
-                    break;
-            }
-            return className;
+            classList.push("w" + this.props.Weight);
+            return classList.join(' ');
         };
         BoardCell.prototype.renderWeight = function () {
             var weightId = "weight_" + this.props.Id;

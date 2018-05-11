@@ -21,7 +21,7 @@ define(["require", "exports", "react", 'Tile'], function (require, exports, Reac
                 var tile = this.renderTile(this.props.Tiles[i], i + 1);
                 childs.push(tile);
             }
-            var className = this.props.className + " tray" + (this.props.Show ? "" : " hide");
+            var className = this.props.className + (this.props.Show ? "" : " hide");
             var elem = React.createElement('div', {
                 id: this.props.Id,
                 key: this.props.Id,

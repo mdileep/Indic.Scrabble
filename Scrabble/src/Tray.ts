@@ -33,7 +33,7 @@ class Tray extends React.Component<Contracts.iTrayView, Contracts.iTrayView> {
             childs.push(tile);
         }
 
-        var className: string = this.props.className + " tray" + (this.props.Show ? "" : " hide");
+        var className: string = this.props.className + (this.props.Show ? "" : " hide");
         var elem = React.createElement('div',
             {
                 id: this.props.Id,
