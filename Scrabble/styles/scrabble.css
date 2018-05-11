@@ -126,7 +126,7 @@ body {
 }
 .board .text {
   left: 4vmin;
-  top: 2vmin;
+  top: 4vmin;
 }
 .board .weight {
   margin: 1vmin;
