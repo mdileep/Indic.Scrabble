@@ -8,19 +8,25 @@ body {
 .currentTurn,
 .noTurn,
 .label {
+  font-size: 4vmin;
+}
+.text {
   font-size: 6vmin;
 }
-.text,
 .tile {
-  font-size: 6vmin;
+  font-size: 4vmin;
 }
 .count,
 .weight {
-  font-size: 3vmin;
+  font-size: 2vmin;
 }
 .wordsList,
 .message {
-  font-size: 6vmin;
+  font-size: 4vmin;
+}
+.content,
+.score {
+  font-size: 4vmin;
 }
 .footer {
   font-size: 2vmin;
@@ -47,14 +53,13 @@ body {
   clear: both;
   float: left;
   width: 100%;
-  height: 24vh;
-  min-height: 32vmin;
+  height: 28vmin;
   position: fixed;
   bottom: 0;
   left: 0;
 }
 .gameTable .actions {
-  height: 8vh;
+  height: 8vmin;
 }
 .gameTable .message {
   overflow: hidden;
@@ -70,7 +75,7 @@ body {
 }
 .footer {
   clear: both;
-  margin-bottom: 24vh;
+  margin-bottom: 32vmin;
 }
 .cabinet {
   clear: both;
@@ -95,8 +100,8 @@ body {
   display: block;
 }
 .tray .tile {
-  width: 8vmin;
-  height: 8vmin;
+  width: 7vmin;
+  height: 7vmin;
   position: relative;
   display: block;
   float: left;
@@ -113,8 +118,8 @@ body {
   float: left;
 }
 .board .square {
-  width: 7vmin;
-  height: 7vmin;
+  width: 6vmin;
+  height: 6vmin;
   position: relative;
 }
 .board .square span {
@@ -125,8 +130,8 @@ body {
   display: block;
 }
 .board .text {
-  left: 4vmin;
-  top: 4vmin;
+  left: 3vmin;
+  top: 3vmin;
 }
 .board .weight {
   margin: 1vmin;
@@ -216,7 +221,7 @@ body {
   margin: 2vmin;
 }
 .board {
-  margin: 4vmin;
+  margin: 6vmin;
 }
 .players {
   margin: 2vmin;
@@ -225,7 +230,7 @@ body {
   margin: 2vmin;
 }
 .players .player .wordsList {
-  padding: 8vmin;
+  margin: 4vmin;
 }
 .infoBar {
   margin: 4vmin;
@@ -262,13 +267,16 @@ body {
   color: gray;
 }
 .board .table {
-  border: 1px solid gray;
   border-collapse: collapse;
   text-align: center;
+  border: 1px solid #BBBBBB;
+}
+.board .row {
+  border: 1px solid #BBBBBB;
 }
 .board .cell {
   background-color: lightyellow;
-  border: 1px solid green;
+  border: 1px solid #BBBBBB;
 }
 .board .filled {
   background-color: yellow;

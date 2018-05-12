@@ -1,5 +1,4 @@
-﻿@h: 1vh;
-@cells: 11vmin;
+﻿@cells: 11vmin;
 @tiles: 10vmin;
 
 html, body {
@@ -26,14 +25,13 @@ html, body {
     clear: both;
     float: left;
     width: 100%;
-    height: 24*@h;
-    min-height: 32vmin;
+    height: 28vmin;
     position: fixed;
     bottom: 0;
     left: 0;
 
     .actions {
-        height: 8vh;
+        height: 8vmin;
     }
 
     .message {
@@ -53,7 +51,7 @@ html, body {
 
 .footer {
     clear: both;
-    margin-bottom: 24*@h;
+    margin-bottom: 32vmin;
 }
 
 .cabinet {
@@ -86,8 +84,8 @@ html, body {
     }
 
     .tile {
-        width: floor(100vmin/(@tiles+2));
-        height: floor(100vmin/(@tiles+2));
+        width: floor(100vmin/(@tiles+4));
+        height: floor(100vmin/(@tiles+4));
         position: relative;
         display: block;
         float: left;
@@ -113,8 +111,8 @@ html, body {
     }
 
     .square {
-        width: floor(100vmin/(@cells+2));
-        height: floor(100vmin/(@cells+2));
+        width: 6vmin;
+        height: 6vmin;
         position: relative;
     }
 
@@ -127,8 +125,8 @@ html, body {
     }
 
     .text {
-        left: 4vmin;
-        top: 4vmin;
+        left: 3vmin;
+        top: 3vmin;
     }
 
     .weight {
