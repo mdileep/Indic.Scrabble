@@ -3,7 +3,7 @@ body {
 }
 .title,
 .h2 {
-  font-size: 8vmin;
+  font-size: 6vmin;
 }
 .currentTurn,
 .noTurn,
@@ -11,7 +11,7 @@ body {
   font-size: 4vmin;
 }
 .text {
-  font-size: 6vmin;
+  font-size: 4vmin;
 }
 .tile {
   font-size: 4vmin;
