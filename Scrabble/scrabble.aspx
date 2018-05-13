@@ -22,7 +22,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="shortcut icon" href="Miriyam.ico" />
     <link href="styles/scrabble.css" type="text/css" rel="stylesheet" />
-    <link id="LangStyle" runat="server" href="styles/te.css" type="text/css" rel="stylesheet" />
+    <link id="LangStyle" runat="server" href="styles/lang/te.min.css" type="text/css" rel="stylesheet" />
 </head>
 <body>
     <div class="title">
@@ -32,7 +32,13 @@
         <h3>Loading...
             <img width="64" height="80" alt="Loading..." src="images/loading.svg" /></h3>
     </div>
-    <div class="footer"><br/><br /><br /><br /><br /><span id="Author2" runat="server" class="author">~ Dileep Miriyala(దిలీపు మిరియాల)</span></div>
+    <div class="footer">
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+        <span id="Author2" runat="server" class="author">~ Dileep Miriyala(దిలీపు మిరియాల)</span></div>
     <script type="text/javascript" src="Config.ashx?<%= Query %>"> </script>
     <script data-main="scripts/Game" src="scripts/require.js"></script>
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-118249672-1"></script>

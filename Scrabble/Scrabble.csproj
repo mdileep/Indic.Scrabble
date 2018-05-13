@@ -21,47 +21,37 @@
     <TargetFrameworkProfile />
   </PropertyGroup>
   <ItemGroup>
-    <Content Include="bots\kn.txt" />
-    <Content Include="images\pick.svg" />
-    <Content Include="scrabble.aspx" />
-    <Content Include="Index.html" />
-    <Content Include="Config.ashx" />
-    <Content Include="scripts\Alert.js" />
-    <Content Include="scripts\AlertDialog.js" />
-    <Content Include="scripts\AskBot.js" />
-    <Content Include="scripts\axios.js" />
-    <Content Include="scripts\ConfirmDialog.js" />
-    <Content Include="scripts\ConsentForm.js" />
-    <Content Include="scripts\Game.js" />
-    <Content Include="scripts\GameStore.js" />
-    <Content Include="scripts\GenericActions.js" />
-    <Content Include="scripts\Index.js" />
-    <Content Include="scripts\OverlayDialog.js" />
-    <Content Include="scripts\_AlertDialog.js" />
-    <Content Include="scripts\_ConfirmDialog.js" />
-    <Content Include="scripts\_OverlayDialog.js" />
-    <Content Include="styles\bn.css" />
-    <Content Include="styles\gu.css" />
-    <Content Include="styles\hi.css" />
-    <Content Include="images\pass.svg" />
-    <Content Include="images\loading.svg" />
-    <Content Include="styles\Index.css" />
-    <Content Include="styles\kn.css" />
-    <Content Include="styles\ml.css" />
-    <Content Include="styles\or.css" />
-    <Content Include="styles\pa.css" />
-    <Content Include="styles\ta.css" />
-    <Content Include="styles\te.css" />
-    <Content Include="API.ashx" />
-    <Content Include="scripts\DragDropTouch.js" />
-    <Content Include="scripts\GameTable.js" />
-    <Content Include="styles\scrabble.css" />
-    <Content Include="styles\scrabble.min.css" />
-    <Content Include="temp.html" />
-    <Content Include="temp2.html" />
-    <Content Include="web.config" />
-    <Content Include="log.txt" />
     <Content Include="API.aspx" />
+    <Content Include="Config.ashx" />
+    <Content Include="API.ashx" />
+    <Content Include="Index.html" />
+    <Content Include="scrabble.aspx" />
+    <Content Include="styles\lang\bn.css" />
+    <Content Include="styles\lang\bn.min.css" />
+    <Content Include="styles\lang\gu.css" />
+    <Content Include="styles\lang\gu.min.css" />
+    <Content Include="styles\lang\hi.css" />
+    <Content Include="styles\lang\hi.min.css" />
+    <Content Include="styles\lang\kn.css" />
+    <Content Include="styles\lang\kn.min.css" />
+    <Content Include="styles\lang\ml.css" />
+    <Content Include="styles\lang\ml.min.css" />
+    <Content Include="styles\lang\or.css" />
+    <Content Include="styles\lang\or.min.css" />
+    <Content Include="styles\lang\pa.css" />
+    <Content Include="styles\lang\pa.min.css" />
+    <Content Include="styles\lang\ta.css" />
+    <Content Include="styles\lang\ta.min.css" />
+    <Content Include="styles\lang\te.css" />
+    <Content Include="styles\lang\te.min.css" />
+    <Content Include="web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="log.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="bots\te.txt" />
+    <Content Include="bots\kn.txt" />
     <Content Include="bots\hi.bbc.txt" />
     <Content Include="bots\te.gallery.txt" />
     <Content Include="bots\te.kinige.txt" />
@@ -70,13 +60,40 @@
     <Content Include="bots\te.andhrajyothy.txt" />
     <Content Include="bots\te.bbc.txt" />
     <Content Include="bots\te.eenadu.txt" />
-    <None Include="web.Debug.config">
-      <DependentUpon>web.config</DependentUpon>
-    </None>
-    <None Include="web.Release.config">
-      <DependentUpon>web.config</DependentUpon>
-    </None>
-    <Content Include="bots\te.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <LessFiles Include="styles\less\0.Index.less" />
+    <LessFiles Include="styles\less\1.fonts.mobile.less" />
+    <LessFiles Include="styles\less\2.structure.mobile.less" />
+    <LessFiles Include="styles\less\3.margins.mobile.less" />
+    <LessFiles Include="styles\less\5.misc.mobile.less" />
+    <LessFiles Include="styles\less\99.Dialog.mobile.less" />
+  </ItemGroup>
+  <ItemGroup>
+    <LessFiles Include="styles\less\1.fonts.less" />
+    <LessFiles Include="styles\less\2.structure.less" />
+    <LessFiles Include="styles\less\3.margins.less" />
+    <LessFiles Include="styles\less\4.colors.less" />
+    <LessFiles Include="styles\less\5.misc.less" />
+    <LessFiles Include="styles\less\99.Dialog.less" />
+  </ItemGroup>
+  <ItemGroup>
+    <LessFiles Include="styles\lang\bn.less" />
+    <LessFiles Include="styles\lang\gu.less" />
+    <LessFiles Include="styles\lang\hi.less" />
+    <LessFiles Include="styles\lang\kn.less" />
+    <LessFiles Include="styles\lang\ml.less" />
+    <LessFiles Include="styles\lang\or.less" />
+    <LessFiles Include="styles\lang\pa.less" />
+    <LessFiles Include="styles\lang\ta.less" />
+    <LessFiles Include="styles\lang\te.less" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="MergeRules.ini" />
+    <Content Include="styles\scrabble.css" />
+    <Content Include="styles\scrabble.min.css" />
+    <Content Include="styles\scrabble.mobile.css" />
+    <Content Include="styles\scrabble.mobile.min.css" />
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="src\AksharaSets.ts" />
@@ -150,19 +167,37 @@
     <Content Include="scripts\Tray.js" />
     <Content Include="scripts\TrayRack.js" />
     <Content Include="scripts\Util.js" />
+    <Content Include="scripts\Alert.js" />
+    <Content Include="scripts\AlertDialog.js" />
+    <Content Include="scripts\AskBot.js" />
+    <Content Include="scripts\axios.js" />
+    <Content Include="scripts\ConfirmDialog.js" />
+    <Content Include="scripts\ConsentForm.js" />
+    <Content Include="scripts\Game.js" />
+    <Content Include="scripts\GameStore.js" />
+    <Content Include="scripts\GenericActions.js" />
+    <Content Include="scripts\Index.js" />
+    <Content Include="scripts\OverlayDialog.js" />
+    <Content Include="scripts\_AlertDialog.js" />
+    <Content Include="scripts\_ConfirmDialog.js" />
+    <Content Include="scripts\_OverlayDialog.js" />
+    <Content Include="scripts\DragDropTouch.js" />
+    <Content Include="scripts\GameTable.js" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Scrabble.png" />
     <Content Include="Miriyam.ico" />
+    <Content Include="images\pick.svg" />
+    <Content Include="images\pass.svg" />
+    <Content Include="images\loading.svg" />
   </ItemGroup>
   <ItemGroup>
-    <LessFiles Include="styles\less\1.fonts.less" />
-    <LessFiles Include="styles\less\2.structure.less" />
-    <LessFiles Include="styles\less\3.margins.less" />
-    <LessFiles Include="styles\less\4.colors.less" />
-    <LessFiles Include="styles\less\5.misc.less" />
-    <LessFiles Include="styles\less\scrabble.less" />
-    <LessFiles Include="styles\less\99.Dialog.less" />
+    <None Include="web.Debug.config">
+      <DependentUpon>web.config</DependentUpon>
+    </None>
+    <None Include="web.Release.config">
+      <DependentUpon>web.config</DependentUpon>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

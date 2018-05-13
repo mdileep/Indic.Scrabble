@@ -20,7 +20,9 @@ body {
 .weight {
   font-size: 2vmin;
 }
-.wordsList,
+.wordsList {
+  font-size: 3vmin;
+}
 .message {
   font-size: 4vmin;
 }
@@ -53,7 +55,7 @@ body {
   clear: both;
   float: left;
   width: 100%;
-  height: 28vmin;
+  height: 30vmin;
   position: fixed;
   bottom: 0;
   left: 0;
@@ -100,8 +102,8 @@ body {
   display: block;
 }
 .tray .tile {
-  width: 7vmin;
-  height: 7vmin;
+  width: 6vmin;
+  height: 6vmin;
   position: relative;
   display: block;
   float: left;
@@ -215,7 +217,7 @@ body {
   padding: 0;
 }
 .tray .content {
-  margin: 4vmin;
+  margin: 3vmin;
 }
 .tray .count {
   margin: 2vmin;
@@ -230,7 +232,7 @@ body {
   margin: 2vmin;
 }
 .players .player .wordsList {
-  margin: 4vmin;
+  margin: 1vmin;
 }
 .infoBar {
   margin: 4vmin;

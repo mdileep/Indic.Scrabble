@@ -1,0 +1,491 @@
+@media screen and (min-width: 300px) and (min-height: 300px) {
+  body {
+    font-size: 5vmin;
+  }
+  .title,
+  .h2 {
+    font-size: 7.5vmin;
+  }
+  .currentTurn,
+  .noTurn,
+  .label {
+    font-size: 5vmin;
+  }
+  .text {
+    font-size: 5vmin;
+  }
+  .tile {
+    font-size: 5vmin;
+  }
+  .count,
+  .weight {
+    font-size: 2.5vmin;
+  }
+  .wordsList {
+    font-size: 3.75vmin;
+  }
+  .message {
+    font-size: 5vmin;
+  }
+  .content,
+  .score {
+    font-size: 5vmin;
+  }
+  .footer {
+    font-size: 2.5vmin;
+  }
+}
+
+/* */
+@media screen and (min-width: 300px) and (min-height: 300px) {
+  html,
+  body {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  .title {
+    width: 100%;
+  }
+  .title .h2 {
+    display: inline;
+  }
+  .game {
+    width: 98%;
+  }
+  .gameTable {
+    clear: both;
+    float: left;
+    width: 100%;
+    height: 30vmin;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+  }
+  .gameTable .actions {
+    height: 8vmin;
+  }
+  .gameTable .message {
+    overflow: hidden;
+    text-overflow: clip;
+    max-width: 80vw;
+    display: block;
+    float: left;
+  }
+  .gameTable button {
+    cursor: pointer;
+    width: 42px;
+    height: 32px;
+  }
+  .footer {
+    clear: both;
+    margin-bottom: 32vmin;
+  }
+  .cabinet {
+    clear: both;
+    float: left;
+    width: 98%;
+  }
+  .cabinet .remaining {
+    float: right;
+    display: none;
+  }
+  .cabinet .hide {
+    display: none;
+  }
+  .tray {
+    clear: both;
+    float: left;
+    display: block;
+    width: 100%;
+  }
+  .tray .label {
+    clear: both;
+    display: block;
+  }
+  .tray .tile {
+    width: 6vmin;
+    height: 6vmin;
+    position: relative;
+    display: block;
+    float: left;
+  }
+  .tray .tile span {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    overflow: hidden;
+    text-overflow: clip;
+    display: block;
+  }
+  .board {
+    clear: both;
+    float: left;
+  }
+  .board .square {
+    width: 6vmin;
+    height: 6vmin;
+    position: relative;
+  }
+  .board .square span {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    overflow: hidden;
+    text-overflow: clip;
+    display: block;
+  }
+  .board .text {
+    left: 3vmin;
+    top: 3vmin;
+  }
+  .board .weight {
+    margin: 1vmin;
+  }
+  .players {
+    float: left;
+  }
+  .players .currentTurn {
+    width: 100%;
+    display: block;
+  }
+  .players .noTurn {
+    width: 100%;
+    display: block;
+  }
+  .players .player {
+    float: left;
+    width: 38vmin;
+  }
+  .players .player .score {
+    display: block;
+    width: 100%;
+  }
+  .players .wordsList {
+    text-overflow: clip;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+  .players .conditions {
+    clear: both;
+    display: block;
+    width: 98%;
+  }
+  .players .hide {
+    display: none;
+  }
+  .infoBar {
+    float: left;
+    width: 98%;
+  }
+  .infoBar .h2 {
+    clear: both;
+  }
+  .list {
+    list-style: none;
+  }
+  .list li {
+    border: 1px solid #EEEEEE;
+    margin: 3px;
+    padding: 3px;
+  }
+  .list table {
+    width: 96%;
+    margin-left: 2%;
+  }
+  .hide {
+    display: none;
+  }
+  .h2 {
+    width: 100%;
+  }
+}
+
+/* */
+@media screen and (min-width: 300px) and (min-height: 300px) {
+  .gameTable .actions {
+    text-align: right;
+  }
+  .gameTable .message {
+    margin-left: 4vw;
+  }
+  .gameTable button {
+    margin: 1vw;
+  }
+  .cabinet {
+    margin: 3vmin;
+  }
+  .tray {
+    margin-left: 8vmin;
+  }
+  .tray .tile {
+    margin: 1vmin;
+    padding: 0;
+  }
+  .tray .content {
+    margin: 3vmin;
+  }
+  .tray .count {
+    margin: 2vmin;
+  }
+  .board {
+    margin: 6vmin;
+  }
+  .players {
+    margin: 2vmin;
+  }
+  .players .player {
+    margin: 2vmin;
+  }
+  .players .player .wordsList {
+    margin: 1vmin;
+  }
+  .infoBar {
+    margin: 4vmin;
+  }
+  .infoBar .ul {
+    max-height: 150px;
+    overflow: auto;
+  }
+}
+
+/* */
+.title {
+  background-color: navajowhite;
+  opacity: 0.9;
+  z-index: 100;
+}
+.cabinet {
+  border: 1px solid #EEEEEE;
+}
+.cabinet .remaining {
+  color: green;
+}
+.tray .label {
+  color: blue;
+}
+.tray .count {
+  color: black;
+}
+.tray .tile {
+  color: red;
+  background-color: lightgoldenrodyellow;
+  border: 1px dotted green;
+}
+.tray .readonly {
+  color: gray;
+}
+.board .table {
+  border-collapse: collapse;
+  text-align: center;
+  border: 1px solid #BBBBBB;
+}
+.board .row {
+  border: 1px solid #BBBBBB;
+}
+.board .cell {
+  background-color: lightyellow;
+  border: 1px solid #BBBBBB;
+}
+.board .filled {
+  background-color: yellow;
+  color: #990099;
+}
+.board .weight {
+  color: white;
+}
+.board .w3 {
+  background-color: burlywood;
+}
+.board .w4 {
+  background-color: coral;
+}
+.board .w6 {
+  background-color: darkred;
+}
+.board .w8 {
+  background-color: yellowgreen;
+}
+.board .confirmed {
+  background-color: yellowgreen;
+  color: #990099;
+}
+.players {
+  color: blue;
+}
+.players .currentTurn {
+  background-color: brown;
+  color: white;
+}
+.players .noTurn {
+  background-color: black;
+  color: white;
+}
+.players .player {
+  border: 1px solid #EEEEEE;
+}
+.players .player .score {
+  color: rebeccapurple;
+}
+.players .player .wordsList {
+  border: 1px solid #EEEEEE;
+}
+.players .player .wordsList .cWord {
+  color: green;
+}
+.players .player .wordsList .wWord {
+  color: orangered;
+  font-style: italic;
+}
+.players .conditions {
+  color: orangered;
+  font-style: italic;
+}
+.infoBar {
+  border: 1px solid #EEEEEE;
+}
+.infoBar .ul {
+  border: 1px solid #EEEEEE;
+}
+.gameTable {
+  background-color: navajowhite;
+  opacity: 0.9;
+  z-index: 100;
+}
+.gameTable .message {
+  color: rebeccapurple;
+}
+.list i {
+  color: red;
+}
+.list b {
+  color: green;
+}
+.footer {
+  color: blue;
+}
+
+/* */
+@media screen and (min-width: 300px) and (min-height: 300px) {
+  .h2,
+  .title {
+    text-align: center;
+  }
+  .gameTable {
+    text-align: right;
+  }
+  .gameTable button {
+    text-indent: -9999px;
+    background-size: 36px 32px;
+    background-repeat: no-repeat;
+    background-color: white;
+  }
+  .gameTable button:disabled,
+  .gameTable button[disabled] {
+    background-color: #DDDDDD;
+    cursor: auto;
+  }
+  .gameTable .pass {
+    background-image: url(/images/pass.svg);
+  }
+  .gameTable .redraw {
+    background-image: url(/images/pick.svg);
+  }
+  .list table {
+    text-align: center;
+  }
+  .tray .tile {
+    text-align: center;
+    vertical-align: bottom;
+  }
+  .tray .count {
+    text-align: left;
+    vertical-align: top;
+  }
+  .board .weight {
+    text-align: right;
+    vertical-align: bottom;
+    z-index: 1;
+  }
+  .board .text {
+    z-index: 2;
+  }
+  .board .cell {
+    white-space: pre-wrap;
+  }
+  .players .player {
+    text-align: center;
+  }
+  .players .player .score {
+    text-align: center;
+  }
+  .players .player .wordsList {
+    text-align: left;
+    list-style-type: decimal;
+  }
+  .infoBar .h2 {
+    color: black;
+  }
+  .footer {
+    text-align: right;
+  }
+  .draggable {
+    cursor: move;
+  }
+}
+
+/* */
+@media screen and (min-width: 300px) and (min-height: 300px) {
+  .olDialog .oBackGround {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    z-index: 1000;
+    opacity: 0.5;
+    filter: alpha(opacity=50);
+    -moz-opacity: 0.5;
+    background-color: black;
+  }
+  .olDialog .oForeGround {
+    border: 1px solid white;
+    box-shadow: 0px 0px 1em white;
+    background-color: white;
+    left: 20%;
+    top: 10%;
+    right: 20%;
+    width: 60%;
+    position: fixed;
+    z-index: 1001;
+    min-height: 100px;
+    height: auto;
+  }
+  .olDialog .oFTitle {
+    color: green;
+  }
+  .olDialog .oFContent {
+    clear: both;
+    text-align: left;
+    margin-left: 10%;
+    font-size: 0.8em;
+  }
+  .olDialog .oFCloseButtonHolder {
+    float: right;
+    margin-right: 10px;
+    cursor: pointer;
+    color: Red;
+    font-size: 2.0em;
+  }
+  .olDialog .oFButtonHolder {
+    clear: both;
+    float: right;
+    margin: 10px;
+  }
+  .olDialog .oFButtonHolder input,
+  .olDialog .oFButtonHolder button {
+    margin: 5px;
+  }
+}
+
+/* */
