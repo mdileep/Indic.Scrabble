@@ -24,50 +24,21 @@
     <Content Include="API.aspx" />
     <Content Include="Config.ashx" />
     <Content Include="API.ashx" />
-    <Content Include="Index.html" />
+    <Content Include="Index.aspx" />
     <Content Include="scrabble.aspx" />
-    <Content Include="styles\lang\css\bn.css" />
-    <Content Include="styles\lang\css\bn.min.css" />
-    <Content Include="styles\lang\css\gu.css" />
-    <Content Include="styles\lang\css\gu.min.css" />
-    <Content Include="styles\lang\css\hi.css" />
-    <Content Include="styles\lang\css\hi.min.css" />
-    <Content Include="styles\lang\css\kn.css" />
-    <Content Include="styles\lang\css\kn.min.css" />
-    <Content Include="styles\lang\css\ml.css" />
-    <Content Include="styles\lang\css\ml.min.css" />
-    <Content Include="styles\lang\css\or.css" />
-    <Content Include="styles\lang\css\or.min.css" />
-    <Content Include="styles\lang\css\pa.css" />
-    <Content Include="styles\lang\css\pa.min.css" />
-    <Content Include="styles\lang\css\ta.css" />
-    <Content Include="styles\lang\css\ta.min.css" />
-    <Content Include="styles\lang\css\te.css" />
-    <Content Include="styles\lang\css\te.min.css" />
-    <Content Include="styles\less\css\0.Index.css" />
-    <Content Include="styles\less\css\0.Index.min.css" />
-    <Content Include="styles\less\css\1.fonts.css" />
-    <Content Include="styles\less\css\1.fonts.min.css" />
-    <Content Include="styles\less\css\1.fonts.mobile.css" />
-    <Content Include="styles\less\css\1.fonts.mobile.min.css" />
-    <Content Include="styles\less\css\2.structure.css" />
-    <Content Include="styles\less\css\2.structure.min.css" />
-    <Content Include="styles\less\css\2.structure.mobile.css" />
-    <Content Include="styles\less\css\2.structure.mobile.min.css" />
-    <Content Include="styles\less\css\3.margins.css" />
-    <Content Include="styles\less\css\3.margins.min.css" />
-    <Content Include="styles\less\css\3.margins.mobile.css" />
-    <Content Include="styles\less\css\3.margins.mobile.min.css" />
-    <Content Include="styles\less\css\4.colors.css" />
-    <Content Include="styles\less\css\4.colors.min.css" />
-    <Content Include="styles\less\css\5.misc.css" />
-    <Content Include="styles\less\css\5.misc.min.css" />
-    <Content Include="styles\less\css\5.misc.mobile.css" />
-    <Content Include="styles\less\css\5.misc.mobile.min.css" />
-    <Content Include="styles\less\css\99.Dialog.css" />
-    <Content Include="styles\less\css\99.Dialog.min.css" />
-    <Content Include="styles\less\css\99.Dialog.mobile.css" />
-    <Content Include="styles\less\css\99.Dialog.mobile.min.css" />
+  </ItemGroup>
+  <ItemGroup>
+     <Content Include="styles\css\index.min.css" />
+    <Content Include="styles\css\bn.min.css" />
+    <Content Include="styles\css\gu.min.css" />
+    <Content Include="styles\css\hi.min.css" />
+ 
+    <Content Include="styles\css\kn.min.css" />
+    <Content Include="styles\css\ml.min.css" />
+    <Content Include="styles\css\or.min.css" />
+    <Content Include="styles\css\pa.min.css" />
+    <Content Include="styles\css\ta.min.css" />
+    <Content Include="styles\css\te.min.css" />
     <Content Include="web.config" />
   </ItemGroup>
   <ItemGroup>
@@ -84,9 +55,12 @@
     <Content Include="bots\te.andhrajyothy.txt" />
     <Content Include="bots\te.bbc.txt" />
     <Content Include="bots\te.eenadu.txt" />
+      <Content Include="bots\te.tebha.txt" />
   </ItemGroup>
   <ItemGroup>
-    <LessFiles Include="styles\less\0.Index.less" />
+    <Content Include="styles\Less.targets" />
+    <LessFiles Include="styles\less\4.colors.mobile.less" />
+    <LessFiles Include="styles\less\index.less" />
     <LessFiles Include="styles\less\1.fonts.mobile.less" />
     <LessFiles Include="styles\less\2.structure.mobile.less" />
     <LessFiles Include="styles\less\3.margins.mobile.less" />
@@ -216,7 +190,7 @@
     <Content Include="images\loading.svg" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="styles\Less.targets" />
+  
     <None Include="web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>

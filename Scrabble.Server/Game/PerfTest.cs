@@ -51,7 +51,7 @@ namespace Scrabble
 
 				using (new Watcher("Iteration#" + (i + 1)))
 				{
-					var R = new Runner2(Board);
+					var R = new StateEngine(Board);
 					var List = R.Probables();
 				}
 				

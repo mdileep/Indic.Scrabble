@@ -22,7 +22,7 @@ define(["require", "exports", "react", "react-dom", 'Contracts', 'Messages', 'In
             }
             var players = state.Players.Players;
             var currentPlayer = state.Players.CurrentPlayer;
-            var isBot = players[currentPlayer].IsBot;
+            var isBot = players[currentPlayer].Bot !== null;
             state.GameTable.ReadOnly = isBot;
             if (!isBot) {
                 return;
@@ -86,7 +86,7 @@ define(["require", "exports", "react", "react-dom", 'Contracts', 'Messages', 'In
         };
         GameActions.ResolveWords = function (state, args) {
             var player = state.Players.Players[state.Players.CurrentPlayer];
-            if (player.IsBot) {
+            if (player.Bot != null) {
                 GameActions.Award(state, args);
             }
             else {
@@ -117,6 +117,7 @@ define(["require", "exports", "react", "react-dom", 'Contracts', 'Messages', 'In
             else {
                 state.GameTable.Message = Util.Util.Format(Messages.Messages.Winner, [winner.Name]);
             }
+            state.Dialog.Title = Messages.Messages.Name;
             state.Dialog.Message = state.GameTable.Message;
             state.Dialog.Show = true;
             state.InfoBar.Messages.push(Util.Util.Format(Messages.Messages.Stats, [state.Stats.EmptyCells, state.Stats.Occupancy.toFixed(2), state.Stats.TotalWords, state.Stats.UnUsed.toFixed(2)]));
@@ -233,7 +234,7 @@ define(["require", "exports", "react", "react-dom", 'Contracts', 'Messages', 'In
             var Name = state.Board.Name;
             var players = state.Players.Players;
             var currentPlayer = state.Players.CurrentPlayer;
-            var BotName = players[currentPlayer].BotId;
+            var BotName = players[currentPlayer].Bot.Id;
             var reference = Math.floor(Math.random() * 1000).toString();
             var post = {
                 "Reference": reference,

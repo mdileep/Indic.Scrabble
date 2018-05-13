@@ -1,44 +1,66 @@
 ﻿{
+  "tebha": {
+    "Name": "పోతన",
+    "FullName": "పోతన",
+    "Language": "te",
+    "Algorithm": "Default",
+    "Dictionary": "te.tebha.txt",
+    "Endpoint": null
+  },
   "eenadu": {
     "Name": "ఈనాడు",
-    "FullName":"ఈనాడు",
+    "FullName": "ఈనాడు",
     "Language": "te",
-    "Dictionary": "te.eenadu.txt"
+    "Algorithm": "Default",
+    "Dictionary": "te.eenadu.txt",
+    "Endpoint": null
   },
   "bbc.te": {
     "Name": "బీబీసీ",
-    "FullName":"బీబీసీ తెలుగు",
+    "FullName": "బీబీసీ తెలుగు",
     "Language": "te",
-    "Dictionary": "te.bbc.txt"
+    "Dictionary": "te.bbc.txt",
+    "Algorithm": "Default",
+    "Endpoint": null
   },
-  "andhrajyothy":{
+  "andhrajyothy": {
     "Name": "ఆంధ్రజ్యోతి",
-    "FullName":"ఆంధ్రజ్యోతి",
+    "FullName": "ఆంధ్రజ్యోతి",
     "Language": "te",
-    "Dictionary": "te.andhrajyothy.txt"
+    "Algorithm": "Default",
+    "Dictionary": "te.andhrajyothy.txt",
+    "Endpoint": null
   },
-  "kinige":{
+  "kinige": {
     "Name": "కినిగె",
-    "FullName":"కినిగె",
+    "FullName": "కినిగె",
     "Language": "te",
-    "Dictionary": "te.kinige.txt"
+    "Algorithm": "Default",
+    "Dictionary": "te.kinige.txt",
+    "Endpoint": null
   },
-  "gallery":{
+  "gallery": {
     "Name": "వసారా",
-    "FullName":"వసారా",
+    "FullName": "వసారా",
     "Language": "te",
-    "Dictionary": "te.gallery.txt"
+    "Algorithm": "Default",
+    "Dictionary": "te.gallery.txt",
+    "Endpoint": null
   },
-  "veeven":{
+  "veeven": {
     "Name": "వీవెనుడు",
-    "FullName":"వీవెన్",
+    "FullName": "వీవెన్",
     "Language": "te",
-    "Dictionary":  "te.veeven.txt"
+    "Algorithm": "Default",
+    "Dictionary": "te.veeven.txt",
+    "Endpoint": null
   },
   "vijay": {
     "Name": "ವಿಜಯ",
-    "FullName":"ವಿಜಯ ಕರ್ನಾಟಕ",
+    "FullName": "ವಿಜಯ ಕರ್ನಾಟಕ",
     "Language": "kn",
-    "Dictionary": "kn.vijaykarnataka.txt"
+    "Dictionary": "kn.vijaykarnataka.txt",
+    "Algorithm": "Default",
+    "Endpoint": null
   }
 }

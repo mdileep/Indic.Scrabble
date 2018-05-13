@@ -42,15 +42,13 @@ namespace Shared
 		public string FullName;
 		public string Language;
 		public string Dictionary;
+		public string Algorithm;
+		public string Endpoint;
 	}
 	public class Player
 	{
 		public string Name;
-		//Consider using Bot Object itself..
-		public bool IsBot;
-		public string BotId;
-		public string Language;
-		public string Dictionary;
+		public Bot Bot;
 	}
 	public class KnownBoard
 	{

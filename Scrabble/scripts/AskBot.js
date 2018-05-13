@@ -496,9 +496,6 @@ define(["require", "exports", 'axios', 'GameStore', 'GameActions', 'Contracts', 
                             var Centers = Center.split(':');
                             var Posts = Post == "" ? [] : Post.TrimStart(',').split(',');
                             if (Centers.length != len) {
-                                if (Centers.length != len - 1) {
-                                    debugger;
-                                }
                                 if (!Post.StartsWith(",") && Posts.length > 0) {
                                     Centers.push(Posts[0]);
                                     Posts = Posts.slice(1);
@@ -1455,11 +1452,12 @@ define(["require", "exports", 'axios', 'GameStore', 'GameActions', 'Contracts', 
             var players = Config.Players;
             for (var i = 0; i < players.length; i++) {
                 var player = players[i];
-                if (player.IsBot == null || !player.IsBot) {
+                var isBot = player.Bot != null;
+                if (!isBot) {
                     continue;
                 }
-                if (player.BotId == bot) {
-                    return player;
+                if (player.Bot.Id == bot) {
+                    return player.Bot;
                 }
             }
             return null;

@@ -140,7 +140,7 @@ export class DOMUtil {
 
     public static _ApplyTemplate = function (html: string, data: any) {
         //http://krasimirtsonev.com/blog/article/Javascript-template-engine-in-just-20-line
-        var re = /<%([^%>]+)?%>/g, reExp = /(^( )?(if|for|else|switch|case|break|{|}))(.*)?/g, code = 'var r=[];\n', cursor = 0;
+        var re = /<#%([^%>]+)?%#>/g, reExp = /(^( )?(if|for|else|switch|case|break|{|}))(.*)?/g, code = 'var r=[];\n', cursor = 0;
 
         var add = function (line: string, js?: any): any {
             js ? (code += line.match(reExp) ? line + '\n' : 'r.push(' + line + ');\n') :

@@ -42,13 +42,14 @@ define(["require", "exports", 'Contracts', 'AksharaSets', 'Messages', 'DragDropT
             var dicts = [];
             for (var i = 0; i < players.length; i++) {
                 var player = players[i];
-                if (player.IsBot == null || !player.IsBot) {
+                var IsBot = player.Bot != null;
+                if (!IsBot) {
                     continue;
                 }
-                if (dicts.Contains(player.Dictionary)) {
+                if (dicts.Contains(player.Bot.Dictionary)) {
                     continue;
                 }
-                dicts.push(player.Dictionary);
+                dicts.push(player.Bot.Dictionary);
             }
             return dicts;
         };

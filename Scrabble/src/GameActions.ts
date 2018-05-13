@@ -49,7 +49,7 @@ export class GameActions {
         }
         var players = state.Players.Players;
         var currentPlayer = state.Players.CurrentPlayer;
-        var isBot: boolean = players[currentPlayer].IsBot;
+        var isBot: boolean = players[currentPlayer].Bot !== null;
         state.GameTable.ReadOnly = isBot;
         if (!isBot) {
             return;
@@ -117,7 +117,7 @@ export class GameActions {
     }
     static ResolveWords(state: Contracts.iGameState, args: Contracts.iArgs): void {
         var player = state.Players.Players[state.Players.CurrentPlayer];
-        if (player.IsBot) {
+        if (player.Bot != null) {
             GameActions.Award(state, args);
         }
         else {
@@ -148,7 +148,7 @@ export class GameActions {
         } else {
             state.GameTable.Message = Util.Util.Format(Messages.Messages.Winner, [winner.Name]);
         }
-
+        state.Dialog.Title = Messages.Messages.Name;
         state.Dialog.Message = state.GameTable.Message;
         state.Dialog.Show = true;
 
@@ -275,7 +275,7 @@ export class GameActions {
         var Name: string = state.Board.Name;
         var players = state.Players.Players;
         var currentPlayer = state.Players.CurrentPlayer;
-        var BotName: string = players[currentPlayer].BotId;
+        var BotName: string = players[currentPlayer].Bot.Id;
         var reference = Math.floor(Math.random() * 1000).toString();
         var post = {
             "Reference": reference,

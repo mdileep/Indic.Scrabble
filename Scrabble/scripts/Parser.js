@@ -143,9 +143,6 @@ define(["require", "exports", "GameActions", "Indic"], function (require, export
                 player.Id = "P_" + (i + 1);
                 player.key = player.Id;
                 player.NoWords = 0;
-                player.IsBot = player.IsBot == null ? false : player.IsBot;
-                player.BotId = player.BotId;
-                player.Dictionary = player.Dictionary;
                 player.Name = player.Name;
                 raw.Players.push(player);
             }

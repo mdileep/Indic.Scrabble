@@ -15,7 +15,7 @@ using System.Collections.Generic;
 
 namespace Scrabble
 {
-	interface iRunner
+	interface iGameEngine
 	{
 		List<ProbableMove> Probables();
 		ProbableMove BestMove();

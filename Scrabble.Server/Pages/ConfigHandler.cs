@@ -131,8 +131,8 @@ namespace Scrabble.Server
 		Player GetPlayer(string Lang, Bot bot)
 		{
 			return bot != null ?
-				new Player { IsBot = true, BotId = bot.Id, Dictionary = bot.Dictionary, Name = bot.Name } :
-				new Player { IsBot = false, Name = Config.Lang(Lang, "Player") };
+				new Player { Bot = bot, Name = bot.Name } :
+				new Player { Bot = null, Name = Config.Lang(Lang, "Player") };
 		}
 
 		public bool IsReusable

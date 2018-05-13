@@ -60,15 +60,14 @@ export interface iInfoBar extends iComponent {
 }
 export interface iPlayer extends iComponent {
     Name: string;
-    Dictionary: string;
+
     Score: number;
     Unconfirmed: number;
     CurrentTurn: boolean;
     Awarded: iWord[];
     Claimed: iWord[];
     NoWords: number;
-    IsBot: boolean;
-    BotId: string;
+    Bot: Bot;
 }
 export interface iGameTable extends iComponent {
     VowelTray: iTrayProps;
@@ -308,7 +307,9 @@ export interface Bot {
     Name: string;
     FullName: string;
     Language: string;
+    Algorithm: string;
     Dictionary: string;
+    Endpoint: string;
 }
 export interface CharSet {
     Name: string;

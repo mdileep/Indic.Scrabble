@@ -15,6 +15,9 @@ using System.Web.UI.HtmlControls;
 
 namespace Scrabble.Server
 {
+	public class StaticPage : System.Web.UI.Page
+	{
+	}
 	public class Home : System.Web.UI.Page
 	{
 		protected void Page_Load(object sender, EventArgs e)
@@ -37,7 +40,7 @@ namespace Scrabble.Server
 			Author.Content = Config.Lang(Lang, "Author");
 			Author2.InnerText = Config.Lang(Lang, "Author2");
 			H2.InnerHtml = Config.Lang(Lang, "Name");
-			LangStyle.Href = string.Format("styles/{0}.css", Lang);
+			LangStyle.Href = string.Format("styles/css/{0}.min.css", Lang);
 		}
 
 		void _Init()

@@ -164,10 +164,10 @@ export class Parser {
             player.Id = "P_" + (i + 1);
             player.key = player.Id;
             player.NoWords = 0;
-            player.IsBot = player.IsBot == null ? false : player.IsBot;
+            //player.IsBot = player.IsBot == null ? false : player.IsBot;
             //Following are Obvious..!!
-            player.BotId = player.BotId;
-            player.Dictionary = player.Dictionary;
+            //player.BotId = player.BotId;
+            //player.Dictionary = player.Dictionary;
             player.Name = player.Name;
             //
             raw.Players.push(player);

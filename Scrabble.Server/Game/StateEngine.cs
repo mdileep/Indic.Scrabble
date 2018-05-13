@@ -1,5 +1,5 @@
 ﻿//---------------------------------------------------------------------------------------------
-// <copyright file="Runner2.cs" company="Chandam-ఛందం">
+// <copyright file="StateEngine.cs" company="Chandam-ఛందం">
 //    Copyright © 2013 - 2018 'Chandam-ఛందం' : http://chandam.apphb.com
 //    Original Author : Dileep Miriyala (m.dileep@gmail.com)
 //    Last Updated    : 29-Mar-2018 20:23EST
@@ -24,9 +24,9 @@ using System.Threading;
 
 namespace Scrabble
 {
-	internal class Runner2 : iRunner
+	internal class StateEngine : iGameEngine
 	{
-		public Runner2(ScrabbleBoard Board)
+		public StateEngine(ScrabbleBoard Board)
 		{
 			if (Board == null)
 			{
@@ -306,10 +306,6 @@ namespace Scrabble
 
 								if (Centers.Length != len)
 								{
-									if (Centers.Length != len - 1)
-									{
-										Debugger.Break();
-									}
 									Array.Resize(ref Centers, len);
 									if (!Post.StartsWith(",") && Posts.Length > 0)
 									{

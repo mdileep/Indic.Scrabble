@@ -1,39 +1,26 @@
 
 /*1.fonts.css*/
-body {
-  font-size: 4vmin;
-}
-.title,
-.h2 {
-  font-size: 6vmin;
-}
-.currentTurn,
-.noTurn,
-.label {
-  font-size: 4vmin;
-}
-.text {
-  font-size: 4vmin;
-}
-.tile {
-  font-size: 4vmin;
-}
 .count,
-.weight {
+.weight,
+.footer {
   font-size: 2vmin;
 }
 .wordsList {
   font-size: 3vmin;
 }
-.message {
-  font-size: 4vmin;
-}
+.h2,
+.currentTurn,
+.noTurn,
+.label,
+.text,
+.tile,
+.message,
 .content,
-.score {
+.scores {
   font-size: 4vmin;
 }
-.footer {
-  font-size: 2vmin;
+.title {
+  font-size: 6vmin;
 }
 
 /*2.structure.css*/
@@ -461,13 +448,13 @@ body {
   clear: both;
   text-align: left;
   margin-left: 10%;
-  font-size: 0.8em;
+  font-size: 1.25em;
 }
 .olDialog .oFCloseButtonHolder {
-  float: right;
-  margin-right: 10px;
   cursor: pointer;
   color: Red;
+  float: right;
+  margin-right: 10px;
   font-size: 2.0em;
 }
 .olDialog .oFButtonHolder {

@@ -66,13 +66,14 @@ export class GameLoader {
         var dicts: string[] = [];
         for (var i = 0; i < players.length; i++) {
             var player: Contracts.iPlayer = players[i];
-            if (player.IsBot == null || !player.IsBot) {
+            var IsBot: boolean = player.Bot != null;
+            if (!IsBot) {
                 continue;
             }
-            if (dicts.Contains(player.Dictionary)) {
+            if (dicts.Contains(player.Bot.Dictionary)) {
                 continue;
             }
-            dicts.push(player.Dictionary);
+            dicts.push(player.Bot.Dictionary);
         }
         return dicts;
     }

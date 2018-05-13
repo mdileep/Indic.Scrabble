@@ -31,13 +31,13 @@
   clear: both;
   text-align: left;
   margin-left: 10%;
-  font-size: 0.8em;
+  font-size: 1.25em;
 }
 .olDialog .oFCloseButtonHolder {
-  float: right;
-  margin-right: 10px;
   cursor: pointer;
   color: Red;
+  float: right;
+  margin-right: 10px;
   font-size: 2.0em;
 }
 .olDialog .oFButtonHolder {

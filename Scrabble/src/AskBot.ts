@@ -567,10 +567,6 @@ export class Runner {
                         var Posts = Post == "" ? [] as string[] : Post.TrimStart(',').split(',');
 
                         if (Centers.length != len) {
-                            if (Centers.length != len - 1) {
-                                //Shouldn't reach here..
-                                debugger;
-                            }
                             if (!Post.StartsWith(",") && Posts.length > 0) {
                                 Centers.push(Posts[0]);
                                 Posts = Posts.slice(1);
@@ -1616,11 +1612,12 @@ export class GameConfig {
         var players: C.iPlayer[] = Config.Players;
         for (var i = 0; i < players.length; i++) {
             var player: C.iPlayer = players[i];
-            if (player.IsBot == null || !player.IsBot) {
+            var isBot: boolean = player.Bot != null;
+            if (!isBot) {
                 continue;
             }
-            if (player.BotId == bot) {
-                return (player as any) as C.Bot;
+            if (player.Bot.Id == bot) {
+                return (player.Bot as any) as C.Bot;
             }
         }
         return null;
