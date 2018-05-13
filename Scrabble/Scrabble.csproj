@@ -26,24 +26,48 @@
     <Content Include="API.ashx" />
     <Content Include="Index.html" />
     <Content Include="scrabble.aspx" />
-    <Content Include="styles\lang\bn.css" />
-    <Content Include="styles\lang\bn.min.css" />
-    <Content Include="styles\lang\gu.css" />
-    <Content Include="styles\lang\gu.min.css" />
-    <Content Include="styles\lang\hi.css" />
-    <Content Include="styles\lang\hi.min.css" />
-    <Content Include="styles\lang\kn.css" />
-    <Content Include="styles\lang\kn.min.css" />
-    <Content Include="styles\lang\ml.css" />
-    <Content Include="styles\lang\ml.min.css" />
-    <Content Include="styles\lang\or.css" />
-    <Content Include="styles\lang\or.min.css" />
-    <Content Include="styles\lang\pa.css" />
-    <Content Include="styles\lang\pa.min.css" />
-    <Content Include="styles\lang\ta.css" />
-    <Content Include="styles\lang\ta.min.css" />
-    <Content Include="styles\lang\te.css" />
-    <Content Include="styles\lang\te.min.css" />
+    <Content Include="styles\lang\css\bn.css" />
+    <Content Include="styles\lang\css\bn.min.css" />
+    <Content Include="styles\lang\css\gu.css" />
+    <Content Include="styles\lang\css\gu.min.css" />
+    <Content Include="styles\lang\css\hi.css" />
+    <Content Include="styles\lang\css\hi.min.css" />
+    <Content Include="styles\lang\css\kn.css" />
+    <Content Include="styles\lang\css\kn.min.css" />
+    <Content Include="styles\lang\css\ml.css" />
+    <Content Include="styles\lang\css\ml.min.css" />
+    <Content Include="styles\lang\css\or.css" />
+    <Content Include="styles\lang\css\or.min.css" />
+    <Content Include="styles\lang\css\pa.css" />
+    <Content Include="styles\lang\css\pa.min.css" />
+    <Content Include="styles\lang\css\ta.css" />
+    <Content Include="styles\lang\css\ta.min.css" />
+    <Content Include="styles\lang\css\te.css" />
+    <Content Include="styles\lang\css\te.min.css" />
+    <Content Include="styles\less\css\0.Index.css" />
+    <Content Include="styles\less\css\0.Index.min.css" />
+    <Content Include="styles\less\css\1.fonts.css" />
+    <Content Include="styles\less\css\1.fonts.min.css" />
+    <Content Include="styles\less\css\1.fonts.mobile.css" />
+    <Content Include="styles\less\css\1.fonts.mobile.min.css" />
+    <Content Include="styles\less\css\2.structure.css" />
+    <Content Include="styles\less\css\2.structure.min.css" />
+    <Content Include="styles\less\css\2.structure.mobile.css" />
+    <Content Include="styles\less\css\2.structure.mobile.min.css" />
+    <Content Include="styles\less\css\3.margins.css" />
+    <Content Include="styles\less\css\3.margins.min.css" />
+    <Content Include="styles\less\css\3.margins.mobile.css" />
+    <Content Include="styles\less\css\3.margins.mobile.min.css" />
+    <Content Include="styles\less\css\4.colors.css" />
+    <Content Include="styles\less\css\4.colors.min.css" />
+    <Content Include="styles\less\css\5.misc.css" />
+    <Content Include="styles\less\css\5.misc.min.css" />
+    <Content Include="styles\less\css\5.misc.mobile.css" />
+    <Content Include="styles\less\css\5.misc.mobile.min.css" />
+    <Content Include="styles\less\css\99.Dialog.css" />
+    <Content Include="styles\less\css\99.Dialog.min.css" />
+    <Content Include="styles\less\css\99.Dialog.mobile.css" />
+    <Content Include="styles\less\css\99.Dialog.mobile.min.css" />
     <Content Include="web.config" />
   </ItemGroup>
   <ItemGroup>
@@ -89,7 +113,7 @@
     <LessFiles Include="styles\lang\te.less" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="MergeRules.ini" />
+    <Content Include="styles\MergeRules.ini" />
     <Content Include="styles\scrabble.css" />
     <Content Include="styles\scrabble.min.css" />
     <Content Include="styles\scrabble.mobile.css" />
@@ -192,6 +216,7 @@
     <Content Include="images\loading.svg" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="styles\Less.targets" />
     <None Include="web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>
@@ -266,6 +291,6 @@
     <TypeScriptRemoveComments>true</TypeScriptRemoveComments>
     <TypeScriptSourceMap>false</TypeScriptSourceMap>
   </PropertyGroup>
-  <Import Project="Less.targets" />
+  <Import Project="Styles\Less.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
 </Project>

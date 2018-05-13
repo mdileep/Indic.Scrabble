@@ -1,3 +1,5 @@
+
+/*1.fonts.mobile.css*/
 @media screen and (min-width: 300px) and (min-height: 300px) {
   body {
     font-size: 5vmin;
@@ -36,7 +38,7 @@
   }
 }
 
-/* */
+/*2.structure.mobile.css*/
 @media screen and (min-width: 300px) and (min-height: 300px) {
   html,
   body {
@@ -200,7 +202,7 @@
   }
 }
 
-/* */
+/*3.margins.mobile.css*/
 @media screen and (min-width: 300px) and (min-height: 300px) {
   .gameTable .actions {
     text-align: right;
@@ -248,7 +250,7 @@
   }
 }
 
-/* */
+/*4.colors.css*/
 .title {
   background-color: navajowhite;
   opacity: 0.9;
@@ -364,7 +366,7 @@
   color: blue;
 }
 
-/* */
+/*5.misc.mobile.css*/
 @media screen and (min-width: 300px) and (min-height: 300px) {
   .h2,
   .title {
@@ -433,7 +435,7 @@
   }
 }
 
-/* */
+/*99.Dialog.mobile.css*/
 @media screen and (min-width: 300px) and (min-height: 300px) {
   .olDialog .oBackGround {
     position: fixed;
@@ -487,5 +489,3 @@
     margin: 5px;
   }
 }
-
-/* */

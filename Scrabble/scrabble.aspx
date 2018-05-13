@@ -21,7 +21,8 @@
     <meta id="Author" runat="server" name="author" content="Dileep Miriyala(దిలీపు మిరియాల)" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="shortcut icon" href="Miriyam.ico" />
-    <link href="styles/scrabble.css" type="text/css" rel="stylesheet" />
+    <link href="styles/scrabble.min.css" type="text/css" rel="stylesheet" />
+    <link href="styles/scrabble.mobile.min.css" type="text/css" rel="stylesheet" />
     <link id="LangStyle" runat="server" href="styles/lang/te.min.css" type="text/css" rel="stylesheet" />
 </head>
 <body>

@@ -1,3 +1,5 @@
+
+/*1.fonts.css*/
 body {
   font-size: 4vmin;
 }
@@ -34,7 +36,7 @@ body {
   font-size: 2vmin;
 }
 
-/* */
+/*2.structure.css*/
 html,
 body {
   height: 100%;
@@ -196,7 +198,7 @@ body {
   width: 100%;
 }
 
-/* */
+/*3.margins.css*/
 .gameTable .actions {
   text-align: right;
 }
@@ -242,7 +244,7 @@ body {
   overflow: auto;
 }
 
-/* */
+/*4.colors.css*/
 .title {
   background-color: navajowhite;
   opacity: 0.9;
@@ -358,7 +360,7 @@ body {
   color: blue;
 }
 
-/* */
+/*5.misc.css*/
 .h2,
 .title {
   text-align: center;
@@ -425,7 +427,7 @@ body {
   cursor: move;
 }
 
-/* */
+/*99.Dialog.css*/
 .olDialog .oBackGround {
   position: fixed;
   left: 0;
@@ -477,5 +479,3 @@ body {
 .olDialog .oFButtonHolder button {
   margin: 5px;
 }
-
-/* */
