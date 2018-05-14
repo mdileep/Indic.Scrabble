@@ -24,7 +24,7 @@
     <Content Include="API.aspx" />
     <Content Include="Config.ashx" />
     <Content Include="API.ashx" />
-    <Content Include="Index.aspx" />
+    <Content Include="Default.aspx" />
     <Content Include="scrabble.aspx" />
   </ItemGroup>
   <ItemGroup>
