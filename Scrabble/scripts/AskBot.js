@@ -1,4 +1,4 @@
-define(["require", "exports", 'axios', 'GameStore', 'GameActions', 'Contracts', 'Util', 'Messages', 'Indic'], function (require, exports, axios, GS, GA, C, U, M, Indic) {
+define(["require", "exports", 'axios', 'GameStore', 'Contracts', 'Util', 'WordLoader'], function (require, exports, axios, GS, C, U, WL) {
     "use strict";
     var AskServer = (function () {
         function AskServer() {
@@ -27,7 +27,7 @@ define(["require", "exports", 'axios', 'GameStore', 'GameActions', 'Contracts', 
         AskServer.BotMoveClient = function (post) {
             setTimeout(function () {
                 var st = performance.now();
-                var move = new Runner().BestMove(post);
+                var move = new RegexEngine().BestMove(post);
                 var effort = U.Util.ElapsedTime(performance.now() - st);
                 var response = {
                     Action: "nextmove",
@@ -54,7 +54,7 @@ define(["require", "exports", 'axios', 'GameStore', 'GameActions', 'Contracts', 
         AskServer.ResolveClient = function (words) {
             setTimeout(function () {
                 var st = performance.now();
-                var invalid = WordLoader.Resolve(words);
+                var invalid = WL.WordLoader.Resolve(words);
                 var effort = U.Util.ElapsedTime(performance.now() - st);
                 var response = {
                     Action: "resolve",
@@ -73,178 +73,6 @@ define(["require", "exports", 'axios', 'GameStore', 'GameActions', 'Contracts', 
         return AskServer;
     }());
     exports.AskServer = AskServer;
-    var AskReferee = (function () {
-        function AskReferee() {
-        }
-        AskReferee.Validate = function (state, args) {
-            var isValidMove = AskReferee.ValidateMove(state.Board);
-            if (!isValidMove) {
-                AskReferee.Announce(state, M.Messages.CrossCells);
-                return;
-            }
-            var hasOrphans = AskReferee.HasOrphans(state);
-            if (hasOrphans) {
-                AskReferee.Announce(state, M.Messages.HasOraphans);
-                return;
-            }
-            var hasClusters = AskReferee.HasClusters(state);
-            if (hasClusters) {
-                AskReferee.Announce(state, M.Messages.HasIslands);
-                return;
-            }
-            var player = state.Players.Players[state.Players.CurrentPlayer];
-            state.GameTable.Message = U.Util.Format(M.Messages.LookupDict, [player.Name]);
-            state.GameTable.ReadOnly = true;
-            setTimeout(AskServer.Validate, 100);
-        };
-        AskReferee.Announce = function (state, message) {
-            state.InfoBar.Messages.push(M.Messages.HasIslands);
-            state.Dialog.Title = M.Messages.Name;
-            state.Dialog.Message = message;
-            state.Dialog.Show = true;
-        };
-        AskReferee.ValidateMove = function (Board) {
-            var Cells = Board.Cells;
-            var size = Board.Size;
-            var cnt = 0;
-            var rows = 0;
-            var columns = 0;
-            var First = {};
-            for (var i = 0; i < size * size; i++) {
-                var C = Cells[i];
-                if (C.Waiting.length == 0) {
-                    continue;
-                }
-                if (C.Confirmed.length + C.Waiting.length == 0) {
-                    continue;
-                }
-                if (cnt == 0) {
-                    First = U.Util.Position(i, size);
-                    cnt++;
-                    continue;
-                }
-                var Current = U.Util.Position(i, size);
-                if (Current.X != First.X) {
-                    rows++;
-                }
-                if (Current.Y != First.Y) {
-                    columns++;
-                }
-            }
-            if (rows == 0 || columns == 0) {
-                return true;
-            }
-            return false;
-        };
-        AskReferee.HasOrphans = function (state) {
-            var orphans = AskReferee.OrphanCells(state.Board);
-            for (var i = 0; i < orphans.length; i++) {
-                var orphan = orphans[i];
-                var P = U.Util.Position(orphan, state.Board.Size);
-                var N = state.Board.Cells[orphan];
-                state.InfoBar.Messages.push(U.Util.Format(M.Messages.OrphanCell, [(P.X + 1), (P.Y + 1), N.Current]));
-            }
-            return orphans.length > 0;
-        };
-        AskReferee.OrphanCells = function (Board) {
-            var oraphans = [];
-            for (var i = 0; i < Board.Cells.length; i++) {
-                var Cell = Board.Cells[i];
-                if (Cell.Waiting.length + Cell.Confirmed.length == 0) {
-                    continue;
-                }
-                var neighors = U.Util.FindNeighbors(i, Board.Size);
-                var valid = false;
-                for (var j = 0; j < neighors.length; j++) {
-                    var neighbor = neighors[j];
-                    var N = Board.Cells[neighbor];
-                    if (N.Waiting.length + N.Confirmed.length != 0) {
-                        valid = true;
-                    }
-                }
-                if (!valid) {
-                    if (oraphans.indexOf(i) >= 0) {
-                        continue;
-                    }
-                    oraphans.push(i);
-                }
-            }
-            return oraphans;
-        };
-        AskReferee.HasClusters = function (state) {
-            var Board = state.Board;
-            var Clustered = [];
-            var clusters = 0;
-            while (true) {
-                var first = AskReferee.FirstNonEmpty(Board.Cells, Clustered, Board.Size);
-                if (first == -1) {
-                    break;
-                }
-                var List = AskReferee.ClusterCells(Board.Cells, first, Board.Size);
-                Clustered = Clustered.concat(List);
-                clusters++;
-            }
-            return (clusters > 1);
-        };
-        AskReferee.ClusterCells = function (Cells, first, size) {
-            var List = [];
-            List.push(first);
-            {
-                var P = U.Util.Position(first, size);
-                var C = Cells[first];
-            }
-            var curr = 0;
-            var found = true;
-            while (found) {
-                if (curr >= List.length) {
-                    break;
-                }
-                found = false;
-                var neighors = U.Util.FindNeighbors(List[curr], size);
-                for (var i = 0; i < neighors.length; i++) {
-                    var neighbor = neighors[i];
-                    if (List.indexOf(neighbor) >= 0) {
-                        continue;
-                    }
-                    found = true;
-                    var C = Cells[neighbor];
-                    if (C.Confirmed.length + C.Waiting.length == 0) {
-                        continue;
-                    }
-                    var P = U.Util.Position(neighbor, size);
-                    List.push(neighbor);
-                }
-                curr++;
-            }
-            return List;
-        };
-        AskReferee.FirstNonEmpty = function (Cells, Clustered, size) {
-            var first = -1;
-            for (var i = 0; i < size * size; i++) {
-                if (Clustered.indexOf(i) >= 0) {
-                    continue;
-                }
-                if (Cells[i].Confirmed.length + Cells[i].Waiting.length == 0) {
-                    continue;
-                }
-                first = i;
-                break;
-            }
-            return first;
-        };
-        AskReferee.ExtractWords = function (board) {
-            var Words = GA.GameActions.WordsOnBoard(board, true, true);
-            var sWords = [];
-            for (var indx in Words) {
-                var word = Words[indx].Text;
-                word = Indic.Indic.ToScrabble(word);
-                sWords.push(word);
-            }
-            return sWords;
-        };
-        return AskReferee;
-    }());
-    exports.AskReferee = AskReferee;
     var BoardUtil = (function () {
         function BoardUtil() {
         }
@@ -312,17 +140,17 @@ define(["require", "exports", 'axios', 'GameStore', 'GameActions', 'Contracts', 
         return ProbableWordComparer;
     }());
     exports.ProbableWordComparer = ProbableWordComparer;
-    var Runner = (function () {
-        function Runner() {
+    var RegexEngine = (function () {
+        function RegexEngine() {
         }
-        Runner.prototype.BestMove = function (Board) {
+        RegexEngine.prototype.BestMove = function (Board) {
             var Moves = this.Probables(Board);
             if (Moves.length == 0) {
                 return null;
             }
             return Moves[0];
         };
-        Runner.prototype.Probables = function (Board) {
+        RegexEngine.prototype.Probables = function (Board) {
             var Moves = [];
             if (Board == null) {
                 return;
@@ -366,23 +194,23 @@ define(["require", "exports", 'axios', 'GameStore', 'GameActions', 'Contracts', 
             NonCornerPattern = U.Util.Format("^(?<All>[{0},])*$", [this.GetFlatList2(NonCornerTiles)]);
             var AllDict = this.GetCountDict(All);
             var NonCornerDict = this.GetCountDict(NonCornerTiles);
-            var WordsDictionary = WordLoader.LoadWords(file);
+            var WordsDictionary = WL.WordLoader.LoadWords(file);
             WordsDictionary = this.ShortList(WordsDictionary, AllPattern, AllDict);
             var NonCornerProbables = this.ShortList(WordsDictionary, NonCornerPattern, NonCornerDict);
             var SpeicalDict = this.GetSpecialDict(CharSet, SpecialList);
             if (EverySyllableOnBoard.length > 0) {
-                Moves = Moves.concat(Runner.SyllableExtensions(cells, size, CharSet, WordsDictionary, NonCornerProbables, MovableList, SpeicalDict));
-                Moves = Moves.concat(Runner.WordExtensions(cells, size, CharSet, WordsDictionary, MovableList, SpeicalDict));
+                Moves = Moves.concat(RegexEngine.SyllableExtensions(cells, size, CharSet, WordsDictionary, NonCornerProbables, MovableList, SpeicalDict));
+                Moves = Moves.concat(RegexEngine.WordExtensions(cells, size, CharSet, WordsDictionary, MovableList, SpeicalDict));
             }
             else {
                 var maxIndex = this.MaxWeightIndex(weights);
-                Moves = Moves.concat(Runner.EmptyExtensions(cells, size, CharSet, maxIndex, WordsDictionary, MovableList, SpeicalDict));
+                Moves = Moves.concat(RegexEngine.EmptyExtensions(cells, size, CharSet, maxIndex, WordsDictionary, MovableList, SpeicalDict));
             }
             WordsDictionary = null;
             this.RefreshScores(Moves, weights, size);
             return Moves;
         };
-        Runner.EmptyExtensions = function (Cells, size, CharSet, maxIndex, AllWords, Movables, SpeicalDict) {
+        RegexEngine.EmptyExtensions = function (Cells, size, CharSet, maxIndex, AllWords, Movables, SpeicalDict) {
             var Moves = [];
             {
                 for (var indx in AllWords) {
@@ -397,14 +225,14 @@ define(["require", "exports", 'axios', 'GameStore', 'GameActions', 'Contracts', 
                     var Centers = Center.split(',');
                     var Posts = Post == "" ? [] : Post.TrimStart(',').split(',');
                     var Tiles = Movables.slice(0, Movables.length);
-                    var res = Runner.Resolve(Pres, Centers, Posts, Tiles, SpeicalDict);
+                    var res = RegexEngine.Resolve(Pres, Centers, Posts, Tiles, SpeicalDict);
                     if (!res) {
                         continue;
                     }
-                    var WH = Runner.TryHarizontal(Cells, size, maxIndex, 0, Pres, Centers, Posts);
-                    var WV = Runner.TryVertical(Cells, size, maxIndex, 0, Pres, Centers, Posts);
-                    var WHValid = Runner.Validate3(WH, AllWords);
-                    var WVValid = Runner.Validate3(WV, AllWords);
+                    var WH = RegexEngine.TryHarizontal(Cells, size, maxIndex, 0, Pres, Centers, Posts);
+                    var WV = RegexEngine.TryVertical(Cells, size, maxIndex, 0, Pres, Centers, Posts);
+                    var WHValid = RegexEngine.Validate3(WH, AllWords);
+                    var WVValid = RegexEngine.Validate3(WV, AllWords);
                     if (WHValid) {
                         Moves.push(WH);
                     }
@@ -415,13 +243,13 @@ define(["require", "exports", 'axios', 'GameStore', 'GameActions', 'Contracts', 
             }
             return Moves;
         };
-        Runner.SyllableExtensions = function (Cells, size, CharSet, AllWords, Probables, Movables, SpeicalDict) {
+        RegexEngine.SyllableExtensions = function (Cells, size, CharSet, AllWords, Probables, Movables, SpeicalDict) {
             var Moves = [];
             {
-                var All = Runner.GetSyllableList2(Cells, size, false, true);
+                var All = RegexEngine.GetSyllableList2(Cells, size, false, true);
                 for (var indx in All) {
                     var syllable = All[indx];
-                    var pattern = Runner.GetSyllablePattern2(CharSet, syllable.Tiles.Replace("(", "").Replace(")", ""), "(?<Center>.*?)", "(?<Pre>.*?)", "(?<Post>.*?)");
+                    var pattern = RegexEngine.GetSyllablePattern2(CharSet, syllable.Tiles.Replace("(", "").Replace(")", ""), "(?<Center>.*?)", "(?<Pre>.*?)", "(?<Post>.*?)");
                     pattern = U.Util.Format("^{0}$", [pattern]);
                     var R = new RegExp(pattern);
                     {
@@ -431,9 +259,9 @@ define(["require", "exports", 'axios', 'GameStore', 'GameActions', 'Contracts', 
                                 continue;
                             }
                             var M = R.exec(probable.Tiles);
-                            var Pre = Runner.MatchedString(M.groups["Pre"], "");
-                            var Center = Runner.MatchedString(M.groups["Conso"], "");
-                            var Post = Runner.MatchedString(M.groups["Post"], "");
+                            var Pre = RegexEngine.MatchedString(M.groups["Pre"], "");
+                            var Center = RegexEngine.MatchedString(M.groups["Conso"], "");
+                            var Post = RegexEngine.MatchedString(M.groups["Post"], "");
                             var Pres = Pre == "" ? [] : Pre.TrimEnd(',').split(',');
                             var Centers = Center == "" ? [] : Center.split(',');
                             var Posts = Post == "" ? [] : Post.TrimStart(',').split(',');
@@ -442,14 +270,14 @@ define(["require", "exports", 'axios', 'GameStore', 'GameActions', 'Contracts', 
                                 Posts = Posts.slice(1);
                             }
                             var Tiles = Movables.slice(0, Movables.length);
-                            var res = Runner.Resolve(Pres, Centers, Posts, Tiles, SpeicalDict);
+                            var res = RegexEngine.Resolve(Pres, Centers, Posts, Tiles, SpeicalDict);
                             if (!res) {
                                 continue;
                             }
-                            var WH = Runner.TryHarizontal(Cells, size, syllable.Index, 0, Pres, Centers, Posts);
-                            var WV = Runner.TryVertical(Cells, size, syllable.Index, 0, Pres, Centers, Posts);
-                            var WHValid = Runner.Validate3(WH, AllWords);
-                            var WVValid = Runner.Validate3(WV, AllWords);
+                            var WH = RegexEngine.TryHarizontal(Cells, size, syllable.Index, 0, Pres, Centers, Posts);
+                            var WV = RegexEngine.TryVertical(Cells, size, syllable.Index, 0, Pres, Centers, Posts);
+                            var WHValid = RegexEngine.Validate3(WH, AllWords);
+                            var WVValid = RegexEngine.Validate3(WV, AllWords);
                             if (WHValid) {
                                 Moves.push(WH);
                             }
@@ -462,15 +290,15 @@ define(["require", "exports", 'axios', 'GameStore', 'GameActions', 'Contracts', 
             }
             return Moves;
         };
-        Runner.WordExtensions = function (Cells, size, CharSet, AllWords, Movables, SpeicalDict) {
+        RegexEngine.WordExtensions = function (Cells, size, CharSet, AllWords, Movables, SpeicalDict) {
             var Moves = [];
             {
-                var WordsOnBoard = Runner.GetWordsOnBoard(Cells, size, false);
+                var WordsOnBoard = RegexEngine.GetWordsOnBoard(Cells, size, false);
                 for (var indx in WordsOnBoard) {
                     var wordOnBoard = WordsOnBoard[indx];
                     var raw = wordOnBoard.Tiles.Replace("(", "").Replace(")", "").Replace(",", "").Replace("|", ",");
                     var len = raw.split(',').length;
-                    var pattern = Runner.GenWordPattern(CharSet, wordOnBoard.Tiles, "(?<Center{0}>.*?)", "", "(?<Center{0}>.*?)", "(?<Pre>.*?)", "(?<Post>.*?)", true);
+                    var pattern = RegexEngine.GenWordPattern(CharSet, wordOnBoard.Tiles, "(?<Center{0}>.*?)", "", "(?<Center{0}>.*?)", "(?<Pre>.*?)", "(?<Post>.*?)", true);
                     pattern = U.Util.Format("^{0}$", [pattern.TrimEnd('|')]);
                     var R = new RegExp(pattern);
                     {
@@ -486,12 +314,12 @@ define(["require", "exports", 'axios', 'GameStore', 'GameActions', 'Contracts', 
                             var Pre = "";
                             var Post = "";
                             var Center = "";
-                            Pre = Runner.MatchedString(M.groups["Pre"], "");
+                            Pre = RegexEngine.MatchedString(M.groups["Pre"], "");
                             for (var i = 0; i < word.Syllables; i++) {
-                                Center = Center + Runner.MatchedString(M.groups["Center" + (i + 1)], ",") + ":";
+                                Center = Center + RegexEngine.MatchedString(M.groups["Center" + (i + 1)], ",") + ":";
                             }
                             Center = Center.TrimEnd(':');
-                            Post = Runner.MatchedString(M.groups["Post"], "");
+                            Post = RegexEngine.MatchedString(M.groups["Post"], "");
                             var Pres = Pre == "" ? [] : Pre.TrimEnd(',').split(',');
                             var Centers = Center.split(':');
                             var Posts = Post == "" ? [] : Post.TrimStart(',').split(',');
@@ -502,20 +330,20 @@ define(["require", "exports", 'axios', 'GameStore', 'GameActions', 'Contracts', 
                                 }
                             }
                             var Tiles = Movables.slice(0, Movables.length);
-                            var res = Runner.Resolve(Pres, Centers, Posts, Tiles, SpeicalDict);
+                            var res = RegexEngine.Resolve(Pres, Centers, Posts, Tiles, SpeicalDict);
                             if (!res) {
                                 continue;
                             }
                             if (wordOnBoard.Position == "R") {
-                                var WH = Runner.TryHarizontal(Cells, size, wordOnBoard.Index, wordOnBoard.Syllables - 1, Pres, Centers, Posts);
-                                var WHValid = Runner.Validate3(WH, AllWords);
+                                var WH = RegexEngine.TryHarizontal(Cells, size, wordOnBoard.Index, wordOnBoard.Syllables - 1, Pres, Centers, Posts);
+                                var WHValid = RegexEngine.Validate3(WH, AllWords);
                                 if (WHValid) {
                                     Moves.push(WH);
                                 }
                             }
                             if (wordOnBoard.Position == "C") {
-                                var WH = Runner.TryVertical(Cells, size, wordOnBoard.Index, wordOnBoard.Syllables - 1, Pres, Centers, Posts);
-                                var WHValid = Runner.Validate3(WH, AllWords);
+                                var WH = RegexEngine.TryVertical(Cells, size, wordOnBoard.Index, wordOnBoard.Syllables - 1, Pres, Centers, Posts);
+                                var WHValid = RegexEngine.Validate3(WH, AllWords);
                                 if (WHValid) {
                                     Moves.push(WH);
                                 }
@@ -526,7 +354,7 @@ define(["require", "exports", 'axios', 'GameStore', 'GameActions', 'Contracts', 
             }
             return Moves;
         };
-        Runner.TryHarizontal = function (Cells, size, Index, offset, Pre, Centers, Post) {
+        RegexEngine.TryHarizontal = function (Cells, size, Index, offset, Pre, Centers, Post) {
             var Moves = [];
             var PreCount = Pre.length;
             var PostCount = Post.length;
@@ -572,11 +400,11 @@ define(["require", "exports", 'axios', 'GameStore', 'GameActions', 'Contracts', 
             var W = [];
             for (var i in Impacted) {
                 var index = Impacted[i];
-                W = W.concat(Runner.WordsAt(NewCells, size, index));
+                W = W.concat(RegexEngine.WordsAt(NewCells, size, index));
             }
             return { Words: W, Moves: Moves, WordsCount: W.length, Direction: "H" };
         };
-        Runner.TryVertical = function (Cells, size, Index, offset, Pre, Centers, Post) {
+        RegexEngine.TryVertical = function (Cells, size, Index, offset, Pre, Centers, Post) {
             var Moves = [];
             var PreCount = Pre.length;
             var PostCount = Post.length;
@@ -625,11 +453,11 @@ define(["require", "exports", 'axios', 'GameStore', 'GameActions', 'Contracts', 
             var W = [];
             for (var i in Impacted) {
                 var index = Impacted[i];
-                W = W.concat(Runner.WordsAt(NewCells, size, index));
+                W = W.concat(RegexEngine.WordsAt(NewCells, size, index));
             }
             return { Words: W, Moves: Moves, WordsCount: W.length, Direction: "V" };
         };
-        Runner.prototype.RefreshScores = function (Moves, Weights, size) {
+        RegexEngine.prototype.RefreshScores = function (Moves, Weights, size) {
             for (var indx in Moves) {
                 var Move = Moves[indx];
                 var score = 0;
@@ -650,7 +478,7 @@ define(["require", "exports", 'axios', 'GameStore', 'GameActions', 'Contracts', 
             Moves.sort(function (x, y) { return x.Score - y.Score; });
             Moves.reverse();
         };
-        Runner.prototype.ShortList = function (Words, NonCornerPattern, Dict) {
+        RegexEngine.prototype.ShortList = function (Words, NonCornerPattern, Dict) {
             if (U.Util.IsNullOrEmpty(NonCornerPattern)) {
                 return [];
             }
@@ -673,15 +501,15 @@ define(["require", "exports", 'axios', 'GameStore', 'GameActions', 'Contracts', 
             }
             return Shortlisted;
         };
-        Runner.Validate3 = function (WV, AllWords) {
+        RegexEngine.Validate3 = function (WV, AllWords) {
             WV.Words = ProbableWordComparer.Distinct(WV.Words);
             WV.WordsCount = WV.Words.length;
             if (WV.Words.length == 0 || WV.Moves.length == 0) {
                 return false;
             }
-            return Runner.Validate2(WV.Words, AllWords);
+            return RegexEngine.Validate2(WV.Words, AllWords);
         };
-        Runner.Validate2 = function (WV, AllWords) {
+        RegexEngine.Validate2 = function (WV, AllWords) {
             for (var indx in WV) {
                 var w = WV[indx];
                 var v = AllWords.filter(function (x) { return x.Tiles == w.String; });
@@ -691,7 +519,7 @@ define(["require", "exports", 'axios', 'GameStore', 'GameActions', 'Contracts', 
             }
             return true;
         };
-        Runner.prototype.Validate = function (InputDict, CharCount) {
+        RegexEngine.prototype.Validate = function (InputDict, CharCount) {
             if (InputDict == null) {
                 return true;
             }
@@ -709,7 +537,7 @@ define(["require", "exports", 'axios', 'GameStore', 'GameActions', 'Contracts', 
             }
             return isValid;
         };
-        Runner.Resolve2 = function (prev, Tiles, SpeicalList) {
+        RegexEngine.Resolve2 = function (prev, Tiles, SpeicalList) {
             if (U.Util.IsNullOrEmpty(prev)) {
                 return { res: true, temp: "" };
             }
@@ -747,7 +575,7 @@ define(["require", "exports", 'axios', 'GameStore', 'GameActions', 'Contracts', 
                     var Post = M.groups["Post"];
                     if (!U.Util.IsNullOrEmpty(Pre)) {
                         var temp = "";
-                        var resolved = Runner.Resolve2(Pre, Tiles, SpeicalList);
+                        var resolved = RegexEngine.Resolve2(Pre, Tiles, SpeicalList);
                         if (!resolved.res) {
                             return { res: false, temp: Pre };
                         }
@@ -757,7 +585,7 @@ define(["require", "exports", 'axios', 'GameStore', 'GameActions', 'Contracts', 
                     order.push(special.Key);
                     if (!U.Util.IsNullOrEmpty(Center)) {
                         var temp = "";
-                        var resolved = Runner.Resolve2(Center, Tiles, SpeicalList);
+                        var resolved = RegexEngine.Resolve2(Center, Tiles, SpeicalList);
                         if (!resolved.res) {
                             return { res: false, temp: Center };
                         }
@@ -765,7 +593,7 @@ define(["require", "exports", 'axios', 'GameStore', 'GameActions', 'Contracts', 
                     }
                     if (!U.Util.IsNullOrEmpty(Post)) {
                         var temp = "";
-                        var resolved = Runner.Resolve2(Post, Tiles, SpeicalList);
+                        var resolved = RegexEngine.Resolve2(Post, Tiles, SpeicalList);
                         if (!resolved) {
                             return { res: false, temp: "" };
                         }
@@ -789,11 +617,11 @@ define(["require", "exports", 'axios', 'GameStore', 'GameActions', 'Contracts', 
                 }
             }
         };
-        Runner.Resolve = function (Pres, Centers, Posts, Tiles, SpeicalDict) {
+        RegexEngine.Resolve = function (Pres, Centers, Posts, Tiles, SpeicalDict) {
             var res = true;
             for (var i = 0; i < Pres.length; i++) {
                 var tile = Pres[i];
-                var result = Runner.Resolve2(tile, Tiles, SpeicalDict);
+                var result = RegexEngine.Resolve2(tile, Tiles, SpeicalDict);
                 if (!result.res) {
                     return false;
                 }
@@ -804,7 +632,7 @@ define(["require", "exports", 'axios', 'GameStore', 'GameActions', 'Contracts', 
             }
             for (var i = 0; i < Centers.length; i++) {
                 var tile = Centers[i];
-                var result = Runner.Resolve2(tile, Tiles, SpeicalDict);
+                var result = RegexEngine.Resolve2(tile, Tiles, SpeicalDict);
                 if (!result.res) {
                     return false;
                 }
@@ -815,7 +643,7 @@ define(["require", "exports", 'axios', 'GameStore', 'GameActions', 'Contracts', 
             }
             for (var i = 0; i < Posts.length; i++) {
                 var tile = Posts[i];
-                var result = Runner.Resolve2(tile, Tiles, SpeicalDict);
+                var result = RegexEngine.Resolve2(tile, Tiles, SpeicalDict);
                 if (!result.res) {
                     return false;
                 }
@@ -826,12 +654,12 @@ define(["require", "exports", 'axios', 'GameStore', 'GameActions', 'Contracts', 
             }
             return true;
         };
-        Runner.prototype.MatchedWords = function (words, Pattern) {
+        RegexEngine.prototype.MatchedWords = function (words, Pattern) {
             var r = RegExp(Pattern);
             var List = words.filter(function (s) { return r.test(s.Tiles); });
             return List;
         };
-        Runner.MatchedString = function (group, seperator) {
+        RegexEngine.MatchedString = function (group, seperator) {
             if (group == null) {
                 return "";
             }
@@ -845,17 +673,17 @@ define(["require", "exports", 'axios', 'GameStore', 'GameActions', 'Contracts', 
             }
             return ret;
         };
-        Runner.GetWordsOnBoard = function (Cells, size, includeDuplicates) {
+        RegexEngine.GetWordsOnBoard = function (Cells, size, includeDuplicates) {
             var Words = [];
             for (var i = 0; i < size; i++) {
-                var R = Runner.GetWords(Cells, "R", i, size, includeDuplicates);
-                var C = Runner.GetWords(Cells, "C", i, size, includeDuplicates);
+                var R = RegexEngine.GetWords(Cells, "R", i, size, includeDuplicates);
+                var C = RegexEngine.GetWords(Cells, "C", i, size, includeDuplicates);
                 Words = Words.concat(R);
                 Words = Words.concat(C);
             }
             return Words;
         };
-        Runner.GetWords = function (Cells, option, r, size, includeDuplicates) {
+        RegexEngine.GetWords = function (Cells, option, r, size, includeDuplicates) {
             var Words = [];
             var pending = "";
             var cnt = 0;
@@ -879,13 +707,13 @@ define(["require", "exports", 'axios', 'GameStore', 'GameActions', 'Contracts', 
                     if (cnt > 1) {
                         var word = pending.TrimEnd('|');
                         if (includeDuplicates) {
-                            var startIndex = Runner.GetStartIndex(option, r, i, size, cnt);
+                            var startIndex = RegexEngine.GetStartIndex(option, r, i, size, cnt);
                             Words.push({ Tiles: word, Syllables: cnt, Position: option, Index: startIndex });
                         }
                         else {
                             var X = Words.filter(function (x) { return x.Tiles == word; });
                             if (X == null || X.length == 0) {
-                                var startIndex = Runner.GetStartIndex(option, r, i, size, cnt);
+                                var startIndex = RegexEngine.GetStartIndex(option, r, i, size, cnt);
                                 Words.push({ Tiles: word, Syllables: cnt, Position: option, Index: startIndex });
                             }
                         }
@@ -898,20 +726,20 @@ define(["require", "exports", 'axios', 'GameStore', 'GameActions', 'Contracts', 
             if (cnt > 1) {
                 var word = pending.TrimEnd('|');
                 if (includeDuplicates) {
-                    var startIndex = Runner.GetStartIndex(option, r, size, size, cnt);
+                    var startIndex = RegexEngine.GetStartIndex(option, r, size, size, cnt);
                     Words.push({ Tiles: word, Syllables: cnt, Position: option, Index: startIndex });
                 }
                 else {
                     var X = Words.filter(function (x) { return x.Tiles == word; });
                     if (X == null || X.length == 0) {
-                        var startIndex = Runner.GetStartIndex(option, r, size, size, cnt);
+                        var startIndex = RegexEngine.GetStartIndex(option, r, size, size, cnt);
                         Words.push({ Tiles: word, Syllables: cnt, Position: option, Index: startIndex });
                     }
                 }
             }
             return Words;
         };
-        Runner.WordsAt = function (Cells, size, index) {
+        RegexEngine.WordsAt = function (Cells, size, index) {
             var List = [];
             var Neighbor = BoardUtil.FindNeighbors(index, size);
             var r = Neighbor.Right != -1 ? Cells[Neighbor.Right] : "";
@@ -985,16 +813,16 @@ define(["require", "exports", 'axios', 'GameStore', 'GameActions', 'Contracts', 
             Topies.reverse();
             Lefties.reverse();
             if (Topies.length + Downies.length > 0) {
-                var Vertical = Runner.MakeAWord(Topies, { Tiles: Cells[index], Index: index }, Downies);
+                var Vertical = RegexEngine.MakeAWord(Topies, { Tiles: Cells[index], Index: index }, Downies);
                 List.push(Vertical);
             }
             if (Lefties.length + Righties.length > 0) {
-                var Harizontal = Runner.MakeAWord(Lefties, { Tiles: Cells[index], Index: index }, Righties);
+                var Harizontal = RegexEngine.MakeAWord(Lefties, { Tiles: Cells[index], Index: index }, Righties);
                 List.push(Harizontal);
             }
             return List;
         };
-        Runner.MakeAWord = function (F1, C, F2) {
+        RegexEngine.MakeAWord = function (F1, C, F2) {
             var W = {};
             var List = [];
             var ret = "";
@@ -1020,7 +848,7 @@ define(["require", "exports", 'axios', 'GameStore', 'GameActions', 'Contracts', 
             W.Cells = List;
             return W;
         };
-        Runner.GetStartIndex = function (option, r, pos, size, move) {
+        RegexEngine.GetStartIndex = function (option, r, pos, size, move) {
             switch (option) {
                 case "R":
                     return BoardUtil.Abs(r, pos - move, size);
@@ -1029,7 +857,7 @@ define(["require", "exports", 'axios', 'GameStore', 'GameActions', 'Contracts', 
             }
             return -1;
         };
-        Runner.GetSyllableList2 = function (Cells, size, filter, free) {
+        RegexEngine.GetSyllableList2 = function (Cells, size, filter, free) {
             var List = [];
             for (var index = 0; index < Cells.length; index++) {
                 var cell = Cells[index];
@@ -1056,7 +884,7 @@ define(["require", "exports", 'axios', 'GameStore', 'GameActions', 'Contracts', 
             }
             return List;
         };
-        Runner.prototype.GetSyllableList = function (Cells, size, filterEdges, asGroups) {
+        RegexEngine.prototype.GetSyllableList = function (Cells, size, filterEdges, asGroups) {
             var List = [];
             for (var index = 0; index < Cells.length; index++) {
                 var cell = Cells[index];
@@ -1087,7 +915,7 @@ define(["require", "exports", 'axios', 'GameStore', 'GameActions', 'Contracts', 
             }
             return List;
         };
-        Runner.GetSpecialSyllablePattern2 = function (CharSet, specialOptions) {
+        RegexEngine.GetSpecialSyllablePattern2 = function (CharSet, specialOptions) {
             if (U.Util.IsNullOrEmpty(specialOptions)) {
                 return "";
             }
@@ -1096,7 +924,7 @@ define(["require", "exports", 'axios', 'GameStore', 'GameActions', 'Contracts', 
                 var temp = "";
                 var Consos = [];
                 var Vowels = [];
-                Runner.Classify2(CharSet, specialOptions, Consos, Vowels);
+                RegexEngine.Classify2(CharSet, specialOptions, Consos, Vowels);
                 if (Vowels.length > 0 && Consos.length > 0) {
                     for (var indx in Consos) {
                         var a = Consos[indx];
@@ -1124,11 +952,11 @@ define(["require", "exports", 'axios', 'GameStore', 'GameActions', 'Contracts', 
             }
             return ret;
         };
-        Runner.GetSyllablePattern = function (CharSet, syllable, consoPatternNoComma, sunnaPattern, allPatternNoComma) {
+        RegexEngine.GetSyllablePattern = function (CharSet, syllable, consoPatternNoComma, sunnaPattern, allPatternNoComma) {
             var temp = "";
             var Consos = [];
             var Vowels = [];
-            Runner.Classify(CharSet, syllable, Consos, Vowels);
+            RegexEngine.Classify(CharSet, syllable, Consos, Vowels);
             if (Vowels.length > 0 && Consos.length > 0) {
                 var tempC = "";
                 for (var indx in Consos) {
@@ -1163,11 +991,11 @@ define(["require", "exports", 'axios', 'GameStore', 'GameActions', 'Contracts', 
             }
             return temp;
         };
-        Runner.GetSyllablePattern2 = function (CharSet, syllable, consoPatternNoComma, prePattern, PostPattern) {
+        RegexEngine.GetSyllablePattern2 = function (CharSet, syllable, consoPatternNoComma, prePattern, PostPattern) {
             var temp = "";
             var Consos = [];
             var Vowels = [];
-            Runner.Classify(CharSet, syllable, Consos, Vowels);
+            RegexEngine.Classify(CharSet, syllable, Consos, Vowels);
             if (Vowels.length > 0 && Consos.length > 0) {
                 var tempC = "";
                 for (var indx in Consos) {
@@ -1194,7 +1022,7 @@ define(["require", "exports", 'axios', 'GameStore', 'GameActions', 'Contracts', 
             }
             return temp;
         };
-        Runner.Join = function (str, join) {
+        RegexEngine.Join = function (str, join) {
             var ret = "";
             for (var indx = 0; indx < str.length; indx++) {
                 var ch = str[indx];
@@ -1203,7 +1031,7 @@ define(["require", "exports", 'axios', 'GameStore', 'GameActions', 'Contracts', 
             ret = ret.TrimEnd(join);
             return ret;
         };
-        Runner.prototype.GetFlatList2 = function (inputs) {
+        RegexEngine.prototype.GetFlatList2 = function (inputs) {
             var list = inputs.Clone();
             list.sort();
             var X = [];
@@ -1215,7 +1043,7 @@ define(["require", "exports", 'axios', 'GameStore', 'GameActions', 'Contracts', 
             }
             return this.GetFlatList(X, ' ').Replace(" ", "");
         };
-        Runner.prototype.GetFlatList = function (List, Seperator) {
+        RegexEngine.prototype.GetFlatList = function (List, Seperator) {
             var ret = "";
             for (var indx in List) {
                 var s = List[indx];
@@ -1224,7 +1052,7 @@ define(["require", "exports", 'axios', 'GameStore', 'GameActions', 'Contracts', 
             ret = ret.TrimEnd(Seperator);
             return ret;
         };
-        Runner.prototype.GetFlatList3 = function (List, Seperator) {
+        RegexEngine.prototype.GetFlatList3 = function (List, Seperator) {
             var ret = "";
             for (var indx in List) {
                 var s = List[indx];
@@ -1233,7 +1061,7 @@ define(["require", "exports", 'axios', 'GameStore', 'GameActions', 'Contracts', 
             ret = ret.TrimEnd(Seperator);
             return ret;
         };
-        Runner.prototype.DistinctList = function (Set, Seperator) {
+        RegexEngine.prototype.DistinctList = function (Set, Seperator) {
             var List = [];
             var arr = Set.split(Seperator);
             for (var indx in arr) {
@@ -1247,7 +1075,7 @@ define(["require", "exports", 'axios', 'GameStore', 'GameActions', 'Contracts', 
             }
             return List;
         };
-        Runner.prototype.GetCountDict2 = function (input) {
+        RegexEngine.prototype.GetCountDict2 = function (input) {
             var Dict = {};
             var arr = input.split(',');
             for (var indx in arr) {
@@ -1264,7 +1092,7 @@ define(["require", "exports", 'axios', 'GameStore', 'GameActions', 'Contracts', 
             }
             return Dict;
         };
-        Runner.prototype.GetCountDict = function (inputs) {
+        RegexEngine.prototype.GetCountDict = function (inputs) {
             if (inputs == null) {
                 return null;
             }
@@ -1283,7 +1111,7 @@ define(["require", "exports", 'axios', 'GameStore', 'GameActions', 'Contracts', 
             }
             return Dict;
         };
-        Runner.Classify = function (CharSet, syllable, Consos, Vowels) {
+        RegexEngine.Classify = function (CharSet, syllable, Consos, Vowels) {
             var Sunna = [];
             var arr = syllable.split(',');
             for (var indx in arr) {
@@ -1305,7 +1133,7 @@ define(["require", "exports", 'axios', 'GameStore', 'GameActions', 'Contracts', 
             }
             Vowels = Vowels.concat(Sunna);
         };
-        Runner.Classify2 = function (CharSet, syllable, Consos, Vowels) {
+        RegexEngine.Classify2 = function (CharSet, syllable, Consos, Vowels) {
             var Sunna = [];
             for (var indx = 0; indx < syllable.length; indx++) {
                 var c = syllable[indx];
@@ -1326,17 +1154,17 @@ define(["require", "exports", 'axios', 'GameStore', 'GameActions', 'Contracts', 
             }
             Vowels = Vowels.concat(Sunna);
         };
-        Runner.GenWordPattern = function (CharSet, word, consoPatternNoComma, sunnaPattern, allPatternNoComma, prePattern, postPattern, useSyllableIndex) {
+        RegexEngine.GenWordPattern = function (CharSet, word, consoPatternNoComma, sunnaPattern, allPatternNoComma, prePattern, postPattern, useSyllableIndex) {
             var temp = "";
             var arr = word.split('|');
             for (var i = 0; i < arr.length; i++) {
                 var syllable = arr[i];
                 var pattern = "";
                 if (useSyllableIndex) {
-                    pattern = Runner.GetSyllablePattern(CharSet, syllable.Replace("(", "").Replace(")", ""), U.Util.Format(consoPatternNoComma, [i + 1]), U.Util.Format(sunnaPattern, [i + 1]), i == arr.length - 1 ? "" : U.Util.Format(allPatternNoComma, [i + 1]));
+                    pattern = RegexEngine.GetSyllablePattern(CharSet, syllable.Replace("(", "").Replace(")", ""), U.Util.Format(consoPatternNoComma, [i + 1]), U.Util.Format(sunnaPattern, [i + 1]), i == arr.length - 1 ? "" : U.Util.Format(allPatternNoComma, [i + 1]));
                 }
                 else {
-                    pattern = Runner.GetSyllablePattern(CharSet, syllable.Replace("(", "").Replace(")", ""), consoPatternNoComma, sunnaPattern, i == arr.length - 1 ? "" : allPatternNoComma);
+                    pattern = RegexEngine.GetSyllablePattern(CharSet, syllable.Replace("(", "").Replace(")", ""), consoPatternNoComma, sunnaPattern, i == arr.length - 1 ? "" : allPatternNoComma);
                 }
                 temp = temp + pattern + ",";
             }
@@ -1345,16 +1173,16 @@ define(["require", "exports", 'axios', 'GameStore', 'GameActions', 'Contracts', 
             temp = U.Util.Format("({0})|", [temp]);
             return temp;
         };
-        Runner.prototype.GetSpecialDict = function (CharSet, SpecialList) {
+        RegexEngine.prototype.GetSpecialDict = function (CharSet, SpecialList) {
             var SpeicalDict = {};
             for (var indx in SpecialList) {
                 var sp = SpecialList[indx];
-                var pattern = Runner.GetSpecialSyllablePattern2(CharSet, sp);
+                var pattern = RegexEngine.GetSpecialSyllablePattern2(CharSet, sp);
                 SpeicalDict[sp] = new RegExp(pattern);
             }
             return SpeicalDict;
         };
-        Runner.prototype.MaxWeightIndex = function (Weights) {
+        RegexEngine.prototype.MaxWeightIndex = function (Weights) {
             var maxIndex = 0;
             var maxVal = 0;
             var index = 0;
@@ -1368,83 +1196,9 @@ define(["require", "exports", 'axios', 'GameStore', 'GameActions', 'Contracts', 
             }
             return maxIndex;
         };
-        return Runner;
+        return RegexEngine;
     }());
-    exports.Runner = Runner;
-    var WordLoader = (function () {
-        function WordLoader() {
-        }
-        WordLoader.LoadWords = function (file) {
-            if (WordLoader.Lists != null && WordLoader.Lists[file] != null) {
-                return WordLoader.Lists[file];
-            }
-            return [];
-        };
-        WordLoader.AddWord = function (word) {
-            var cnt = WordLoader.Lists["Custom"].length;
-            WordLoader.Lists["Custom"].push({
-                Tiles: word,
-                Index: cnt++,
-                Syllables: word.split(',').length,
-            });
-        };
-        WordLoader.Load = function (file, rawResponse) {
-            var words = rawResponse.split('\n');
-            var List = [];
-            var cnt = 0;
-            for (var indx in words) {
-                var line = words[indx];
-                List.push({
-                    Tiles: line,
-                    Index: cnt++,
-                    Syllables: line.split(',').length,
-                });
-            }
-            WordLoader.Lists[file] = List;
-            WordLoader.Lists.Loaded++;
-            rawResponse = null;
-        };
-        WordLoader.Init = function (file) {
-            axios
-                .get("/bots/" + file)
-                .then(function (response) {
-                WordLoader.Load(file, response.data);
-                GA.GameActions.VocabularyLoaded(file);
-            })
-                .catch(function (error) {
-            });
-        };
-        WordLoader.Resolve = function (words) {
-            var unResolved = [];
-            for (var indx in words) {
-                var word = words[indx];
-                var isValid = WordLoader.IsValid(word);
-                if (!isValid) {
-                    unResolved.push(word);
-                }
-            }
-            return unResolved;
-        };
-        WordLoader.IsValid = function (word) {
-            var res = false;
-            for (var indx in WordLoader.Lists) {
-                var List = WordLoader.Lists[indx];
-                for (var indx2 in List) {
-                    var Word = List[indx2];
-                    if (word == Word.Tiles) {
-                        if (console) {
-                            console.log(Word.Tiles);
-                        }
-                        return true;
-                    }
-                }
-            }
-            return res;
-        };
-        WordLoader.Lists = { Loaded: 0, Total: 0, Custom: [] };
-        return WordLoader;
-    }());
-    exports.WordLoader = WordLoader;
+    exports.RegexEngine = RegexEngine;
     var GameConfig = (function () {
         function GameConfig() {
         }

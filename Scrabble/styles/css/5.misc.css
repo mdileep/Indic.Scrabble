@@ -22,6 +22,9 @@
 .gameTable .redraw {
   background-image: url(/images/pick.svg);
 }
+.gameTable .suggest {
+  background-image: url(/images/suggest.svg);
+}
 .list table {
   text-align: center;
 }

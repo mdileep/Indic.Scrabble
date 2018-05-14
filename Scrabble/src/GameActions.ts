@@ -19,6 +19,8 @@ import * as Util from 'Util';
 import * as AskBot from 'AskBot';
 import * as GS from 'GameStore';
 import * as Game from 'GameRoom';
+import * as WL from 'WordLoader';
+import * as AskReferee from 'AskReferee';
 declare var Config: Contracts.iRawConfig;
 
 export class GameActions {
@@ -67,7 +69,7 @@ export class GameActions {
     }
 
     static VocabularyLoaded(file: string): void {
-        if (AskBot.WordLoader.Lists.Loaded != AskBot.WordLoader.Lists.Total) {
+        if (WL.WordLoader.Lists.Loaded != WL.WordLoader.Lists.Total) {
             return;
         }
         GS.GameStore.Dispatch({
@@ -76,8 +78,17 @@ export class GameActions {
             }
         });
     }
+    static RequestSuggestion(state: Contracts.iGameState, args: Contracts.iArgs): void {
+
+    }
+    static ReciveSuggestion(state: Contracts.iGameState, args: Contracts.iArgs): void {
+
+    }
+    static DismissSuggestion(state: Contracts.iGameState, args: Contracts.iArgs): void {
+
+    }
     static Pass(state: Contracts.iGameState, args: Contracts.iArgs): void {
-        AskBot.AskReferee.Validate(state, args);
+        AskReferee.AskReferee.Validate(state, args);
     }
     static TakeConsent(state: Contracts.iGameState, words: string[]): void {
         state.Consent.Pending = GameActions.BuildWordPairs(words);
@@ -88,7 +99,7 @@ export class GameActions {
     }
     static ResolveWord(state: Contracts.iGameState, args: Contracts.iArgs): void {
         var word: Contracts.iWordPair = state.Consent.Pending.pop();
-        AskBot.WordLoader.AddWord(word.Scrabble);
+        WL.WordLoader.AddWord(word.Scrabble);
         GameActions.ConsentRecieved(state, args);
     }
     static RejectWord(state: Contracts.iGameState, args: Contracts.iArgs): void {
@@ -121,7 +132,7 @@ export class GameActions {
             GameActions.Award(state, args);
         }
         else {
-            var words: string[] = AskBot.AskReferee.ExtractWords(state.Board);
+            var words: string[] = AskReferee.AskReferee.ExtractWords(state.Board);
             AskBot.AskServer.Resolve(words);
         }
     }

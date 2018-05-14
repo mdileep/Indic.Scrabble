@@ -141,20 +141,25 @@ export interface iArgs {
 export class Actions {
     public static Init: number = 0;
     public static ReRender: number = 1;
-
+    //
     public static ToBoard: number = 20;
     public static ToTray: number = 21;
-    public static OpenOrClose: number = 30;
+    public static OpenOrClose: number = 22;
     //
     public static Pass: number = 40;
     public static ReDraw: number = 41;
-    public static PunchAndPick: number = 42;
+    //Suggestions
+    public static RequestSuggestion: number = 42;
+    public static ReciveSuggestion: number = 43;
+    public static DismissSuggestion: number = 44;
+    //
+    public static PunchAndPick: number = 45;
     //
     public static BotMove: number = 50;
     public static BotMoveResponse: number = 51;
     //
     public static Award: number = 60;
-    public static ResolveWords: number = 65;
+    public static ResolveWords: number = 61;
     public static TakeConsent: number = 62;
     public static WordResolved: number = 63;
     public static WordRejected: number = 64;
@@ -324,4 +329,9 @@ export interface CharSet {
 export interface KnownBoard {
     Size: number;
     Weights: number[];
+}
+export interface iGameEngine
+{
+    BestMove(Board: ScrabbleBoard): ProbableMove;
+    Probables(Board: ScrabbleBoard): ProbableMove[];
 }

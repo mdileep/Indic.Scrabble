@@ -1,4 +1,4 @@
-define(["require", "exports", 'Contracts', 'AksharaSets', 'Messages', 'DragDropTouch', 'GameActions', 'GameStore', 'AskBot'], function (require, exports, Contracts, Sets, M, DragDropTouch, GA, GS, AskBot) {
+define(["require", "exports", 'Contracts', 'AksharaSets', 'Messages', 'DragDropTouch', 'GameActions', 'GameStore', 'WordLoader'], function (require, exports, Contracts, Sets, M, DragDropTouch, GA, GS, WL) {
     "use strict";
     var GameLoader = (function () {
         function GameLoader() {
@@ -23,7 +23,7 @@ define(["require", "exports", 'Contracts', 'AksharaSets', 'Messages', 'DragDropT
             if (list.length == 0) {
                 list.push(Config.CharSet.Dictionary);
             }
-            AskBot.WordLoader.Lists.Total = list.length;
+            WL.WordLoader.Lists.Total = list.length;
             if (list.length == 0) {
                 GS.GameStore.Dispatch({
                     type: Contracts.Actions.Init,
@@ -35,7 +35,7 @@ define(["require", "exports", 'Contracts', 'AksharaSets', 'Messages', 'DragDropT
         };
         GameLoader.LoadVocabularies = function (list) {
             for (var indx in list) {
-                AskBot.WordLoader.Init(list[indx]);
+                WL.WordLoader.Init(list[indx]);
             }
         };
         GameLoader.Vocabularies = function (players) {

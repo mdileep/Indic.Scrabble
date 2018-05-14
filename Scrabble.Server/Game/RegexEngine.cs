@@ -1,5 +1,5 @@
 ﻿//---------------------------------------------------------------------------------------------
-// <copyright file="StateEngine.cs" company="Chandam-ఛందం">
+// <copyright file="RegexEngine.cs" company="Chandam-ఛందం">
 //    Copyright © 2013 - 2018 'Chandam-ఛందం' : http://chandam.apphb.com
 //    Original Author : Dileep Miriyala (m.dileep@gmail.com)
 //    Last Updated    : 29-Mar-2018 20:23EST
@@ -24,9 +24,9 @@ using System.Threading;
 
 namespace Scrabble
 {
-	internal class StateEngine : iGameEngine
+	internal class RegexEngine : iGameEngine
 	{
-		public StateEngine(ScrabbleBoard Board)
+		public RegexEngine(ScrabbleBoard Board)
 		{
 			if (Board == null)
 			{

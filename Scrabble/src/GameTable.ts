@@ -25,6 +25,7 @@ class GameTable extends React.Component<Contracts.iGameTable, Contracts.iGameTab
     render() {
         var childs: React.ReactElement<Contracts.iProps>[] = [];
         var message = this.renderMessage();
+        var help = this.renderSuggest();
         var reDraw = this.renderReDraw();
         var pass = this.renderPass();
 
@@ -36,7 +37,7 @@ class GameTable extends React.Component<Contracts.iGameTable, Contracts.iGameTab
                 ref: id,
                 className: "actions",
                 title: "Actions",
-            }, [message, reDraw, pass]);
+            }, [message, help, reDraw, pass]);
         childs.push(actions);
 
         var vowelTray = React.createElement(((Tray.default as any) as React.ComponentClass<Contracts.iTrayProps>), Util.Util.Merge(this.props.VowelTray, { ShowLabel: false, ReadOnly: this.props.ReadOnly }));
@@ -70,6 +71,21 @@ class GameTable extends React.Component<Contracts.iGameTable, Contracts.iGameTab
                 title: this.props.Message
             }, [], this.props.Message);
         return pass;
+    }
+
+    public renderSuggest(): React.ReactElement<Contracts.iProps> {
+        var id = "help";
+        var help = React.createElement('button',
+            {
+                id: id,
+                key: id,
+                ref: id,
+                className: "suggest",
+                title: "Suggest",
+                disabled: this.props.ReadOnly,
+                onClick: this.OnAskSuggestion,
+            }, [], "Suggest");
+        return help;
     }
 
     public renderReDraw(): React.ReactElement<Contracts.iProps> {
@@ -117,7 +133,13 @@ class GameTable extends React.Component<Contracts.iGameTable, Contracts.iGameTab
             }
         });
     }
-
+    public OnAskSuggestion(ev: MouseEvent) {
+        GS.GameStore.Dispatch({
+            type: Contracts.Actions.RequestSuggestion,
+            args: {
+            }
+        });
+    }
     public OnDragOver(ev: Event) {
         ev.preventDefault();
     }

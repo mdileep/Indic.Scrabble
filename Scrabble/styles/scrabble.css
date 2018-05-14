@@ -44,7 +44,7 @@ body {
   clear: both;
   float: left;
   width: 100%;
-  height: 30vmin;
+  height: 25vmin;
   position: fixed;
   bottom: 0;
   left: 0;
@@ -66,7 +66,7 @@ body {
 }
 .footer {
   clear: both;
-  margin-bottom: 32vmin;
+  margin-bottom: 25vmin;
 }
 .cabinet {
   clear: both;
@@ -371,6 +371,9 @@ body {
 }
 .gameTable .redraw {
   background-image: url(/images/pick.svg);
+}
+.gameTable .suggest {
+  background-image: url(/images/suggest.svg);
 }
 .list table {
   text-align: center;

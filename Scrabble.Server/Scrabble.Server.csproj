@@ -50,7 +50,7 @@
     <Compile Include="Game\iGameEngine.cs" />
     <Compile Include="Game\LoadWords.cs" />
     <Compile Include="Game\PerfTest.cs" />
-    <Compile Include="Game\StateEngine.cs" />
+    <Compile Include="Game\RegexEngine.cs" />
     <Compile Include="Pages\ConfigHandler.cs" />
     <Compile Include="Shared\Printer.cs" />
     <Compile Include="Pages\APIHandler.cs" />

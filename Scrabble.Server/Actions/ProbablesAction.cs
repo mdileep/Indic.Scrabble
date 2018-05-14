@@ -19,7 +19,7 @@ namespace Scrabble.Server
 		public object Process(Dictionary<string, object> dict)
 		{
 			var Board = ParseUtil.ConvertTo<ScrabbleBoard>(dict);
-			var R = new StateEngine(Board);
+			var R = new RegexEngine(Board);
 			return R.BestMove();
 		}
 	}

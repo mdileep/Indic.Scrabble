@@ -20,6 +20,15 @@ define(["require", "exports", 'Contracts', 'Parser', "GameActions", "GenericActi
             case Contracts.Actions.OpenOrClose:
                 GameActions.GameActions.OpenClose(state, args);
                 return state;
+            case Contracts.Actions.RequestSuggestion:
+                GameActions.GameActions.RequestSuggestion(state, args);
+                return state;
+            case Contracts.Actions.ReciveSuggestion:
+                GameActions.GameActions.ReciveSuggestion(state, args);
+                return state;
+            case Contracts.Actions.DismissSuggestion:
+                GameActions.GameActions.DismissSuggestion(state, args);
+                return state;
             case Contracts.Actions.Pass:
                 GameActions.GameActions.Pass(state, args);
                 return state;

@@ -15,6 +15,7 @@ define(["require", "exports", "react", 'Contracts', 'Tray', 'Util', 'GameStore']
             var _this = this;
             var childs = [];
             var message = this.renderMessage();
+            var help = this.renderSuggest();
             var reDraw = this.renderReDraw();
             var pass = this.renderPass();
             var id = "actions";
@@ -24,7 +25,7 @@ define(["require", "exports", "react", 'Contracts', 'Tray', 'Util', 'GameStore']
                 ref: id,
                 className: "actions",
                 title: "Actions",
-            }, [message, reDraw, pass]);
+            }, [message, help, reDraw, pass]);
             childs.push(actions);
             var vowelTray = React.createElement(Tray.default, Util.Util.Merge(this.props.VowelTray, { ShowLabel: false, ReadOnly: this.props.ReadOnly }));
             childs.push(vowelTray);
@@ -52,6 +53,19 @@ define(["require", "exports", "react", 'Contracts', 'Tray', 'Util', 'GameStore']
                 title: this.props.Message
             }, [], this.props.Message);
             return pass;
+        };
+        GameTable.prototype.renderSuggest = function () {
+            var id = "help";
+            var help = React.createElement('button', {
+                id: id,
+                key: id,
+                ref: id,
+                className: "suggest",
+                title: "Suggest",
+                disabled: this.props.ReadOnly,
+                onClick: this.OnAskSuggestion,
+            }, [], "Suggest");
+            return help;
         };
         GameTable.prototype.renderReDraw = function () {
             var id = "draw";
@@ -88,6 +102,12 @@ define(["require", "exports", "react", 'Contracts', 'Tray', 'Util', 'GameStore']
         GameTable.prototype.OnReDraw = function (ev) {
             GS.GameStore.Dispatch({
                 type: Contracts.Actions.ReDraw,
+                args: {}
+            });
+        };
+        GameTable.prototype.OnAskSuggestion = function (ev) {
+            GS.GameStore.Dispatch({
+                type: Contracts.Actions.RequestSuggestion,
                 args: {}
             });
         };

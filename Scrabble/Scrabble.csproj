@@ -28,11 +28,10 @@
     <Content Include="scrabble.aspx" />
   </ItemGroup>
   <ItemGroup>
-     <Content Include="styles\css\index.min.css" />
+    <Content Include="styles\css\index.min.css" />
     <Content Include="styles\css\bn.min.css" />
     <Content Include="styles\css\gu.min.css" />
     <Content Include="styles\css\hi.min.css" />
- 
     <Content Include="styles\css\kn.min.css" />
     <Content Include="styles\css\ml.min.css" />
     <Content Include="styles\css\or.min.css" />
@@ -55,7 +54,7 @@
     <Content Include="bots\te.andhrajyothy.txt" />
     <Content Include="bots\te.bbc.txt" />
     <Content Include="bots\te.eenadu.txt" />
-      <Content Include="bots\te.tebha.txt" />
+    <Content Include="bots\te.tebha.txt" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="styles\Less.targets" />
@@ -95,6 +94,7 @@
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="src\AksharaSets.ts" />
+    <TypeScriptCompile Include="src\AskReferee.ts" />
     <TypeScriptCompile Include="src\ConsentForm.ts" />
     <TypeScriptCompile Include="src\ConfirmDialog.ts" />
     <TypeScriptCompile Include="src\AskBot.ts" />
@@ -111,6 +111,7 @@
     <TypeScriptCompile Include="src\Indic.ts" />
     <TypeScriptCompile Include="src\GamePlayers.ts" />
     <TypeScriptCompile Include="src\AlertDialog.ts" />
+    <TypeScriptCompile Include="src\WordLoader.ts" />
     <TypeScriptCompile Include="src\_ConfirmDialog.ts" />
     <TypeScriptCompile Include="src\_AlertDialog.ts" />
     <TypeScriptCompile Include="src\Parser.ts" />
@@ -138,6 +139,8 @@
     <TypeScriptCompile Include="typings\require.d.ts" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="scripts\AskReferee.js" />
+    <Content Include="scripts\WordLoader.js" />
     <Content Include="scripts\AksharaSets.js" />
     <Content Include="scripts\Board.js" />
     <Content Include="scripts\BoardCell.js" />
@@ -188,9 +191,9 @@
     <Content Include="images\pick.svg" />
     <Content Include="images\pass.svg" />
     <Content Include="images\loading.svg" />
+    <Content Include="images\suggest.svg" />
   </ItemGroup>
   <ItemGroup>
-  
     <None Include="web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>

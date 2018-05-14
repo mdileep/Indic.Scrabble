@@ -16,6 +16,7 @@ import * as M from 'Messages';
 import * as DragDropTouch from 'DragDropTouch';
 import * as GA from 'GameActions';
 import * as GS from 'GameStore';
+import * as WL from 'WordLoader';
 import * as AskBot from 'AskBot';
 declare var Config: Contracts.iRawConfig;
 
@@ -44,7 +45,7 @@ export class GameLoader {
             //Not Loading the Referee if there is a Bot..
             list.push(Config.CharSet.Dictionary);
         }
-        AskBot.WordLoader.Lists.Total = list.length;
+        WL.WordLoader.Lists.Total = list.length;
         if (list.length == 0) {
             GS.GameStore.Dispatch({
                 type: Contracts.Actions.Init,
@@ -58,7 +59,7 @@ export class GameLoader {
 
     static LoadVocabularies(list: string[]): void {
         for (var indx in list) {
-            AskBot.WordLoader.Init(list[indx]);
+            WL.WordLoader.Init(list[indx]);
         }
     }
 

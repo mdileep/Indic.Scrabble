@@ -20,7 +20,7 @@ export default (state: Contracts.iGameState = Parser.Parser.Parse(), action: Con
     switch (action.type) {
 
         case Contracts.Actions.Init:
-             //if (console) { console.log("Initizlizin the Game Room"); }
+            //if (console) { console.log("Initizlizin the Game Room"); }
             GameActions.GameActions.Init(state, args);
             return state;
 
@@ -42,6 +42,19 @@ export default (state: Contracts.iGameState = Parser.Parser.Parse(), action: Con
         case Contracts.Actions.OpenOrClose:
             //if (console) { console.log("Opening Tray"); }
             GameActions.GameActions.OpenClose(state, args);
+            return state;
+
+        case Contracts.Actions.RequestSuggestion:
+            //if (console) { console.log("Reequest: Suggest Words"); }
+            GameActions.GameActions.RequestSuggestion(state, args);
+            return state;
+        case Contracts.Actions.ReciveSuggestion:
+            //if (console) { console.log("Recieve:Suggest Words"); }
+            GameActions.GameActions.ReciveSuggestion(state, args);
+            return state;
+        case Contracts.Actions.DismissSuggestion:
+            //if (console) { console.log("Dismiss: Suggest Words"); }
+            GameActions.GameActions.DismissSuggestion(state, args);
             return state;
 
         case Contracts.Actions.Pass:

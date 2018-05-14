@@ -1,4 +1,4 @@
-define(["require", "exports", "react", "react-dom", 'Contracts', 'Messages', 'Indic', 'Util', 'AskBot', 'GameStore', 'GameRoom'], function (require, exports, React, ReactDOM, Contracts, Messages, Indic, Util, AskBot, GS, Game) {
+define(["require", "exports", "react", "react-dom", 'Contracts', 'Messages', 'Indic', 'Util', 'AskBot', 'GameStore', 'GameRoom', 'WordLoader', 'AskReferee'], function (require, exports, React, ReactDOM, Contracts, Messages, Indic, Util, AskBot, GS, Game, WL, AskReferee) {
     "use strict";
     var GameActions = (function () {
         function GameActions() {
@@ -37,7 +37,7 @@ define(["require", "exports", "react", "react-dom", 'Contracts', 'Messages', 'In
             return ReactDOM.render(left, rootEl);
         };
         GameActions.VocabularyLoaded = function (file) {
-            if (AskBot.WordLoader.Lists.Loaded != AskBot.WordLoader.Lists.Total) {
+            if (WL.WordLoader.Lists.Loaded != WL.WordLoader.Lists.Total) {
                 return;
             }
             GS.GameStore.Dispatch({
@@ -45,8 +45,14 @@ define(["require", "exports", "react", "react-dom", 'Contracts', 'Messages', 'In
                 args: {}
             });
         };
+        GameActions.RequestSuggestion = function (state, args) {
+        };
+        GameActions.ReciveSuggestion = function (state, args) {
+        };
+        GameActions.DismissSuggestion = function (state, args) {
+        };
         GameActions.Pass = function (state, args) {
-            AskBot.AskReferee.Validate(state, args);
+            AskReferee.AskReferee.Validate(state, args);
         };
         GameActions.TakeConsent = function (state, words) {
             state.Consent.Pending = GameActions.BuildWordPairs(words);
@@ -57,7 +63,7 @@ define(["require", "exports", "react", "react-dom", 'Contracts', 'Messages', 'In
         };
         GameActions.ResolveWord = function (state, args) {
             var word = state.Consent.Pending.pop();
-            AskBot.WordLoader.AddWord(word.Scrabble);
+            WL.WordLoader.AddWord(word.Scrabble);
             GameActions.ConsentRecieved(state, args);
         };
         GameActions.RejectWord = function (state, args) {
@@ -90,7 +96,7 @@ define(["require", "exports", "react", "react-dom", 'Contracts', 'Messages', 'In
                 GameActions.Award(state, args);
             }
             else {
-                var words = AskBot.AskReferee.ExtractWords(state.Board);
+                var words = AskReferee.AskReferee.ExtractWords(state.Board);
                 AskBot.AskServer.Resolve(words);
             }
         };
