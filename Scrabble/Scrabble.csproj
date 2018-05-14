@@ -57,7 +57,6 @@
     <Content Include="bots\te.tebha.txt" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="styles\Less.targets" />
     <LessFiles Include="styles\less\4.colors.mobile.less" />
     <LessFiles Include="styles\less\index.less" />
     <LessFiles Include="styles\less\1.fonts.mobile.less" />
