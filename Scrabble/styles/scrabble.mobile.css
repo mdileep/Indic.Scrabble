@@ -20,7 +20,7 @@
   .scores {
     font-size: 6vmin;
   }
-  .title {
+  .brand .h2 {
     font-size: 8vmin;
   }
 }
@@ -41,7 +41,7 @@
     height: 32px;
   }
   .footer {
-    margin-bottom: 32vmin;
+    margin-bottom: 34vmin;
   }
   .tray .tile {
     width: 8vmin;
@@ -104,7 +104,7 @@
     margin: 1vmin;
   }
   .infoBar {
-    margin: 6vmin;
+    margin: 3vmin;
   }
 }
 

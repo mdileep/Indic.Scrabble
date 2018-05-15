@@ -88,14 +88,12 @@ export class Util {
         if (available.length < max) {
             size = available.length;
         }
-
         var ret: string[] = [];
         for (var i = 0; i < size; i++) {
             var indx = Math.round(Math.random() * (available.length - 1));
             ret.push(available[indx]);
         }
         ret.sort();
-
         return ret;
     }
 

@@ -28,7 +28,7 @@
     <link id="LangStyle" runat="server" href="styles/css/te.min.css" type="text/css" rel="stylesheet" />
 </head>
 <body>
-    <div class="title">
+    <div class="brand">
         <h2 class="h2" runat="server" id="H2">పదకేళి</h2>
     </div>
     <div class="loading" id="root">

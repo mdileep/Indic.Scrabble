@@ -5,10 +5,10 @@ body {
   margin: 0;
   padding: 0;
 }
-.title {
+.brand {
   width: 100%;
 }
-.title .h2 {
+.brand .h2 {
   display: inline;
 }
 .game {

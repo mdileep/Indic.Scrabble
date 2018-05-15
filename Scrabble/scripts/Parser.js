@@ -35,10 +35,13 @@ define(["require", "exports", "GameActions", "Indic"], function (require, export
             return gameState;
         };
         Parser.BuildGameTable = function (JSON, cache) {
+            GameActions.GameActions.ResetOnBoard(cache);
             var vAvailable = GameActions.GameActions.DrawVowelTiles(cache, JSON.MaxVowels);
             var vTray = GameActions.GameActions.SetTableTray(vAvailable, "Vowels");
+            GameActions.GameActions.SetOnBoard(cache, vAvailable);
             var cAvailable = GameActions.GameActions.DrawConsoTiles(cache, JSON.MaxOnTable - JSON.MaxVowels);
             var cTray = GameActions.GameActions.SetTableTray(cAvailable, "Conso");
+            GameActions.GameActions.SetOnBoard(cache, cAvailable);
             var raw = {};
             raw.key = "gameTable";
             raw.Id = raw.key;

@@ -293,6 +293,14 @@ define(["require", "exports", "react", "react-dom", 'Contracts', 'Messages', 'In
             }
             cabinet.Remaining = remaining;
             cabinet.Total = total;
+            for (var i = 0; i < cabinet.Trays.length; i++) {
+                var item = cabinet.Trays[i];
+                for (var j = 0; j < item.Tiles.length; j++) {
+                    var tile = item.Tiles[j];
+                    tile.OnBoard = cache[tile.Text].OnBoard;
+                    tile.Remaining = cache[tile.Text].Remaining;
+                }
+            }
         };
         GameActions.RefreshTrays = function (trays, cache) {
             for (var i = 0; i < trays.length; i++) {
@@ -598,15 +606,29 @@ define(["require", "exports", "react", "react-dom", 'Contracts', 'Messages', 'In
             return Words;
         };
         GameActions.ReDraw = function (state, args) {
+            GameActions.ResetOnBoard(state.Cache);
             {
                 var available = GameActions.DrawVowelTiles(state.Cache, state.GameTable.MaxVowels);
                 var tray = GameActions.SetTableTray(available, "Vowels");
                 state.GameTable.VowelTray = tray;
+                GameActions.SetOnBoard(state.Cache, available);
             }
             {
                 var available = GameActions.DrawConsoTiles(state.Cache, state.GameTable.MaxOnTable - state.GameTable.MaxVowels);
                 var tray = GameActions.SetTableTray(available, "Conso");
                 state.GameTable.ConsoTray = tray;
+                GameActions.SetOnBoard(state.Cache, available);
+            }
+            GameActions.RefreshCabinet(state.Cabinet, state.Cache);
+        };
+        GameActions.ResetOnBoard = function (cache) {
+            for (var prop in cache) {
+                cache[prop].OnBoard = 0;
+            }
+        };
+        GameActions.SetOnBoard = function (cache, available) {
+            for (var item in available) {
+                cache[available[item]].OnBoard++;
             }
         };
         GameActions.ResetVowelsTray = function (state) {

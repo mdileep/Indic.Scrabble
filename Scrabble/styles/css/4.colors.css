@@ -1,4 +1,4 @@
-.title {
+.brand {
   background-color: navajowhite;
   opacity: 0.9;
   z-index: 100;
@@ -88,9 +88,6 @@
 .players .conditions {
   color: orangered;
   font-style: italic;
-}
-.infoBar {
-  border: 1px solid #EEEEEE;
 }
 .infoBar .ul {
   border: 1px solid #EEEEEE;

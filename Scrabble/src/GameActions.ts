@@ -339,6 +339,14 @@ export class GameActions {
         }
         cabinet.Remaining = remaining;
         cabinet.Total = total;
+        for (var i = 0; i < cabinet.Trays.length; i++) {
+            var item = cabinet.Trays[i];
+            for (var j = 0; j < item.Tiles.length; j++) {
+                var tile = item.Tiles[j];
+                tile.OnBoard = cache[tile.Text].OnBoard;
+                tile.Remaining = cache[tile.Text].Remaining;
+            }
+        }
     }
     static RefreshTrays(trays: Contracts.iTrayProps[], cache: Contracts.iCachedTile): void {
         for (var i = 0; i < trays.length; i++) {
@@ -655,17 +663,32 @@ export class GameActions {
         return Words;
     }
     static ReDraw(state: Contracts.iGameState, args: Contracts.iArgs): void {
+        GameActions.ResetOnBoard(state.Cache);
         {
             var available: string[] = GameActions.DrawVowelTiles(state.Cache, state.GameTable.MaxVowels);
             var tray: Contracts.iTrayProps = GameActions.SetTableTray(available, "Vowels");
             state.GameTable.VowelTray = tray;
+            GameActions.SetOnBoard(state.Cache, available);
         }
         {
             var available = GameActions.DrawConsoTiles(state.Cache, state.GameTable.MaxOnTable - state.GameTable.MaxVowels);
             var tray = GameActions.SetTableTray(available, "Conso");
             state.GameTable.ConsoTray = tray;
+            GameActions.SetOnBoard(state.Cache, available);
+        }
+        GameActions.RefreshCabinet(state.Cabinet, state.Cache);
+    }
+    static ResetOnBoard(cache: Contracts.iCachedTile) {
+        for (var prop in cache) {
+            cache[prop].OnBoard = 0;
         }
     }
+    static SetOnBoard(cache: Contracts.iCachedTile, available: string[]) {
+        for (var item in available) {
+            cache[available[item]].OnBoard++;
+        }
+    }
+
     static ResetVowelsTray(state: Contracts.iGameState): void {
         var gameTable: Contracts.iGameTable = state.GameTable;
         var vtray: Contracts.iTrayProps = state.GameTable.VowelTray;

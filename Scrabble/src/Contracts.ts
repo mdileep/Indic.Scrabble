@@ -92,7 +92,7 @@ export interface iGameState extends iComponent {
     Players: iPlayers;
     InfoBar: iInfoBar;
     GameTable: iGameTable;
-    Cache: iCachedTile;
+    Cache: iCachedTile;//This Contract doesn't look good and makes no-sense. Why not a Array??
     Consent: iConsent;
     Stats: iBoardsStats;
     Dialog: iDialog;

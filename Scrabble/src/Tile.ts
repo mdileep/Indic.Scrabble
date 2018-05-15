@@ -21,6 +21,8 @@ class Tile extends React.Component<Contracts.iTileProps, Contracts.iTileProps> {
     }
     render() {
         var childs: React.ReactElement<Contracts.iProps>[] = [];
+        var classList: string[] = ["tile"];
+
 
         if (this.props.Remaining > 1) {
             childs.push(this.renderCount());
@@ -32,10 +34,15 @@ class Tile extends React.Component<Contracts.iTileProps, Contracts.iTileProps> {
             childs.push(this.renderEmpty());
         }
 
-        var className: string = this.props.Remaining > 0 ? "tile" : "tile readonly";
+        if (this.props.Remaining == 0 || this.props.Remaining - this.props.OnBoard == 0) {
+            classList.push("readonly");
+        }
+
         var draggable = this.props.Remaining > 0;
         if (this.props.ReadOnly) { draggable = false; }
-        if (draggable) { className += " draggable"; }
+        if (draggable) { classList.push("draggable"); }
+        var className: string = classList.join(' ');
+
         var elem = React.createElement('span',
             {
                 id: this.props.Id,
@@ -71,7 +78,7 @@ class Tile extends React.Component<Contracts.iTileProps, Contracts.iTileProps> {
                 key: countId,
                 className: "count",
                 title: this.props.Remaining
-            }, [], this.props.Remaining);
+            }, [], this.props.Remaining - this.props.OnBoard);
         return count;
     }
     public renderEmpty(): React.ReactElement<Contracts.iProps> {

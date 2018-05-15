@@ -27,7 +27,7 @@
     <script src="/Config.ashx?Home"></script>
 </head>
 <body>
-    <div class="title"><h2 class="h2">padakaeLi ~ పదకేళి</h2></div>
+    <div class="brand"><h2 class="h2">padakaeLi ~ పదకేళి</h2></div>
     <div id="list">
         <h3> Loading... </h3>
     </div>
@@ -65,7 +65,11 @@
                                     </optgroup>
                                 </select>
                             </th>
+                           </tr>
+                        <tr>
                             <th><#%this.Strings[this.Langs[indx]].Against%#></th>
+                        </tr>
+                             <tr>
                             <th>
                                 <select id="<#%this.Langs[indx]%#>.player2" class="list">
                                     <option value="player" selected="selected"><#%this.Strings[this.Langs[indx]].PlayerFull%#></option>
@@ -76,8 +80,9 @@
                                     </optgroup>
                                 </select>
                             </th>
-                      
-                            <th>
+                        </tr>
+                        <tr>
+                            <th colspan="3">
                                 <button -lang="<#%this.Langs[indx]%#>" id="<#%this.Langs[indx]%#>.Play"><#%this.Strings[this.Langs[indx]].Play%#></button>
                             </th>
                         </tr>

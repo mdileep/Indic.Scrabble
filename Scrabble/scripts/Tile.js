@@ -14,6 +14,7 @@ define(["require", "exports", "react"], function (require, exports, React) {
         Tile.prototype.render = function () {
             var _this = this;
             var childs = [];
+            var classList = ["tile"];
             if (this.props.Remaining > 1) {
                 childs.push(this.renderCount());
             }
@@ -21,14 +22,17 @@ define(["require", "exports", "react"], function (require, exports, React) {
             if (this.props.Remaining > 1) {
                 childs.push(this.renderEmpty());
             }
-            var className = this.props.Remaining > 0 ? "tile" : "tile readonly";
+            if (this.props.Remaining == 0 || this.props.Remaining - this.props.OnBoard == 0) {
+                classList.push("readonly");
+            }
             var draggable = this.props.Remaining > 0;
             if (this.props.ReadOnly) {
                 draggable = false;
             }
             if (draggable) {
-                className += " draggable";
+                classList.push("draggable");
             }
+            var className = classList.join(' ');
             var elem = React.createElement('span', {
                 id: this.props.Id,
                 ref: this.props.Id,
@@ -59,7 +63,7 @@ define(["require", "exports", "react"], function (require, exports, React) {
                 key: countId,
                 className: "count",
                 title: this.props.Remaining
-            }, [], this.props.Remaining);
+            }, [], this.props.Remaining - this.props.OnBoard);
             return count;
         };
         Tile.prototype.renderEmpty = function () {
