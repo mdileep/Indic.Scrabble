@@ -65,9 +65,7 @@
                                     </optgroup>
                                 </select>
                             </th>
-                        </tr>
-                        <tr><th><#%this.Strings[this.Langs[indx]].Against%#></th></tr>
-                        <tr>
+                            <th><#%this.Strings[this.Langs[indx]].Against%#></th>
                             <th>
                                 <select id="<#%this.Langs[indx]%#>.player2" class="list">
                                     <option value="player" selected="selected"><#%this.Strings[this.Langs[indx]].PlayerFull%#></option>
@@ -78,8 +76,7 @@
                                     </optgroup>
                                 </select>
                             </th>
-                        </tr>
-                        <tr>
+                      
                             <th>
                                 <button -lang="<#%this.Langs[indx]%#>" id="<#%this.Langs[indx]%#>.Play"><#%this.Strings[this.Langs[indx]].Play%#></button>
                             </th>
@@ -90,8 +87,6 @@
             <#%}%#>
         </ul>
     </script>
-
-
 
     <div class="footer"><br /><br /><br /><br /><br /><span class="author">~ Dileep Miriyala(దిలీపు మిరియాల)</span></div>
     <script data-main="scripts/Index" src="scripts/require.js"></script>

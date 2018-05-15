@@ -308,11 +308,13 @@ define(["require", "exports", "react", "react-dom", 'Contracts', 'Messages', 'In
                     var synm = Indic.Indic.GetSynonym(text);
                     tile.Remaining = cache[synm].Remaining;
                     tile.Total = cache[synm].Remaining;
+                    tile.OnBoard = cache[synm].OnBoard;
                     continue;
                 }
                 {
                     tile.Remaining = cache[text].Remaining;
                     tile.Total = cache[text].Remaining;
+                    tile.OnBoard = cache[text].OnBoard;
                 }
             }
         };

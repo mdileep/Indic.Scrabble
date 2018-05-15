@@ -56,6 +56,7 @@ class Tray extends React.Component<Contracts.iTrayView, Contracts.iTrayView> {
                 Show: true,
                 Text: tileProp.Text,
                 Remaining: tileProp.Remaining,
+                OnBoard: tileProp.OnBoard,
                 Total: tileProp.Total,
                 Index: tileProp.Index,
                 TrayIndex: tileProp.TrayIndex

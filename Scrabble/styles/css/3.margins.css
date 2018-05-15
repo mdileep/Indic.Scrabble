@@ -21,7 +21,7 @@
   margin: 3vmin;
 }
 .tray .count {
-  margin: 2vmin;
+  margin: 1vmin;
 }
 .board {
   margin: 6vmin;
@@ -39,6 +39,6 @@
   margin: 4vmin;
 }
 .infoBar .ul {
-  max-height: 150px;
+  max-height: 30vmin;
   overflow: auto;
 }

@@ -38,6 +38,9 @@ body {
   width: 42px;
   height: 32px;
 }
+.gameTable .tray {
+  width: 100%;
+}
 .footer {
   clear: both;
   margin-bottom: 25vmin;
@@ -58,7 +61,6 @@ body {
   clear: both;
   float: left;
   display: block;
-  width: 100%;
 }
 .tray .label {
   clear: both;
@@ -149,11 +151,7 @@ body {
   padding: 3px;
 }
 .list table {
-  width: 96%;
   margin-left: 2%;
-}
-.hide {
-  display: none;
 }
 .h2 {
   width: 100%;

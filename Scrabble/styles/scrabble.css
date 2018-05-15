@@ -64,6 +64,9 @@ body {
   width: 42px;
   height: 32px;
 }
+.gameTable .tray {
+  width: 100%;
+}
 .footer {
   clear: both;
   margin-bottom: 25vmin;
@@ -84,7 +87,6 @@ body {
   clear: both;
   float: left;
   display: block;
-  width: 100%;
 }
 .tray .label {
   clear: both;
@@ -175,11 +177,7 @@ body {
   padding: 3px;
 }
 .list table {
-  width: 96%;
   margin-left: 2%;
-}
-.hide {
-  display: none;
 }
 .h2 {
   width: 100%;
@@ -209,7 +207,7 @@ body {
   margin: 3vmin;
 }
 .tray .count {
-  margin: 2vmin;
+  margin: 1vmin;
 }
 .board {
   margin: 6vmin;
@@ -227,7 +225,7 @@ body {
   margin: 4vmin;
 }
 .infoBar .ul {
-  max-height: 150px;
+  max-height: 30vmin;
   overflow: auto;
 }
 
@@ -351,6 +349,9 @@ body {
 .h2,
 .title {
   text-align: center;
+}
+.hide {
+  display: none;
 }
 .gameTable {
   text-align: right;

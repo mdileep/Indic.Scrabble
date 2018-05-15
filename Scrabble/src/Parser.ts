@@ -78,7 +78,7 @@ export class Parser {
         raw.key = "Cabinet";
         raw.Trays = [];
         raw.ReadOnly = true;
-        raw.Show = false;
+        raw.Show = true;
         var index = 0;
         var tilesDict: Contracts.iCachedTile = {} as any;
         for (var i = 0; i < JSON.Trays.length; i++) {
@@ -86,7 +86,7 @@ export class Parser {
             var props: Contracts.iTrayProps = ({} as any) as Contracts.iTrayProps;
             props.Id = item.Id;
             props.key = item.Id;
-            props.className = item.Id;
+            props.className = "tray";
             props.Title = item.Title;
             props.Show = item.Show;
             props.Disabled = false;

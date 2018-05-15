@@ -56,7 +56,7 @@ define(["require", "exports", "GameActions", "Indic"], function (require, export
             raw.key = "Cabinet";
             raw.Trays = [];
             raw.ReadOnly = true;
-            raw.Show = false;
+            raw.Show = true;
             var index = 0;
             var tilesDict = {};
             for (var i = 0; i < JSON.Trays.length; i++) {
@@ -64,7 +64,7 @@ define(["require", "exports", "GameActions", "Indic"], function (require, export
                 var props = {};
                 props.Id = item.Id;
                 props.key = item.Id;
-                props.className = item.Id;
+                props.className = "tray";
                 props.Title = item.Title;
                 props.Show = item.Show;
                 props.Disabled = false;

@@ -41,6 +41,7 @@ define(["require", "exports", "react", 'Tile'], function (require, exports, Reac
                 Show: true,
                 Text: tileProp.Text,
                 Remaining: tileProp.Remaining,
+                OnBoard: tileProp.OnBoard,
                 Total: tileProp.Total,
                 Index: tileProp.Index,
                 TrayIndex: tileProp.TrayIndex

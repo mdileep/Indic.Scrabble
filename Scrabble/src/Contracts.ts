@@ -34,6 +34,7 @@ export interface iTileProps extends iComponent {
     Text: string;
     Remaining: number;
     Total: number;
+    OnBoard: number;
     Index: number;
     TrayIndex: number;
 }
@@ -215,6 +216,7 @@ export interface iCachedTile {
     [key: string]: any;
     Remaining: number;
     Total: number;
+    OnBoard: number;
 }
 export interface iBoardsStats {
     Occupancy: number;
