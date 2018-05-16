@@ -28,7 +28,6 @@ export class GameActions {
     static NoWords: number = 5;
     static BotWait: number = 1000;
     static PinchWait: number = 300;
-
     static Init(state: Contracts.iGameState, args: Contracts.iArgs): void {
         GameActions.Render();
         var players = state.Players.Players;
@@ -36,7 +35,6 @@ export class GameActions {
         state.GameTable.Message = Util.Util.Format(Messages.Messages.YourTurn, [players[currentPlayer].Name]);
         setTimeout(GameActions.PinchPlayer, GameActions.PinchWait);
     }
-
     static PinchPlayer(): void {
         GS.GameStore.Dispatch({
             type: Contracts.Actions.PunchAndPick,
@@ -44,7 +42,6 @@ export class GameActions {
             }
         });
     }
-
     static PunchAndPick(state: Contracts.iGameState, args: Contracts.iArgs): void {
         if (state.GameOver) {
             return;
@@ -60,14 +57,12 @@ export class GameActions {
         //
         setTimeout(AskBot.AskServer.NextMove, GameActions.BotWait);
     }
-
-    public static Render(): any {
+    static Render(): any {
         var rootEl = document.getElementById('root');
         var state: any = GS.GameStore.GetState();
         var left = React.createElement(((Game.default as any) as React.ComponentClass<Contracts.iGameState>), state);
         return ReactDOM.render(left, rootEl);
     }
-
     static VocabularyLoaded(file: string): void {
         if (WL.WordLoader.Lists.Loaded != WL.WordLoader.Lists.Total) {
             return;
@@ -150,7 +145,6 @@ export class GameActions {
         }
         setTimeout(GameActions.PinchPlayer, GameActions.PinchWait);
     }
-
     static SetWinner(state: Contracts.iGameState) {
         state.ReadOnly = true;
         var winner: Contracts.iPlayer = GameActions.FindWinner(state);
@@ -182,7 +176,6 @@ export class GameActions {
         stats.UnUsed = state.Cabinet.Remaining * 100.00 / state.Cabinet.Total;
         state.Stats = stats;
     }
-
     static GetEmptyCells(board: Contracts.iBoardProps): number {
         var tot: number = 0;
         for (var i: number = 0; i < board.Cells.length; i++) {
@@ -244,7 +237,6 @@ export class GameActions {
         }
         GameActions.Pass(state, {});
     }
-
     static BotMove(state: Contracts.iGameState, args: Contracts.iArgs): void {
         var Cells: string[] = [];
         for (var i in state.Board.Cells) {
@@ -452,8 +444,6 @@ export class GameActions {
             cell.Waiting.pop();
             cell.Current = Indic.Indic.ToString(cell.Confirmed.concat(cell.Waiting));
             GameActions.Play(state.GameTable, toRemove, 1, true);
-
-            GameActions.SetRemaining(state.Cache, toRemove, 1);
         }
         GameActions.Refresh(state);
     }
@@ -496,9 +486,7 @@ export class GameActions {
         cell.Current = Indic.Indic.ToString(list);
 
         if (args.Origin == "Tile") {
-
             GameActions.Play(state.GameTable, src, 0, true);
-            GameActions.SetRemaining(state.Cache, src, -1);
         }
         if (args.Origin == "Cell") {
             var srcCell: Contracts.iCellProps = state.Board.Cells[args.SrcCell];
@@ -586,10 +574,12 @@ export class GameActions {
     static SetRemaining(cache: Contracts.iCachedTile, text: string, incBy: number) {
         if (cache[text] != null) {
             cache[text].Remaining = cache[text].Remaining + incBy;
+            cache[text].OnBoard = cache[text].OnBoard + incBy
             return;
         }
         var synonym: string = Indic.Indic.GetSynonym(text);
         cache[synonym].Remaining = cache[synonym].Remaining + incBy;
+        cache[text].OnBoard = cache[text].OnBoard + incBy
     }
     static WordsOnColumn(Board: Contracts.iBoardProps, i: number, claimsOnly: boolean, asSyllables: boolean): Contracts.iWord[] {
         return GameActions.FindWords(Board, 'C', i, claimsOnly, asSyllables);
@@ -688,11 +678,15 @@ export class GameActions {
             cache[available[item]].OnBoard++;
         }
     }
-
     static ResetVowelsTray(state: Contracts.iGameState): void {
         var gameTable: Contracts.iGameTable = state.GameTable;
         var vtray: Contracts.iTrayProps = state.GameTable.VowelTray;
-        var unMoved: string[] = GameActions.UnMovedTiles(vtray);
+        var Moved: string[] = GameActions.CountTiles(vtray, true);
+        for (var indx in Moved) {
+            var toRemove = Moved[indx];
+            GameActions.SetRemaining(state.Cache, toRemove, -1);
+        }
+        var unMoved: string[] = GameActions.CountTiles(vtray, false);
         var vCount = 0;
         for (var i = 0; i < unMoved.length; i++) {
             var prop = unMoved[i];
@@ -707,7 +701,12 @@ export class GameActions {
     static ResetConsoTray(state: Contracts.iGameState): void {
         var gameTable: Contracts.iGameTable = state.GameTable;
         var ctray: Contracts.iTrayProps = state.GameTable.ConsoTray;
-        var unMoved: string[] = GameActions.UnMovedTiles(ctray);
+        var Moved: string[] = GameActions.CountTiles(ctray, true);
+        for (var indx in Moved) {
+            var toRemove = Moved[indx];
+            GameActions.SetRemaining(state.Cache, toRemove, -1);
+        }
+        var unMoved: string[] = GameActions.CountTiles(ctray, false);
         var vCount = 0;
         for (var i = 0; i < unMoved.length; i++) {
             var prop = unMoved[i];
@@ -723,14 +722,15 @@ export class GameActions {
         GameActions.ResetVowelsTray(state);
         GameActions.ResetConsoTray(state);
     }
-    static UnMovedTiles(tray: Contracts.iTrayProps): string[] {
-        var old: string[] = [];
+    static CountTiles(tray: Contracts.iTrayProps, moved: boolean): string[] {
+        var set: string[] = [];
         for (var i = 0; i < tray.Tiles.length; i++) {
-            if (tray.Tiles[i].Remaining != 0) {
-                old.push(tray.Tiles[i].Text);
+            if ((moved && tray.Tiles[i].Remaining == 0) ||
+                (!moved && tray.Tiles[i].Remaining != 0)) {
+                set.push(tray.Tiles[i].Text);
             }
         }
-        return old;
+        return set;
     }
     static SetTableTray(picked: string[], id: string): Contracts.iTrayProps {
         var tray: Contracts.iTrayProps = ({} as any) as Contracts.iTrayProps;

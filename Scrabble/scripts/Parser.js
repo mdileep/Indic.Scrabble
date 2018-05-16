@@ -35,7 +35,6 @@ define(["require", "exports", "GameActions", "Indic"], function (require, export
             return gameState;
         };
         Parser.BuildGameTable = function (JSON, cache) {
-            GameActions.GameActions.ResetOnBoard(cache);
             var vAvailable = GameActions.GameActions.DrawVowelTiles(cache, JSON.MaxVowels);
             var vTray = GameActions.GameActions.SetTableTray(vAvailable, "Vowels");
             GameActions.GameActions.SetOnBoard(cache, vAvailable);
@@ -189,6 +188,7 @@ define(["require", "exports", "GameActions", "Indic"], function (require, export
                 if (cache[text].Total < prop.Total) {
                     cache[text].Remaining = prop.Remaining;
                     cache[text].Total = prop.Total;
+                    cache[text].OnBoard = 0;
                 }
                 return;
             }
@@ -197,13 +197,15 @@ define(["require", "exports", "GameActions", "Indic"], function (require, export
                 if (cache[sym].Total < prop.Total) {
                     cache[sym].Remaining = prop.Remaining;
                     cache[sym].Total = prop.Total;
+                    cache[text].OnBoard = 0;
                 }
                 return;
             }
             cache[text] =
                 {
                     Remaining: prop.Remaining,
-                    Total: prop.Total
+                    Total: prop.Total,
+                    OnBoard: 0
                 };
             return;
         };

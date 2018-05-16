@@ -407,7 +407,6 @@ define(["require", "exports", "react", "react-dom", 'Contracts', 'Messages', 'In
                 cell.Waiting.pop();
                 cell.Current = Indic.Indic.ToString(cell.Confirmed.concat(cell.Waiting));
                 GameActions.Play(state.GameTable, toRemove, 1, true);
-                GameActions.SetRemaining(state.Cache, toRemove, 1);
             }
             GameActions.Refresh(state);
         };
@@ -446,7 +445,6 @@ define(["require", "exports", "react", "react-dom", 'Contracts', 'Messages', 'In
             cell.Current = Indic.Indic.ToString(list);
             if (args.Origin == "Tile") {
                 GameActions.Play(state.GameTable, src, 0, true);
-                GameActions.SetRemaining(state.Cache, src, -1);
             }
             if (args.Origin == "Cell") {
                 var srcCell = state.Board.Cells[args.SrcCell];
@@ -531,10 +529,12 @@ define(["require", "exports", "react", "react-dom", 'Contracts', 'Messages', 'In
         GameActions.SetRemaining = function (cache, text, incBy) {
             if (cache[text] != null) {
                 cache[text].Remaining = cache[text].Remaining + incBy;
+                cache[text].OnBoard = cache[text].OnBoard + incBy;
                 return;
             }
             var synonym = Indic.Indic.GetSynonym(text);
             cache[synonym].Remaining = cache[synonym].Remaining + incBy;
+            cache[text].OnBoard = cache[text].OnBoard + incBy;
         };
         GameActions.WordsOnColumn = function (Board, i, claimsOnly, asSyllables) {
             return GameActions.FindWords(Board, 'C', i, claimsOnly, asSyllables);
@@ -634,7 +634,12 @@ define(["require", "exports", "react", "react-dom", 'Contracts', 'Messages', 'In
         GameActions.ResetVowelsTray = function (state) {
             var gameTable = state.GameTable;
             var vtray = state.GameTable.VowelTray;
-            var unMoved = GameActions.UnMovedTiles(vtray);
+            var Moved = GameActions.CountTiles(vtray, true);
+            for (var indx in Moved) {
+                var toRemove = Moved[indx];
+                GameActions.SetRemaining(state.Cache, toRemove, -1);
+            }
+            var unMoved = GameActions.CountTiles(vtray, false);
             var vCount = 0;
             for (var i = 0; i < unMoved.length; i++) {
                 var prop = unMoved[i];
@@ -649,7 +654,12 @@ define(["require", "exports", "react", "react-dom", 'Contracts', 'Messages', 'In
         GameActions.ResetConsoTray = function (state) {
             var gameTable = state.GameTable;
             var ctray = state.GameTable.ConsoTray;
-            var unMoved = GameActions.UnMovedTiles(ctray);
+            var Moved = GameActions.CountTiles(ctray, true);
+            for (var indx in Moved) {
+                var toRemove = Moved[indx];
+                GameActions.SetRemaining(state.Cache, toRemove, -1);
+            }
+            var unMoved = GameActions.CountTiles(ctray, false);
             var vCount = 0;
             for (var i = 0; i < unMoved.length; i++) {
                 var prop = unMoved[i];
@@ -665,14 +675,15 @@ define(["require", "exports", "react", "react-dom", 'Contracts', 'Messages', 'In
             GameActions.ResetVowelsTray(state);
             GameActions.ResetConsoTray(state);
         };
-        GameActions.UnMovedTiles = function (tray) {
-            var old = [];
+        GameActions.CountTiles = function (tray, moved) {
+            var set = [];
             for (var i = 0; i < tray.Tiles.length; i++) {
-                if (tray.Tiles[i].Remaining != 0) {
-                    old.push(tray.Tiles[i].Text);
+                if ((moved && tray.Tiles[i].Remaining == 0) ||
+                    (!moved && tray.Tiles[i].Remaining != 0)) {
+                    set.push(tray.Tiles[i].Text);
                 }
             }
-            return old;
+            return set;
         };
         GameActions.SetTableTray = function (picked, id) {
             var tray = {};

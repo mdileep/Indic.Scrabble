@@ -55,9 +55,7 @@ export class Parser {
         return gameState;
     }
     public static BuildGameTable(JSON: Contracts.iRawGameTable, cache: Contracts.iCachedTile): Contracts.iGameTable {
-        GameActions.GameActions.ResetOnBoard(cache);
-
-        var vAvailable = GameActions.GameActions.DrawVowelTiles(cache, JSON.MaxVowels);
+       var vAvailable = GameActions.GameActions.DrawVowelTiles(cache, JSON.MaxVowels);
         var vTray = GameActions.GameActions.SetTableTray(vAvailable, "Vowels");
         GameActions.GameActions.SetOnBoard(cache, vAvailable);
 
@@ -220,6 +218,7 @@ export class Parser {
             if (cache[text].Total < prop.Total) {
                 cache[text].Remaining = prop.Remaining;
                 cache[text].Total = prop.Total;
+                cache[text].OnBoard = 0;
             }
             return;
         }
@@ -228,13 +227,15 @@ export class Parser {
             if (cache[sym].Total < prop.Total) {
                 cache[sym].Remaining = prop.Remaining;
                 cache[sym].Total = prop.Total;
+                cache[text].OnBoard = 0;
             }
             return;
         }
         cache[text] =
             {
                 Remaining: prop.Remaining,
-                Total: prop.Total
+                Total: prop.Total,
+                OnBoard: 0
             };
         return;
     }
