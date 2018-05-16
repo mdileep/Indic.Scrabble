@@ -18,6 +18,12 @@
     width: 98%;
 }
 
+.actionBar {
+    height: 8vmin;
+    float: right;
+    width: 80vmin;
+}
+
 @h: 25vmin;
 
 .gameTable {
@@ -36,16 +42,13 @@
     .message {
         overflow: hidden;
         text-overflow: clip;
+        white-space: nowrap;
         max-width: 80vw;
         display: block;
         float: left;
     }
 
-    button {
-        cursor: pointer;
-        width: 42px;
-        height: 32px;
-    }
+
 
     .tray {
         width: 100%;
@@ -205,4 +208,12 @@
 
 .h2 {
     width: 100%;
+}
+
+.gameTable, .actionBar {
+    button {
+        cursor: pointer;
+        width: 6vmin;
+        height: 6vmin;
+    }
 }

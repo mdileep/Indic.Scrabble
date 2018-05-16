@@ -3,7 +3,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", "react", 'Cabinet', 'Board', 'InfoBar', 'GamePlayers', 'GameTable', 'AlertDialog', 'Util', 'GenericActions', 'ConsentForm'], function (require, exports, React, Cabinet, Board, InfoBar, GamePlayers, GameTable, Alert, Util, GA, ConsentForm) {
+define(["require", "exports", "react", 'Cabinet', 'Board', 'InfoBar', 'GamePlayers', 'ActionBar', 'GameTable', 'AlertDialog', 'Util', 'GenericActions', 'ConsentForm'], function (require, exports, React, Cabinet, Board, InfoBar, GamePlayers, ActionBar, GameTable, Alert, Util, GA, ConsentForm) {
     "use strict";
     var GameRoom = (function (_super) {
         __extends(GameRoom, _super);
@@ -15,6 +15,10 @@ define(["require", "exports", "react", 'Cabinet', 'Board', 'InfoBar', 'GamePlaye
             var childs = [];
             var scores = React.createElement(GamePlayers.default, Util.Util.Merge(this.props.Players, { key: "scores", showScores: true, showWordsList: false }));
             childs.push(scores);
+            var scores = React.createElement(GamePlayers.default, Util.Util.Merge(this.props.Players, { key: "scores", showScores: true, showWordsList: false }));
+            childs.push(scores);
+            var actionBar = React.createElement(ActionBar.default, Util.Util.Merge(this.props.Stats, { key: "actionBar" }));
+            childs.push(actionBar);
             var gameTable = React.createElement(GameTable.default, this.props.GameTable);
             childs.push(gameTable);
             var board = React.createElement(Board.default, this.props.Board);

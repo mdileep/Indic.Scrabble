@@ -8,12 +8,8 @@
   .gameTable .message {
     max-width: 80vw;
   }
-  .gameTable button {
-    width: 42px;
-    height: 32px;
-  }
   .footer {
-    margin-bottom: 34vmin;
+    margin-bottom: 44vmin;
   }
   .tray .tile {
     width: 8vmin;
@@ -36,5 +32,10 @@
   .list li {
     margin: 3px;
     padding: 3px;
+  }
+  .gameTable button,
+  .actionBar button {
+    width: 8vmin;
+    height: 8vmin;
   }
 }

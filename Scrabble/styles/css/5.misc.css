@@ -8,26 +8,6 @@
 .gameTable {
   text-align: right;
 }
-.gameTable button {
-  text-indent: -9999px;
-  background-size: 36px 32px;
-  background-repeat: no-repeat;
-  background-color: white;
-}
-.gameTable button:disabled,
-.gameTable button[disabled] {
-  background-color: #DDDDDD;
-  cursor: auto;
-}
-.gameTable .pass {
-  background-image: url(/images/pass.svg);
-}
-.gameTable .redraw {
-  background-image: url(/images/pick.svg);
-}
-.gameTable .suggest {
-  background-image: url(/images/suggest.svg);
-}
 .list table {
   text-align: center;
 }
@@ -60,6 +40,22 @@
   text-align: left;
   list-style-type: decimal;
 }
+.players .player .human,
+.players .player .bot {
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: right center;
+}
+.players .player .human path,
+.players .player .bot path {
+  color: white;
+}
+.players .player .human {
+  background-image: url(/images/human.svg);
+}
+.players .player .bot {
+  background-image: url(/images/bot.svg);
+}
 .infoBar .h2 {
   color: black;
 }
@@ -68,4 +64,30 @@
 }
 .draggable {
   cursor: move;
+}
+.gameTable button,
+.actionBar button {
+  text-indent: -9999px;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: contain;
+}
+.gameTable button:disabled,
+.actionBar button:disabled,
+.gameTable button[disabled],
+.actionBar button[disabled] {
+  background-color: #DDDDDD;
+  cursor: auto;
+}
+.gameTable .pass,
+.actionBar .pass {
+  background-image: url(/images/pass.svg);
+}
+.gameTable .redraw,
+.actionBar .redraw {
+  background-image: url(/images/pick.svg);
+}
+.gameTable .suggest,
+.actionBar .suggest {
+  background-image: url(/images/suggest.svg);
 }

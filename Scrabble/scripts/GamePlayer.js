@@ -12,14 +12,16 @@ define(["require", "exports", "react"], function (require, exports, React) {
             this.state = props;
         }
         GamePlayer.prototype.render = function () {
-            var className = this.props.CurrentTurn ? "currentTurn" : "noTurn";
+            var classList = [];
+            classList.push(this.props.CurrentTurn ? "currentTurn" : "noTurn");
+            classList.push(this.props.Bot != null ? "bot" : "human");
             var childs = [];
             var id = "U" + this.props.Id;
             var elem = React.createElement('span', {
                 id: id,
                 ref: id,
                 key: id,
-                className: className,
+                className: classList.join(" "),
                 title: this.props.Name,
             }, this.props.Name);
             childs.push(elem);
@@ -31,16 +33,16 @@ define(["require", "exports", "react"], function (require, exports, React) {
                 var words = this.renderWords();
                 childs.push(words);
             }
-            var className = "player";
+            var classList = ["player"];
             if (this.props.showWords && !this.hasWords() && !this.props.showScore) {
-                className = "hide";
+                classList.push("hide");
             }
             var id = "D_" + this.props.Id;
             var div = React.createElement('div', {
                 id: id,
                 ref: id,
                 key: id,
-                className: className,
+                className: classList.join(" "),
                 title: this.props.Name,
             }, childs);
             return div;

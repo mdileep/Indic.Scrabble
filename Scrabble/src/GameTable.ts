@@ -25,7 +25,7 @@ class GameTable extends React.Component<Contracts.iGameTable, Contracts.iGameTab
     render() {
         var childs: React.ReactElement<Contracts.iProps>[] = [];
         var message = this.renderMessage();
-        var help = this.renderSuggest();
+        var suggest = this.renderSuggest();
         var reDraw = this.renderReDraw();
         var pass = this.renderPass();
 
@@ -37,7 +37,7 @@ class GameTable extends React.Component<Contracts.iGameTable, Contracts.iGameTab
                 ref: id,
                 className: "actions",
                 title: "Actions",
-            }, [message, help, reDraw, pass]);
+            }, [message, suggest, reDraw, pass]);
         childs.push(actions);
 
         var vowelTray = React.createElement(((Tray.default as any) as React.ComponentClass<Contracts.iTrayProps>), Util.Util.Merge(this.props.VowelTray, { ShowLabel: false, ReadOnly: this.props.ReadOnly }));

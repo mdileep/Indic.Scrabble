@@ -36,12 +36,8 @@
   .gameTable .message {
     max-width: 80vw;
   }
-  .gameTable button {
-    width: 42px;
-    height: 32px;
-  }
   .footer {
-    margin-bottom: 34vmin;
+    margin-bottom: 44vmin;
   }
   .tray .tile {
     width: 8vmin;
@@ -64,6 +60,11 @@
   .list li {
     margin: 3px;
     padding: 3px;
+  }
+  .gameTable button,
+  .actionBar button {
+    width: 8vmin;
+    height: 8vmin;
   }
 }
 
@@ -117,8 +118,10 @@
 
 /*5.misc.mobile.css*/
 @media screen and (min-width: 300px) and (min-height: 300px) and (max-width: 600px) and (max-height: 600px) {
-  .gameTable button {
-    background-size: 36px 32px;
+  .gameTable button,
+  .actionBar button {
+    width: 8vmin;
+    height: 8vmin;
   }
 }
 

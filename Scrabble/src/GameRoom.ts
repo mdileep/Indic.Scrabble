@@ -19,6 +19,7 @@ import * as Cabinet from 'Cabinet';
 import * as Board from 'Board';
 import * as InfoBar from 'InfoBar';
 import * as GamePlayers from 'GamePlayers';
+import * as ActionBar from 'ActionBar';
 import * as GameTable from 'GameTable';
 import * as Alert from 'AlertDialog';
 import * as Confirm from 'ConfirmDialog';
@@ -39,6 +40,11 @@ class GameRoom extends React.Component<Contracts.iGameState, Contracts.iGameStat
         var scores = React.createElement(((GamePlayers.default as any) as React.ComponentClass<Contracts.iPlayers>), Util.Util.Merge(this.props.Players, { key: "scores", showScores: true, showWordsList: false }));
         childs.push(scores);
 
+        var scores = React.createElement(((GamePlayers.default as any) as React.ComponentClass<Contracts.iPlayers>), Util.Util.Merge(this.props.Players, { key: "scores", showScores: true, showWordsList: false }));
+        childs.push(scores);
+
+        var actionBar = React.createElement(((ActionBar.default as any) as React.ComponentClass<Contracts.iActionBar>), Util.Util.Merge(this.props.Stats, { key: "actionBar" }));
+        childs.push(actionBar);
 
         var gameTable = React.createElement(((GameTable.default as any) as React.ComponentClass<Contracts.iGameTable>), this.props.GameTable);
         childs.push(gameTable);

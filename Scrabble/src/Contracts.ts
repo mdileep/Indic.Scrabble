@@ -236,6 +236,8 @@ export interface iPlayersView extends iPlayers {
     showScores: boolean;
     showWordsList: boolean;
 }
+export interface iActionBar extends iBoardsStats, iComponent {
+}
 //
 export interface iAction {
     type: number;
@@ -332,8 +334,7 @@ export interface KnownBoard {
     Size: number;
     Weights: number[];
 }
-export interface iGameEngine
-{
+export interface iGameEngine {
     BestMove(Board: ScrabbleBoard): ProbableMove;
     Probables(Board: ScrabbleBoard): ProbableMove[];
 }

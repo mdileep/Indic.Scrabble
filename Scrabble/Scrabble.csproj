@@ -99,6 +99,7 @@
     <TypeScriptCompile Include="src\AskBot.ts" />
     <TypeScriptCompile Include="src\BoardCell.ts" />
     <TypeScriptCompile Include="src\DragDropTouch.ts" />
+    <TypeScriptCompile Include="src\ActionBar.ts" />
     <TypeScriptCompile Include="src\GameStore.ts" />
     <TypeScriptCompile Include="src\GenericActions.ts" />
     <TypeScriptCompile Include="src\Index.ts" />
@@ -191,6 +192,10 @@
     <Content Include="images\pass.svg" />
     <Content Include="images\loading.svg" />
     <Content Include="images\suggest.svg" />
+    <Content Include="images\bot.svg" />
+    <Content Include="images\human.svg" />
+    <Content Include="scripts\ActionBar.js" />
+    <Content Include="styles\Less.targets" />
   </ItemGroup>
   <ItemGroup>
     <None Include="web.Debug.config">

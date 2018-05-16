@@ -61,13 +61,15 @@
 .players {
   color: blue;
 }
-.players .currentTurn {
-  background-color: brown;
+.players .currentTurn,
+.players .noTurn {
   color: white;
 }
+.players .currentTurn {
+  background-color: #007f0b;
+}
 .players .noTurn {
-  background-color: black;
-  color: white;
+  background-color: #b24b2c;
 }
 .players .player {
   border: 1px solid #EEEEEE;

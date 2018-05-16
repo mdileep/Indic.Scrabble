@@ -23,7 +23,9 @@ class GamePlayer extends React.Component<Contracts.iPlayerView, Contracts.iPlaye
     }
 
     render() {
-        var className: string = this.props.CurrentTurn ? "currentTurn" : "noTurn";
+        var classList: string[] = [];
+        classList.push(this.props.CurrentTurn ? "currentTurn" : "noTurn");
+        classList.push(this.props.Bot != null ? "bot" : "human");
 
         var childs: React.ReactElement<Contracts.iProps>[] = [];
 
@@ -33,7 +35,7 @@ class GamePlayer extends React.Component<Contracts.iPlayerView, Contracts.iPlaye
                 id: id,
                 ref: id,
                 key: id,
-                className: className,
+                className: classList.join(" "),
                 title: this.props.Name,
             }, this.props.Name);
         childs.push(elem);
@@ -48,9 +50,9 @@ class GamePlayer extends React.Component<Contracts.iPlayerView, Contracts.iPlaye
             childs.push(words);
         }
 
-        var className: string = "player";
+        var classList: string[] = ["player"];
         if (this.props.showWords && !this.hasWords() && !this.props.showScore) {
-            className = "hide";
+            classList.push("hide");
         }
 
         var id = "D_" + this.props.Id;
@@ -59,7 +61,7 @@ class GamePlayer extends React.Component<Contracts.iPlayerView, Contracts.iPlaye
                 id: id,
                 ref: id,
                 key: id,
-                className: className,
+                className: classList.join(" "),
                 title: this.props.Name,
             }, childs);
         return div;

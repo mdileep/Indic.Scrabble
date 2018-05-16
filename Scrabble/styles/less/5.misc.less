@@ -8,31 +8,6 @@
 
 .gameTable {
     text-align: right;
-
-    button {
-        text-indent: -9999px;
-        background-size: 36px 32px;
-        background-repeat: no-repeat;
-        background-color: white;
-    }
-
-    button:disabled,
-    button[disabled] {
-        background-color: #DDDDDD;
-        cursor: auto;
-    }
-
-    .pass {
-        background-image: url(/images/pass.svg);
-    }
-
-    .redraw {
-        background-image: url(/images/pick.svg);
-    }
-
-    .suggest {
-        background-image: url(/images/suggest.svg);
-    }
 }
 
 .cabinet {
@@ -84,6 +59,31 @@
             text-align: left;
             list-style-type: decimal;
         }
+
+        .human, .bot {
+            background-repeat: no-repeat;
+            background-size: contain;
+            background-position: right center;
+
+            path {
+                color: white;
+            }
+        }
+
+        .human {
+            background-image: url(/images/human.svg);
+        }
+
+        .bot {
+            background-image: url(/images/bot.svg);
+        }
+
+
+        .currentTurn {
+        }
+
+        .noTurn {
+        }
     }
 }
 
@@ -99,4 +99,31 @@
 
 .draggable {
     cursor: move;
+}
+
+.gameTable, .actionBar {
+    button {
+        text-indent: -9999px;
+        background-repeat: no-repeat;
+        background-position: center center;
+        background-size: contain;
+    }
+
+    button:disabled,
+    button[disabled] {
+        background-color: #DDDDDD;
+        cursor: auto;
+    }
+
+    .pass {
+        background-image: url(/images/pass.svg);
+    }
+
+    .redraw {
+        background-image: url(/images/pick.svg);
+    }
+
+    .suggest {
+        background-image: url(/images/suggest.svg);
+    }
 }

@@ -15,7 +15,7 @@ define(["require", "exports", "react", 'Contracts', 'Tray', 'Util', 'GameStore']
             var _this = this;
             var childs = [];
             var message = this.renderMessage();
-            var help = this.renderSuggest();
+            var suggest = this.renderSuggest();
             var reDraw = this.renderReDraw();
             var pass = this.renderPass();
             var id = "actions";
@@ -25,7 +25,7 @@ define(["require", "exports", "react", 'Contracts', 'Tray', 'Util', 'GameStore']
                 ref: id,
                 className: "actions",
                 title: "Actions",
-            }, [message, help, reDraw, pass]);
+            }, [message, suggest, reDraw, pass]);
             childs.push(actions);
             var vowelTray = React.createElement(Tray.default, Util.Util.Merge(this.props.VowelTray, { ShowLabel: false, ReadOnly: this.props.ReadOnly }));
             childs.push(vowelTray);
