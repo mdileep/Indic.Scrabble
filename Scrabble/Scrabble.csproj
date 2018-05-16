@@ -195,7 +195,6 @@
     <Content Include="images\bot.svg" />
     <Content Include="images\human.svg" />
     <Content Include="scripts\ActionBar.js" />
-    <Content Include="styles\Less.targets" />
   </ItemGroup>
   <ItemGroup>
     <None Include="web.Debug.config">
