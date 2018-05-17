@@ -38,13 +38,13 @@ class GameRoom extends React.Component<Contracts.iGameState, Contracts.iGameStat
     render() {
         var childs: React.ReactElement<Contracts.iProps>[] = [];
 
-        var scores = React.createElement(((GamePlayers.default as any) as React.ComponentClass<Contracts.iPlayers>), Util.Util.Merge(this.props.Players, { key: "scores", showScores: true, showWordsList: false, ReadOnly: this.props.ReadOnly }));
+        var scores = React.createElement(((GamePlayers.default as any) as React.ComponentClass<Contracts.iPlayers>), Util.Util.Merge(this.props.Players, { key: "scores", showScores: true, showWordsList: false, ReadOnly: this.props.Players.ReadOnly || this.props.ReadOnly }));
         childs.push(scores);
 
         var actionBar = React.createElement(((ActionBar.default as any) as React.ComponentClass<Contracts.iActionBar>), Util.Util.Merge(this.props.Stats, { key: "actionBar", ReadOnly: this.props.ReadOnly }));
         childs.push(actionBar);
 
-        var gameTable = React.createElement(((GameTable.default as any) as React.ComponentClass<Contracts.iGameTable>), this.props.GameTable);
+        var gameTable = React.createElement(((GameTable.default as any) as React.ComponentClass<Contracts.iGameTable>), Util.Util.Merge(this.props.GameTable, { ReadOnly: this.props.GameTable.ReadOnly || this.props.ReadOnly }));
         childs.push(gameTable);
 
         var board = React.createElement(((Board.default as any) as React.ComponentClass<Contracts.iBoardProps>), this.props.Board);
@@ -53,7 +53,7 @@ class GameRoom extends React.Component<Contracts.iGameState, Contracts.iGameStat
         var words = React.createElement(((GamePlayers.default as any) as React.ComponentClass<Contracts.iPlayers>), Util.Util.Merge(this.props.Players, { key: "words", Id: "WordBoard", showScores: false, showWordsList: true, ReadOnly: this.props.ReadOnly }));
         childs.push(words);
 
-        var cabinet = React.createElement(((Cabinet.default as any) as React.ComponentClass<Contracts.iCabinetProps>), this.props.Cabinet);
+        var cabinet = React.createElement(((Cabinet.default as any) as React.ComponentClass<Contracts.iCabinetProps>), Util.Util.Merge(this.props.Cabinet, { ReadOnly: this.props.Cabinet.ReadOnly || this.props.ReadOnly }));
         childs.push(cabinet);
 
         var info = React.createElement(((InfoBar.default as any) as React.ComponentClass<Contracts.iInfoBar>), this.props.InfoBar);

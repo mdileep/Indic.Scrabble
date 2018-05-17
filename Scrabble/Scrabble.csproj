@@ -52,11 +52,12 @@
     <Content Include="bots\te.gallery.txt" />
     <Content Include="bots\te.kinige.txt" />
     <Content Include="bots\te.veeven.txt" />
-    <Content Include="bots\kn.vijaykarnataka.txt" />
     <Content Include="bots\te.andhrajyothy.txt" />
     <Content Include="bots\te.bbc.txt" />
     <Content Include="bots\te.eenadu.txt" />
     <Content Include="bots\te.tebha.txt" />
+    <Content Include="bots\kn.vijaykarnataka.txt" />
+    <Content Include="bots\kn.udayavani.txt" />
   </ItemGroup>
   <ItemGroup>
     <LessFiles Include="styles\less\4.colors.mobile.less" />

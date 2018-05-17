@@ -46,6 +46,7 @@ namespace Scrabble
 			//
 			file = ServerUtil.Path("bots\\" + bot.Dictionary);
 			CharSet = Config.GetCharSet(bot.Language);
+			key = bot.Id;
 			//
 			size = board.Size;
 			weights = board.Weights;
@@ -126,7 +127,7 @@ namespace Scrabble
 
 				Thread t2 = new Thread(() =>
 				{
-					Moves.AddRange(WordExtensions(cells, size, CharSet, WordsDictionary, MovableList, SpeicalDict));
+					Moves.AddRange(WordExtensions(cells, size, CharSet, key, WordsDictionary, MovableList, SpeicalDict));
 				});
 
 				t1.Start(); t2.Start();
@@ -259,7 +260,8 @@ namespace Scrabble
 				return Moves;
 			}
 		}
-		static List<ProbableMove> WordExtensions(string[] Cells, int size, CharSet CharSet, List<Word> AllWords, List<string> Movables, Dictionary<string, Regex> SpeicalDict)
+
+		static List<ProbableMove> WordExtensions(string[] Cells, int size, CharSet CharSet, string key, List<Word> AllWords, List<string> Movables, Dictionary<string, Regex> SpeicalDict)
 		{
 			using (new Watcher("\tWord Extensions"))
 			{
@@ -278,6 +280,7 @@ namespace Scrabble
 						//Printer.PrintLine("\t\t Word Pattern: " + pattern);
 						//using (new Watcher("\t\t Match Word: ", true))
 						{
+							//var CachedList = CacheManager.GetSession<List<Word>>(key + "|" + wordOnBoard.Tiles,AllWords,ShortListedWords);
 							foreach (Word word in AllWords)
 							{
 								if (raw == word.Tiles)
@@ -351,6 +354,11 @@ namespace Scrabble
 				return Moves;
 			}
 		}
+		static List<Word> ShortListedWords(List<Word> AllWords)
+		{
+			return null;
+		}
+
 		static ProbableMove TryHarizontal(string[] Cells, int size, int Index, int offset, string[] Pre, string[] Centers, string[] Post)
 		{
 
@@ -1483,6 +1491,7 @@ namespace Scrabble
 		string conso;
 		string special;
 		int start;
+		string key;
 
 		static T Deserialize<T>(string fromFile)
 		{

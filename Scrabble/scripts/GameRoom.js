@@ -13,17 +13,17 @@ define(["require", "exports", "react", 'Cabinet', 'Board', 'InfoBar', 'GamePlaye
         }
         GameRoom.prototype.render = function () {
             var childs = [];
-            var scores = React.createElement(GamePlayers.default, Util.Util.Merge(this.props.Players, { key: "scores", showScores: true, showWordsList: false, ReadOnly: this.props.ReadOnly }));
+            var scores = React.createElement(GamePlayers.default, Util.Util.Merge(this.props.Players, { key: "scores", showScores: true, showWordsList: false, ReadOnly: this.props.Players.ReadOnly || this.props.ReadOnly }));
             childs.push(scores);
             var actionBar = React.createElement(ActionBar.default, Util.Util.Merge(this.props.Stats, { key: "actionBar", ReadOnly: this.props.ReadOnly }));
             childs.push(actionBar);
-            var gameTable = React.createElement(GameTable.default, this.props.GameTable);
+            var gameTable = React.createElement(GameTable.default, Util.Util.Merge(this.props.GameTable, { ReadOnly: this.props.GameTable.ReadOnly || this.props.ReadOnly }));
             childs.push(gameTable);
             var board = React.createElement(Board.default, this.props.Board);
             childs.push(board);
             var words = React.createElement(GamePlayers.default, Util.Util.Merge(this.props.Players, { key: "words", Id: "WordBoard", showScores: false, showWordsList: true, ReadOnly: this.props.ReadOnly }));
             childs.push(words);
-            var cabinet = React.createElement(Cabinet.default, this.props.Cabinet);
+            var cabinet = React.createElement(Cabinet.default, Util.Util.Merge(this.props.Cabinet, { ReadOnly: this.props.Cabinet.ReadOnly || this.props.ReadOnly }));
             childs.push(cabinet);
             var info = React.createElement(InfoBar.default, this.props.InfoBar);
             childs.push(info);

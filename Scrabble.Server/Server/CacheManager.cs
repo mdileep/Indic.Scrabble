@@ -49,5 +49,16 @@ namespace Scrabble.Server
 			HttpContext.Current.Application[Key] = obj;
 			return obj;
 		}
+
+		internal static T GetSession<T, T1, T2>(string Key, T1 p1, T2 p2, Func<T1, T2, T> callBack)
+		{
+			if (HttpContext.Current.Session[Key] != null)
+			{
+				return (T)HttpContext.Current.Session[Key];
+			}
+			var obj = callBack(p1, p2);
+			HttpContext.Current.Session[Key] = obj;
+			return obj;
+		}
 	}
 }

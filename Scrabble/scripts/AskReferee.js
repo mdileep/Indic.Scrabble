@@ -19,15 +19,23 @@ define(["require", "exports", 'Messages', 'Util', "AskBot", 'Indic', 'GameAction
                 AskReferee.Announce(state, M.Messages.HasIslands);
                 return;
             }
-            var isCovered = AskReferee.IsStarCovered(state);
-            if (!isCovered) {
-                AskReferee.Announce(state, M.Messages.IsStarCovered);
-                return;
+            var hasMoves = AskReferee.HasMoves(state);
+            if (hasMoves) {
+                var isCovered = AskReferee.IsStarCovered(state);
+                if (!isCovered) {
+                    AskReferee.Announce(state, M.Messages.IsStarCovered);
+                    return;
+                }
             }
             var player = state.Players.Players[state.Players.CurrentPlayer];
             state.GameTable.Message = U.Util.Format(M.Messages.LookupDict, [player.Name]);
-            state.GameTable.ReadOnly = true;
+            state.ReadOnly = true;
             setTimeout(AskServer.AskServer.Validate, 100);
+        };
+        AskReferee.HasMoves = function (state) {
+            var Board = state.Board;
+            var first = AskReferee.FirstNonEmpty(Board.Cells, [], Board.Size);
+            return (first != -1);
         };
         AskReferee.IsStarCovered = function (state) {
             var C = state.Board.Cells[state.Board.Star];

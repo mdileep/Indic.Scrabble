@@ -49,7 +49,7 @@
   },
   "veeven": {
     "Name": "వీవెనుడు",
-    "FullName": "వీవెన్",
+    "FullName": "వీవెనుడు",
     "Language": "te",
     "Algorithm": "Default",
     "Dictionary": "te.veeven.txt",
@@ -60,6 +60,14 @@
     "FullName": "ವಿಜಯ ಕರ್ನಾಟಕ",
     "Language": "kn",
     "Dictionary": "kn.vijaykarnataka.txt",
+    "Algorithm": "Default",
+    "Endpoint": null
+  },
+  "udayavani":{
+    "Name": "ಉದಯವಾಣಿ",
+    "FullName": "ಉದಯವಾಣಿ",
+    "Language": "kn",
+    "Dictionary": "kn.udayavani.txt",
     "Algorithm": "Default",
     "Endpoint": null
   }

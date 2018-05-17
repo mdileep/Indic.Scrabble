@@ -33,9 +33,6 @@
   .gameTable .actions {
     height: 8vmin;
   }
-  .gameTable .message {
-    max-width: 80vw;
-  }
   .footer {
     margin-bottom: 44vmin;
   }
