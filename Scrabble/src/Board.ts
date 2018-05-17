@@ -9,10 +9,13 @@
 //       _._        | <TODO>                   |   <TODO>                  | <TODO>
 // </copyright>
 //---------------------------------------------------------------------------------------------
+
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as Contracts from 'Contracts';
 import * as BoardCell from 'BoardCell';
+import * as U from  'Util';
+import * as M from  'Messages';
 
 class Board extends React.Component<Contracts.iBoardProps, Contracts.iBoardProps> {
     constructor(props: Contracts.iBoardProps) {
@@ -36,7 +39,7 @@ class Board extends React.Component<Contracts.iBoardProps, Contracts.iBoardProps
                     key: rowId,
                     ref: rowId,
                     className: "row",
-                    title: "Row",
+                    title: U.Util.Format(M.Messages.Row, [i + 1]),
                 }, cells);
             rows.push(row);
         }
@@ -48,16 +51,15 @@ class Board extends React.Component<Contracts.iBoardProps, Contracts.iBoardProps
                 id: "table",
                 key: "table",
                 ref: "table",
-                className: "table",
-                title: "Table",
+                className: "table"
             }, tbody);
-       var elem = React.createElement('div',
+        var elem = React.createElement('div',
             {
                 id: "board",
                 key: "board",
                 ref: "board",
                 className: "board",
-                title: "Board",
+                title: M.Messages.Board,
             }, [table]);
         return elem;
     }

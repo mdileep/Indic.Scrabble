@@ -23,7 +23,7 @@ define(["require", "exports", "react", "react-dom", 'Contracts', 'Messages', 'In
             var players = state.Players.Players;
             var currentPlayer = state.Players.CurrentPlayer;
             var isBot = players[currentPlayer].Bot !== null;
-            state.GameTable.ReadOnly = isBot;
+            state.ReadOnly = isBot;
             if (!isBot) {
                 return;
             }
@@ -57,7 +57,7 @@ define(["require", "exports", "react", "react-dom", 'Contracts', 'Messages', 'In
         GameActions.TakeConsent = function (state, words) {
             state.Consent.Pending = GameActions.BuildWordPairs(words);
             state.Consent.UnResolved = [];
-            state.GameTable.ReadOnly = true;
+            state.ReadOnly = true;
             var player = state.Players.Players[state.Players.CurrentPlayer];
             state.GameTable.Message = Util.Util.Format(Messages.Messages.YourTurn, [player.Name]);
         };
@@ -74,7 +74,7 @@ define(["require", "exports", "react", "react-dom", 'Contracts', 'Messages', 'In
             GameActions.ConsentRecieved(state, args);
         };
         GameActions.ConsentRecieved = function (state, args) {
-            state.GameTable.ReadOnly = false;
+            state.ReadOnly = false;
             if (state.Consent.Pending.length == 0) {
                 if (state.Consent.UnResolved.length == 0) {
                     GameActions.Award(state, args);
@@ -328,30 +328,10 @@ define(["require", "exports", "react", "react-dom", 'Contracts', 'Messages', 'In
         };
         GameActions.AwardClaims = function (state) {
             var Claims = GameActions.WordsOnBoard(state.Board, true, false);
-            var Awarded = GameActions.AwardedWords(state);
-            for (var key in Claims) {
-                var word = Claims[key];
-                var isDuplicate = Util.Util.Contains(word, Awarded);
-                if (isDuplicate) {
-                    word.Score = 1;
-                }
-            }
             var playerId = state.Players.CurrentPlayer;
             var player = state.Players.Players[playerId];
             player.Awarded = player.Awarded.concat(Claims);
             player.Claimed = [];
-        };
-        GameActions.HasDuplicates = function (state, Src, Compare) {
-            var res = false;
-            for (var key in Compare) {
-                var word = Compare[key];
-                var exists = Util.Util.Contains(word, Src);
-                if (exists) {
-                    state.InfoBar.Messages.push(Util.Util.Format(Messages.Messages.HasDupliates, [word.Text]));
-                    return true;
-                }
-            }
-            return false;
         };
         GameActions.AwardedWords = function (state) {
             var Words = [];
@@ -715,8 +695,8 @@ define(["require", "exports", "react", "react-dom", 'Contracts', 'Messages', 'In
         GameActions.AvailableVowels = function (cache) {
             var available = [];
             for (var prop in cache) {
-                if ((Indic.Indic.IsVowel(prop) || Indic.Indic.IsSunnaSet(prop)) && cache[prop].Remaining > 0) {
-                    for (var i = 0; i < cache[prop].Remaining; i++) {
+                if ((Indic.Indic.IsVowel(prop) || Indic.Indic.IsSunnaSet(prop)) && (cache[prop].Remaining - cache[prop].OnBoard > 0)) {
+                    for (var i = 0; i < cache[prop].Remaining - cache[prop].OnBoard; i++) {
                         available.push(prop);
                     }
                 }
@@ -726,8 +706,8 @@ define(["require", "exports", "react", "react-dom", 'Contracts', 'Messages', 'In
         GameActions.AvailableConso = function (cache) {
             var available = [];
             for (var prop in cache) {
-                if (Indic.Indic.IsConsonent(prop) && cache[prop].Remaining > 0) {
-                    for (var i = 0; i < cache[prop].Remaining; i++) {
+                if (Indic.Indic.IsConsonent(prop) && (cache[prop].Remaining - cache[prop].OnBoard > 0)) {
+                    for (var i = 0; i < cache[prop].Remaining - cache[prop].OnBoard; i++) {
                         available.push(prop);
                     }
                 }

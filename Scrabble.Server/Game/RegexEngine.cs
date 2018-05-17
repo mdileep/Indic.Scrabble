@@ -49,6 +49,7 @@ namespace Scrabble
 			//
 			size = board.Size;
 			weights = board.Weights;
+			start = board.Star;
 			//
 			cells = Board.Cells;
 			vowels = Board.Vowels;
@@ -65,6 +66,7 @@ namespace Scrabble
 			}
 			return Moves[0];
 		}
+
 		public List<ProbableMove> Probables()
 		{
 			var Moves = new List<ProbableMove>();
@@ -132,8 +134,7 @@ namespace Scrabble
 			}
 			else
 			{
-				int maxIndex = MaxWeightIndex(weights);
-				Moves.AddRange(EmptyExtensions(cells, size, CharSet, maxIndex, WordsDictionary, MovableList, SpeicalDict));
+				Moves.AddRange(EmptyExtensions(cells, size, CharSet, start, WordsDictionary, MovableList, SpeicalDict));
 			}
 
 			WordsDictionary = null;
@@ -141,7 +142,7 @@ namespace Scrabble
 			return Moves;
 		}
 
-		static List<ProbableMove> EmptyExtensions(string[] Cells, int size, CharSet CharSet, int maxIndex, List<Word> AllWords, List<string> Movables, Dictionary<string, Regex> SpeicalDict)
+		static List<ProbableMove> EmptyExtensions(string[] Cells, int size, CharSet CharSet, int startIndex, List<Word> AllWords, List<string> Movables, Dictionary<string, Regex> SpeicalDict)
 		{
 			using (new Watcher("\tEmpty Extesnsions"))
 			{
@@ -168,9 +169,11 @@ namespace Scrabble
 						{
 							continue;
 						}
+						int totalCells = Pres.Length + Centers.Length + Posts.Length;
+						int centroid = totalCells % 2 == 0 ? (totalCells / 2 - 1) : totalCells / 2;
 
-						ProbableMove WH = TryHarizontal(Cells, size, maxIndex, 0, Pres, Centers, Posts);
-						ProbableMove WV = TryVertical(Cells, size, maxIndex, 0, Pres, Centers, Posts);
+						ProbableMove WH = TryHarizontal(Cells, size, startIndex - centroid, 0, Pres, Centers, Posts);
+						ProbableMove WV = TryVertical(Cells, size, startIndex - centroid, 0, Pres, Centers, Posts);
 
 						bool WHValid = Validate(WH, AllWords);
 						bool WVValid = Validate(WV, AllWords);
@@ -1479,6 +1482,7 @@ namespace Scrabble
 		string vowels;
 		string conso;
 		string special;
+		int start;
 
 		static T Deserialize<T>(string fromFile)
 		{

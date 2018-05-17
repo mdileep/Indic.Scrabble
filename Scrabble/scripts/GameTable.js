@@ -3,7 +3,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", "react", 'Contracts', 'Tray', 'Util', 'GameStore'], function (require, exports, React, Contracts, Tray, Util, GS) {
+define(["require", "exports", "react", 'Contracts', 'Tray', 'Util', 'GameStore', 'Messages'], function (require, exports, React, Contracts, Tray, Util, GS, M) {
     "use strict";
     var GameTable = (function (_super) {
         __extends(GameTable, _super);
@@ -24,7 +24,7 @@ define(["require", "exports", "react", 'Contracts', 'Tray', 'Util', 'GameStore']
                 key: id,
                 ref: id,
                 className: "actions",
-                title: "Actions",
+                title: M.Messages.Actions,
             }, [message, suggest, reDraw, pass]);
             childs.push(actions);
             var vowelTray = React.createElement(Tray.default, Util.Util.Merge(this.props.VowelTray, { ShowLabel: false, ReadOnly: this.props.ReadOnly }));
@@ -37,7 +37,7 @@ define(["require", "exports", "react", 'Contracts', 'Tray', 'Util', 'GameStore']
                 key: id,
                 ref: id,
                 className: "gameTable",
-                title: "GameTable",
+                title: M.Messages.GameTable,
                 onDragOver: this.OnDragOver,
                 onDrop: function (evt) { _this.OnDrop(evt); },
             }, childs);
@@ -61,10 +61,10 @@ define(["require", "exports", "react", 'Contracts', 'Tray', 'Util', 'GameStore']
                 key: id,
                 ref: id,
                 className: "suggest",
-                title: "Suggest",
+                title: M.Messages.Suggest,
                 disabled: this.props.ReadOnly,
                 onClick: this.OnAskSuggestion,
-            }, [], "Suggest");
+            }, [], M.Messages.Suggest);
             return help;
         };
         GameTable.prototype.renderReDraw = function () {
@@ -74,10 +74,10 @@ define(["require", "exports", "react", 'Contracts', 'Tray', 'Util', 'GameStore']
                 key: id,
                 ref: id,
                 className: "redraw",
-                title: "Re-Draw",
+                title: M.Messages.ReDraw,
                 disabled: this.props.ReadOnly || !this.props.CanReDraw,
                 onClick: this.OnReDraw,
-            }, [], "Re-Draw");
+            }, [], M.Messages.ReDraw);
             return pass;
         };
         GameTable.prototype.renderPass = function () {
@@ -87,10 +87,10 @@ define(["require", "exports", "react", 'Contracts', 'Tray', 'Util', 'GameStore']
                 key: id,
                 ref: id,
                 className: "pass",
-                title: "Pass",
+                title: M.Messages.Pass,
                 onClick: this.OnPass,
                 disabled: this.props.ReadOnly,
-            }, [], "Pass");
+            }, [], M.Messages.Pass);
             return pass;
         };
         GameTable.prototype.OnPass = function (ev) {

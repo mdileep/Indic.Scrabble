@@ -16,7 +16,7 @@ import * as GamePlayer from 'GamePlayer';
 import * as GameLoader from 'GameLoader';
 import * as Indic from 'Indic';
 import * as Util from 'Util';
-import * as Messages from 'Messages';
+import * as M from 'Messages';
 
 class GamePlayers extends React.Component<Contracts.iPlayersView, Contracts.iPlayersView> {
     constructor(props: Contracts.iPlayersView) {
@@ -40,8 +40,8 @@ class GamePlayers extends React.Component<Contracts.iPlayersView, Contracts.iPla
                 {
                     key: "lbl",
                     className:"conditions",
-                    title: Messages.Messages.Claimed
-                }, Messages.Messages.Claimed);
+                    title: M.Messages.Claimed
+                }, M.Messages.Claimed);
             childs.push(label);
         }
 
@@ -52,7 +52,7 @@ class GamePlayers extends React.Component<Contracts.iPlayersView, Contracts.iPla
                 key: this.props.Id,
                 ref: this.props.Id,
                 className: className,
-                title: "Players",
+                title: M.Messages.Players,
             }, childs);
         return elem;
     }

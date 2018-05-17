@@ -166,6 +166,7 @@ define(["require", "exports", 'axios', 'GameStore', 'Contracts', 'Util', 'WordLo
             var CharSet = GameConfig.GetCharSet(bot.Language);
             var size = board.Size;
             var weights = board.Weights;
+            var start = board.Star;
             var cells = Board.Cells;
             var vowels = Board.Vowels;
             var conso = Board.Conso;
@@ -203,14 +204,13 @@ define(["require", "exports", 'axios', 'GameStore', 'Contracts', 'Util', 'WordLo
                 Moves = Moves.concat(RegexEngine.WordExtensions(cells, size, CharSet, WordsDictionary, MovableList, SpeicalDict));
             }
             else {
-                var maxIndex = this.MaxWeightIndex(weights);
-                Moves = Moves.concat(RegexEngine.EmptyExtensions(cells, size, CharSet, maxIndex, WordsDictionary, MovableList, SpeicalDict));
+                Moves = Moves.concat(RegexEngine.EmptyExtensions(cells, size, CharSet, start, WordsDictionary, MovableList, SpeicalDict));
             }
             WordsDictionary = null;
             this.RefreshScores(Moves, weights, size);
             return Moves;
         };
-        RegexEngine.EmptyExtensions = function (Cells, size, CharSet, maxIndex, AllWords, Movables, SpeicalDict) {
+        RegexEngine.EmptyExtensions = function (Cells, size, CharSet, startIndex, AllWords, Movables, SpeicalDict) {
             var Moves = [];
             {
                 for (var indx in AllWords) {
@@ -229,8 +229,10 @@ define(["require", "exports", 'axios', 'GameStore', 'Contracts', 'Util', 'WordLo
                     if (!res) {
                         continue;
                     }
-                    var WH = RegexEngine.TryHarizontal(Cells, size, maxIndex, 0, Pres, Centers, Posts);
-                    var WV = RegexEngine.TryVertical(Cells, size, maxIndex, 0, Pres, Centers, Posts);
+                    var totalCells = Pres.length + Centers.length + Posts.length;
+                    var centroid = totalCells % 2 == 0 ? (Math.floor(totalCells / 2) - 1) : Math.floor(totalCells / 2);
+                    var WH = RegexEngine.TryHarizontal(Cells, size, startIndex - centroid, 0, Pres, Centers, Posts);
+                    var WV = RegexEngine.TryVertical(Cells, size, startIndex - centroid, 0, Pres, Centers, Posts);
                     var WHValid = RegexEngine.Validate3(WH, AllWords);
                     var WVValid = RegexEngine.Validate3(WV, AllWords);
                     if (WHValid) {

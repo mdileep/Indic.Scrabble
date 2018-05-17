@@ -45,4 +45,20 @@ export class Messages {
     public static OK: string = "";
     public static Yes: string = "";
     public static No: string = "";
+    public static IsStarCovered: string = "";
+    public static ActionBar: string = "";
+    public static Help: string = "";
+    public static Suggest: string = "";
+    public static Board: string = "";
+    public static Row: string = "";
+    public static Cabinet: string = "";
+    public static TrayLabels: string = "";
+    public static Words: string = "";
+    public static Players: string = "";
+    public static Brand: string = "";
+    public static List: string = "";
+    public static GameTable: string = "";
+    public static ReDraw: string = "";
+    public static Pass: string = "";
+    public static Actions: string = "";
 }

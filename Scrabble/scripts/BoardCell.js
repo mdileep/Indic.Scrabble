@@ -56,6 +56,7 @@ define(["require", "exports", "react", 'Contracts', 'GameStore'], function (requ
             if (this.props.Waiting.length + this.props.Confirmed.length != 0) {
                 classList.push("filled");
             }
+            var covered = (this.props.Waiting.length + this.props.Confirmed.length != 0);
             var confirmed = (this.props.Waiting.length == 0 && this.props.Confirmed.length != 0);
             var draggable = this.isDragable();
             if (confirmed) {
@@ -63,6 +64,9 @@ define(["require", "exports", "react", 'Contracts', 'GameStore'], function (requ
             }
             if (draggable) {
                 classList.push("draggable");
+            }
+            if (this.props.Star && !covered) {
+                classList.push("star");
             }
             if (confirmed || this.props.Waiting.length != 0) {
                 return classList.join(' ');

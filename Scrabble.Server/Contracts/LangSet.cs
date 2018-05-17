@@ -55,6 +55,7 @@ namespace Shared
 		public string Name;
 		public int Size;
 		public int[] Weights;
+		public int Star;
 		public GameTable GameTable;
 		public GameTray[] Trays;
 	}

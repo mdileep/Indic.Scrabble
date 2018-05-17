@@ -197,6 +197,7 @@ export class RegexEngine {
         //
         var size = board.Size;
         var weights = board.Weights;
+        var start = board.Star;
         //
         var cells = Board.Cells;
         var vowels = Board.Vowels;
@@ -250,8 +251,7 @@ export class RegexEngine {
             Moves = Moves.concat(RegexEngine.WordExtensions(cells, size, CharSet, WordsDictionary, MovableList, SpeicalDict));
         }
         else {
-            var maxIndex: number = this.MaxWeightIndex(weights);
-            Moves = Moves.concat(RegexEngine.EmptyExtensions(cells, size, CharSet, maxIndex, WordsDictionary, MovableList, SpeicalDict));
+            Moves = Moves.concat(RegexEngine.EmptyExtensions(cells, size, CharSet, start, WordsDictionary, MovableList, SpeicalDict));
         }
 
         WordsDictionary = null;
@@ -259,7 +259,7 @@ export class RegexEngine {
         return Moves;
     }
 
-    static EmptyExtensions(Cells: string[], size: number, CharSet: C.CharSet, maxIndex: number, AllWords: C.Word[], Movables: string[], SpeicalDict: any): C.ProbableMove[] {
+    static EmptyExtensions(Cells: string[], size: number, CharSet: C.CharSet, startIndex: number, AllWords: C.Word[], Movables: string[], SpeicalDict: any): C.ProbableMove[] {
         var Moves = [] as C.ProbableMove[];
         {
             for (var indx in AllWords) {
@@ -282,9 +282,11 @@ export class RegexEngine {
                 if (!res) {
                     continue;
                 }
+                var totalCells = Pres.length + Centers.length + Posts.length;
+                var centroid = totalCells % 2 == 0 ? (Math.floor(totalCells / 2) - 1) : Math.floor(totalCells / 2);
 
-                var WH = RegexEngine.TryHarizontal(Cells, size, maxIndex, 0, Pres, Centers, Posts);
-                var WV = RegexEngine.TryVertical(Cells, size, maxIndex, 0, Pres, Centers, Posts);
+                var WH = RegexEngine.TryHarizontal(Cells, size, startIndex - centroid, 0, Pres, Centers, Posts);
+                var WV = RegexEngine.TryVertical(Cells, size, startIndex - centroid, 0, Pres, Centers, Posts);
 
                 var WHValid = RegexEngine.Validate3(WH, AllWords);
                 var WVValid = RegexEngine.Validate3(WV, AllWords);

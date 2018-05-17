@@ -3,7 +3,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", "react", 'Cabinet', 'Board', 'InfoBar', 'GamePlayers', 'ActionBar', 'GameTable', 'AlertDialog', 'Util', 'GenericActions', 'ConsentForm'], function (require, exports, React, Cabinet, Board, InfoBar, GamePlayers, ActionBar, GameTable, Alert, Util, GA, ConsentForm) {
+define(["require", "exports", "react", 'Cabinet', 'Board', 'InfoBar', 'GamePlayers', 'ActionBar', 'GameTable', 'AlertDialog', 'Util', 'GenericActions', 'ConsentForm', 'Messages'], function (require, exports, React, Cabinet, Board, InfoBar, GamePlayers, ActionBar, GameTable, Alert, Util, GA, ConsentForm, M) {
     "use strict";
     var GameRoom = (function (_super) {
         __extends(GameRoom, _super);
@@ -13,25 +13,21 @@ define(["require", "exports", "react", 'Cabinet', 'Board', 'InfoBar', 'GamePlaye
         }
         GameRoom.prototype.render = function () {
             var childs = [];
-            var scores = React.createElement(GamePlayers.default, Util.Util.Merge(this.props.Players, { key: "scores", showScores: true, showWordsList: false }));
+            var scores = React.createElement(GamePlayers.default, Util.Util.Merge(this.props.Players, { key: "scores", showScores: true, showWordsList: false, ReadOnly: this.props.ReadOnly }));
             childs.push(scores);
-            var scores = React.createElement(GamePlayers.default, Util.Util.Merge(this.props.Players, { key: "scores", showScores: true, showWordsList: false }));
-            childs.push(scores);
-            var actionBar = React.createElement(ActionBar.default, Util.Util.Merge(this.props.Stats, { key: "actionBar" }));
+            var actionBar = React.createElement(ActionBar.default, Util.Util.Merge(this.props.Stats, { key: "actionBar", ReadOnly: this.props.ReadOnly }));
             childs.push(actionBar);
             var gameTable = React.createElement(GameTable.default, this.props.GameTable);
             childs.push(gameTable);
             var board = React.createElement(Board.default, this.props.Board);
             childs.push(board);
-            var words = React.createElement(GamePlayers.default, Util.Util.Merge(this.props.Players, { key: "words", Id: "WordBoard", showScores: false, showWordsList: true }));
+            var words = React.createElement(GamePlayers.default, Util.Util.Merge(this.props.Players, { key: "words", Id: "WordBoard", showScores: false, showWordsList: true, ReadOnly: this.props.ReadOnly }));
             childs.push(words);
             var cabinet = React.createElement(Cabinet.default, this.props.Cabinet);
             childs.push(cabinet);
             var info = React.createElement(InfoBar.default, this.props.InfoBar);
             childs.push(info);
-            var dialog = React.createElement(Alert.default, Util.Util.Merge(this.props.Dialog, {
-                OnConfirm: GA.GenericActions.OnDismissDialog,
-            }));
+            var dialog = React.createElement(Alert.default, Util.Util.Merge(this.props.Dialog, { OnConfirm: GA.GenericActions.OnDismissDialog }));
             childs.push(dialog);
             var consent = React.createElement(ConsentForm.default, this.props.Consent);
             childs.push(consent);
@@ -40,7 +36,7 @@ define(["require", "exports", "react", 'Cabinet', 'Board', 'InfoBar', 'GamePlaye
                 key: this.props.Id,
                 ref: this.props.Id,
                 className: "game",
-                title: "Scrabble"
+                title: M.Messages.Brand
             }, childs);
             return block;
         };

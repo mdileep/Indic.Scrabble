@@ -15,7 +15,7 @@ import * as Contracts from 'Contracts';
 import * as GamePlayer from 'GamePlayer';
 import * as GameLoader from 'GameLoader';
 import * as Indic from "Indic"
-import * as Messages from "Messages"
+import * as M from "Messages"
 
 class InfoBar extends React.Component<Contracts.iInfoBar, Contracts.iInfoBar> {
     constructor(props: Contracts.iInfoBar) {
@@ -37,7 +37,7 @@ class InfoBar extends React.Component<Contracts.iInfoBar, Contracts.iInfoBar> {
             return elem;
         }
 
-        var h2 = React.createElement("span", { key: "h2", className: "h2" }, Messages.Messages.Messages);
+        var h2 = React.createElement("span", { key: "h2", className: "h2" }, M.Messages.Messages);
         childs.push(h2);
 
         var items: React.ReactElement<Contracts.iProps>[] = [];
@@ -53,7 +53,7 @@ class InfoBar extends React.Component<Contracts.iInfoBar, Contracts.iInfoBar> {
                 key: id,
                 ref: id,
                 className: "ul",
-                title: "List"
+                title: M.Messages.List
             }, items);
         childs.push(ul);
 
@@ -63,7 +63,7 @@ class InfoBar extends React.Component<Contracts.iInfoBar, Contracts.iInfoBar> {
                 key: "infoBar",
                 ref: "infoBar",
                 className: "infoBar",
-                title: "Messages",
+                title: M.Messages.Messages,
             }, childs);
         return elem;
     }

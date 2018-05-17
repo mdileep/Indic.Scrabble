@@ -12,6 +12,10 @@ define(["require", "exports", 'AksharaSets'], function (require, exports, AS) {
                     res = res + Indic.ToString(tiles);
                     continue;
                 }
+                if (tiles.length == 2 && Indic.IsSunnaSet(tiles[1])) {
+                    res = res + Indic.ToString(tiles);
+                    continue;
+                }
                 for (var indx2 in tiles) {
                     var tile = tiles[indx2];
                     var alt = Indic.GetSynonym(tile);

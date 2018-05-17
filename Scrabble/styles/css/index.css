@@ -6,3 +6,8 @@ li {
   float: left;
   min-width: 60vmin;
 }
+li table {
+  width: 95%;
+  border-collapse: separate;
+  border-spacing: 10px;
+}

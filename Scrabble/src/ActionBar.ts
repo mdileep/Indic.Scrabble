@@ -14,6 +14,7 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as Contracts from 'Contracts';
 import * as GS from 'GameStore';
+import * as M from 'Messages';
 
 class ActionBar extends React.Component<Contracts.iActionBar, Contracts.iActionBar> {
     constructor(props: Contracts.iActionBar) {
@@ -25,36 +26,59 @@ class ActionBar extends React.Component<Contracts.iActionBar, Contracts.iActionB
         var childs: React.ReactElement<Contracts.iProps>[] = [];
         var id = "actionBar";
         var suggest = this.renderSuggest();
-
+        var help = this.renderHelp();
         var elem = React.createElement('div',
             {
                 id: id,
                 key: id,
                 ref: id,
                 className: "actionBar",
-                title: "Action Bar",
-            }, [suggest]);
+                title: M.Messages.ActionBar,
+            }, [suggest, help]);
         return elem;
     }
 
-    public renderSuggest(): React.ReactElement<Contracts.iProps> {
+    public renderHelp(): React.ReactElement<Contracts.iProps> {
         var id = "help";
         var help = React.createElement('button',
             {
                 id: id,
                 key: id,
                 ref: id,
+                className: "help",
+                title: M.Messages.Help,
+                disabled: false,
+                onClick: this.OnHelp,
+            }, [], M.Messages.Help);
+        return help;
+    }
+
+    public renderSuggest(): React.ReactElement<Contracts.iProps> {
+        var id = "suggest";
+        var help = React.createElement('button',
+            {
+                id: id,
+                key: id,
+                ref: id,
                 className: "suggest",
-                title: "Suggest",
+                title: M.Messages.Suggest,
                 disabled: this.props.ReadOnly,
                 onClick: this.OnAskSuggestion,
-            }, [], "Suggest");
+            }, [], M.Messages.Suggest);
         return help;
     }
 
     public OnAskSuggestion(ev: MouseEvent) {
         GS.GameStore.Dispatch({
             type: Contracts.Actions.RequestSuggestion,
+            args: {
+            }
+        });
+    }
+
+    public OnHelp(ev: MouseEvent) {
+        GS.GameStore.Dispatch({
+            type: Contracts.Actions.AskHelp,
             args: {
             }
         });

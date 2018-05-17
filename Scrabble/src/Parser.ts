@@ -55,7 +55,7 @@ export class Parser {
         return gameState;
     }
     public static BuildGameTable(JSON: Contracts.iRawGameTable, cache: Contracts.iCachedTile): Contracts.iGameTable {
-       var vAvailable = GameActions.GameActions.DrawVowelTiles(cache, JSON.MaxVowels);
+        var vAvailable = GameActions.GameActions.DrawVowelTiles(cache, JSON.MaxVowels);
         var vTray = GameActions.GameActions.SetTableTray(vAvailable, "Vowels");
         GameActions.GameActions.SetOnBoard(cache, vAvailable);
 
@@ -132,6 +132,7 @@ export class Parser {
         raw.key = "Board";
         raw.Size = JSON.Size;
         raw.Name = JSON.Name;
+        raw.Star = JSON.Star;
         raw.Cells = [];
         var index = 0;
         for (var i = 0; i < JSON.Size; i++) {
@@ -144,6 +145,7 @@ export class Parser {
                 cell.Index = index;
                 cell.Waiting = [];
                 cell.Confirmed = [];
+                cell.Star = (JSON.Star == index);
                 raw.Cells.push(cell); index++;
             }
         }

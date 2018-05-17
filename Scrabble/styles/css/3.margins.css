@@ -11,6 +11,9 @@
   text-align: right;
   margin: 2vmin;
 }
+.actionBar button {
+  margin: 2vmin;
+}
 .cabinet {
   margin: 3vmin;
 }

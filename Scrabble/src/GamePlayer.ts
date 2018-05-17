@@ -15,6 +15,7 @@ import * as ReactDOM from "react-dom";
 import * as Contracts from 'Contracts';
 import * as GameLoader from 'GameLoader';
 import * as Indic from 'Indic';
+import * as M from  'Messages';
 
 class GamePlayer extends React.Component<Contracts.iPlayerView, Contracts.iPlayerView> {
     constructor(props: Contracts.iPlayerView) {
@@ -77,7 +78,7 @@ class GamePlayer extends React.Component<Contracts.iPlayerView, Contracts.iPlaye
                 key: _id,
                 ref: _id,
                 className: className,
-                title: "Words",
+                title: M.Messages.Words,
             }, [ol]);
         return div;
     }
@@ -113,7 +114,7 @@ class GamePlayer extends React.Component<Contracts.iPlayerView, Contracts.iPlaye
                 key: id,
                 ref: id,
                 className: "wordsList",
-                title: "List"
+                title: M.Messages.List
             }, items);
         return ol;
     }

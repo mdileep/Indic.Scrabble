@@ -3,7 +3,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", "react", 'GamePlayer', 'Util', 'Messages'], function (require, exports, React, GamePlayer, Util, Messages) {
+define(["require", "exports", "react", 'GamePlayer', 'Util', 'Messages'], function (require, exports, React, GamePlayer, Util, M) {
     "use strict";
     var GamePlayers = (function (_super) {
         __extends(GamePlayers, _super);
@@ -24,8 +24,8 @@ define(["require", "exports", "react", 'GamePlayer', 'Util', 'Messages'], functi
                 var label = React.createElement('span', {
                     key: "lbl",
                     className: "conditions",
-                    title: Messages.Messages.Claimed
-                }, Messages.Messages.Claimed);
+                    title: M.Messages.Claimed
+                }, M.Messages.Claimed);
                 childs.push(label);
             }
             var className = "players";
@@ -34,7 +34,7 @@ define(["require", "exports", "react", 'GamePlayer', 'Util', 'Messages'], functi
                 key: this.props.Id,
                 ref: this.props.Id,
                 className: className,
-                title: "Players",
+                title: M.Messages.Players,
             }, childs);
             return elem;
         };

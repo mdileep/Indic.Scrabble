@@ -38,9 +38,10 @@
     "No": " కాదు",
     "Pass": "Pass",
     "ReDraw": "Redraw",
-    "LookupDict":"పదాలు పరిశీలిస్తున్నాం.",
-    "ResolveWord":"'{0}'ను మీ ప్రత్యర్ధి గుర్తించలేదు. మీరు అనుమతించదలిచారా?",
-    "Referee":"పర్యవేక్షకుడు"
+    "LookupDict": "పదాలు పరిశీలిస్తున్నాం.",
+    "ResolveWord": "'{0}'ను మీ ప్రత్యర్ధి గుర్తించలేదు. మీరు అనుమతించదలిచారా?",
+    "Referee": "పర్యవేక్షకుడు",
+    "IsStarCovered": "* గుర్తు ఉన్న గడిలో అక్షరం తప్పక ఉంచాలి"
   },
   "kn": {
     "LangName": "ಕನ್ನಡ ~ Kannada",
@@ -99,8 +100,22 @@
     "No": " No",
     "Pass": "Pass",
     "ReDraw": "Redraw",
-    "LookupDict":"Validating words",
-    "ResolveWord":"The word {0} recognized by your opponent, Do you want to allow?",
-    "Referee":"Referee"
+    "LookupDict": "Validating words",
+    "ResolveWord": "The word {0} recognized by your opponent, Do you want to allow?",
+    "Referee": "Referee",
+    "IsStarCovered": "The Cell with * must be covered.",
+    "ActionBar": "Action Bar",
+    "Help": "Help",
+    "Suggest": "Suggest",
+    "Board": "Board",
+    "Row": "Row {0}",
+    "Cabinet": "Cabinet",
+    "TrayLabels": "Tray Labels",
+    "Words": "Words",
+    "Players": "Players",
+    "Brand": "padakaeLi",
+    "List": "List",
+    "GameTable": "Game Table",
+    "Actions": "Actions"
   }
 }

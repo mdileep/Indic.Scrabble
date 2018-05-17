@@ -3,7 +3,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", "react", 'Contracts', 'Tray', 'TrayRack', 'Util', 'GameStore'], function (require, exports, React, Contracts, Tray, TrayRack, Util, GS) {
+define(["require", "exports", "react", 'Contracts', 'Tray', 'TrayRack', 'Util', 'GameStore', 'Messages'], function (require, exports, React, Contracts, Tray, TrayRack, Util, GS, M) {
     "use strict";
     var Cabinet = (function (_super) {
         __extends(Cabinet, _super);
@@ -32,7 +32,7 @@ define(["require", "exports", "react", 'Contracts', 'Tray', 'TrayRack', 'Util', 
                 key: id,
                 ref: id,
                 className: className,
-                title: "Cabinet",
+                title: M.Messages.Cabinet,
                 onDragOver: this.OnDragOver,
                 onDrop: function (evt) { _this.OnDrop(evt); },
             }, childs);
@@ -54,7 +54,7 @@ define(["require", "exports", "react", 'Contracts', 'Tray', 'TrayRack', 'Util', 
                 key: id,
                 ref: id,
                 className: "trayLabels",
-                title: "Tray Labels"
+                title: M.Messages.TrayLabels
             }, childs);
             return groupContainer;
         };

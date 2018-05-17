@@ -110,6 +110,7 @@ define(["require", "exports", "GameActions", "Indic"], function (require, export
             raw.key = "Board";
             raw.Size = JSON.Size;
             raw.Name = JSON.Name;
+            raw.Star = JSON.Star;
             raw.Cells = [];
             var index = 0;
             for (var i = 0; i < JSON.Size; i++) {
@@ -122,6 +123,7 @@ define(["require", "exports", "GameActions", "Indic"], function (require, export
                     cell.Index = index;
                     cell.Waiting = [];
                     cell.Confirmed = [];
+                    cell.Star = (JSON.Star == index);
                     raw.Cells.push(cell);
                     index++;
                 }

@@ -3,7 +3,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", "react", "react-dom", "Messages"], function (require, exports, React, ReactDOM, Messages) {
+define(["require", "exports", "react", "react-dom", "Messages"], function (require, exports, React, ReactDOM, M) {
     "use strict";
     var InfoBar = (function (_super) {
         __extends(InfoBar, _super);
@@ -23,7 +23,7 @@ define(["require", "exports", "react", "react-dom", "Messages"], function (requi
                 var elem = React.createElement('div', {});
                 return elem;
             }
-            var h2 = React.createElement("span", { key: "h2", className: "h2" }, Messages.Messages.Messages);
+            var h2 = React.createElement("span", { key: "h2", className: "h2" }, M.Messages.Messages);
             childs.push(h2);
             var items = [];
             for (var i = 0; i < this.props.Messages.length; i++) {
@@ -37,7 +37,7 @@ define(["require", "exports", "react", "react-dom", "Messages"], function (requi
                 key: id,
                 ref: id,
                 className: "ul",
-                title: "List"
+                title: M.Messages.List
             }, items);
             childs.push(ul);
             var elem = React.createElement('div', {
@@ -45,7 +45,7 @@ define(["require", "exports", "react", "react-dom", "Messages"], function (requi
                 key: "infoBar",
                 ref: "infoBar",
                 className: "infoBar",
-                title: "Messages",
+                title: M.Messages.Messages,
             }, childs);
             return elem;
         };

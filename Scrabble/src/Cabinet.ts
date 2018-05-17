@@ -17,6 +17,7 @@ import * as TrayRack from 'TrayRack';
 import * as GameLoader from 'GameLoader';
 import * as Util from 'Util';
 import * as GS from 'GameStore';
+import * as M from  'Messages';
 
 class Cabinet extends React.Component<Contracts.iCabinetProps, Contracts.iCabinetProps> {
     constructor(props: Contracts.iCabinetProps) {
@@ -47,7 +48,7 @@ class Cabinet extends React.Component<Contracts.iCabinetProps, Contracts.iCabine
                 key: id,
                 ref: id,
                 className: className,
-                title: "Cabinet",
+                title:M.Messages.Cabinet,
                 onDragOver: this.OnDragOver,
                 onDrop: (evt: DragEvent) => { this.OnDrop(evt); },
             }, childs);
@@ -73,7 +74,7 @@ class Cabinet extends React.Component<Contracts.iCabinetProps, Contracts.iCabine
                 key: id,
                 ref: id,
                 className: "trayLabels",
-                title: "Tray Labels"
+                title: M.Messages.TrayLabels
             }, childs);
         return groupContainer;
     }

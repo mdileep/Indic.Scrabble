@@ -3,7 +3,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", "react", 'BoardCell'], function (require, exports, React, BoardCell) {
+define(["require", "exports", "react", 'BoardCell', 'Util', 'Messages'], function (require, exports, React, BoardCell, U, M) {
     "use strict";
     var Board = (function (_super) {
         __extends(Board, _super);
@@ -27,7 +27,7 @@ define(["require", "exports", "react", 'BoardCell'], function (require, exports,
                     key: rowId,
                     ref: rowId,
                     className: "row",
-                    title: "Row",
+                    title: U.Util.Format(M.Messages.Row, [i + 1]),
                 }, cells);
                 rows.push(row);
             }
@@ -36,15 +36,14 @@ define(["require", "exports", "react", 'BoardCell'], function (require, exports,
                 id: "table",
                 key: "table",
                 ref: "table",
-                className: "table",
-                title: "Table",
+                className: "table"
             }, tbody);
             var elem = React.createElement('div', {
                 id: "board",
                 key: "board",
                 ref: "board",
                 className: "board",
-                title: "Board",
+                title: M.Messages.Board,
             }, [table]);
             return elem;
         };

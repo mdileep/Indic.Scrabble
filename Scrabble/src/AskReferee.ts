@@ -10,7 +10,6 @@
 // </copyright>
 //---------------------------------------------------------------------------------------------
 
-
 import * as C from 'Contracts';
 import * as M from 'Messages';
 import * as U from 'Util';
@@ -35,10 +34,19 @@ export class AskReferee {
             AskReferee.Announce(state, M.Messages.HasIslands);
             return;
         }
+        var isCovered: boolean = AskReferee.IsStarCovered(state);
+        if (!isCovered) {
+            AskReferee.Announce(state, M.Messages.IsStarCovered);
+            return;
+        }
         var player: C.iPlayer = state.Players.Players[state.Players.CurrentPlayer];
         state.GameTable.Message = U.Util.Format(M.Messages.LookupDict, [player.Name]);
         state.GameTable.ReadOnly = true;
         setTimeout(AskServer.AskServer.Validate, 100);
+    }
+    static IsStarCovered(state: C.iGameState): boolean {
+        var C = state.Board.Cells[state.Board.Star];
+        return (C.Waiting.length + C.Confirmed.length != 0);
     }
     static Announce(state: C.iGameState, message: string) {
         state.InfoBar.Messages.push(M.Messages.HasIslands);

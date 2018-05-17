@@ -49,7 +49,7 @@ export class GameActions {
         var players = state.Players.Players;
         var currentPlayer = state.Players.CurrentPlayer;
         var isBot: boolean = players[currentPlayer].Bot !== null;
-        state.GameTable.ReadOnly = isBot;
+        state.ReadOnly = isBot;
         if (!isBot) {
             return;
         }
@@ -88,7 +88,7 @@ export class GameActions {
     static TakeConsent(state: Contracts.iGameState, words: string[]): void {
         state.Consent.Pending = GameActions.BuildWordPairs(words);
         state.Consent.UnResolved = [];
-        state.GameTable.ReadOnly = true;
+        state.ReadOnly = true;
         var player: Contracts.iPlayer = state.Players.Players[state.Players.CurrentPlayer];
         state.GameTable.Message = Util.Util.Format(Messages.Messages.YourTurn, [player.Name]);
     }
@@ -105,7 +105,7 @@ export class GameActions {
         GameActions.ConsentRecieved(state, args);
     }
     static ConsentRecieved(state: Contracts.iGameState, args: Contracts.iArgs): void {
-        state.GameTable.ReadOnly = false;
+        state.ReadOnly = false;
         if (state.Consent.Pending.length == 0) {
             if (state.Consent.UnResolved.length == 0) {
                 GameActions.Award(state, args);
@@ -366,30 +366,10 @@ export class GameActions {
     }
     static AwardClaims(state: Contracts.iGameState): void {
         var Claims: Contracts.iWord[] = GameActions.WordsOnBoard(state.Board, true, false);
-        var Awarded: Contracts.iWord[] = GameActions.AwardedWords(state);
-        for (var key in Claims) {
-            var word: Contracts.iWord = Claims[key];
-            var isDuplicate: boolean = Util.Util.Contains(word, Awarded);
-            if (isDuplicate) {
-                word.Score = 1;
-            }
-        }
         var playerId: number = state.Players.CurrentPlayer;
         var player: Contracts.iPlayer = state.Players.Players[playerId];
         player.Awarded = player.Awarded.concat(Claims);
         player.Claimed = [];
-    }
-    static HasDuplicates(state: Contracts.iGameState, Src: Contracts.iWord[], Compare: Contracts.iWord[]): boolean {
-        var res: boolean = false;
-        for (var key in Compare) {
-            var word: Contracts.iWord = Compare[key];
-            var exists: boolean = Util.Util.Contains(word, Src);
-            if (exists) {
-                state.InfoBar.Messages.push(Util.Util.Format(Messages.Messages.HasDupliates, [word.Text]));
-                return true;
-            }
-        }
-        return false;
     }
     static AwardedWords(state: Contracts.iGameState) {
         var Words: Contracts.iWord[] = [];
@@ -763,8 +743,8 @@ export class GameActions {
     static AvailableVowels(cache: Contracts.iCachedTile): string[] {
         var available: string[] = [];
         for (var prop in cache) {
-            if ((Indic.Indic.IsVowel(prop) || Indic.Indic.IsSunnaSet(prop)) && cache[prop].Remaining > 0) {
-                for (var i = 0; i < cache[prop].Remaining; i++) {
+            if ((Indic.Indic.IsVowel(prop) || Indic.Indic.IsSunnaSet(prop)) && (cache[prop].Remaining - cache[prop].OnBoard > 0)) {
+                for (var i = 0; i < cache[prop].Remaining - cache[prop].OnBoard; i++) {
                     available.push(prop)
                 }
             }
@@ -774,8 +754,8 @@ export class GameActions {
     static AvailableConso(cache: Contracts.iCachedTile): string[] {
         var available: string[] = [];
         for (var prop in cache) {
-            if (Indic.Indic.IsConsonent(prop) && cache[prop].Remaining > 0) {
-                for (var i = 0; i < cache[prop].Remaining; i++) {
+            if (Indic.Indic.IsConsonent(prop) && (cache[prop].Remaining - cache[prop].OnBoard > 0)) {
+                for (var i = 0; i < cache[prop].Remaining - cache[prop].OnBoard; i++) {
                     available.push(prop)
                 }
             }

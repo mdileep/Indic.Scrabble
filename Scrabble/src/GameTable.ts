@@ -16,6 +16,7 @@ import * as GameLoader from 'GameLoader';
 import * as Tray from 'Tray';
 import * as Util from 'Util';
 import * as GS from 'GameStore';
+import * as M from 'Messages';
 
 class GameTable extends React.Component<Contracts.iGameTable, Contracts.iGameTable> {
     constructor(props: Contracts.iGameTable) {
@@ -36,7 +37,7 @@ class GameTable extends React.Component<Contracts.iGameTable, Contracts.iGameTab
                 key: id,
                 ref: id,
                 className: "actions",
-                title: "Actions",
+                title: M.Messages.Actions,
             }, [message, suggest, reDraw, pass]);
         childs.push(actions);
 
@@ -53,7 +54,7 @@ class GameTable extends React.Component<Contracts.iGameTable, Contracts.iGameTab
                 key: id,
                 ref: id,
                 className: "gameTable",
-                title: "GameTable",
+                title: M.Messages.GameTable,
                 onDragOver: this.OnDragOver,
                 onDrop: (evt: DragEvent) => { this.OnDrop(evt); },
             }, childs);
@@ -81,10 +82,10 @@ class GameTable extends React.Component<Contracts.iGameTable, Contracts.iGameTab
                 key: id,
                 ref: id,
                 className: "suggest",
-                title: "Suggest",
+                title: M.Messages.Suggest,
                 disabled: this.props.ReadOnly,
                 onClick: this.OnAskSuggestion,
-            }, [], "Suggest");
+            }, [], M.Messages.Suggest);
         return help;
     }
 
@@ -96,10 +97,10 @@ class GameTable extends React.Component<Contracts.iGameTable, Contracts.iGameTab
                 key: id,
                 ref: id,
                 className: "redraw",
-                title: "Re-Draw",
+                title: M.Messages.ReDraw,
                 disabled: this.props.ReadOnly || !this.props.CanReDraw,
                 onClick: this.OnReDraw,
-            }, [], "Re-Draw");
+            }, [], M.Messages.ReDraw);
         return pass;
     }
 
@@ -111,10 +112,10 @@ class GameTable extends React.Component<Contracts.iGameTable, Contracts.iGameTab
                 key: id,
                 ref: id,
                 className: "pass",
-                title: "Pass",
+                title: M.Messages.Pass,
                 onClick: this.OnPass,
                 disabled: this.props.ReadOnly,
-            }, [], "Pass");
+            }, [], M.Messages.Pass);
         return pass;
     }
 

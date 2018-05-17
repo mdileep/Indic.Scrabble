@@ -16,7 +16,7 @@
 .tile,
 .message,
 .content,
-.scores {
+.score {
   font-size: 4vmin;
 }
 .brand .h2 {
@@ -204,6 +204,9 @@ body {
   text-align: right;
   margin: 2vmin;
 }
+.actionBar button {
+  margin: 2vmin;
+}
 .cabinet {
   margin: 3vmin;
 }
@@ -388,6 +391,12 @@ body {
 .board .cell {
   white-space: pre-wrap;
 }
+.board .star {
+  background-image: url(/images/star.svg);
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: contain;
+}
 .players .player {
   text-align: center;
 }
@@ -429,6 +438,7 @@ body {
   background-repeat: no-repeat;
   background-position: center center;
   background-size: contain;
+  background-color: #FFFFFF;
 }
 .gameTable button:disabled,
 .actionBar button:disabled,
@@ -448,6 +458,10 @@ body {
 .gameTable .suggest,
 .actionBar .suggest {
   background-image: url(/images/suggest.svg);
+}
+.gameTable .help,
+.actionBar .help {
+  background-image: url(/images/help.svg);
 }
 
 /*99.Dialog.css*/

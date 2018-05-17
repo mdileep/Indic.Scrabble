@@ -41,6 +41,7 @@ export interface iTileProps extends iComponent {
 export interface iBoardProps extends iComponent {
     Size: number;
     Name: string;
+    Star: number;
     Cells: iCellProps[];
 }
 export interface iCellProps extends iComponent {
@@ -50,6 +51,7 @@ export interface iCellProps extends iComponent {
     Weight: number;
     Waiting: string[];
     Confirmed: string[];
+    Star: boolean;
 }
 export interface iPlayers extends iComponent {
     Players: iPlayer[];
@@ -167,6 +169,7 @@ export class Actions {
 
     //
     public static DismissDialog: number = 90;
+    public static AskHelp: number = 91;
 }
 export interface iIndexConfig {
     Langs: string[];
@@ -187,8 +190,9 @@ export interface iRawBoard {
     Lanaguage: string;
     GameTable: iRawGameTable;
     Trays: iRawTray[];
-    Size: number;
     Name: string;
+    Size: number;
+    Star: number;
     Weights: number[];
 }
 export interface iRawGameTable {
@@ -333,6 +337,7 @@ export interface CharSet {
 export interface KnownBoard {
     Size: number;
     Weights: number[];
+    Star: number;
 }
 export interface iGameEngine {
     BestMove(Board: ScrabbleBoard): ProbableMove;

@@ -70,11 +70,12 @@ class BoardCell extends React.Component<Contracts.iCellProps, Contracts.iCellPro
         if (this.props.Waiting.length + this.props.Confirmed.length != 0) {
             classList.push("filled");
         }
+        var covered = (this.props.Waiting.length + this.props.Confirmed.length != 0);
         var confirmed = (this.props.Waiting.length == 0 && this.props.Confirmed.length != 0);
         var draggable: boolean = this.isDragable();
         if (confirmed) { classList.push("confirmed"); }
         if (draggable) { classList.push("draggable"); }
-
+        if (this.props.Star && !covered) { classList.push("star"); }
         if (confirmed || this.props.Waiting.length != 0) {
             return classList.join(' ');
         }

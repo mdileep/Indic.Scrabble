@@ -21,6 +21,8 @@
     <TargetFrameworkProfile />
   </PropertyGroup>
   <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
     <Content Include="API.aspx" />
     <Content Include="Config.ashx" />
     <Content Include="API.ashx" />
@@ -184,6 +186,7 @@
     <Content Include="scripts\_OverlayDialog.js" />
     <Content Include="scripts\DragDropTouch.js" />
     <Content Include="scripts\GameTable.js" />
+    <Content Include="scripts\ActionBar.js" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Scrabble.png" />
@@ -194,7 +197,8 @@
     <Content Include="images\suggest.svg" />
     <Content Include="images\bot.svg" />
     <Content Include="images\human.svg" />
-    <Content Include="scripts\ActionBar.js" />
+    <Content Include="images\star.svg" />
+    <Content Include="images\help.svg" />
   </ItemGroup>
   <ItemGroup>
     <None Include="web.Debug.config">
@@ -253,7 +257,7 @@
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <TypeScriptRemoveComments>True</TypeScriptRemoveComments>
     <TypeScriptSourceMap>False</TypeScriptSourceMap>
-    <TypeScriptJsxEmit>None</TypeScriptJsxEmit>
+    <TypeScriptJsxEmit>React</TypeScriptJsxEmit>
     <TypeScriptModuleKind>AMD</TypeScriptModuleKind>
     <TypeScriptOutDir>scripts</TypeScriptOutDir>
     <TypeScriptGeneratesDeclarations>False</TypeScriptGeneratesDeclarations>

@@ -22,6 +22,7 @@ define(["require", "exports"], function (require, exports) {
         Actions.WordResolved = 63;
         Actions.WordRejected = 64;
         Actions.DismissDialog = 90;
+        Actions.AskHelp = 91;
         return Actions;
     }());
     exports.Actions = Actions;

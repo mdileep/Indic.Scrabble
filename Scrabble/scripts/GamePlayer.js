@@ -3,7 +3,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", "react"], function (require, exports, React) {
+define(["require", "exports", "react", 'Messages'], function (require, exports, React, M) {
     "use strict";
     var GamePlayer = (function (_super) {
         __extends(GamePlayer, _super);
@@ -56,7 +56,7 @@ define(["require", "exports", "react"], function (require, exports, React) {
                 key: _id,
                 ref: _id,
                 className: className,
-                title: "Words",
+                title: M.Messages.Words,
             }, [ol]);
             return div;
         };
@@ -88,7 +88,7 @@ define(["require", "exports", "react"], function (require, exports, React) {
                 key: id,
                 ref: id,
                 className: "wordsList",
-                title: "List"
+                title: M.Messages.List
             }, items);
             return ol;
         };
