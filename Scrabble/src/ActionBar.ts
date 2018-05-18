@@ -62,7 +62,7 @@ class ActionBar extends React.Component<Contracts.iActionBar, Contracts.iActionB
                 ref: id,
                 className: "suggest",
                 title: M.Messages.Suggest,
-                disabled: this.props.ReadOnly,
+                style: { visibility: this.props.ReadOnly ? "hidden" : "visible" },
                 onClick: this.OnAskSuggestion,
             }, [], M.Messages.Suggest);
         return help;

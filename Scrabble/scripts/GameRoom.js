@@ -13,10 +13,10 @@ define(["require", "exports", "react", 'Cabinet', 'Board', 'InfoBar', 'GamePlaye
         }
         GameRoom.prototype.render = function () {
             var childs = [];
-            var scores = React.createElement(GamePlayers.default, Util.Util.Merge(this.props.Players, { key: "scores", showScores: true, showWordsList: false, ReadOnly: this.props.Players.ReadOnly || this.props.ReadOnly }));
-            childs.push(scores);
             var actionBar = React.createElement(ActionBar.default, Util.Util.Merge(this.props.Stats, { key: "actionBar", ReadOnly: this.props.ReadOnly }));
             childs.push(actionBar);
+            var scores = React.createElement(GamePlayers.default, Util.Util.Merge(this.props.Players, { key: "scores", showScores: true, showWordsList: false, ReadOnly: this.props.Players.ReadOnly || this.props.ReadOnly }));
+            childs.push(scores);
             var gameTable = React.createElement(GameTable.default, Util.Util.Merge(this.props.GameTable, { ReadOnly: this.props.GameTable.ReadOnly || this.props.ReadOnly }));
             childs.push(gameTable);
             var board = React.createElement(Board.default, this.props.Board);

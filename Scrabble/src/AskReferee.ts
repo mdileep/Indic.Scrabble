@@ -155,19 +155,14 @@ export class AskReferee {
             var C: C.iCellProps = Cells[first];
         }
         var curr = 0;
-        var found: boolean = true;
-        while (found) {
-            if (curr >= List.length) {
-                break;
-            }
-            found = false;
+        while (curr < List.length) {
+
             var neighors = U.Util.FindNeighbors(List[curr], size);
             for (var i = 0; i < neighors.length; i++) {
                 var neighbor = neighors[i];
                 if (List.indexOf(neighbor) >= 0) {
                     continue;
                 }
-                found = true;
                 var C = Cells[neighbor];
                 if (C.Confirmed.length + C.Waiting.length == 0) {
                     continue;

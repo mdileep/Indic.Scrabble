@@ -37,12 +37,11 @@ class GameRoom extends React.Component<Contracts.iGameState, Contracts.iGameStat
 
     render() {
         var childs: React.ReactElement<Contracts.iProps>[] = [];
+        var actionBar = React.createElement(((ActionBar.default as any) as React.ComponentClass<Contracts.iActionBar>), Util.Util.Merge(this.props.Stats, { key: "actionBar", ReadOnly: this.props.ReadOnly }));
+        childs.push(actionBar);
 
         var scores = React.createElement(((GamePlayers.default as any) as React.ComponentClass<Contracts.iPlayers>), Util.Util.Merge(this.props.Players, { key: "scores", showScores: true, showWordsList: false, ReadOnly: this.props.Players.ReadOnly || this.props.ReadOnly }));
         childs.push(scores);
-
-        var actionBar = React.createElement(((ActionBar.default as any) as React.ComponentClass<Contracts.iActionBar>), Util.Util.Merge(this.props.Stats, { key: "actionBar", ReadOnly: this.props.ReadOnly }));
-        childs.push(actionBar);
 
         var gameTable = React.createElement(((GameTable.default as any) as React.ComponentClass<Contracts.iGameTable>), Util.Util.Merge(this.props.GameTable, { ReadOnly: this.props.GameTable.ReadOnly || this.props.ReadOnly }));
         childs.push(gameTable);
