@@ -17,9 +17,9 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
 <head>
     <title>padakaeLi ~ Scrabble for Indic Languages</title>
-    <meta id="keywords" name="keywords" content="Telugu Scrabble" />
-    <meta id="description" name="description" content="Telugu Scrabble" />
-    <meta name="author" content="Dileep Miriyala(దిలీపు మిరియాల)" />
+    <meta id="keywords" name="keywords" content="Scrabble, Telugu, Kannada and Hindi" />
+    <meta id="description" name="description" content="Play Scrabble in Indian Languages" />
+    <meta name="author" content="5-69Dileep Miriyala(దిలీపు మిరియాల)" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="shortcut icon" href="Miriyam.ico" />
     <link href="styles/css/index.min.css" type="text/css" rel="stylesheet" />
