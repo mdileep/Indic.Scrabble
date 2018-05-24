@@ -4,9 +4,9 @@ define(["require", "exports", 'Messages', 'Util', "AskBot", 'Indic', 'GameAction
         function AskReferee() {
         }
         AskReferee.Validate = function (state, args) {
-            var isValidMove = AskReferee.ValidateMove(state.Board);
-            if (!isValidMove) {
-                AskReferee.Announce(state, M.Messages.CrossCells);
+            var errorCode = AskReferee.ValidateMove(state.Board);
+            if (errorCode > 0) {
+                AskReferee.Announce(state, (errorCode == 1) ? M.Messages.CrossCells : M.Messages.NoGap);
                 return;
             }
             var hasOrphans = AskReferee.HasOrphans(state);
@@ -50,35 +50,42 @@ define(["require", "exports", 'Messages', 'Util', "AskBot", 'Indic', 'GameAction
         AskReferee.ValidateMove = function (Board) {
             var Cells = Board.Cells;
             var size = Board.Size;
-            var cnt = 0;
-            var rows = 0;
-            var columns = 0;
-            var First = {};
+            var Waiting = [];
             for (var i = 0; i < size * size; i++) {
                 var C = Cells[i];
                 if (C.Waiting.length == 0) {
                     continue;
                 }
-                if (C.Confirmed.length + C.Waiting.length == 0) {
-                    continue;
-                }
-                if (cnt == 0) {
-                    First = U.Util.Position(i, size);
-                    cnt++;
-                    continue;
-                }
-                var Current = U.Util.Position(i, size);
+                Waiting.push(i);
+            }
+            if (Waiting.length == 0) {
+                return 0;
+            }
+            var First = U.Util.Position(Waiting[0], size);
+            var Last = {};
+            var rows = 0;
+            var columns = 0;
+            for (var indx in Waiting) {
+                var Current = U.Util.Position(Waiting[indx], size);
                 if (Current.X != First.X) {
                     rows++;
                 }
                 if (Current.Y != First.Y) {
                     columns++;
                 }
+                if (rows != 0 && columns != 0) {
+                    return 1;
+                }
+                Last = Current;
             }
-            if (rows == 0 || columns == 0) {
-                return true;
+            for (var i = ((rows == 0) ? First.Y : First.X); i < ((rows == 0) ? Last.Y : Last.X); i++) {
+                var _i = U.Util.Abs((rows == 0) ? First.X : i, (rows == 0) ? i : First.Y, size);
+                var C = Cells[_i];
+                if (C.Confirmed.length + C.Waiting.length == 0) {
+                    return 2;
+                }
             }
-            return false;
+            return 0;
         };
         AskReferee.HasOrphans = function (state) {
             var orphans = AskReferee.OrphanCells(state.Board);

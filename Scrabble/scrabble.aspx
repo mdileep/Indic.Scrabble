@@ -13,7 +13,7 @@
 %>
 
 <%@ Page Language="C#" AutoEventWireup="true" Inherits="Scrabble.Server.Home" EnableViewState="false" %>
-
+<%@ Import Namespace="Scrabble.Server" %>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="<%= Lang %>">
 <head runat="server" id="Head">
@@ -32,7 +32,7 @@
         <h2 class="h2" runat="server" id="H2">పదకేళి</h2>
     </div>
     <div class="loading" id="root">
-        <h3>Loading...
+        <h3><%=Config.Lang(Lang,"Loading") %>
             <img width="64" height="80" alt="Loading..." src="images/loading.svg" /></h3>
     </div>
     <div class="footer">

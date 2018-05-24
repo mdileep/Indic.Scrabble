@@ -10,7 +10,6 @@
 // </copyright>
 //---------------------------------------------------------------------------------------------
 
-
 using System.Collections.Generic;
 
 namespace Scrabble
@@ -19,5 +18,9 @@ namespace Scrabble
 	{
 		List<ProbableMove> Probables();
 		ProbableMove BestMove();
+	}
+
+	interface iAgent : iGameEngine
+	{
 	}
 }

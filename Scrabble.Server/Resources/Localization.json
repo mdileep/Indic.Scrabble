@@ -17,6 +17,7 @@
     "UseSynonym": " '{1}' కు బదులుగా '{2}' తో '{0}' ను కలపడానికి ప్రయత్నం చేస్తున్నాం.",
     "Messages": "సందేశాలు",
     "CrossCells": "అన్నీ ఒకే నిలువు లేదా అడ్డం గడులలో మాత్రమే ఉండాలి.",
+    "NoGap": "పేర్చిన అక్షరాల మధ్య ఖాళీ ఉండరాదు.",
     "HasIslands": "పదాలు వేరువేరు లంకలలో విస్తరించి ఉన్నాయి.",
     "HasOraphans": "ఏకాక్షరపదాలు అంగీకారం కావు.",
     "OrphanCell": "ఏకాక్షరము {2} అడ్డం: {0} నిలువు:{1} వద్ధ ఉన్నది ",
@@ -41,7 +42,8 @@
     "LookupDict": "పదాలు పరిశీలిస్తున్నాం.",
     "ResolveWord": "'{0}'ను మీ ప్రత్యర్ధి గుర్తించలేదు. మీరు అనుమతించదలిచారా?",
     "Referee": "పర్యవేక్షకుడు",
-    "IsStarCovered": "* గుర్తు ఉన్న గడిలో అక్షరం తప్పక ఉంచాలి"
+    "IsStarCovered": "* గుర్తు ఉన్న గడిలో అక్షరం తప్పక ఉంచాలి",
+    "Loading": "ఆట సిద్ధం అవుతోంది."
   },
   "kn": {
     "LangName": "ಕನ್ನಡ ~ Kannada",
@@ -53,8 +55,8 @@
     "Author2": "~ Dileep Miriyala(ದಿಲೀಪು ಮಿರಿಯಾಲ)"
   },
   "hi": {
-    "LangName": "Hindi",
-    "Title": "पदकेळि  ~ Scrabble for Kannada",
+    "LangName": "Hindi ~  हिंदी",
+    "Title": "पदकेळि  ~ Scrabble for Hindi",
     "Name": "पदकेळि ",
     "Keywords": "Scrabble, Indic , Indian Languages, Hindi",
     "Description": "पदकेळि  ~ Scrabble for Hindi",
@@ -79,6 +81,7 @@
     "UseSynonym": " Attempting to add '{1}' instead of '{2}' with '{0}'.",
     "Messages": "Messages",
     "CrossCells": "All tiles should be either in a Row or Column.",
+    "NoGap": "No empty cell is allowed between placed tiles.",
     "HasIslands": "Words are spreaded across islands.",
     "HasOraphans": "Single Syllable Words are not accepatable.",
     "OrphanCell": "Single Syllable : {2} is at Row : {0} and Column:{1}",
@@ -116,6 +119,7 @@
     "Brand": "padakaeLi",
     "List": "List",
     "GameTable": "Game Table",
-    "Actions": "Actions"
+    "Actions": "Actions",
+    "Loading": "Loading the Game"
   }
 }

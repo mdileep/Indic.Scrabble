@@ -16,13 +16,13 @@ using System;
 
 namespace Scrabble.Server
 {
-	class Config
+	public class Config
 	{
 		public const string DefaultLang = "te";
 		public const string NeutralLang = "en";
 		public const string DefaultBoard = "11x11";
 
-		public static readonly List<string> Languages = new List<string> { "te", "kn" };
+		public static readonly List<string> Languages = new List<string> { "te", "kn", "hi" };
 		public static readonly List<string> Actions = new List<string> { ActionNames.Ping, ActionNames.Help, ActionNames.NextMove, ActionNames.Probables, ActionNames.Validate };
 		public static readonly List<string> BoardNames = new List<string> { "11x11" };
 
@@ -167,7 +167,7 @@ namespace Scrabble.Server
 			return Dict;
 		}
 
-		internal static string Lang(string lang, string key)
+		public static string Lang(string lang, string key)
 		{
 			if (!Dictionary.ContainsKey(lang + ":" + key))
 			{

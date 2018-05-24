@@ -19,9 +19,9 @@ import * as GA from 'GameActions';
 
 export class AskReferee {
     static Validate(state: C.iGameState, args: C.iArgs): void {
-        var isValidMove: boolean = AskReferee.ValidateMove(state.Board);
-        if (!isValidMove) {
-            AskReferee.Announce(state, M.Messages.CrossCells);
+        var errorCode: number = AskReferee.ValidateMove(state.Board);
+        if (errorCode > 0) {
+            AskReferee.Announce(state, (errorCode == 1) ? M.Messages.CrossCells : M.Messages.NoGap);
             return;
         }
         var hasOrphans: boolean = AskReferee.HasOrphans(state);
@@ -62,39 +62,46 @@ export class AskReferee {
         state.Dialog.Message = message;
         state.Dialog.Show = true;
     }
-    static ValidateMove(Board: C.iBoardProps): boolean {
+    static ValidateMove(Board: C.iBoardProps): number {
         var Cells: C.iCellProps[] = Board.Cells;
         var size: number = Board.Size;
-        var cnt = 0;
-        var rows = 0;
-        var columns = 0;
-        var First: C.iPosition = {} as C.iPosition;
+        var Waiting: number[] = [];
         for (var i = 0; i < size * size; i++) {
             var C = Cells[i];
             if (C.Waiting.length == 0) {
                 continue;
             }
-            if (C.Confirmed.length + C.Waiting.length == 0) {
-                continue;
-            }
-            if (cnt == 0) {
-                First = U.Util.Position(i, size);
-                cnt++;
-                continue;
-            }
-            var Current = U.Util.Position(i, size);
+            Waiting.push(i);
+        }
+        if (Waiting.length == 0) {
+            return 0;
+        }
+        var First: C.iPosition = U.Util.Position(Waiting[0], size);
+        var Last: C.iPosition = {} as C.iPosition;
+        var rows = 0; var columns = 0;
+        for (var indx in Waiting) {
+            var Current = U.Util.Position(Waiting[indx], size);
             if (Current.X != First.X) {
                 rows++;
             }
             if (Current.Y != First.Y) {
                 columns++;
             }
+            if (rows != 0 && columns != 0) {
+                return 1;
+            }
+            Last = Current;
         }
 
-        if (rows == 0 || columns == 0) {
-            return true;
+        for (var i = ((rows == 0) ? First.Y : First.X); i < ((rows == 0) ? Last.Y : Last.X); i++) {
+            //All Cells Should be filled between First and Last.
+            var _i: number = U.Util.Abs((rows == 0) ? First.X : i, (rows == 0) ? i : First.Y, size);
+            var C = Cells[_i];
+            if (C.Confirmed.length + C.Waiting.length == 0) {
+                return 2;
+            }
         }
-        return false;
+        return 0;
     }
     static HasOrphans(state: C.iGameState): boolean {
         var orphans: number[] = AskReferee.OrphanCells(state.Board);

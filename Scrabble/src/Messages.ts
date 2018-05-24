@@ -61,4 +61,5 @@ export class Messages {
     public static ReDraw: string = "";
     public static Pass: string = "";
     public static Actions: string = "";
+    public static NoGap: string = "";
 }

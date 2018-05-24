@@ -10,7 +10,6 @@
 // </copyright>
 //---------------------------------------------------------------------------------------------
 
-
 using Scrabble.Server;
 using Shared;
 using System;
@@ -354,6 +353,7 @@ namespace Scrabble
 				return Moves;
 			}
 		}
+
 		static List<Word> ShortListedWords(List<Word> AllWords)
 		{
 			return null;

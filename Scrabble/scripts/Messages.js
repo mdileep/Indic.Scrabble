@@ -53,6 +53,7 @@ define(["require", "exports"], function (require, exports) {
         Messages.ReDraw = "";
         Messages.Pass = "";
         Messages.Actions = "";
+        Messages.NoGap = "";
         return Messages;
     }());
     exports.Messages = Messages;

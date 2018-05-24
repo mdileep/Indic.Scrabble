@@ -247,7 +247,7 @@
         "ै",
         "ॊ", "ो",
         "ौ","़",
-        "्", "्ᴌ"
+        "्", "्‌"
   ],
   "SpecialSet": [
         "ॅ","ॉ",
@@ -312,9 +312,15 @@
         "ॅ":"ऍ",
         "ॉ":"ऑ"
     },
-  "SyllableTiles": {},
-  "SyllableChars": {},
-  "SyllableSynonym":{}
+    "SyllableTiles": {
+      "क्ष": ["क", "ष"]
+  },
+  "SyllableChars": {
+    "क्ष": ["क", "ष"]
+  },
+  "SyllableSynonym":{
+    "कष":"क्ष"
+  }
 },
 "si": {
   "Language": "si",
