@@ -11,6 +11,7 @@
 //---------------------------------------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Web;
 
 namespace Scrabble.Server
@@ -50,14 +51,44 @@ namespace Scrabble.Server
 			return obj;
 		}
 
-		internal static T GetSession<T, T1, T2>(string Key, T1 p1, T2 p2, Func<T1, T2, T> callBack)
+		internal static T GetSession<T>(string Key)
 		{
-			if (HttpContext.Current.Session[Key] != null)
+			var Val = HttpContext.Current.Session[Key];
+			if (Val == null)
 			{
-				return (T)HttpContext.Current.Session[Key];
+				return default(T);
+			}
+			return (T)Val;
+		}
+
+		internal static T GetSession<T>(string Block, string Key)
+		{
+			var Dict = (Dictionary<string, T>)HttpContext.Current.Session[Block];
+			if (Dict == null)
+			{
+				return default(T);
+			}
+			if (Dict.ContainsKey(Key))
+			{
+				return Dict[Key];
+			}
+			return default(T);
+		}
+
+		internal static T GetSession<T, T1, T2>(string Block, string Key, T1 p1, T2 p2, Func<T1, T2, T> callBack)
+		{
+			var Dict = (Dictionary<string, T>)HttpContext.Current.Session[Block];
+			if (Dict == null)
+			{
+				Dict = new Dictionary<string, T>();
+			}
+			if (Dict.ContainsKey(Key))
+			{
+				return Dict[Key];
 			}
 			var obj = callBack(p1, p2);
-			HttpContext.Current.Session[Key] = obj;
+			Dict[Key] = obj;
+			HttpContext.Current.Session[Block] = Dict;
 			return obj;
 		}
 	}

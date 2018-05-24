@@ -64,12 +64,14 @@ namespace Scrabble.Server
 			var charSet = Config.GetCharSet(Lang);
 			var messages = Config.GetMessages(Lang);
 			var players = GetPlayers(Lang, bot1, bot2);
+			var gameId = Config.NewId();
 
 			Dictionary<string, object> Dict = new Dictionary<string, object>();
 			Dict["Board"] = board;
 			Dict["CharSet"] = charSet;
 			Dict["Localization"] = messages;
 			Dict["Players"] = players;
+			Dict["GameId"] = gameId;
 			return Dict;
 		}
 

@@ -30,6 +30,7 @@ namespace Scrabble.Server
 		static Dictionary<string, CharSet> CharSets = null;
 		static Dictionary<string, Bot> Bots = null;
 		static Dictionary<string, KnownBoard> Boards = null;
+		static Random Random = null;
 
 		static Config()
 		{
@@ -46,6 +47,7 @@ namespace Scrabble.Server
 			CharSets = CacheManager.GetApppObject<Dictionary<string, CharSet>>("CharSets", BuildCharSets);
 			Bots = CacheManager.GetApppObject<Dictionary<string, Bot>>("Bots", BuildBots);
 			Boards = CacheManager.GetApppObject<Dictionary<string, KnownBoard>>("Boards", BuildBoards);
+			Random = new Random(1000);
 		}
 
 		internal static Bot[] BotsByLang(string lang)
@@ -60,6 +62,11 @@ namespace Scrabble.Server
 				bots.Add(KV.Value);
 			}
 			return bots.ToArray();
+		}
+
+		internal static int NewId()
+		{
+			return Random.Next();
 		}
 
 		static Dictionary<string, KnownBoard> BuildBoards()

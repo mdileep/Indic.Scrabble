@@ -10,6 +10,7 @@
 // </copyright>
 //---------------------------------------------------------------------------------------------
 
+using Scrabble.Engines;
 using System.Collections.Generic;
 
 namespace Scrabble.Server
@@ -19,7 +20,7 @@ namespace Scrabble.Server
 		public object Process(Dictionary<string, object> dict)
 		{
 			var Board = ParseUtil.ConvertTo<ScrabbleBoard>(dict);
-			var R = new RegexEngine(Board);
+			var R = new RegexV2Engine(Board);
 			return R.BestMove();
 		}
 	}

@@ -17,11 +17,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Text.RegularExpressions;
 using System.Threading;
 
-namespace Scrabble
+namespace Scrabble.Engines
 {
 	internal class RegexEngine : iGameEngine
 	{
@@ -45,11 +44,11 @@ namespace Scrabble
 			//
 			file = ServerUtil.Path("bots\\" + bot.Dictionary);
 			CharSet = Config.GetCharSet(bot.Language);
-			key = bot.Id;
+			id = bot.Id + Board.Id;
 			//
 			size = board.Size;
 			weights = board.Weights;
-			start = board.Star;
+			star = board.Star;
 			//
 			cells = Board.Cells;
 			vowels = Board.Vowels;
@@ -67,7 +66,7 @@ namespace Scrabble
 			return Moves[0];
 		}
 
-		public List<ProbableMove> Probables()
+		public virtual List<ProbableMove> Probables()
 		{
 			var Moves = new List<ProbableMove>();
 			if (!new FileInfo(file).Exists)
@@ -95,6 +94,7 @@ namespace Scrabble
 			MovableList.RemoveAll(x => x.Length == 0);
 
 			var SpecialList = DistinctList(special.Replace("(", " ").Replace(")", " ").Replace(",", ""), ' ');
+			var SpeicalDict = GetSpecialDict(SpecialList);
 
 			List<string> EverySyllableOnBoard = GetSyllableList(cells, size, false, true);
 			List<string> NonCornerSyllables = GetSyllableList(cells, size, true, false);
@@ -102,23 +102,19 @@ namespace Scrabble
 			//
 			All = (GetFlatList(EverySyllableOnBoard, ',') + " " + Movables).Replace("(", " ").Replace(")", " ").Replace(",", " ").Replace("|", " ").Split(' ');
 			AllPattern = string.Format("^(?<All>[{0},])*$", GetFlatList2(All));
-
-			//
-			NonCornerTiles = (GetFlatList2(NonCornerSyllables.ToArray()) + " " + Movables).Replace("(", " ").Replace(")", " ").Replace(",", " ").Replace("|", " ").Split(' ');
-			NonCornerPattern = string.Format("^(?<All>[{0},])*$", GetFlatList2(NonCornerTiles));
-
 			Dictionary<string, int> AllDict = GetCountDict(All);
-			Dictionary<string, int> NonCornerDict = GetCountDict(NonCornerTiles);
 
 			List<Word> WordsDictionary = WordLoader.Load(file); //Large Set of Words
-
 			WordsDictionary = ShortList(WordsDictionary, AllPattern, AllDict); // Probables 
-
-			var NonCornerProbables = ShortList(WordsDictionary, NonCornerPattern, NonCornerDict);  //Non Corner Probables
-			var SpeicalDict = GetSpecialDict(SpecialList);
 
 			if (EverySyllableOnBoard.Count > 0)
 			{
+				//
+				NonCornerTiles = (GetFlatList2(NonCornerSyllables.ToArray()) + " " + Movables).Replace("(", " ").Replace(")", " ").Replace(",", " ").Replace("|", " ").Split(' ');
+				NonCornerPattern = string.Format("^(?<All>[{0},])*$", GetFlatList2(NonCornerTiles));
+				Dictionary<string, int> NonCornerDict = GetCountDict(NonCornerTiles);
+				var NonCornerProbables = ShortList(WordsDictionary, NonCornerPattern, NonCornerDict);  //Non Corner Probables
+
 				Thread t1 = new Thread(() =>
 				{
 					Moves.AddRange(SyllableExtensions(cells, size, CharSet, WordsDictionary, NonCornerProbables, MovableList, SpeicalDict));
@@ -126,7 +122,7 @@ namespace Scrabble
 
 				Thread t2 = new Thread(() =>
 				{
-					Moves.AddRange(WordExtensions(cells, size, CharSet, key, WordsDictionary, MovableList, SpeicalDict));
+					Moves.AddRange(WordExtensions(cells, size, CharSet, id, WordsDictionary, MovableList, SpeicalDict));
 				});
 
 				t1.Start(); t2.Start();
@@ -134,15 +130,15 @@ namespace Scrabble
 			}
 			else
 			{
-				Moves.AddRange(EmptyExtensions(cells, size, CharSet, start, WordsDictionary, MovableList, SpeicalDict));
+				Moves.AddRange(EmptyExtensions(cells, size, CharSet, star, WordsDictionary, MovableList, SpeicalDict));
 			}
 
-			WordsDictionary = null;
+			WordsDictionary = null; WordsDictionary = null;
 			RefreshScores(Moves, weights, size);
 			return Moves;
 		}
 
-		static List<ProbableMove> EmptyExtensions(string[] Cells, int size, CharSet CharSet, int startIndex, List<Word> AllWords, List<string> Movables, Dictionary<string, Regex> SpeicalDict)
+		protected static List<ProbableMove> EmptyExtensions(string[] Cells, int size, CharSet CharSet, int startIndex, List<Word> AllWords, List<string> Movables, Dictionary<string, Regex> SpeicalDict)
 		{
 			using (new Watcher("\tEmpty Extesnsions"))
 			{
@@ -191,7 +187,7 @@ namespace Scrabble
 				return Moves;
 			}
 		}
-		static List<ProbableMove> SyllableExtensions(string[] Cells, int size, CharSet CharSet, List<Word> AllWords, List<Word> Probables, List<string> Movables, Dictionary<string, Regex> SpeicalDict)
+		protected static List<ProbableMove> SyllableExtensions(string[] Cells, int size, CharSet CharSet, List<Word> AllWords, List<Word> Probables, List<string> Movables, Dictionary<string, Regex> SpeicalDict)
 		{
 			using (new Watcher("\tSyllable Extensions"))
 			{
@@ -259,8 +255,7 @@ namespace Scrabble
 				return Moves;
 			}
 		}
-
-		static List<ProbableMove> WordExtensions(string[] Cells, int size, CharSet CharSet, string key, List<Word> AllWords, List<string> Movables, Dictionary<string, Regex> SpeicalDict)
+		protected static List<ProbableMove> WordExtensions(string[] Cells, int size, CharSet CharSet, string key, List<Word> AllWords, List<string> Movables, Dictionary<string, Regex> SpeicalDict)
 		{
 			using (new Watcher("\tWord Extensions"))
 			{
@@ -279,7 +274,6 @@ namespace Scrabble
 						//Printer.PrintLine("\t\t Word Pattern: " + pattern);
 						//using (new Watcher("\t\t Match Word: ", true))
 						{
-							//var CachedList = CacheManager.GetSession<List<Word>>(key + "|" + wordOnBoard.Tiles,AllWords,ShortListedWords);
 							foreach (Word word in AllWords)
 							{
 								if (raw == word.Tiles)
@@ -354,21 +348,14 @@ namespace Scrabble
 			}
 		}
 
-		static List<Word> ShortListedWords(List<Word> AllWords)
+		protected static ProbableMove TryHarizontal(string[] Cells, int size, int Index, int offset, string[] Pre, string[] Centers, string[] Post)
 		{
-			return null;
-		}
-
-		static ProbableMove TryHarizontal(string[] Cells, int size, int Index, int offset, string[] Pre, string[] Centers, string[] Post)
-		{
-
 			List<Word> Moves = new List<Word>();
 			int PreCount = Pre.Length;
 			int PostCount = Post.Length;
 
 			string[] NewCells = (string[])Cells.Clone();
 			List<int> Impacted = new List<int>();
-
 
 			if (Pre.Length != 0)
 			{
@@ -379,6 +366,10 @@ namespace Scrabble
 					{
 						NewCells[n.Left] += Pre[x];
 						Impacted.Add(n.Left);
+						if (Pre[x] == null)
+						{
+							continue;
+						}
 						Moves.Add(new Word { Tiles = Pre[x], Index = n.Left });
 					}
 					else
@@ -399,6 +390,10 @@ namespace Scrabble
 
 					NewCells[cellIndex] += Centers[c];
 					Impacted.Add(cellIndex);
+					if (Centers[c] == null)
+					{
+						continue;
+					}
 					Moves.Add(new Word { Tiles = Centers[c], Index = cellIndex });
 				}
 			}
@@ -412,6 +407,10 @@ namespace Scrabble
 					{
 						NewCells[n.Right] += Post[x];
 						Impacted.Add(n.Right);
+						if (Post[x] == null)
+						{
+							continue;
+						}
 						Moves.Add(new Word { Tiles = Post[x], Index = n.Right });
 					}
 					else
@@ -428,7 +427,7 @@ namespace Scrabble
 			}
 			return new ProbableMove { Words = W, Moves = Moves, Direction = "H" };
 		}
-		static ProbableMove TryVertical(string[] Cells, int size, int Index, int offset, string[] Pre, string[] Centers, string[] Post)
+		protected static ProbableMove TryVertical(string[] Cells, int size, int Index, int offset, string[] Pre, string[] Centers, string[] Post)
 		{
 			List<Word> Moves = new List<Word>();
 			int PreCount = Pre.Length;
@@ -447,9 +446,12 @@ namespace Scrabble
 					Neighbor n = BoardUtil.FindNeighbors(cellIndex, size);
 					if (n.Top != -1)
 					{
-						//string temp = Join(Pre[x], Seperator);
 						NewCells[n.Top] += Pre[x];
 						Impacted.Add(n.Top);
+						if (Pre[x] == null)
+						{
+							continue;
+						}
 						Moves.Add(new Word { Tiles = Pre[x], Index = n.Top });
 					}
 					else
@@ -468,9 +470,13 @@ namespace Scrabble
 					{
 						continue;
 					}
-					//string temp = Join(Centers[c], Seperator);
+
 					NewCells[cellIndex] += Centers[c];
 					Impacted.Add(cellIndex);
+					if (Centers[c] == null)
+					{
+						continue;
+					}
 					Moves.Add(new Word { Tiles = Centers[c], Index = cellIndex });
 				}
 			}
@@ -486,6 +492,10 @@ namespace Scrabble
 						//string temp = Join(Post[x], Seperator);
 						NewCells[n.Bottom] += Post[x];
 						Impacted.Add(n.Bottom);
+						if (Post[x] == null)
+						{
+							continue;
+						}
 						Moves.Add(new Word { Tiles = Post[x], Index = n.Bottom });
 					}
 					else
@@ -503,7 +513,7 @@ namespace Scrabble
 			return new ProbableMove { Words = W, Moves = Moves, Direction = "V" };
 		}
 
-		void RefreshScores(List<ProbableMove> Moves, int[] Weights, int size)
+		protected void RefreshScores(List<ProbableMove> Moves, int[] Weights, int size)
 		{
 			//using (new Watcher("\tRefresh Scores"))
 			{
@@ -571,7 +581,7 @@ namespace Scrabble
 			}
 		}
 
-		static bool Validate(ProbableMove WV, List<Word> AllWords)
+		protected static bool Validate(ProbableMove WV, List<Word> AllWords)
 		{
 			WV.Words = WV.Words.Distinct(new ProbableWordComparer()).ToList();
 			if (WV.Words.Count == 0 || WV.Moves.Count == 0)
@@ -580,7 +590,7 @@ namespace Scrabble
 			}
 			return Validate(WV.Words, AllWords);
 		}
-		static bool Validate(List<ProbableWord> WV, List<Word> AllWords)
+		protected static bool Validate(List<ProbableWord> WV, List<Word> AllWords)
 		{
 			foreach (var w in WV)
 			{
@@ -592,7 +602,7 @@ namespace Scrabble
 			}
 			return true;
 		}
-		bool Validate(Dictionary<string, int> InputDict, Dictionary<string, int> CharCount)
+		protected bool Validate(Dictionary<string, int> InputDict, Dictionary<string, int> CharCount)
 		{
 			if (InputDict == null)
 			{
@@ -615,7 +625,7 @@ namespace Scrabble
 			return isValid;
 		}
 
-		static bool Resolve(string prev, List<string> Tiles, Dictionary<string, Regex> SpeicalList, ref string ordered)
+		protected static bool Resolve(string prev, List<string> Tiles, Dictionary<string, Regex> SpeicalList, ref string ordered)
 		{
 			if (string.IsNullOrEmpty(prev))
 			{
@@ -728,7 +738,7 @@ namespace Scrabble
 				}
 			}
 		}
-		static bool Resolve(string[] Pres, string[] Centers, string[] Posts, List<string> Tiles, Dictionary<string, Regex> SpeicalDict)
+		protected static bool Resolve(string[] Pres, string[] Centers, string[] Posts, List<string> Tiles, Dictionary<string, Regex> SpeicalDict)
 		{
 			bool res = true;
 			for (int i = 0; i < Pres.Length; i++)
@@ -773,7 +783,7 @@ namespace Scrabble
 			return true;
 		}
 
-		List<Word> MatchedWords(List<Word> words, string Pattern)
+		protected List<Word> MatchedWords(List<Word> words, string Pattern)
 		{
 			using (new Watcher("\t\tMatch Words "))
 			{
@@ -785,7 +795,7 @@ namespace Scrabble
 				return List;
 			}
 		}
-		static string MatchedString(Group group, string seperator)
+		protected static string MatchedString(Group group, string seperator)
 		{
 			string ret = "";
 			foreach (Capture capture in group.Captures)
@@ -799,7 +809,7 @@ namespace Scrabble
 			return ret;
 		}
 
-		static List<Word> GetWordsOnBoard(string[] Cells, int size, bool includeDuplicates)
+		protected static List<Word> GetWordsOnBoard(string[] Cells, int size, bool includeDuplicates)
 		{
 			List<Word> Words = new List<Word>();
 			for (var i = 0; i < size; i++)
@@ -1032,7 +1042,7 @@ namespace Scrabble
 			return -1;
 		}
 
-		static List<Word> GetSyllableList2(string[] Cells, int size, bool filter, bool free)
+		protected static List<Word> GetSyllableList2(string[] Cells, int size, bool filter, bool free)
 		{
 			List<Word> List = new List<Word>();
 			for (int index = 0; index < Cells.Length; index++)
@@ -1071,7 +1081,7 @@ namespace Scrabble
 			}
 			return List;
 		}
-		List<string> GetSyllableList(string[] Cells, int size, bool filterEdges, bool asGroups)
+		protected List<string> GetSyllableList(string[] Cells, int size, bool filterEdges, bool asGroups)
 		{
 			List<string> List = new List<string>();
 			for (int index = 0; index < Cells.Length; index++)
@@ -1218,7 +1228,7 @@ namespace Scrabble
 			}
 			return temp;
 		}
-		static string GetSyllablePattern2(CharSet CharSet, string syllable, string consoPatternNoComma, string prePattern, string PostPattern)
+		protected static string GetSyllablePattern2(CharSet CharSet, string syllable, string consoPatternNoComma, string prePattern, string PostPattern)
 		{
 			string temp = "";
 			List<string> Consos = new List<string>();
@@ -1268,7 +1278,7 @@ namespace Scrabble
 			ret = ret.TrimEnd(join);
 			return ret;
 		}
-		string GetFlatList2(string[] inputs)
+		protected string GetFlatList2(string[] inputs)
 		{
 			var list = inputs.ToList(); list.Sort();
 
@@ -1283,7 +1293,7 @@ namespace Scrabble
 
 			return GetFlatList(X, ' ').Replace(" ", "");
 		}
-		string GetFlatList(List<string> List, char Seperator)
+		protected string GetFlatList(List<string> List, char Seperator)
 		{
 			string ret = "";
 			foreach (string s in List)
@@ -1303,7 +1313,7 @@ namespace Scrabble
 			ret = ret.TrimEnd(Seperator);
 			return ret;
 		}
-		List<string> DistinctList(string Set, char Seperator)
+		protected List<string> DistinctList(string Set, char Seperator)
 		{
 			List<string> List = new List<string>();
 
@@ -1321,7 +1331,7 @@ namespace Scrabble
 			return List;
 		}
 
-		Dictionary<string, int> GetCountDict(string input)
+		protected Dictionary<string, int> GetCountDict(string input)
 		{
 			Dictionary<string, int> Dict = new Dictionary<string, int>();
 
@@ -1341,7 +1351,7 @@ namespace Scrabble
 			}
 			return Dict;
 		}
-		Dictionary<string, int> GetCountDict(string[] inputs)
+		protected Dictionary<string, int> GetCountDict(string[] inputs)
 		{
 			if (inputs == null)
 			{
@@ -1422,7 +1432,7 @@ namespace Scrabble
 			Vowels.AddRange(Sunna);
 		}
 
-		static string GenWordPattern(CharSet CharSet, string word, string consoPatternNoComma, string sunnaPattern, string allPatternNoComma, string prePattern, string postPattern, bool useSyllableIndex)
+		protected static string GenWordPattern(CharSet CharSet, string word, string consoPatternNoComma, string sunnaPattern, string allPatternNoComma, string prePattern, string postPattern, bool useSyllableIndex)
 		{
 			string temp = "";
 			var arr = word.Split('|');
@@ -1454,7 +1464,7 @@ namespace Scrabble
 			temp = string.Format("({0})|", temp);
 			return temp;
 		}
-		Dictionary<string, Regex> GetSpecialDict(List<string> SpecialList)
+		protected Dictionary<string, Regex> GetSpecialDict(List<string> SpecialList)
 		{
 			Dictionary<string, Regex> SpeicalDict = new Dictionary<string, Regex>();
 			foreach (string sp in SpecialList)
@@ -1482,39 +1492,15 @@ namespace Scrabble
 			return maxIndex;
 		}
 
-		CharSet CharSet;
-		string file;
-		int size;
-		string[] cells;
-		int[] weights;
-		string vowels;
-		string conso;
-		string special;
-		int start;
-		string key;
-
-		static T Deserialize<T>(string fromFile)
-		{
-			BinaryFormatter formatter = new BinaryFormatter();
-			using (FileStream fs = File.Open(fromFile, FileMode.Open))
-			{
-				object obj = formatter.Deserialize(fs);
-				fs.Flush();
-				fs.Close();
-				fs.Dispose();
-				return (T)obj;
-			}
-		}
-		static void Serialize<T>(T settings, string toFile)
-		{
-			using (Stream ms = File.OpenWrite(toFile))
-			{
-				BinaryFormatter formatter = new BinaryFormatter();
-				formatter.Serialize(ms, settings);
-				ms.Flush();
-				ms.Close();
-				ms.Dispose();
-			}
-		}
+		protected CharSet CharSet;
+		protected string file;
+		protected int size;
+		protected string[] cells;
+		protected int[] weights;
+		protected string vowels;
+		protected string conso;
+		protected string special;
+		protected int star;
+		protected string id;
 	}
 }

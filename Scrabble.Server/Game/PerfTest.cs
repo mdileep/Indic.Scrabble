@@ -10,6 +10,7 @@
 // </copyright>
 //---------------------------------------------------------------------------------------------
 
+using Scrabble.Engines;
 using Scrabble.Server;
 using System;
 using System.Collections.Generic;

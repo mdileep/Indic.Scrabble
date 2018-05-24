@@ -246,6 +246,7 @@ define(["require", "exports", "react", "react-dom", 'Contracts', 'Messages', 'In
                 "Reference": reference,
                 "Name": Name,
                 "Bot": BotName,
+                "Id": state.GameId,
                 "Cells": Cells,
                 "Vowels": Vowels.join(' '),
                 "Conso": Cosos.join(' '),

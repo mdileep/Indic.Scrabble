@@ -17,6 +17,7 @@ namespace Scrabble.Server
 	{
 		public string Name;
 		public string Bot;
+		public string Id;
 		//
 		public string Reference;
 		//Dynamic

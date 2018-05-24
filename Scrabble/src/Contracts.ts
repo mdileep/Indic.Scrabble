@@ -98,7 +98,7 @@ export interface iGameState extends iComponent {
     Consent: iConsent;
     Stats: iBoardsStats;
     Dialog: iDialog;
-
+    GameId: number;
     GameOver: boolean;
 }
 export interface iOverlayDialog extends iComponent {
@@ -184,6 +184,7 @@ export interface iRawConfig {
     CharSet: any;
     Localization: any;
     Players: any;
+    GameId: number;
 }
 export interface iRawBoard {
     Id: string;

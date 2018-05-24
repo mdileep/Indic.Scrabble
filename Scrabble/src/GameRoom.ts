@@ -13,7 +13,6 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as Redux from 'redux';
-import Reducers from 'GameState';
 import * as Contracts from 'Contracts';
 import * as Cabinet from 'Cabinet';
 import * as Board from 'Board';
@@ -40,16 +39,13 @@ class GameRoom extends React.Component<Contracts.iGameState, Contracts.iGameStat
         var actionBar = React.createElement(((ActionBar.default as any) as React.ComponentClass<Contracts.iActionBar>), Util.Util.Merge(this.props.Stats, { key: "actionBar", ReadOnly: this.props.ReadOnly }));
         childs.push(actionBar);
 
-        var scores = React.createElement(((GamePlayers.default as any) as React.ComponentClass<Contracts.iPlayers>), Util.Util.Merge(this.props.Players, { key: "scores", showScores: true, showWordsList: false, ReadOnly: this.props.Players.ReadOnly || this.props.ReadOnly }));
-        childs.push(scores);
-
         var gameTable = React.createElement(((GameTable.default as any) as React.ComponentClass<Contracts.iGameTable>), Util.Util.Merge(this.props.GameTable, { ReadOnly: this.props.GameTable.ReadOnly || this.props.ReadOnly }));
         childs.push(gameTable);
 
         var board = React.createElement(((Board.default as any) as React.ComponentClass<Contracts.iBoardProps>), this.props.Board);
         childs.push(board);
 
-        var words = React.createElement(((GamePlayers.default as any) as React.ComponentClass<Contracts.iPlayers>), Util.Util.Merge(this.props.Players, { key: "words", Id: "WordBoard", showScores: false, showWordsList: true, ReadOnly: this.props.ReadOnly }));
+        var words = React.createElement(((GamePlayers.default as any) as React.ComponentClass<Contracts.iPlayers>), Util.Util.Merge(this.props.Players, { key: "words", Id: "WordBoard", showScores: true, showWordsList: true, ReadOnly: this.props.ReadOnly }));
         childs.push(words);
 
         var cabinet = React.createElement(((Cabinet.default as any) as React.ComponentClass<Contracts.iCabinetProps>), Util.Util.Merge(this.props.Cabinet, { ReadOnly: this.props.Cabinet.ReadOnly || this.props.ReadOnly }));

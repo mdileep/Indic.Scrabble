@@ -18,11 +18,11 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace Scrabble
+namespace Scrabble.Engines
 {
-	internal class Runner : iRunner
+	internal class AlphaEngine : iGameEngine
 	{
-		public Runner(ScrabbleBoard Board)
+		public AlphaEngine(ScrabbleBoard Board)
 		{
 			if (Board == null)
 			{
@@ -40,17 +40,20 @@ namespace Scrabble
 				return;
 			}
 			//
-			file = bot.Dictionary;
+			file = ServerUtil.Path("bots\\" + bot.Dictionary);
 			CharSet = Config.GetCharSet(bot.Language);
+			key = bot.Id;
 			//
 			size = board.Size;
 			weights = board.Weights;
+			start = board.Star;
 			//
 			cells = Board.Cells;
 			vowels = Board.Vowels;
 			conso = Board.Conso;
 			special = Board.Special;
 		}
+
 		public ProbableMove BestMove()
 		{
 			var Moves = Probables();
@@ -60,10 +63,11 @@ namespace Scrabble
 			}
 			return Moves[0];
 		}
+
 		public List<ProbableMove> Probables()
 		{
 			var Moves = new List<ProbableMove>();
-			if (!new FileInfo(ServerUtil.Path(file)).Exists)
+			if (!new FileInfo(file).Exists)
 			{
 				return Moves;
 			}
@@ -1611,12 +1615,14 @@ namespace Scrabble
 		}
 
 		CharSet CharSet;
-		private string file;
-		private int size;
-		private string[] cells;
-		private int[] weights;
-		private string vowels;
-		private string conso;
-		private string special;
+		string file;
+		int size;
+		string[] cells;
+		int[] weights;
+		string vowels;
+		string conso;
+		string special;
+		int start;
+		string key;
 	}
 }

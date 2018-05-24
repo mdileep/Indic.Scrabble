@@ -52,7 +52,7 @@ export class AskServer {
         setTimeout(function () {
 
             var st = performance.now();
-            var move: C.ProbableMove = new RegexEngine().BestMove(post);
+            var move: C.ProbableMove = new RegexV2Engine().BestMove(post);
             var effort = U.Util.ElapsedTime(performance.now() - st);
 
             var response =
@@ -445,6 +445,9 @@ export class RegexEngine {
                 if (n.Left != -1) {
                     NewCells[n.Left] += Pre[x];
                     Impacted.push(n.Left);
+                    if (Pre[x] == null || Pre[x] == "") {
+                        debugger;
+                    }
                     Moves.push({ Tiles: Pre[x], Index: n.Left } as C.Word);
                 }
                 else {
@@ -462,6 +465,9 @@ export class RegexEngine {
 
                 NewCells[cellIndex] += Centers[c];
                 Impacted.push(cellIndex);
+                if (Centers[c] == null || Centers[c] == "") {
+                    debugger;
+                }
                 Moves.push({ Tiles: Centers[c], Index: cellIndex } as C.Word);
             }
         }
@@ -472,6 +478,9 @@ export class RegexEngine {
                 if (n.Right != -1) {
                     NewCells[n.Right] += Post[x];
                     Impacted.push(n.Right);
+                    if (Post[x] == null || Post[x] == "") {
+                        debugger;
+                    }
                     Moves.push({ Tiles: Post[x], Index: n.Right } as C.Word);
                 }
                 else {
@@ -502,6 +511,9 @@ export class RegexEngine {
                 if (n.Top != -1) {
                     NewCells[n.Top] += Pre[x];
                     Impacted.push(n.Top);
+                    if (Pre[x] == null || Pre[x] == "") {
+                        debugger;
+                    }
                     Moves.push({ Tiles: Pre[x], Index: n.Top } as C.Word);
                 }
                 else {
@@ -518,6 +530,9 @@ export class RegexEngine {
                 }
                 NewCells[cellIndex] += Centers[c];
                 Impacted.push(cellIndex);
+                if (Centers[c] == null || Centers[c] == "") {
+                    debugger;
+                }
                 Moves.push({ Tiles: Centers[c], Index: cellIndex } as C.Word);
             }
         }
@@ -529,6 +544,9 @@ export class RegexEngine {
                 if (n.Bottom != -1) {
                     NewCells[n.Bottom] += Post[x];
                     Impacted.push(n.Bottom);
+                    if (Post[x] == null || Post[x] == "") {
+                        debugger;
+                    }
                     Moves.push({ Tiles: Post[x], Index: n.Bottom } as C.Word);
                 }
                 else {
@@ -1366,6 +1384,10 @@ export class RegexEngine {
         }
         return maxIndex;
     }
+}
+export class RegexV2Engine extends RegexEngine
+{
+
 }
 export class GameConfig {
     static GetBot(bot: string): C.Bot {

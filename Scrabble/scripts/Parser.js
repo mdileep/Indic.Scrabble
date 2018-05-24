@@ -18,6 +18,7 @@ define(["require", "exports", "GameActions", "Indic"], function (require, export
             var gameState = {
                 Id: Config.Board.Id,
                 key: Config.Board.Id,
+                GameId: Config.GameId,
                 className: "game",
                 ReadOnly: false,
                 Show: true,

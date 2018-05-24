@@ -1,3 +1,8 @@
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
 define(["require", "exports", 'axios', 'GameStore', 'Contracts', 'Util', 'WordLoader'], function (require, exports, axios, GS, C, U, WL) {
     "use strict";
     var AskServer = (function () {
@@ -27,7 +32,7 @@ define(["require", "exports", 'axios', 'GameStore', 'Contracts', 'Util', 'WordLo
         AskServer.BotMoveClient = function (post) {
             setTimeout(function () {
                 var st = performance.now();
-                var move = new RegexEngine().BestMove(post);
+                var move = new RegexV2Engine().BestMove(post);
                 var effort = U.Util.ElapsedTime(performance.now() - st);
                 var response = {
                     Action: "nextmove",
@@ -368,6 +373,9 @@ define(["require", "exports", 'axios', 'GameStore', 'Contracts', 'Util', 'WordLo
                     if (n.Left != -1) {
                         NewCells[n.Left] += Pre[x];
                         Impacted.push(n.Left);
+                        if (Pre[x] == null || Pre[x] == "") {
+                            debugger;
+                        }
                         Moves.push({ Tiles: Pre[x], Index: n.Left });
                     }
                     else {
@@ -383,6 +391,9 @@ define(["require", "exports", 'axios', 'GameStore', 'Contracts', 'Util', 'WordLo
                     }
                     NewCells[cellIndex] += Centers[c];
                     Impacted.push(cellIndex);
+                    if (Centers[c] == null || Centers[c] == "") {
+                        debugger;
+                    }
                     Moves.push({ Tiles: Centers[c], Index: cellIndex });
                 }
             }
@@ -392,6 +403,9 @@ define(["require", "exports", 'axios', 'GameStore', 'Contracts', 'Util', 'WordLo
                     if (n.Right != -1) {
                         NewCells[n.Right] += Post[x];
                         Impacted.push(n.Right);
+                        if (Post[x] == null || Post[x] == "") {
+                            debugger;
+                        }
                         Moves.push({ Tiles: Post[x], Index: n.Right });
                     }
                     else {
@@ -420,6 +434,9 @@ define(["require", "exports", 'axios', 'GameStore', 'Contracts', 'Util', 'WordLo
                     if (n.Top != -1) {
                         NewCells[n.Top] += Pre[x];
                         Impacted.push(n.Top);
+                        if (Pre[x] == null || Pre[x] == "") {
+                            debugger;
+                        }
                         Moves.push({ Tiles: Pre[x], Index: n.Top });
                     }
                     else {
@@ -435,6 +452,9 @@ define(["require", "exports", 'axios', 'GameStore', 'Contracts', 'Util', 'WordLo
                     }
                     NewCells[cellIndex] += Centers[c];
                     Impacted.push(cellIndex);
+                    if (Centers[c] == null || Centers[c] == "") {
+                        debugger;
+                    }
                     Moves.push({ Tiles: Centers[c], Index: cellIndex });
                 }
             }
@@ -445,6 +465,9 @@ define(["require", "exports", 'axios', 'GameStore', 'Contracts', 'Util', 'WordLo
                     if (n.Bottom != -1) {
                         NewCells[n.Bottom] += Post[x];
                         Impacted.push(n.Bottom);
+                        if (Post[x] == null || Post[x] == "") {
+                            debugger;
+                        }
                         Moves.push({ Tiles: Post[x], Index: n.Bottom });
                     }
                     else {
@@ -1201,6 +1224,14 @@ define(["require", "exports", 'axios', 'GameStore', 'Contracts', 'Util', 'WordLo
         return RegexEngine;
     }());
     exports.RegexEngine = RegexEngine;
+    var RegexV2Engine = (function (_super) {
+        __extends(RegexV2Engine, _super);
+        function RegexV2Engine() {
+            _super.apply(this, arguments);
+        }
+        return RegexV2Engine;
+    }(RegexEngine));
+    exports.RegexV2Engine = RegexV2Engine;
     var GameConfig = (function () {
         function GameConfig() {
         }
