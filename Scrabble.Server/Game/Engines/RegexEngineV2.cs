@@ -46,16 +46,17 @@ namespace Scrabble.Engines
 			}
 
 			string[] All = new string[] { };
-			string[] NonCornerTiles = new string[] { };
+
 
 			string AllPattern = "";
-			var NonCornerPattern = "";
+
 
 			string Movables = (vowels + " " + conso + " " + special);
 			var MovableList = Movables.Replace("(", " ").Replace(")", " ").Replace(",", "").Split(' ').ToList();
 			MovableList.RemoveAll(x => x.Length == 0);
 
 			var SpecialList = DistinctList(special.Replace("(", " ").Replace(")", " ").Replace(",", ""), ' ');
+			var SpeicalDict = GetSpecialDict(SpecialList);
 
 			List<string> EverySyllableOnBoard = GetSyllableList(cells, size, false, true);
 			List<string> NonCornerSyllables = GetSyllableList(cells, size, true, false);
@@ -63,24 +64,23 @@ namespace Scrabble.Engines
 			//
 			All = (GetFlatList(EverySyllableOnBoard, ',') + " " + Movables).Replace("(", " ").Replace(")", " ").Replace(",", " ").Replace("|", " ").Split(' ');
 			AllPattern = string.Format("^(?<All>[{0},])*$", GetFlatList2(All));
-
-
 			Dictionary<string, int> AllDict = GetCountDict(All);
 
 			var WordsDictionary = WordLoader.Load(file); //Large Set of Words
 			var ContextualList = ShortList(WordsDictionary, AllPattern, AllDict); // Probables 
 
-			var SpeicalDict = GetSpecialDict(SpecialList);
 
 			if (EverySyllableOnBoard.Count > 0)
 			{
+				var NonCornerPattern = "";
+				string[] NonCornerTiles = new string[] { };
 				//
 				NonCornerTiles = (GetFlatList2(NonCornerSyllables.ToArray()) + " " + Movables).Replace("(", " ").Replace(")", " ").Replace(",", " ").Replace("|", " ").Split(' ');
 				NonCornerPattern = string.Format("^(?<All>[{0},])*$", GetFlatList2(NonCornerTiles));
 				//
 				Dictionary<string, int> NonCornerDict = GetCountDict(NonCornerTiles);
 				var NonCornerProbables = ShortList(WordsDictionary, ContextualList, NonCornerPattern, NonCornerDict);  //Non Corner Probables
-																													   //
+
 				Moves.AddRange(SyllableExtensions(cells, size, CharSet, id, WordsDictionary, NonCornerProbables, MovableList, SpeicalDict));
 				Moves.AddRange(WordExtensions(cells, size, CharSet, id, WordsDictionary, ContextualList, MovableList, SpeicalDict));
 			}
@@ -105,14 +105,21 @@ namespace Scrabble.Engines
 			{
 				Regex R = new Regex(NonCornerPattern, RegexOptions.Compiled);
 
-				List<Word> Matches = MatchedWords(Words, NonCornerPattern);
 				List<int> Shortlisted = new List<int>();
 
 				using (new Watcher("\t\tShortList2 "))
 				{
-					foreach (Word word in Matches)
+					foreach (int indx in Probables)
 					{
+						var word = Words[indx];
+
 						if (word.Syllables == 1)
+						{
+							continue;
+						}
+						Regex r = new Regex(NonCornerPattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
+						var isMatch = r.IsMatch(word.Tiles);
+						if (!isMatch)
 						{
 							continue;
 						}
@@ -127,7 +134,7 @@ namespace Scrabble.Engines
 
 						Shortlisted.Add(word.Index);
 					}
-					Printer.PrintLine("\t\t\t Shortlisted: " + Shortlisted.Count + "  of " + Matches.Count);
+					Printer.PrintLine("\t\t\t Shortlisted: " + Shortlisted.Count + "  of " + Probables.Count);
 				}
 				return Shortlisted;
 			}
@@ -205,6 +212,7 @@ namespace Scrabble.Engines
 			}
 			return Probables;
 		}
+
 		static void RefreshCache(string block, List<Word> Items)
 		{
 			var Dict = CacheManager.GetSession<Dictionary<string, List<int>>>(block);

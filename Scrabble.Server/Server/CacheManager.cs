@@ -61,20 +61,6 @@ namespace Scrabble.Server
 			return (T)Val;
 		}
 
-		internal static T GetSession<T>(string Block, string Key)
-		{
-			var Dict = (Dictionary<string, T>)HttpContext.Current.Session[Block];
-			if (Dict == null)
-			{
-				return default(T);
-			}
-			if (Dict.ContainsKey(Key))
-			{
-				return Dict[Key];
-			}
-			return default(T);
-		}
-
 		internal static T GetSession<T, T1, T2>(string Block, string Key, T1 p1, T2 p2, Func<T1, T2, T> callBack)
 		{
 			var Dict = (Dictionary<string, T>)HttpContext.Current.Session[Block];
@@ -93,3 +79,18 @@ namespace Scrabble.Server
 		}
 	}
 }
+
+
+//internal static T GetSession<T>(string Block, string Key)
+//{
+//	var Dict = (Dictionary<string, T>)HttpContext.Current.Session[Block];
+//	if (Dict == null)
+//	{
+//		return default(T);
+//	}
+//	if (Dict.ContainsKey(Key))
+//	{
+//		return Dict[Key];
+//	}
+//	return default(T);
+//}

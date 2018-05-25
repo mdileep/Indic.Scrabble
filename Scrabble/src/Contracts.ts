@@ -308,6 +308,7 @@ export interface TargetCell {
 export interface ScrabbleBoard {
     Name: string;
     Bot: string;
+    Id: string;
     //
     Reference: string;
     //Dynamic

@@ -84,10 +84,10 @@ namespace Scrabble.Engines
 			}
 
 			string[] All = new string[] { };
-			string[] NonCornerTiles = new string[] { };
+
 
 			string AllPattern = "";
-			var NonCornerPattern = "";
+
 
 			string Movables = (vowels + " " + conso + " " + special);
 			var MovableList = Movables.Replace("(", " ").Replace(")", " ").Replace(",", "").Split(' ').ToList();
@@ -109,6 +109,8 @@ namespace Scrabble.Engines
 
 			if (EverySyllableOnBoard.Count > 0)
 			{
+				var NonCornerPattern = "";
+				string[] NonCornerTiles = new string[] { };
 				//
 				NonCornerTiles = (GetFlatList2(NonCornerSyllables.ToArray()) + " " + Movables).Replace("(", " ").Replace(")", " ").Replace(",", " ").Replace("|", " ").Split(' ');
 				NonCornerPattern = string.Format("^(?<All>[{0},])*$", GetFlatList2(NonCornerTiles));
@@ -122,7 +124,7 @@ namespace Scrabble.Engines
 
 				Thread t2 = new Thread(() =>
 				{
-					Moves.AddRange(WordExtensions(cells, size, CharSet, id, WordsDictionary, MovableList, SpeicalDict));
+					Moves.AddRange(WordExtensions(cells, size, CharSet, WordsDictionary, MovableList, SpeicalDict));
 				});
 
 				t1.Start(); t2.Start();
@@ -138,7 +140,7 @@ namespace Scrabble.Engines
 			return Moves;
 		}
 
-		protected static List<ProbableMove> EmptyExtensions(string[] Cells, int size, CharSet CharSet, int startIndex, List<Word> AllWords, List<string> Movables, Dictionary<string, Regex> SpeicalDict)
+		protected static List<ProbableMove> EmptyExtensions(string[] Cells, int size, CharSet CharSet, int star, List<Word> AllWords, List<string> Movables, Dictionary<string, Regex> SpeicalDict)
 		{
 			using (new Watcher("\tEmpty Extesnsions"))
 			{
@@ -168,8 +170,8 @@ namespace Scrabble.Engines
 						int totalCells = Pres.Length + Centers.Length + Posts.Length;
 						int centroid = totalCells % 2 == 0 ? (totalCells / 2 - 1) : totalCells / 2;
 
-						ProbableMove WH = TryHarizontal(Cells, size, startIndex - centroid, 0, Pres, Centers, Posts);
-						ProbableMove WV = TryVertical(Cells, size, startIndex - centroid, 0, Pres, Centers, Posts);
+						ProbableMove WH = TryHarizontal(Cells, size, star - centroid, 0, Pres, Centers, Posts);
+						ProbableMove WV = TryVertical(Cells, size, star - centroid, 0, Pres, Centers, Posts);
 
 						bool WHValid = Validate(WH, AllWords);
 						bool WVValid = Validate(WV, AllWords);
@@ -255,7 +257,7 @@ namespace Scrabble.Engines
 				return Moves;
 			}
 		}
-		protected static List<ProbableMove> WordExtensions(string[] Cells, int size, CharSet CharSet, string key, List<Word> AllWords, List<string> Movables, Dictionary<string, Regex> SpeicalDict)
+		protected static List<ProbableMove> WordExtensions(string[] Cells, int size, CharSet CharSet, List<Word> AllWords, List<string> Movables, Dictionary<string, Regex> SpeicalDict)
 		{
 			using (new Watcher("\tWord Extensions"))
 			{
@@ -289,7 +291,6 @@ namespace Scrabble.Engines
 								string Pre = "";
 								string Post = "";
 								string Center = "";
-
 
 								Pre = MatchedString(M.Groups["Pre"], "");
 								for (int i = 0; i < word.Syllables; i++)
