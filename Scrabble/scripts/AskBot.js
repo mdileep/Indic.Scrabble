@@ -32,7 +32,7 @@ define(["require", "exports", 'axios', 'GameStore', 'Contracts', 'Util', 'WordLo
         AskServer.BotMoveClient = function (post) {
             setTimeout(function () {
                 var st = performance.now();
-                var move = new RegexV2Engine().BestMove(post);
+                var move = new RegexEngine().BestMove(post);
                 var effort = U.Util.ElapsedTime(performance.now() - st);
                 var response = {
                     Action: "nextmove",

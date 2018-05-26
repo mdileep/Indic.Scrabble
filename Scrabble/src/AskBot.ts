@@ -52,7 +52,7 @@ export class AskServer {
         setTimeout(function () {
 
             var st = performance.now();
-            var move: C.ProbableMove = new RegexV2Engine().BestMove(post);
+            var move: C.ProbableMove = new RegexEngine().BestMove(post);
             var effort = U.Util.ElapsedTime(performance.now() - st);
 
             var response =
