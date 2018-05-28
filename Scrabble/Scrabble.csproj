@@ -58,6 +58,9 @@
     <Content Include="bots\te.tebha.txt" />
     <Content Include="bots\kn.vijaykarnataka.txt" />
     <Content Include="bots\kn.udayavani.txt" />
+    <Content Include="bots\hi.bible.txt" />
+    <Content Include="bots\kn.bible.txt" />
+    <Content Include="bots\te.bible.txt" />
   </ItemGroup>
   <ItemGroup>
     <LessFiles Include="styles\less\4.colors.mobile.less" />

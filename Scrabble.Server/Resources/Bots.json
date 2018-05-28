@@ -23,6 +23,14 @@
     "Algorithm": "Default",
     "Endpoint": null
   },
+  "bible.te": {
+    "Name": "బైబిలు",
+    "FullName": "బైబిలు",
+    "Language": "te",
+    "Dictionary": "te.bible.txt",
+    "Algorithm": "Default",
+    "Endpoint": null
+  },
   "andhrajyothy": {
     "Name": "ఆంధ్రజ్యోతి",
     "FullName": "ఆంధ్రజ్యోతి",
@@ -71,11 +79,27 @@
     "Algorithm": "Default",
     "Endpoint": null
   },
+  "bible.kn": {
+    "Name": "Bible",
+    "FullName": "Bible",
+    "Language": "kn",
+    "Dictionary": "kn.bible.txt",
+    "Algorithm": "Default",
+    "Endpoint": null
+  },
   "bbc.hi": {
     "Name": "बीबीसी",
     "FullName": "बीबीसी हिंदी",
     "Language": "hi",
     "Dictionary": "hi.bbc.txt",
+    "Algorithm": "Default",
+    "Endpoint": null
+  },
+  "bible.hi": {
+    "Name": "Bible",
+    "FullName": "Bible",
+    "Language": "hi",
+    "Dictionary": "hi.bible.txt",
     "Algorithm": "Default",
     "Endpoint": null
   }
