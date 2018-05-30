@@ -508,7 +508,6 @@ define(["require", "exports", 'axios', 'GameStore', 'Contracts', 'Util', 'WordLo
             if (U.Util.IsNullOrEmpty(NonCornerPattern)) {
                 return [];
             }
-            var R = RegExp(NonCornerPattern);
             var Matches = this.MatchedWords(Words, NonCornerPattern);
             var Shortlisted = [];
             {
@@ -1327,8 +1326,7 @@ define(["require", "exports", 'axios', 'GameStore', 'Contracts', 'Util', 'WordLo
                     if (word.Syllables == 1) {
                         continue;
                     }
-                    var r = new RegExp(NonCornerPattern);
-                    var isMatch = r.test(word.Tiles);
+                    var isMatch = R.test(word.Tiles);
                     if (!isMatch) {
                         continue;
                     }
@@ -1387,8 +1385,8 @@ define(["require", "exports", 'axios', 'GameStore', 'Contracts', 'Util', 'WordLo
                     var centroid = totalCells % 2 == 0 ? (Math.floor(totalCells / 2) - 1) : Math.floor(totalCells / 2);
                     var WH = RegexEngine.TryHarizontal(Cells, size, startIndex - centroid, 0, Pres, Centers, Posts);
                     var WV = RegexEngine.TryVertical(Cells, size, startIndex - centroid, 0, Pres, Centers, Posts);
-                    var WHValid = RegexEngine.Validate3(WH, AllWords);
-                    var WVValid = RegexEngine.Validate3(WV, AllWords);
+                    var WHValid = RegexV2Engine.Validate4(WH, AllWords, Probables);
+                    var WVValid = RegexV2Engine.Validate4(WV, AllWords, Probables);
                     if (WHValid) {
                         Moves.push(WH);
                     }
@@ -1433,8 +1431,8 @@ define(["require", "exports", 'axios', 'GameStore', 'Contracts', 'Util', 'WordLo
                             }
                             var WH = RegexEngine.TryHarizontal(Cells, size, syllable.Index, 0, Pres, Centers, Posts);
                             var WV = RegexEngine.TryVertical(Cells, size, syllable.Index, 0, Pres, Centers, Posts);
-                            var WHValid = RegexEngine.Validate3(WH, AllWords);
-                            var WVValid = RegexEngine.Validate3(WV, AllWords);
+                            var WHValid = RegexV2Engine.Validate4(WH, AllWords, Probables);
+                            var WVValid = RegexV2Engine.Validate4(WV, AllWords, Probables);
                             if (WHValid) {
                                 Moves.push(WH);
                             }
@@ -1496,14 +1494,14 @@ define(["require", "exports", 'axios', 'GameStore', 'Contracts', 'Util', 'WordLo
                             }
                             if (wordOnBoard.Position == "R") {
                                 var WH = RegexEngine.TryHarizontal(Cells, size, wordOnBoard.Index, wordOnBoard.Syllables - 1, Pres, Centers, Posts);
-                                var WHValid = RegexEngine.Validate3(WH, AllWords);
+                                var WHValid = RegexV2Engine.Validate4(WH, AllWords, Probables);
                                 if (WHValid) {
                                     Moves.push(WH);
                                 }
                             }
                             if (wordOnBoard.Position == "C") {
                                 var WH = RegexEngine.TryVertical(Cells, size, wordOnBoard.Index, wordOnBoard.Syllables - 1, Pres, Centers, Posts);
-                                var WHValid = RegexEngine.Validate3(WH, AllWords);
+                                var WHValid = RegexV2Engine.Validate4(WH, AllWords, Probables);
                                 if (WHValid) {
                                     Moves.push(WH);
                                 }
@@ -1513,6 +1511,24 @@ define(["require", "exports", 'axios', 'GameStore', 'Contracts', 'Util', 'WordLo
                 }
             }
             return Moves;
+        };
+        RegexV2Engine.Validate4 = function (WV, AllWords, Probables) {
+            WV.Words = ProbableWordComparer.Distinct(WV.Words);
+            WV.WordsCount = WV.Words.length;
+            if (WV.Words.length == 0 || WV.Moves.length == 0) {
+                return false;
+            }
+            return RegexV2Engine.Validate5(WV.Words, AllWords, Probables);
+        };
+        RegexV2Engine.Validate5 = function (WV, AllWords, Probables) {
+            for (var indx in WV) {
+                var w = WV[indx];
+                var v = Probables.filter(function (x) { return AllWords[x].Tiles == w.String; });
+                if (v == null || v.length == 0) {
+                    return false;
+                }
+            }
+            return true;
         };
         return RegexV2Engine;
     }(RegexEngine));

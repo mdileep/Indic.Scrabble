@@ -35,8 +35,8 @@ export class Parser {
 
         //
         var gameState: Contracts.iGameState = {
-            Id: Config.Board.Id,
-            key: Config.Board.Id,
+            Id: "game",
+            key: "game",
             GameId: Config.GameId,
             className: "game",
             ReadOnly: false,

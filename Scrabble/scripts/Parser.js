@@ -16,8 +16,8 @@ define(["require", "exports", "GameActions", "Indic"], function (require, export
             GameActions.GameActions.RefreshCabinet(cabinet, cache);
             var dialog = Parser.BuildDialog();
             var gameState = {
-                Id: Config.Board.Id,
-                key: Config.Board.Id,
+                Id: "game",
+                key: "game",
                 GameId: Config.GameId,
                 className: "game",
                 ReadOnly: false,

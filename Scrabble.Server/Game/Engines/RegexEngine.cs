@@ -552,8 +552,6 @@ namespace Scrabble.Engines
 
 			using (new Watcher("\tShortList "))
 			{
-				Regex R = new Regex(NonCornerPattern, RegexOptions.Compiled);
-
 				List<Word> Matches = MatchedWords(Words, NonCornerPattern);
 				List<Word> Shortlisted = new List<Word>();
 

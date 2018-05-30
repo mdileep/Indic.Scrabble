@@ -117,8 +117,7 @@ namespace Scrabble.Engines
 						{
 							continue;
 						}
-						Regex r = new Regex(NonCornerPattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
-						var isMatch = r.IsMatch(word.Tiles);
+						var isMatch = R.IsMatch(word.Tiles);
 						if (!isMatch)
 						{
 							continue;
@@ -454,6 +453,5 @@ namespace Scrabble.Engines
 				return Moves;
 			}
 		}
-
 	}
 }

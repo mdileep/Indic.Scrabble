@@ -80,8 +80,8 @@
     "Endpoint": null
   },
   "bible.kn": {
-    "Name": "Bible",
-    "FullName": "Bible",
+    "Name": "ಬೈಬಲ್",
+    "FullName": "ಬೈಬಲ್",
     "Language": "kn",
     "Dictionary": "kn.bible.txt",
     "Algorithm": "Default",
@@ -96,8 +96,8 @@
     "Endpoint": null
   },
   "bible.hi": {
-    "Name": "Bible",
-    "FullName": "Bible",
+    "Name": "बाइबिल",
+    "FullName": "बाइबिल",
     "Language": "hi",
     "Dictionary": "hi.bible.txt",
     "Algorithm": "Default",
