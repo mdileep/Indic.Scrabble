@@ -15,7 +15,7 @@ define(["require", "exports", "react", 'Cabinet', 'Board', 'InfoBar', 'GamePlaye
             var childs = [];
             var gameTable = React.createElement(GameTable.default, Util.Util.Merge(this.props.GameTable, { ReadOnly: this.props.GameTable.ReadOnly || this.props.ReadOnly }));
             childs.push(gameTable);
-            var board = React.createElement(Board.default, this.props.Board);
+            var board = React.createElement(Board.default, Util.Util.Merge(this.props.Board, { ReadOnly: this.props.Board.ReadOnly || this.props.ReadOnly }));
             childs.push(board);
             var actionBar = React.createElement(ActionBar.default, Util.Util.Merge(this.props.Stats, { key: "actionBar", ReadOnly: this.props.ReadOnly }));
             childs.push(actionBar);

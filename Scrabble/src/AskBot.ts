@@ -56,12 +56,11 @@ export class AskServer {
             var effort = U.Util.ElapsedTime(performance.now() - st);
             //if (console) { console.log(U.Util.Format("RegexEngine: V1: {0}", [effort])); }
 
-            //
-            //var st = performance.now();
-            //var move: C.ProbableMove = new RegexV2Engine().BestMove(post);
-            //var effort = U.Util.ElapsedTime(performance.now() - st);
-           // if (console) { console.log(U.Util.Format("RegexEngine: V2: {0}", [effort2])); }
-            
+            //var st2 = performance.now();
+            //var move2: C.ProbableMove = new RegexV2Engine().BestMove(post);
+            //var effort2 = U.Util.ElapsedTime(performance.now() - st2);
+            // if (console) { console.log(U.Util.Format("RegexEngine: V2: {0}", [effort2])); }
+
             var response =
                 {
                     Action: "nextmove",
@@ -240,6 +239,8 @@ export class RegexEngine {
 
         var WordsDictionary = WL.WordLoader.LoadWords(file); //Large Set of Words
         WordsDictionary = this.ShortList(WordsDictionary, AllPattern, AllDict); // Probables 
+
+        //if (console) { console.log("\t\tProbables: V1: " + WordsDictionary.length); }
 
         if (EverySyllableOnBoard.length > 0) {
             var NonCornerTiles = [] as string[];
@@ -1446,6 +1447,8 @@ export class RegexV2Engine extends RegexEngine {
         var WordsDictionary = WL.WordLoader.LoadWords(file); //Large Set of Words
         var ContextualList = this.ShortList2(WordsDictionary, AllPattern, AllDict); // Probables 
 
+        //if (console) { console.log("\t\tProbables: V2: "+ContextualList.length); }
+
         if (EverySyllableOnBoard.length > 0) {
             var NonCornerTiles = [] as string[];
             var NonCornerPattern = "";
@@ -1495,7 +1498,7 @@ export class RegexV2Engine extends RegexEngine {
                 Shortlisted.push(word.Index);
             }
         }
-       //if (console) { console.log(U.Util.Format("\tContextual: V2: {1} {0}", [U.Util.ElapsedTime(performance.now() - st), Shortlisted.length])); }
+        //if (console) { console.log(U.Util.Format("\tContextual: V2: {1} {0}", [U.Util.ElapsedTime(performance.now() - st), Shortlisted.length])); }
 
         return Shortlisted;
     }
@@ -1550,7 +1553,7 @@ export class RegexV2Engine extends RegexEngine {
         //		CachedList: Cache all Possible Extesnsion Indexes
         //	ShortListed: Intersection of Probables and CachedList
         //
-        var CachedList = EngineMemory.Memorize(block, key, R, AllWords, RegexV2Engine.ShortList4);
+        var CachedList = EngineMemory.Memorize(block, key, R, AllWords, RegexV2Engine.ShortList4, RegexV2Engine.CanCache);
 
         //var st = performance.now();
 
@@ -1572,6 +1575,9 @@ export class RegexV2Engine extends RegexEngine {
         //}
 
         return ShortListed;
+    }
+    static CanCache(t1: number, t2: number): boolean {
+        return t1 < t2;
     }
 
     static EmptyExtensions2(Cells: string[], size: number, CharSet: C.CharSet, startIndex: number, AllWords: C.Word[], Probables: number[], Movables: string[], SpeicalDict: any): C.ProbableMove[] {
@@ -1778,7 +1784,9 @@ export class RegexV2Engine extends RegexEngine {
 }
 export class EngineMemory {
     static Cache: any = {};
-    static Memorize(Block: string, Key: string, r: RegExp, Words: C.Word[], Callback: (r: RegExp, Words: C.Word[]) => number[]): number[] {
+    static Memorize(Block: string, Key: string, r: RegExp, Words: C.Word[],
+        Callback: (r: RegExp, Words: C.Word[]) => number[],
+        CanCache: (t1: number, t2: number) => boolean): number[] {
         var Dict = EngineMemory.Cache[Block];
         if (Dict == null) {
             Dict = [];
@@ -1788,7 +1796,9 @@ export class EngineMemory {
         }
         var obj = Callback(r, Words);
         Dict[Key] = obj;
-        EngineMemory.Cache[Block] = Dict;
+        if (CanCache(obj.length, Words.length)) {
+            EngineMemory.Cache[Block] = Dict;
+        }
         return obj;
     }
 

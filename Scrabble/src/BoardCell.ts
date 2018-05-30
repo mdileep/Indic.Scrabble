@@ -62,7 +62,7 @@ class BoardCell extends React.Component<Contracts.iCellProps, Contracts.iCellPro
         return elem;
     }
     isDragable(): boolean {
-        return this.props.Waiting.length != 0;
+        return this.props.Waiting.length != 0 && !this.props.ReadOnly;
     }
     getClass(): string {
         var classList: string[] = [];

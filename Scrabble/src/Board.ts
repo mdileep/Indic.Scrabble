@@ -28,7 +28,7 @@ class Board extends React.Component<Contracts.iBoardProps, Contracts.iBoardProps
         for (var i = 0; i < this.props.Size; i++) {
             var cells: React.ReactElement<Contracts.iCellProps>[] = [];
             for (var j = 0; j < this.props.Size; j++) {
-                var cell = React.createElement(((BoardCell.default as any) as React.ComponentClass<Contracts.iCellProps>), this.props.Cells[index], {});
+                var cell = React.createElement(((BoardCell.default as any) as React.ComponentClass<Contracts.iCellProps>), U.Util.Merge(this.props.Cells[index], { ReadOnly: this.props.Cells[index].ReadOnly || this.props.ReadOnly }), {});
                 cells.push(cell);
                 index++;
             }

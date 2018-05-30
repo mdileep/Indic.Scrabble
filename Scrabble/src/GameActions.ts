@@ -23,17 +23,23 @@ import * as WL from 'WordLoader';
 import * as AskReferee from 'AskReferee';
 declare var Config: Contracts.iRawConfig;
 
+export class Settings
+{
+    static NoWords: number = 5;
+    static BotWait: number = 300;
+    static PinchWait: number = 300;
+    static RefreeWait: number = 100;
+}
+
 export class GameActions {
     //Move to Seperate Config File
-    static NoWords: number = 5;
-    static BotWait: number = 1000;
-    static PinchWait: number = 300;
+   
     static Init(state: Contracts.iGameState, args: Contracts.iArgs): void {
         GameActions.Render();
         var players = state.Players.Players;
         var currentPlayer = state.Players.CurrentPlayer;
         state.GameTable.Message = Util.Util.Format(Messages.Messages.YourTurn, [players[currentPlayer].Name]);
-        setTimeout(GameActions.PinchPlayer, GameActions.PinchWait);
+        setTimeout(GameActions.PinchPlayer, Settings.PinchWait);
     }
     static PinchPlayer(): void {
         GS.GameStore.Dispatch({
@@ -55,7 +61,7 @@ export class GameActions {
         }
         state.GameTable.Message = Util.Util.Format(Messages.Messages.Thinking, [players[currentPlayer].Name]);
         //
-        setTimeout(AskBot.AskServer.NextMove, GameActions.BotWait);
+        setTimeout(AskBot.AskServer.NextMove, Settings.BotWait);
     }
     static Render(): any {
         var rootEl = document.getElementById('root');
@@ -143,7 +149,7 @@ export class GameActions {
             GameActions.SetWinner(state);
             return;
         }
-        setTimeout(GameActions.PinchPlayer, GameActions.PinchWait);
+        setTimeout(GameActions.PinchPlayer, Settings.PinchWait);
     }
     static SetWinner(state: Contracts.iGameState) {
         state.ReadOnly = true;
@@ -395,7 +401,7 @@ export class GameActions {
                 else { player.NoWords = 0; }
             }
             player.Score = score;
-            if (player.NoWords >= GameActions.NoWords) {
+            if (player.NoWords >= Settings.NoWords) {
                 state.InfoBar.Messages.push(Util.Util.Format(Messages.Messages.WhyGameOver, [player.Name, player.NoWords]));
                 state.GameOver = true;
             }

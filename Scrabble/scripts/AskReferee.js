@@ -30,7 +30,7 @@ define(["require", "exports", 'Messages', 'Util', "AskBot", 'Indic', 'GameAction
             var player = state.Players.Players[state.Players.CurrentPlayer];
             state.GameTable.Message = U.Util.Format(M.Messages.LookupDict, [player.Name]);
             state.ReadOnly = true;
-            setTimeout(AskServer.AskServer.Validate, 100);
+            setTimeout(AskServer.AskServer.Validate, GA.Settings.RefreeWait);
         };
         AskReferee.HasMoves = function (state) {
             var Board = state.Board;

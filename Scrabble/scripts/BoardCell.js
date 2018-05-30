@@ -48,7 +48,7 @@ define(["require", "exports", "react", 'Contracts', 'GameStore'], function (requ
             return elem;
         };
         BoardCell.prototype.isDragable = function () {
-            return this.props.Waiting.length != 0;
+            return this.props.Waiting.length != 0 && !this.props.ReadOnly;
         };
         BoardCell.prototype.getClass = function () {
             var classList = [];

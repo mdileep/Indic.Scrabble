@@ -1,5 +1,15 @@
 define(["require", "exports", "react", "react-dom", 'Contracts', 'Messages', 'Indic', 'Util', 'AskBot', 'GameStore', 'GameRoom', 'WordLoader', 'AskReferee'], function (require, exports, React, ReactDOM, Contracts, Messages, Indic, Util, AskBot, GS, Game, WL, AskReferee) {
     "use strict";
+    var Settings = (function () {
+        function Settings() {
+        }
+        Settings.NoWords = 5;
+        Settings.BotWait = 300;
+        Settings.PinchWait = 300;
+        Settings.RefreeWait = 100;
+        return Settings;
+    }());
+    exports.Settings = Settings;
     var GameActions = (function () {
         function GameActions() {
         }
@@ -8,7 +18,7 @@ define(["require", "exports", "react", "react-dom", 'Contracts', 'Messages', 'In
             var players = state.Players.Players;
             var currentPlayer = state.Players.CurrentPlayer;
             state.GameTable.Message = Util.Util.Format(Messages.Messages.YourTurn, [players[currentPlayer].Name]);
-            setTimeout(GameActions.PinchPlayer, GameActions.PinchWait);
+            setTimeout(GameActions.PinchPlayer, Settings.PinchWait);
         };
         GameActions.PinchPlayer = function () {
             GS.GameStore.Dispatch({
@@ -28,7 +38,7 @@ define(["require", "exports", "react", "react-dom", 'Contracts', 'Messages', 'In
                 return;
             }
             state.GameTable.Message = Util.Util.Format(Messages.Messages.Thinking, [players[currentPlayer].Name]);
-            setTimeout(AskBot.AskServer.NextMove, GameActions.BotWait);
+            setTimeout(AskBot.AskServer.NextMove, Settings.BotWait);
         };
         GameActions.Render = function () {
             var rootEl = document.getElementById('root');
@@ -112,7 +122,7 @@ define(["require", "exports", "react", "react-dom", 'Contracts', 'Messages', 'In
                 GameActions.SetWinner(state);
                 return;
             }
-            setTimeout(GameActions.PinchPlayer, GameActions.PinchWait);
+            setTimeout(GameActions.PinchPlayer, Settings.PinchWait);
         };
         GameActions.SetWinner = function (state) {
             state.ReadOnly = true;
@@ -359,7 +369,7 @@ define(["require", "exports", "react", "react-dom", 'Contracts', 'Messages', 'In
                     }
                 }
                 player.Score = score;
-                if (player.NoWords >= GameActions.NoWords) {
+                if (player.NoWords >= Settings.NoWords) {
                     state.InfoBar.Messages.push(Util.Util.Format(Messages.Messages.WhyGameOver, [player.Name, player.NoWords]));
                     state.GameOver = true;
                 }
@@ -725,9 +735,6 @@ define(["require", "exports", "react", "react-dom", 'Contracts', 'Messages', 'In
             var pickedConso = Util.Util.Draw(conso, maxConsos);
             return pickedConso;
         };
-        GameActions.NoWords = 5;
-        GameActions.BotWait = 1000;
-        GameActions.PinchWait = 300;
         return GameActions;
     }());
     exports.GameActions = GameActions;

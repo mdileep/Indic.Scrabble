@@ -275,8 +275,8 @@ namespace Scrabble.Engines
 						ProbableMove WH = TryHarizontal(Cells, size, star - centroid, 0, Pres, Centers, Posts);
 						ProbableMove WV = TryVertical(Cells, size, star - centroid, 0, Pres, Centers, Posts);
 
-						bool WHValid = Validate(WH, AllWords);
-						bool WVValid = Validate(WV, AllWords);
+						bool WHValid = Validate(WH, AllWords, Probables);
+						bool WVValid = Validate(WV, AllWords, Probables);
 
 						if (WHValid)
 						{
@@ -340,8 +340,8 @@ namespace Scrabble.Engines
 								ProbableMove WH = TryHarizontal(Cells, size, syllable.Index, 0, Pres, Centers, Posts);
 								ProbableMove WV = TryVertical(Cells, size, syllable.Index, 0, Pres, Centers, Posts);
 
-								bool WHValid = Validate(WH, AllWords);
-								bool WVValid = Validate(WV, AllWords);
+								bool WHValid = Validate(WH, AllWords, Probables);
+								bool WVValid = Validate(WV, AllWords, Probables);
 
 								if (WHValid)
 								{
@@ -359,6 +359,7 @@ namespace Scrabble.Engines
 				return Moves;
 			}
 		}
+
 		protected static List<ProbableMove> WordExtensions(string[] Cells, int size, CharSet CharSet, string botId, List<Word> AllWords, List<int> Probables, List<string> Movables, Dictionary<string, Regex> SpeicalDict)
 		{
 			using (new Watcher("\tWord Extensions"))
@@ -430,7 +431,7 @@ namespace Scrabble.Engines
 								if (wordOnBoard.Position == "R")
 								{
 									ProbableMove WH = TryHarizontal(Cells, size, wordOnBoard.Index, wordOnBoard.Syllables - 1, Pres, Centers, Posts);
-									bool WHValid = Validate(WH, AllWords);
+									bool WHValid = Validate(WH, AllWords, Probables);
 									if (WHValid)
 									{
 										Moves.Add(WH);
@@ -439,7 +440,7 @@ namespace Scrabble.Engines
 								if (wordOnBoard.Position == "C")
 								{
 									ProbableMove WH = TryVertical(Cells, size, wordOnBoard.Index, wordOnBoard.Syllables - 1, Pres, Centers, Posts);
-									bool WHValid = Validate(WH, AllWords);
+									bool WHValid = Validate(WH, AllWords, Probables);
 									if (WHValid)
 									{
 										Moves.Add(WH);
@@ -452,6 +453,29 @@ namespace Scrabble.Engines
 				Printer.PrintLine("\t\t Moves found: " + Moves.Count);
 				return Moves;
 			}
+		}
+
+		static bool Validate(ProbableMove Move, List<Word> AllWords, List<int> Probables)
+		{
+			Move.Words = Move.Words.Distinct(new ProbableWordComparer()).ToList();
+			if (Move.Words.Count == 0 || Move.Moves.Count == 0)
+			{
+				return false;
+			}
+			return Validate(Move.Words, AllWords, Probables);
+		}
+
+		static bool Validate(List<ProbableWord> Words, List<Word> AllWords, List<int> Probables)
+		{
+			foreach (var w in Words)
+			{
+				var v = Probables.FindIndex(x => AllWords[x].Tiles == w.String);
+				if (v == -1)
+				{
+					return false;
+				}
+			}
+			return true;
 		}
 	}
 }

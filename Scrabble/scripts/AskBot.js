@@ -1350,7 +1350,7 @@ define(["require", "exports", 'axios', 'GameStore', 'Contracts', 'Util', 'WordLo
             return Probables;
         };
         RegexV2Engine.ShortList5 = function (block, key, R, AllWords, Probables) {
-            var CachedList = EngineMemory.Memorize(block, key, R, AllWords, RegexV2Engine.ShortList4);
+            var CachedList = EngineMemory.Memorize(block, key, R, AllWords, RegexV2Engine.ShortList4, RegexV2Engine.CanCache);
             var ShortListed = [];
             for (var indx in Probables) {
                 var probable = Probables[indx];
@@ -1360,6 +1360,9 @@ define(["require", "exports", 'axios', 'GameStore', 'Contracts', 'Util', 'WordLo
                 ShortListed.push(probable);
             }
             return ShortListed;
+        };
+        RegexV2Engine.CanCache = function (t1, t2) {
+            return t1 < t2;
         };
         RegexV2Engine.EmptyExtensions2 = function (Cells, size, CharSet, startIndex, AllWords, Probables, Movables, SpeicalDict) {
             var Moves = [];
@@ -1536,7 +1539,7 @@ define(["require", "exports", 'axios', 'GameStore', 'Contracts', 'Util', 'WordLo
     var EngineMemory = (function () {
         function EngineMemory() {
         }
-        EngineMemory.Memorize = function (Block, Key, r, Words, Callback) {
+        EngineMemory.Memorize = function (Block, Key, r, Words, Callback, CanCache) {
             var Dict = EngineMemory.Cache[Block];
             if (Dict == null) {
                 Dict = [];
@@ -1546,7 +1549,9 @@ define(["require", "exports", 'axios', 'GameStore', 'Contracts', 'Util', 'WordLo
             }
             var obj = Callback(r, Words);
             Dict[Key] = obj;
-            EngineMemory.Cache[Block] = Dict;
+            if (CanCache(obj.length, Words.length)) {
+                EngineMemory.Cache[Block] = Dict;
+            }
             return obj;
         };
         EngineMemory.Retrieve = function (Key) {

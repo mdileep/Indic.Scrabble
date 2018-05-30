@@ -580,14 +580,14 @@ namespace Scrabble.Engines
 			}
 		}
 
-		protected static bool Validate(ProbableMove WV, List<Word> AllWords)
+		protected static bool Validate(ProbableMove Move, List<Word> AllWords)
 		{
-			WV.Words = WV.Words.Distinct(new ProbableWordComparer()).ToList();
-			if (WV.Words.Count == 0 || WV.Moves.Count == 0)
+			Move.Words = Move.Words.Distinct(new ProbableWordComparer()).ToList();
+			if (Move.Words.Count == 0 || Move.Moves.Count == 0)
 			{
 				return false;
 			}
-			return Validate(WV.Words, AllWords);
+			return Validate(Move.Words, AllWords);
 		}
 		protected static bool Validate(List<ProbableWord> WV, List<Word> AllWords)
 		{

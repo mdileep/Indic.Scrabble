@@ -17,7 +17,7 @@ define(["require", "exports", "react", 'BoardCell', 'Util', 'Messages'], functio
             for (var i = 0; i < this.props.Size; i++) {
                 var cells = [];
                 for (var j = 0; j < this.props.Size; j++) {
-                    var cell = React.createElement(BoardCell.default, this.props.Cells[index], {});
+                    var cell = React.createElement(BoardCell.default, U.Util.Merge(this.props.Cells[index], { ReadOnly: this.props.Cells[index].ReadOnly || this.props.ReadOnly }), {});
                     cells.push(cell);
                     index++;
                 }
