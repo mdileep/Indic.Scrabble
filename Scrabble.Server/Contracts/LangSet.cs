@@ -53,6 +53,7 @@ namespace Shared
 	public class KnownBoard
 	{
 		public string Name;
+		public string Language;
 		public int Size;
 		public int[] Weights;
 		public int Star;

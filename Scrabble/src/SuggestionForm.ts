@@ -11,23 +11,23 @@
 //---------------------------------------------------------------------------------------------
 
 import * as React from "react";
-import * as ReactDOM from "react-dom";
 import * as Contracts from 'Contracts';
-import * as _AlertDialog from '_AlertDialog';
+import * as _SuggestionDialog from '_SuggestionDialog';
 import * as Util from 'Util';
 import * as GameLoader from 'GameLoader';
 import * as Messages from 'Messages';
+import * as GS from 'GameStore';
 
-class AlertDialog extends React.Component<Contracts.iAlert, Contracts.iAlert>
+class SuggestionForm extends React.Component<Contracts.iSuggestion, Contracts.iSuggestion>
 {
-    constructor(props: Contracts.iAlert) {
+    constructor(props: Contracts.iSuggestion) {
         super(props);
         this.state = props;
     }
 
     render() {
-        var id: string = "AlertDialog";
-        return React.createElement(((_AlertDialog.default as any) as React.ComponentClass<Contracts.iAlert>), Util.Util.Merge(this.props,
+        var id: string = "SuggestDialog";
+        return React.createElement(((_SuggestionDialog.default as any) as React.ComponentClass<Contracts.iSuggestion>), Util.Util.Merge(this.props,
             {
                 Id: id,
                 key: id,
@@ -37,8 +37,17 @@ class AlertDialog extends React.Component<Contracts.iAlert, Contracts.iAlert>
                 //
                 ShowClose: false,
                 ConfirmText: Messages.Messages.OK, ShowConfirm: true,
-                OnConfirm: this.props.OnConfirm,
+                Title: Messages.Messages.Suggest,
+                OnConfirm: SuggestionForm.Dismiss,
             }));
     }
+
+    static Dismiss(): void {
+        GS.GameStore.Dispatch({
+            type: Contracts.Actions.DismissSuggestion,
+            args: {
+            }
+        });
+    }
 }
-export default AlertDialog;
+export default SuggestionForm;

@@ -50,7 +50,7 @@ export default (state: Contracts.iGameState = Parser.Parser.Parse(), action: Con
             return state;
         case Contracts.Actions.ReciveSuggestion:
             //if (console) { console.log("Recieve:Suggest Words"); }
-            GameActions.GameActions.ReciveSuggestion(state, args);
+            GameActions.GameActions.ReciveSuggestion(state, args as Contracts.iBotMoveResponse);
             return state;
         case Contracts.Actions.DismissSuggestion:
             //if (console) { console.log("Dismiss: Suggest Words"); }

@@ -18,7 +18,6 @@ define(["require", "exports", "react", '_AlertDialog', 'Util', 'Messages'], func
                 key: id,
                 ref: id,
                 className: id,
-                Show: this.props.Show,
                 ReadOnly: false,
                 ShowClose: false,
                 ConfirmText: Messages.Messages.OK, ShowConfirm: true,

@@ -3,9 +3,16 @@ define(["require", "exports", 'axios', 'GameActions'], function (require, export
     var WordLoader = (function () {
         function WordLoader() {
         }
-        WordLoader.LoadWords = function (file) {
+        WordLoader.LoadWords = function (file, force) {
             if (WordLoader.Lists != null && WordLoader.Lists[file] != null) {
                 return WordLoader.Lists[file];
+            }
+            if (force && WordLoader.Lists != null) {
+                for (var key in WordLoader.Lists) {
+                    if (key != "Custom") {
+                        return WordLoader.Lists[key];
+                    }
+                }
             }
             return [];
         };
@@ -30,7 +37,7 @@ define(["require", "exports", 'axios', 'GameActions'], function (require, export
                 });
             }
             WordLoader.Lists[file] = List;
-            WordLoader.Lists.Loaded++;
+            WordLoader.Loaded++;
             rawResponse = null;
         };
         WordLoader.Init = function (file) {
@@ -70,7 +77,9 @@ define(["require", "exports", 'axios', 'GameActions'], function (require, export
             }
             return res;
         };
-        WordLoader.Lists = { Loaded: 0, Total: 0, Custom: [] };
+        WordLoader.Loaded = 0;
+        WordLoader.Total = 0;
+        WordLoader.Lists = { Custom: [] };
         return WordLoader;
     }());
     exports.WordLoader = WordLoader;

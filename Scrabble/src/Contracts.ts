@@ -63,7 +63,6 @@ export interface iInfoBar extends iComponent {
 }
 export interface iPlayer extends iComponent {
     Name: string;
-
     Score: number;
     Unconfirmed: number;
     CurrentTurn: boolean;
@@ -89,6 +88,8 @@ export interface iWordPair {
     Readble: string;
 }
 export interface iGameState extends iComponent {
+    GameId: number;
+    GameOver: boolean;
     Cabinet: iCabinetProps;
     Board: iBoardProps;
     Players: iPlayers;
@@ -96,10 +97,9 @@ export interface iGameState extends iComponent {
     GameTable: iGameTable;
     Cache: iCachedTile;//This Contract doesn't look good and makes no-sense. Why not a Array??
     Consent: iConsent;
-    Stats: iBoardsStats;
     Dialog: iDialog;
-    GameId: number;
-    GameOver: boolean;
+    Suggestion: iSuggestion;
+    Stats: iBoardsStats;
 }
 export interface iOverlayDialog extends iComponent {
     Title: string;
@@ -118,6 +118,10 @@ export interface _iConfirmDialog extends _iAlertDialog {
     Title: string;
     Message: string;
 }
+export interface _iSuggestionDialog extends iOverlayDialog {
+    Moves: iBotMoveResult[];
+    Loaded: boolean;
+}
 export interface iDialog extends iComponent {
     Title: string;
     Message: string;
@@ -128,6 +132,8 @@ export interface iAlert extends iDialog {
 }
 export interface iConfirm extends iAlert {
     OnDismiss?: () => void;
+}
+export interface iSuggestion extends _iSuggestionDialog {
 }
 export interface iActionArgs {
     type: number;
@@ -307,6 +313,7 @@ export interface TargetCell {
 }
 export interface ScrabbleBoard {
     Name: string;
+    Language: string;
     Bot: string;
     Id: string;
     //
@@ -337,7 +344,9 @@ export interface CharSet {
     Virama: string;
 }
 export interface KnownBoard {
+    Name: string;
     Size: number;
+    Language: string;
     Weights: number[];
     Star: number;
 }

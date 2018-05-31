@@ -45,7 +45,7 @@ export class GameLoader {
             //Not Loading the Referee if there is a Bot..
             list.push(Config.CharSet.Dictionary);
         }
-        WL.WordLoader.Lists.Total = list.length;
+        WL.WordLoader.Total = list.length;
         if (list.length == 0) {
             GS.GameStore.Dispatch({
                 type: Contracts.Actions.Init,

@@ -16,10 +16,20 @@ import * as axios from 'axios';
 import * as GA from 'GameActions';
 
 export class WordLoader {
-    static Lists: any = { Loaded: 0, Total: 0, Custom: [] };
-    static LoadWords(file: string): C.Word[] {
+    static Loaded = 0;
+    static Total = 0;
+    static Lists: any = { Custom: [] };
+    static LoadWords(file: string, force: boolean): C.Word[] {
         if (WordLoader.Lists != null && WordLoader.Lists[file] != null) {
             return WordLoader.Lists[file];
+        }
+        //Pick Non-Custom
+        if (force && WordLoader.Lists != null) {
+            for (var key in WordLoader.Lists) {
+                if (key != "Custom") {
+                    return WordLoader.Lists[key];
+                }
+            }
         }
         return [] as C.Word[];
     }
@@ -45,7 +55,7 @@ export class WordLoader {
                 } as C.Word);
         }
         WordLoader.Lists[file] = List;
-        WordLoader.Lists.Loaded++;
+        WordLoader.Loaded++;
         rawResponse = null;
     }
     static Init(file: string) {

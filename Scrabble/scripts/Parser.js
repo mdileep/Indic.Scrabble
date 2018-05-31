@@ -11,6 +11,7 @@ define(["require", "exports", "GameActions", "Indic"], function (require, export
             var infoBar = Parser.BuildInfoBar();
             var gameTable = Parser.BuildGameTable(Config.Board.GameTable, cache);
             var consent = Parser.BuildConsent();
+            var suggest = Parser.BuildSuggestion();
             var stats = { EmptyCells: 0, Occupancy: 0, TotalWords: 0, UnUsed: 0 };
             GameActions.GameActions.RefreshTrays(cabinet.Trays, cache);
             GameActions.GameActions.RefreshCabinet(cabinet, cache);
@@ -22,6 +23,7 @@ define(["require", "exports", "GameActions", "Indic"], function (require, export
                 className: "game",
                 ReadOnly: false,
                 Show: true,
+                GameOver: false,
                 Cache: cache,
                 Cabinet: cabinet,
                 Board: board,
@@ -31,7 +33,7 @@ define(["require", "exports", "GameActions", "Indic"], function (require, export
                 Stats: stats,
                 GameTable: gameTable,
                 Dialog: dialog,
-                GameOver: false
+                Suggestion: suggest
             };
             return gameState;
         };
@@ -171,6 +173,26 @@ define(["require", "exports", "GameActions", "Indic"], function (require, export
                 Message: "",
             };
             return dialog;
+        };
+        Parser.BuildSuggestion = function () {
+            var id = "Suggest";
+            var suggest = {
+                Id: id,
+                key: id,
+                Show: false,
+                ReadOnly: false,
+                className: "",
+                Loaded: false,
+                Moves: [],
+                Title: "",
+                ConfirmText: "",
+                CancelText: "",
+                ShowConfirm: true,
+                ShowClose: false,
+                OnConfirm: null,
+                OnDismiss: null
+            };
+            return suggest;
         };
         Parser.BuildConsent = function () {
             var id = "Consent";

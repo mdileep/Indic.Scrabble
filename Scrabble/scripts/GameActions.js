@@ -7,6 +7,7 @@ define(["require", "exports", "react", "react-dom", 'Contracts', 'Messages', 'In
         Settings.BotWait = 300;
         Settings.PinchWait = 300;
         Settings.RefreeWait = 100;
+        Settings.ServerWait = 100;
         return Settings;
     }());
     exports.Settings = Settings;
@@ -47,7 +48,7 @@ define(["require", "exports", "react", "react-dom", 'Contracts', 'Messages', 'In
             return ReactDOM.render(left, rootEl);
         };
         GameActions.VocabularyLoaded = function (file) {
-            if (WL.WordLoader.Lists.Loaded != WL.WordLoader.Lists.Total) {
+            if (WL.WordLoader.Loaded != WL.WordLoader.Total) {
                 return;
             }
             GS.GameStore.Dispatch({
@@ -56,10 +57,19 @@ define(["require", "exports", "react", "react-dom", 'Contracts', 'Messages', 'In
             });
         };
         GameActions.RequestSuggestion = function (state, args) {
+            state.Suggestion.Loaded = false;
+            state.Suggestion.Show = true;
+            var post = GameActions.PostInfo(state);
+            AskBot.AskServer.Suggest(post);
         };
-        GameActions.ReciveSuggestion = function (state, args) {
+        GameActions.ReciveSuggestion = function (state, response) {
+            state.Suggestion.Loaded = true;
+            state.Suggestion.Moves = [response.Result];
         };
         GameActions.DismissSuggestion = function (state, args) {
+            state.Suggestion.Loaded = false;
+            state.Suggestion.Moves = [];
+            state.Suggestion.Show = false;
         };
         GameActions.Pass = function (state, args) {
             AskReferee.AskReferee.Validate(state, args);
@@ -214,6 +224,10 @@ define(["require", "exports", "react", "react-dom", 'Contracts', 'Messages', 'In
             GameActions.Pass(state, {});
         };
         GameActions.BotMove = function (state, args) {
+            var post = GameActions.PostInfo(state);
+            AskBot.AskServer.BotMove(post);
+        };
+        GameActions.PostInfo = function (state) {
             var Cells = [];
             for (var i in state.Board.Cells) {
                 var Cell = state.Board.Cells[i];
@@ -250,7 +264,8 @@ define(["require", "exports", "react", "react-dom", 'Contracts', 'Messages', 'In
             var Name = state.Board.Name;
             var players = state.Players.Players;
             var currentPlayer = state.Players.CurrentPlayer;
-            var BotName = players[currentPlayer].Bot.Id;
+            var bot = players[currentPlayer].Bot;
+            var BotName = bot == null ? null : bot.Id;
             var reference = Math.floor(Math.random() * 1000).toString();
             var post = {
                 "Reference": reference,
@@ -262,7 +277,7 @@ define(["require", "exports", "react", "react-dom", 'Contracts', 'Messages', 'In
                 "Conso": Cosos.join(' '),
                 "Special": Special.join(' ')
             };
-            AskBot.AskServer.BotMove(post);
+            return post;
         };
         GameActions.SaveBoard = function (state) {
             for (var i = 0; i < state.Board.Cells.length; i++) {
@@ -640,6 +655,7 @@ define(["require", "exports", "react", "react-dom", 'Contracts', 'Messages', 'In
             }
             var fresh = GameActions.DrawVowelTiles(state.Cache, gameTable.MaxVowels - vCount);
             var available = unMoved.concat(fresh);
+            available.sort();
             state.GameTable.VowelTray = GameActions.SetTableTray(available, "Vowels");
         };
         GameActions.ResetConsoTray = function (state) {
@@ -660,6 +676,7 @@ define(["require", "exports", "react", "react-dom", 'Contracts', 'Messages', 'In
             }
             var fresh = GameActions.DrawConsoTiles(state.Cache, (gameTable.MaxOnTable - gameTable.MaxVowels) - vCount);
             var available = unMoved.concat(fresh);
+            available.sort();
             state.GameTable.ConsoTray = GameActions.SetTableTray(available, "Conso");
         };
         GameActions.ResetTable = function (state) {

@@ -3,7 +3,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", 'axios', 'GameStore', 'Contracts', 'Util', 'WordLoader'], function (require, exports, axios, GS, C, U, WL) {
+define(["require", "exports", 'axios', 'GameStore', 'GameActions', 'Contracts', 'Util', 'WordLoader'], function (require, exports, axios, GS, GA, C, U, WL) {
     "use strict";
     var AskServer = (function () {
         function AskServer() {
@@ -14,8 +14,38 @@ define(["require", "exports", 'axios', 'GameStore', 'Contracts', 'Util', 'WordLo
                 args: {}
             });
         };
+        AskServer.Validate = function () {
+            GS.GameStore.Dispatch({
+                type: C.Actions.ResolveWords,
+                args: {}
+            });
+        };
+        AskServer.Suggest = function (post) {
+            AskServer.SuggestClient(post);
+        };
         AskServer.BotMove = function (post) {
             AskServer.BotMoveClient(post);
+        };
+        AskServer.Resolve = function (words) {
+            AskServer.ResolveClient(words);
+        };
+        AskServer.SuggestServer = function (post) {
+        };
+        AskServer.SuggestClient = function (post) {
+            setTimeout(function () {
+                var st = performance.now();
+                var move = new RegexV2Engine().BestMove(post);
+                var effort = U.Util.ElapsedTime(performance.now() - st);
+                var response = {
+                    Action: "suggest",
+                    Result: move,
+                    Effort: effort
+                };
+                GS.GameStore.Dispatch({
+                    type: C.Actions.ReciveSuggestion,
+                    args: response
+                });
+            }, GA.Settings.ServerWait);
         };
         AskServer.BotMoveServer = function (post) {
             axios
@@ -31,28 +61,19 @@ define(["require", "exports", 'axios', 'GameStore', 'Contracts', 'Util', 'WordLo
         };
         AskServer.BotMoveClient = function (post) {
             setTimeout(function () {
-                var st = performance.now();
-                var move = new RegexEngine().BestMove(post);
-                var effort = U.Util.ElapsedTime(performance.now() - st);
+                var st2 = performance.now();
+                var move2 = new RegexV2Engine().BestMove(post);
+                var effort2 = U.Util.ElapsedTime(performance.now() - st2);
                 var response = {
                     Action: "nextmove",
-                    Result: move,
-                    Effort: effort
+                    Result: move2,
+                    Effort: effort2
                 };
                 GS.GameStore.Dispatch({
                     type: C.Actions.BotMoveResponse,
                     args: response
                 });
-            }, AskServer.WaitTime);
-        };
-        AskServer.Validate = function () {
-            GS.GameStore.Dispatch({
-                type: C.Actions.ResolveWords,
-                args: {}
-            });
-        };
-        AskServer.Resolve = function (words) {
-            AskServer.ResolveClient(words);
+            }, GA.Settings.ServerWait);
         };
         AskServer.ResolveServer = function (words) {
         };
@@ -72,9 +93,8 @@ define(["require", "exports", 'axios', 'GameStore', 'Contracts', 'Util', 'WordLo
                         C.Actions.TakeConsent,
                     args: response.Result
                 });
-            }, AskServer.WaitTime);
+            }, GA.Settings.ServerWait);
         };
-        AskServer.WaitTime = 100;
         return AskServer;
     }());
     exports.AskServer = AskServer;
@@ -161,14 +181,11 @@ define(["require", "exports", 'axios', 'GameStore', 'Contracts', 'Util', 'WordLo
                 return;
             }
             var bot = GameConfig.GetBot(Board.Bot);
-            if (bot == null) {
-                return;
-            }
             var board = GameConfig.GetBoard(Board.Name);
             if (board == null) {
                 return;
             }
-            var CharSet = GameConfig.GetCharSet(bot.Language);
+            var CharSet = GameConfig.GetCharSet(board.Language);
             var id = bot.Id + Board.Id;
             var size = board.Size;
             var weights = board.Weights;
@@ -177,7 +194,7 @@ define(["require", "exports", 'axios', 'GameStore', 'Contracts', 'Util', 'WordLo
             var vowels = Board.Vowels;
             var conso = Board.Conso;
             var special = Board.Special;
-            var file = bot.Dictionary;
+            var file = (bot == null) ? CharSet.Dictionary : bot.Dictionary;
             if (CharSet == null || cells == null || weights == null || U.Util.IsNullOrEmpty(file) ||
                 (U.Util.IsNullOrEmpty(vowels) && U.Util.IsNullOrEmpty(conso) && U.Util.IsNullOrEmpty(special))) {
                 return Moves;
@@ -197,7 +214,7 @@ define(["require", "exports", 'axios', 'GameStore', 'Contracts', 'Util', 'WordLo
             All = (this.GetFlatList(EverySyllableOnBoard, ',') + " " + Movables).Replace("(", " ").Replace(")", " ").Replace(",", " ").Replace("|", " ").split(' ');
             AllPattern = U.Util.Format("^(?<All>[{0},])*$", [this.GetFlatList2(All)]);
             var AllDict = this.GetCountDict(All);
-            var WordsDictionary = WL.WordLoader.LoadWords(file);
+            var WordsDictionary = WL.WordLoader.LoadWords(file, (bot == null));
             WordsDictionary = this.ShortList(WordsDictionary, AllPattern, AllDict);
             if (EverySyllableOnBoard.length > 0) {
                 var NonCornerTiles = [];
@@ -1235,15 +1252,12 @@ define(["require", "exports", 'axios', 'GameStore', 'Contracts', 'Util', 'WordLo
                 return;
             }
             var bot = GameConfig.GetBot(Board.Bot);
-            if (bot == null) {
-                return;
-            }
             var board = GameConfig.GetBoard(Board.Name);
             if (board == null) {
                 return;
             }
-            var CharSet = GameConfig.GetCharSet(bot.Language);
-            var id = bot.Id + Board.Id;
+            var CharSet = GameConfig.GetCharSet(board.Language);
+            var id = (bot == null ? board.Name : bot.Id) + Board.Id;
             var size = board.Size;
             var weights = board.Weights;
             var star = board.Star;
@@ -1251,7 +1265,7 @@ define(["require", "exports", 'axios', 'GameStore', 'Contracts', 'Util', 'WordLo
             var vowels = Board.Vowels;
             var conso = Board.Conso;
             var special = Board.Special;
-            var file = bot.Dictionary;
+            var file = (bot == null) ? CharSet.Dictionary : bot.Dictionary;
             if (CharSet == null || cells == null || weights == null || U.Util.IsNullOrEmpty(file) ||
                 (U.Util.IsNullOrEmpty(vowels) && U.Util.IsNullOrEmpty(conso) && U.Util.IsNullOrEmpty(special))) {
                 return Moves;
@@ -1271,7 +1285,7 @@ define(["require", "exports", 'axios', 'GameStore', 'Contracts', 'Util', 'WordLo
             All = (this.GetFlatList(EverySyllableOnBoard, ',') + " " + Movables).Replace("(", " ").Replace(")", " ").Replace(",", " ").Replace("|", " ").split(' ');
             AllPattern = U.Util.Format("^(?<All>[{0},])*$", [this.GetFlatList2(All)]);
             var AllDict = this.GetCountDict(All);
-            var WordsDictionary = WL.WordLoader.LoadWords(file);
+            var WordsDictionary = WL.WordLoader.LoadWords(file, (bot == null));
             var ContextualList = this.ShortList2(WordsDictionary, AllPattern, AllDict);
             if (EverySyllableOnBoard.length > 0) {
                 var NonCornerTiles = [];
@@ -1452,7 +1466,6 @@ define(["require", "exports", 'axios', 'GameStore', 'Contracts', 'Util', 'WordLo
             var Moves = [];
             {
                 var WordsOnBoard = RegexEngine.GetWordsOnBoard(Cells, size, false);
-                EngineMemory.RefreshCache(botId + ":W", WordsOnBoard);
                 for (var indx in WordsOnBoard) {
                     var wordOnBoard = WordsOnBoard[indx];
                     var raw = wordOnBoard.Tiles.Replace("(", "").Replace(")", "").Replace(",", "").Replace("|", ",");
@@ -1461,9 +1474,8 @@ define(["require", "exports", 'axios', 'GameStore', 'Contracts', 'Util', 'WordLo
                     pattern = U.Util.Format("^{0}$", [pattern.TrimEnd('|')]);
                     var R = new RegExp(pattern);
                     {
-                        var Probables2 = RegexV2Engine.ShortList5(botId + ":W", wordOnBoard.Tiles, R, AllWords, Probables);
-                        for (var indx2 in Probables2) {
-                            var wordIndx = Probables2[indx2];
+                        for (var indx2 in Probables) {
+                            var wordIndx = Probables[indx2];
                             var word = AllWords[wordIndx];
                             if (raw == word.Tiles) {
                                 continue;

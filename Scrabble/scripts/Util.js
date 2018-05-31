@@ -85,6 +85,7 @@ define(["require", "exports"], function (require, exports) {
             for (var i = 0; i < size; i++) {
                 var indx = Math.round(Math.random() * (available.length - 1));
                 ret.push(available[indx]);
+                available.splice(indx, 1);
             }
             ret.sort();
             return ret;

@@ -23,7 +23,7 @@ define(["require", "exports", 'Contracts', 'AksharaSets', 'Messages', 'DragDropT
             if (list.length == 0) {
                 list.push(Config.CharSet.Dictionary);
             }
-            WL.WordLoader.Lists.Total = list.length;
+            WL.WordLoader.Total = list.length;
             if (list.length == 0) {
                 GS.GameStore.Dispatch({
                     type: Contracts.Actions.Init,

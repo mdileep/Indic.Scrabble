@@ -1,6 +1,7 @@
 ﻿{
   "te.11x11": {
     "Name":"te.11x11",
+    "Language":"te",
     "Size": 11,
     "GameTable": {"MaxOnTable": 16,"MaxVowels": 8},
     "Star":60,
@@ -44,6 +45,7 @@
   },
   "kn.11x11": {
     "Name":"kn.11x11",
+    "Language":"kn",
     "Size": 11,
     "GameTable": {"MaxOnTable": 16,"MaxVowels": 8},
     "Star":60,
@@ -87,6 +89,7 @@
   },
   "hi.11x11": {
     "Name":"hi.11x11",
+    "Language":"hi",
     "Size": 11,
     "GameTable": {"MaxOnTable": 16,"MaxVowels": 8},
     "Star":60,

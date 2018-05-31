@@ -26,6 +26,7 @@ export class Parser {
         var infoBar: Contracts.iInfoBar = Parser.BuildInfoBar();
         var gameTable: Contracts.iGameTable = Parser.BuildGameTable(Config.Board.GameTable, cache);
         var consent: Contracts.iConsent = Parser.BuildConsent();
+        var suggest: Contracts.iSuggestion = Parser.BuildSuggestion();
         var stats: Contracts.iBoardsStats = { EmptyCells: 0, Occupancy: 0, TotalWords: 0, UnUsed: 0 };
         //
         GameActions.GameActions.RefreshTrays(cabinet.Trays, cache);
@@ -41,6 +42,7 @@ export class Parser {
             className: "game",
             ReadOnly: false,
             Show: true,
+            GameOver: false,
             //
             Cache: cache,
             Cabinet: cabinet,
@@ -51,7 +53,7 @@ export class Parser {
             Stats: stats,
             GameTable: gameTable,
             Dialog: dialog,
-            GameOver: false
+            Suggestion: suggest
         };
         return gameState;
     }
@@ -169,10 +171,6 @@ export class Parser {
             player.Id = "P_" + (i + 1);
             player.key = player.Id;
             player.NoWords = 0;
-            //player.IsBot = player.IsBot == null ? false : player.IsBot;
-            //Following are Obvious..!!
-            //player.BotId = player.BotId;
-            //player.Dictionary = player.Dictionary;
             player.Name = player.Name;
             //
             raw.Players.push(player);
@@ -199,6 +197,29 @@ export class Parser {
                 Message: "",
             };
         return dialog;
+    }
+    public static BuildSuggestion(): Contracts.iSuggestion {
+        var id: string = "Suggest";
+        var suggest: Contracts.iSuggestion =
+            {
+                Id: id,
+                key: id,
+                Show: false,
+                ReadOnly: false,
+                className: "",
+                //
+                Loaded: false,
+                Moves: [],
+                //
+                Title: "",
+                ConfirmText: "",
+                CancelText: "",
+                ShowConfirm: true,
+                ShowClose: false,
+                OnConfirm: null,
+                OnDismiss: null
+            };
+        return suggest;
     }
     public static BuildConsent(): Contracts.iConsent {
         var id: string = "Consent";

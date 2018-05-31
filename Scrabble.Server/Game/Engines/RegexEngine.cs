@@ -31,10 +31,7 @@ namespace Scrabble.Engines
 				return;
 			}
 			var bot = Config.GetBot(Board.Bot);
-			if (bot == null)
-			{
-				return;
-			}
+
 			//
 			var board = Config.GetBoard(Board.Name);
 			if (board == null)
@@ -42,8 +39,9 @@ namespace Scrabble.Engines
 				return;
 			}
 			//
-			file = ServerUtil.Path("bots\\" + bot.Dictionary);
-			CharSet = Config.GetCharSet(bot.Language);
+			CharSet = Config.GetCharSet(board.Language);
+			var voc = (bot == null) ? CharSet.Dictionary : bot.Dictionary;
+			file = ServerUtil.Path("bots\\" + voc);
 			id = bot.Id + Board.Id;
 			//
 			size = board.Size;

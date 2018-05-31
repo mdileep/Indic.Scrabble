@@ -23,17 +23,17 @@ import * as WL from 'WordLoader';
 import * as AskReferee from 'AskReferee';
 declare var Config: Contracts.iRawConfig;
 
-export class Settings
-{
+export class Settings {
     static NoWords: number = 5;
     static BotWait: number = 300;
     static PinchWait: number = 300;
     static RefreeWait: number = 100;
+    static ServerWait: number = 100;
 }
 
 export class GameActions {
     //Move to Seperate Config File
-   
+
     static Init(state: Contracts.iGameState, args: Contracts.iArgs): void {
         GameActions.Render();
         var players = state.Players.Players;
@@ -70,7 +70,7 @@ export class GameActions {
         return ReactDOM.render(left, rootEl);
     }
     static VocabularyLoaded(file: string): void {
-        if (WL.WordLoader.Lists.Loaded != WL.WordLoader.Lists.Total) {
+        if (WL.WordLoader.Loaded != WL.WordLoader.Total) {
             return;
         }
         GS.GameStore.Dispatch({
@@ -80,13 +80,20 @@ export class GameActions {
         });
     }
     static RequestSuggestion(state: Contracts.iGameState, args: Contracts.iArgs): void {
-
+        state.Suggestion.Loaded = false;
+        state.Suggestion.Show = true;
+        //
+        var post = GameActions.PostInfo(state);
+        AskBot.AskServer.Suggest(post);
     }
-    static ReciveSuggestion(state: Contracts.iGameState, args: Contracts.iArgs): void {
-
+    static ReciveSuggestion(state: Contracts.iGameState, response: Contracts.iBotMoveResponse): void {
+        state.Suggestion.Loaded = true;
+        state.Suggestion.Moves = [response.Result];
     }
     static DismissSuggestion(state: Contracts.iGameState, args: Contracts.iArgs): void {
-
+        state.Suggestion.Loaded = false;
+        state.Suggestion.Moves = [];
+        state.Suggestion.Show = false;
     }
     static Pass(state: Contracts.iGameState, args: Contracts.iArgs): void {
         AskReferee.AskReferee.Validate(state, args);
@@ -244,6 +251,11 @@ export class GameActions {
         GameActions.Pass(state, {});
     }
     static BotMove(state: Contracts.iGameState, args: Contracts.iArgs): void {
+        var post = GameActions.PostInfo(state);
+        AskBot.AskServer.BotMove(post);
+    }
+
+    static PostInfo(state: Contracts.iGameState): any {
         var Cells: string[] = [];
         for (var i in state.Board.Cells) {
             var Cell: Contracts.iCellProps = state.Board.Cells[i];
@@ -284,7 +296,8 @@ export class GameActions {
         var Name: string = state.Board.Name;
         var players = state.Players.Players;
         var currentPlayer = state.Players.CurrentPlayer;
-        var BotName: string = players[currentPlayer].Bot.Id;
+        var bot: Contracts.Bot = players[currentPlayer].Bot;
+        var BotName: string = bot == null ? null : bot.Id;
         var reference = Math.floor(Math.random() * 1000).toString();
         var post = {
             "Reference": reference,
@@ -296,7 +309,7 @@ export class GameActions {
             "Conso": Cosos.join(' '),
             "Special": Special.join(' ')
         };
-        AskBot.AskServer.BotMove(post);
+        return post;
     }
     static SaveBoard(state: Contracts.iGameState): void {
         for (var i = 0; i < state.Board.Cells.length; i++) {
@@ -683,6 +696,7 @@ export class GameActions {
         }
         var fresh = GameActions.DrawVowelTiles(state.Cache, gameTable.MaxVowels - vCount);
         var available = unMoved.concat(fresh);
+        available.sort();
         state.GameTable.VowelTray = GameActions.SetTableTray(available, "Vowels");
     }
     static ResetConsoTray(state: Contracts.iGameState): void {
@@ -703,6 +717,7 @@ export class GameActions {
         }
         var fresh = GameActions.DrawConsoTiles(state.Cache, (gameTable.MaxOnTable - gameTable.MaxVowels) - vCount);
         var available = unMoved.concat(fresh);
+        available.sort();
         state.GameTable.ConsoTray = GameActions.SetTableTray(available, "Conso");
     }
     static ResetTable(state: Contracts.iGameState): void {

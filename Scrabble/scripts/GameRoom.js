@@ -3,7 +3,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", "react", 'Cabinet', 'Board', 'InfoBar', 'GamePlayers', 'ActionBar', 'GameTable', 'AlertDialog', 'Util', 'GenericActions', 'ConsentForm', 'Messages'], function (require, exports, React, Cabinet, Board, InfoBar, GamePlayers, ActionBar, GameTable, Alert, Util, GA, ConsentForm, M) {
+define(["require", "exports", "react", 'Cabinet', 'Board', 'InfoBar', 'GamePlayers', 'ActionBar', 'GameTable', 'AlertDialog', 'SuggestionForm', 'Util', 'GenericActions', 'ConsentForm', 'Messages'], function (require, exports, React, Cabinet, Board, InfoBar, GamePlayers, ActionBar, GameTable, Alert, Suggest, Util, GA, ConsentForm, M) {
     "use strict";
     var GameRoom = (function (_super) {
         __extends(GameRoom, _super);
@@ -29,6 +29,8 @@ define(["require", "exports", "react", 'Cabinet', 'Board', 'InfoBar', 'GamePlaye
             childs.push(dialog);
             var consent = React.createElement(ConsentForm.default, this.props.Consent);
             childs.push(consent);
+            var suggest = React.createElement(Suggest.default, this.props.Suggestion);
+            childs.push(suggest);
             var block = React.createElement('div', {
                 id: this.props.Id,
                 key: this.props.Id,

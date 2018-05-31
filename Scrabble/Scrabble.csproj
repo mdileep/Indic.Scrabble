@@ -99,7 +99,9 @@
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="src\AksharaSets.ts" />
+    <TypeScriptCompile Include="src\SuggestionForm.ts" />
     <TypeScriptCompile Include="src\AskReferee.ts" />
+    <TypeScriptCompile Include="src\_SuggestionDialog.ts" />
     <TypeScriptCompile Include="src\ConsentForm.ts" />
     <TypeScriptCompile Include="src\ConfirmDialog.ts" />
     <TypeScriptCompile Include="src\AskBot.ts" />
@@ -145,6 +147,8 @@
     <TypeScriptCompile Include="typings\require.d.ts" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="scripts\SuggestionForm.js" />
+    <Content Include="scripts\_SuggestionDialog.js" />
     <Content Include="scripts\AskReferee.js" />
     <Content Include="scripts\WordLoader.js" />
     <Content Include="scripts\AksharaSets.js" />

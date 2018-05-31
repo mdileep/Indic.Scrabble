@@ -22,7 +22,7 @@ import * as ActionBar from 'ActionBar';
 import * as GameTable from 'GameTable';
 import * as Alert from 'AlertDialog';
 import * as Confirm from 'ConfirmDialog';
-import * as Indic from 'Indic';
+import * as Suggest from 'SuggestionForm';
 import * as Util from 'Util';
 import * as GA from 'GenericActions';
 import * as ConsentForm from 'ConsentForm';
@@ -61,6 +61,9 @@ class GameRoom extends React.Component<Contracts.iGameState, Contracts.iGameStat
         var consent = React.createElement(((ConsentForm.default as any) as React.ComponentClass<Contracts.iConsent>), this.props.Consent);
         childs.push(consent);
 
+        var suggest = React.createElement(((Suggest.default as any) as React.ComponentClass<Contracts.iSuggestion>), this.props.Suggestion);
+        childs.push(suggest);
+            
         var block = React.createElement('div',
             {
                 id: this.props.Id,

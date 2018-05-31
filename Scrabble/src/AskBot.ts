@@ -20,7 +20,6 @@ import * as WL from 'WordLoader';
 declare var Config: any;
 
 export class AskServer {
-    static WaitTime: number = 100;
 
     static NextMove(): void {
         GS.GameStore.Dispatch({
@@ -28,10 +27,49 @@ export class AskServer {
             args: {}
         });
     }
+    static Validate(): void {
+        GS.GameStore.Dispatch({
+            type: C.Actions.ResolveWords,
+            args: {}
+        });
+    }
 
+    static Suggest(post: any): void {
+        //Decide between Server or Client
+        AskServer.SuggestClient(post);
+    }
     static BotMove(post: any): void {
         //Decide between Server or Client
         AskServer.BotMoveClient(post);
+    }
+    static Resolve(words: string[]): void {
+        //Decide between Server or Client
+        AskServer.ResolveClient(words);
+    }
+
+    static SuggestServer(post: any): void {
+        //TODO...
+    }
+    static SuggestClient(post: any): void {
+        setTimeout(function () {
+
+            var st = performance.now();
+            var move: C.ProbableMove = new RegexV2Engine().BestMove(post);
+            var effort = U.Util.ElapsedTime(performance.now() - st);
+
+            var response =
+                {
+                    Action: "suggest",
+                    Result: move,
+                    Effort: effort
+                };
+
+            GS.GameStore.Dispatch({
+                type: C.Actions.ReciveSuggestion,
+                args: response
+            });
+
+        }, GA.Settings.ServerWait);
     }
 
     static BotMoveServer(post: any): void {
@@ -47,25 +85,18 @@ export class AskServer {
                 //TODO...
             });
     }
-
     static BotMoveClient(post: any): void {
         setTimeout(function () {
 
-            var st = performance.now();
-            var move: C.ProbableMove = new RegexEngine().BestMove(post);
-            var effort = U.Util.ElapsedTime(performance.now() - st);
-            //if (console) { console.log(U.Util.Format("RegexEngine: V1: {0}", [effort])); }
-
-            //var st2 = performance.now();
-            //var move2: C.ProbableMove = new RegexV2Engine().BestMove(post);
-            //var effort2 = U.Util.ElapsedTime(performance.now() - st2);
-            // if (console) { console.log(U.Util.Format("RegexEngine: V2: {0}", [effort2])); }
+            var st2 = performance.now();
+            var move2: C.ProbableMove = new RegexV2Engine().BestMove(post);
+            var effort2 = U.Util.ElapsedTime(performance.now() - st2);
 
             var response =
                 {
                     Action: "nextmove",
-                    Result: move,
-                    Effort: effort
+                    Result: move2,
+                    Effort: effort2
                 };
 
             GS.GameStore.Dispatch({
@@ -73,25 +104,12 @@ export class AskServer {
                 args: response
             });
 
-        }, AskServer.WaitTime);
-    }
-
-    static Validate(): void {
-        GS.GameStore.Dispatch({
-            type: C.Actions.ResolveWords,
-            args: {}
-        });
-    }
-
-    static Resolve(words: string[]): void {
-        //Decide between Server or Client
-        AskServer.ResolveClient(words);
+        }, GA.Settings.ServerWait);
     }
 
     static ResolveServer(words: string[]): void {
         //TODO...
     }
-
     static ResolveClient(words: string[]): void {
         setTimeout(function () {
 
@@ -114,7 +132,7 @@ export class AskServer {
                     args: response.Result
                 });
 
-        }, AskServer.WaitTime);
+        }, GA.Settings.ServerWait);
     }
 }
 export class BoardUtil {
@@ -190,16 +208,15 @@ export class RegexEngine {
         }
 
         var bot: C.Bot = GameConfig.GetBot(Board.Bot);
-        if (bot == null) {
-            return;
-        }
+
         //
         var board: C.KnownBoard = GameConfig.GetBoard(Board.Name);
         if (board == null) {
             return;
         }
+
         //
-        var CharSet = GameConfig.GetCharSet(bot.Language);
+        var CharSet = GameConfig.GetCharSet(board.Language);
         var id = bot.Id + Board.Id;
         //
         var size = board.Size;
@@ -210,7 +227,7 @@ export class RegexEngine {
         var vowels = Board.Vowels;
         var conso = Board.Conso;
         var special = Board.Special;
-        var file = bot.Dictionary;
+        var file = (bot == null) ? CharSet.Dictionary : bot.Dictionary;
 
         if (CharSet == null || cells == null || weights == null || U.Util.IsNullOrEmpty(file) ||
             (U.Util.IsNullOrEmpty(vowels) && U.Util.IsNullOrEmpty(conso) && U.Util.IsNullOrEmpty(special))) {
@@ -237,7 +254,7 @@ export class RegexEngine {
         AllPattern = U.Util.Format("^(?<All>[{0},])*$", [this.GetFlatList2(All)]);
         var AllDict = this.GetCountDict(All);
 
-        var WordsDictionary = WL.WordLoader.LoadWords(file); //Large Set of Words
+        var WordsDictionary = WL.WordLoader.LoadWords(file, (bot == null)); //Large Set of Words
         WordsDictionary = this.ShortList(WordsDictionary, AllPattern, AllDict); // Probables 
 
         //if (console) { console.log("\t\tProbables: V1: " + WordsDictionary.length); }
@@ -1397,17 +1414,14 @@ export class RegexV2Engine extends RegexEngine {
         }
 
         var bot: C.Bot = GameConfig.GetBot(Board.Bot);
-        if (bot == null) {
-            return;
-        }
         //
         var board: C.KnownBoard = GameConfig.GetBoard(Board.Name);
         if (board == null) {
             return;
         }
         //
-        var CharSet = GameConfig.GetCharSet(bot.Language);
-        var id = bot.Id + Board.Id;
+        var CharSet = GameConfig.GetCharSet(board.Language);
+        var id = (bot == null ? board.Name: bot.Id) + Board.Id;
         //
         var size = board.Size;
         var weights = board.Weights;
@@ -1417,7 +1431,7 @@ export class RegexV2Engine extends RegexEngine {
         var vowels = Board.Vowels;
         var conso = Board.Conso;
         var special = Board.Special;
-        var file = bot.Dictionary;
+        var file = (bot == null) ? CharSet.Dictionary : bot.Dictionary;
 
         if (CharSet == null || cells == null || weights == null || U.Util.IsNullOrEmpty(file) ||
             (U.Util.IsNullOrEmpty(vowels) && U.Util.IsNullOrEmpty(conso) && U.Util.IsNullOrEmpty(special))) {
@@ -1444,7 +1458,7 @@ export class RegexV2Engine extends RegexEngine {
         AllPattern = U.Util.Format("^(?<All>[{0},])*$", [this.GetFlatList2(All)]);
         var AllDict = this.GetCountDict(All);
 
-        var WordsDictionary = WL.WordLoader.LoadWords(file); //Large Set of Words
+        var WordsDictionary = WL.WordLoader.LoadWords(file, (bot == null)); //Large Set of Words
         var ContextualList = this.ShortList2(WordsDictionary, AllPattern, AllDict); // Probables 
 
         //if (console) { console.log("\t\tProbables: V2: "+ContextualList.length); }
@@ -1687,7 +1701,7 @@ export class RegexV2Engine extends RegexEngine {
         var Moves = [] as C.ProbableMove[];
         {
             var WordsOnBoard = RegexEngine.GetWordsOnBoard(Cells, size, false);
-            EngineMemory.RefreshCache(botId + ":W", WordsOnBoard);
+            //EngineMemory.RefreshCache(botId + ":W", WordsOnBoard);
 
             for (var indx in WordsOnBoard) {
                 var wordOnBoard: C.Word = WordsOnBoard[indx];
@@ -1698,9 +1712,9 @@ export class RegexV2Engine extends RegexEngine {
                 pattern = U.Util.Format("^{0}$", [pattern.TrimEnd('|')]);
                 var R = new RegExp(pattern);
                 {
-                    var Probables2: number[] = RegexV2Engine.ShortList5(botId + ":W", wordOnBoard.Tiles, R, AllWords, Probables);
-                    for (var indx2 in Probables2) {
-                        var wordIndx: number = Probables2[indx2];
+                    //var Probables2: number[] = RegexV2Engine.ShortList5(botId + ":W", wordOnBoard.Tiles, R, AllWords, Probables);
+                    for (var indx2 in Probables) {
+                        var wordIndx: number = Probables[indx2];
                         var word: C.Word = AllWords[wordIndx];
                         if (raw == word.Tiles) {
                             continue;
