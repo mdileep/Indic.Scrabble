@@ -62,4 +62,6 @@ export class Messages {
     public static Pass: string = "";
     public static Actions: string = "";
     public static NoGap: string = "";
+    public static SuggestLoading: string = "";
+    public static NoSuggestions: string = "";
 }

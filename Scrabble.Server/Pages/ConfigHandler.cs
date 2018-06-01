@@ -59,8 +59,8 @@ namespace Scrabble.Server
 				boardName = Config.DefaultBoard;
 			}
 			var board = Config.GetBoard(Lang + "." + boardName);
-			var bot1 = Config.GetBot(parts.Length > 1 ? parts[2] : "", Lang);
-			var bot2 = Config.GetBot(parts.Length > 2 ? parts[3] : "", Lang);
+			var bot1 = Config.GetBot(parts.Length >= 2 ? parts[2] : "", Lang);
+			var bot2 = Config.GetBot(parts.Length >= 3 ? parts[3] : "", Lang);
 			var charSet = Config.GetCharSet(Lang);
 			var messages = Config.GetMessages(Lang);
 			var players = GetPlayers(Lang, bot1, bot2);

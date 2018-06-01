@@ -42,20 +42,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Game\Engines\RegexEngineBase.cs" />
     <Compile Include="Game\Engines\RegexEngineV2.cs" />
     <Compile Include="Game\Engines\RegexEngine.cs" />
     <Compile Include="Game\Engines\AlphaEngine.cs" />
-
     <Compile Include="Actions\ActionHandler.cs" />
     <Compile Include="Actions\NextMoveAction.cs" />
     <Compile Include="Actions\ProbablesAction.cs" />
     <Compile Include="Actions\ScrabbleBoard.cs" />
     <Compile Include="Actions\ValidateAction.cs" />
-
     <Compile Include="Game\iGameEngine.cs" />
     <Compile Include="Game\LoadWords.cs" />
     <Compile Include="Game\PerfTest.cs" />
-
     <Compile Include="Pages\ConfigHandler.cs" />
     <Compile Include="Pages\APIHandler.cs" />
     <Compile Include="Game\BoardUtil.cs" />

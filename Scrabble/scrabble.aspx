@@ -26,12 +26,16 @@
     <link href="styles/scrabble.min.css" type="text/css" rel="stylesheet" />
     <link href="styles/scrabble.mobile.min.css" type="text/css" rel="stylesheet" />
     <link id="LangStyle" runat="server" href="styles/css/te.min.css" type="text/css" rel="stylesheet" />
+    <script type="text/javascript" src="Config.ashx?<%= Query %>"> </script>
+    <script type="text/javascript" src="scripts/require.js"></script>
+    <script type="text/javascript" src="scripts/scrabble.js"></script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=UA-118249672-1"></script>
 </head>
 <body>
     <div class="brand">
         <h2 class="h2" runat="server" id="H2">పదకేళి</h2>
     </div>
-    <div class="loading" id="root">
+    <div id="root">
         <h3><%=Config.Lang(Lang,"Loading") %>
             <img width="64" height="80" alt="Loading..." src="images/loading.svg" /></h3>
     </div>
@@ -43,9 +47,7 @@
         <br />
         <span id="Author2" runat="server" class="author">~ Dileep Miriyala(దిలీపు మిరియాల)</span>
     </div>
-    <script type="text/javascript" src="Config.ashx?<%= Query %>"> </script>
-    <script data-main="scripts/Game" src="scripts/require.js"></script>
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-118249672-1"></script>
+    <script type="text/javascript">requirejs.config({ paths: { react: 'scripts\\react', "react-dom": 'scripts\\react-dom', "redux": 'scripts\\redux', "axios": 'scripts\\axios', } }); require(['Game'])</script>
     <script>window.dataLayer = window.dataLayer || []; function gtag() { dataLayer.push(arguments); } gtag('js', new Date()); gtag('config', 'UA-118249672-1');</script>
 </body>
 </html>

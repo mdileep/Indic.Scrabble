@@ -1,8 +1,8 @@
 ﻿//---------------------------------------------------------------------------------------------
-// <copyright file="ConfirmDialog.ts" company="Chandam-ఛందం">
+// <copyright file="_SuggestionDialog.ts" company="Chandam-ఛందం">
 //    Copyright © 2013 - 2018 'Chandam-ఛందం' : http://chandam.apphb.com
 //    Original Author : Dileep Miriyala (m.dileep@gmail.com)
-//    Last Updated    : 30-Apr-2018 20:09EST
+//    Last Updated    : 31-May-2018 20:01EST
 //    Revisions:
 //       Version    | Author                   | Email                     | Remarks
 //       1.0        | Dileep Miriyala          | m.dileep@gmail.com        | Initial Commit
@@ -34,31 +34,28 @@ class _SuggestionDialog extends OverlayDialog.default<Contracts.iSuggestion, Con
                 {
                     key: "suggest_" + this.props.Id,
                     className: "oFContent"
-                }, Messages.Messages.Suggest);
+                }, Messages.Messages.SuggestLoading);
             childs.push(content);
         }
         else {
             var items: React.ReactElement<Contracts.iProps>[] = [];
+            var hasMoves: boolean = this.props.Moves.length != 0;
             for (var i = 0; i < this.props.Moves.length; i++) {
                 var move = this.props.Moves[i];
-
                 {
                     var li = React.createElement("li", { key: "li" + i }, "Direction: " + move.Direction);
                     items.push(li);
                 }
-
+                hasMoves = move.Moves.length != 0;
                 for (var indx in move.Moves) {
-                    {
-                        var li = React.createElement("li", { key: "li" + i + indx }, move.Moves[indx].Tiles + "  at " + move.Moves[indx].Index);
-                        items.push(li);
-                    }
+                    var li = React.createElement("li", { key: "li" + i + indx }, move.Moves[indx].Tiles + "  at " + move.Moves[indx].Index);
+                    items.push(li);
                 }
             }
-            if (this.props.Moves.length == 0) {
-                var li = React.createElement("li", { key: "li" + i }, "No Suggestions Available ");
+            if (!hasMoves) {
+                var li = React.createElement("li", { key: "li" + i }, Messages.Messages.NoSuggestions);
                 items.push(li);
             }
-
             var id = "ul";
             var ul = React.createElement("ul",
                 {

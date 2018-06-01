@@ -30,6 +30,8 @@
     <Content Include="scrabble.aspx" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="scripts\scrabble.bundle.js" />
+    <Content Include="scripts\scrabble.js" />
     <Content Include="styles\css\index.min.css" />
     <Content Include="styles\css\bn.min.css" />
     <Content Include="styles\css\gu.min.css" />
@@ -124,7 +126,6 @@
     <TypeScriptCompile Include="src\_AlertDialog.ts" />
     <TypeScriptCompile Include="src\Parser.ts" />
     <TypeScriptCompile Include="src\InfoBar.ts" />
-    <TypeScriptCompile Include="src\Tests.ts" />
     <TypeScriptCompile Include="src\_OverlayDialog.ts" />
     <TypeScriptCompile Include="src\TrayRack.ts" />
     <TypeScriptCompile Include="src\Tray.ts" />
@@ -147,54 +148,15 @@
     <TypeScriptCompile Include="typings\require.d.ts" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="scripts\SuggestionForm.js" />
-    <Content Include="scripts\_SuggestionDialog.js" />
-    <Content Include="scripts\AskReferee.js" />
-    <Content Include="scripts\WordLoader.js" />
-    <Content Include="scripts\AksharaSets.js" />
-    <Content Include="scripts\Board.js" />
-    <Content Include="scripts\BoardCell.js" />
-    <Content Include="scripts\Cabinet.js" />
-    <Content Include="scripts\Contracts.js" />
-    <Content Include="scripts\GameActions.js" />
-    <Content Include="scripts\GameLoader.js" />
-    <Content Include="scripts\GamePlayer.js" />
-    <Content Include="scripts\GamePlayers.js" />
-    <Content Include="scripts\GameRoom.js" />
-    <Content Include="scripts\GameState.js" />
-    <Content Include="scripts\Indic.js" />
-    <Content Include="scripts\InfoBar.js" />
-    <Content Include="scripts\Messages.js" />
-    <Content Include="scripts\Parser.js" />
-    <Content Include="scripts\RaiseHand.js" />
     <Content Include="scripts\react-dom.js" />
     <Content Include="scripts\react-dom_14.js" />
     <Content Include="scripts\react.js" />
     <Content Include="scripts\react_14.js" />
     <Content Include="scripts\redux.js" />
-    <Content Include="scripts\Referee.js" />
     <Content Include="scripts\require.js" />
-    <Content Include="scripts\Tile.js" />
-    <Content Include="scripts\Tray.js" />
-    <Content Include="scripts\TrayRack.js" />
-    <Content Include="scripts\Util.js" />
-    <Content Include="scripts\Alert.js" />
-    <Content Include="scripts\AlertDialog.js" />
-    <Content Include="scripts\AskBot.js" />
     <Content Include="scripts\axios.js" />
-    <Content Include="scripts\ConfirmDialog.js" />
-    <Content Include="scripts\ConsentForm.js" />
-    <Content Include="scripts\Game.js" />
-    <Content Include="scripts\GameStore.js" />
-    <Content Include="scripts\GenericActions.js" />
-    <Content Include="scripts\Index.js" />
-    <Content Include="scripts\OverlayDialog.js" />
-    <Content Include="scripts\_AlertDialog.js" />
-    <Content Include="scripts\_ConfirmDialog.js" />
-    <Content Include="scripts\_OverlayDialog.js" />
-    <Content Include="scripts\DragDropTouch.js" />
-    <Content Include="scripts\GameTable.js" />
-    <Content Include="scripts\ActionBar.js" />
+        <Content Include="scripts\bundle.ini" />
+    <Content Include="scripts\Bundle.targets" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Scrabble.png" />
@@ -209,6 +171,7 @@
     <Content Include="images\help.svg" />
   </ItemGroup>
   <ItemGroup>
+
     <None Include="web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>
@@ -270,8 +233,7 @@
     <TypeScriptOutDir>scripts</TypeScriptOutDir>
     <TypeScriptGeneratesDeclarations>False</TypeScriptGeneratesDeclarations>
     <TypeScriptCompileOnSaveEnabled>False</TypeScriptCompileOnSaveEnabled>
-    <TypeScriptOutFile>
-    </TypeScriptOutFile>
+    <TypeScriptOutFile>scripts\scrabble.js</TypeScriptOutFile>
     <TypeScriptNoImplicitAny>True</TypeScriptNoImplicitAny>
     <TypeScriptTarget>ES5</TypeScriptTarget>
     <TypeScriptNoEmitOnError>True</TypeScriptNoEmitOnError>

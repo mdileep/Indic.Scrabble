@@ -43,7 +43,9 @@
     "ResolveWord": "'{0}'ను మీ ప్రత్యర్ధి గుర్తించలేదు. మీరు అనుమతించదలిచారా?",
     "Referee": "పర్యవేక్షకుడు",
     "IsStarCovered": "* గుర్తు ఉన్న గడిలో అక్షరం తప్పక ఉంచాలి",
-    "Loading": "ఆట సిద్ధం అవుతోంది."
+    "Loading": "ఆట సిద్ధం అవుతోంది.",
+    "SuggestLoading": "Loading Suggestions",
+    "NoSuggestions":"No Suggestions Available"
   },
   "kn": {
     "LangName": "ಕನ್ನಡ ~ Kannada",
@@ -120,6 +122,8 @@
     "List": "List",
     "GameTable": "Game Table",
     "Actions": "Actions",
-    "Loading": "Loading the Game"
+    "Loading": "Loading the Game",
+    "SuggestLoading": "Loading Suggestions",
+    "NoSuggestions":"No Suggestions Available"
   }
 }

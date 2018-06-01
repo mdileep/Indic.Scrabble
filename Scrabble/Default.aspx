@@ -24,7 +24,10 @@
     <link rel="shortcut icon" href="Miriyam.ico" />
     <link href="styles/css/index.min.css" type="text/css" rel="stylesheet" />
     <link href="styles/scrabble.css" type="text/css" rel="stylesheet" />
-    <script src="/Config.ashx?Home"></script>
+    <script type="text/javascript" src="/Config.ashx?Home"></script>
+    <script type="text/javascript" src="scripts/require.js"></script>
+    <script type="text/javascript" src="scripts/scrabble.js"></script>
+    <script type="text/javascript" async="async" src="https://www.googletagmanager.com/gtag/js?id=UA-118249672-1"></script>
 </head>
 <body>
     <div class="brand"><h2 class="h2">padakaeLi ~ పదకేళి</h2></div>
@@ -92,10 +95,15 @@
             <#%}%#>
         </ul>
     </script>
-
-    <div class="footer"><br /><br /><br /><br /><br /><span class="author">~ Dileep Miriyala(దిలీపు మిరియాల)</span></div>
-    <script data-main="scripts/Index" src="scripts/require.js"></script>
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-118249672-1"></script>
+    <div class="footer">
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+        <span class="author">~ Dileep Miriyala(దిలీపు మిరియాల)</span>
+    </div>
+    <script>require(['Index'])</script>
     <script>window.dataLayer = window.dataLayer || []; function gtag() { dataLayer.push(arguments); } gtag('js', new Date()); gtag('config', 'UA-118249672-1');</script>
 </body>
 </html>

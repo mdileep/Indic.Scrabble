@@ -192,268 +192,7 @@ export class ProbableWordComparer {
         return false;
     }
 }
-export class RegexEngine {
-    public BestMove(Board: C.ScrabbleBoard): C.ProbableMove {
-        var Moves = this.Probables(Board);
-        if (Moves.length == 0) {
-            return null;
-        }
-        return Moves[0];
-    }
-    public Probables(Board: C.ScrabbleBoard): C.ProbableMove[] {
-        var Moves = [] as C.ProbableMove[];
-
-        if (Board == null) {
-            return;
-        }
-
-        var bot: C.Bot = GameConfig.GetBot(Board.Bot);
-
-        //
-        var board: C.KnownBoard = GameConfig.GetBoard(Board.Name);
-        if (board == null) {
-            return;
-        }
-
-        //
-        var CharSet = GameConfig.GetCharSet(board.Language);
-        var id = bot.Id + Board.Id;
-        //
-        var size = board.Size;
-        var weights = board.Weights;
-        var start = board.Star;
-        //
-        var cells = Board.Cells;
-        var vowels = Board.Vowels;
-        var conso = Board.Conso;
-        var special = Board.Special;
-        var file = (bot == null) ? CharSet.Dictionary : bot.Dictionary;
-
-        if (CharSet == null || cells == null || weights == null || U.Util.IsNullOrEmpty(file) ||
-            (U.Util.IsNullOrEmpty(vowels) && U.Util.IsNullOrEmpty(conso) && U.Util.IsNullOrEmpty(special))) {
-            return Moves;
-        }
-        if (cells.length != size * size || weights.length != size * size) {
-            return Moves;
-        }
-
-        var All = [] as string[];
-        var AllPattern = "";
-
-        var Movables = (vowels + " " + conso + " " + special);
-        var MovableList = Movables.Replace("(", " ").Replace(")", " ").Replace(",", "").split(' ');
-        MovableList = MovableList.filter(function (x) { return x.length != 0; });
-
-        var SpecialList = this.DistinctList(special.Replace("(", " ").Replace(")", " ").Replace(",", ""), ' ');
-        var SpeicalDict = this.GetSpecialDict(CharSet, SpecialList);
-
-        var EverySyllableOnBoard = this.GetSyllableList(cells, size, false, true);
-        var NonCornerSyllables = this.GetSyllableList(cells, size, true, false);
-        //
-        All = (this.GetFlatList(EverySyllableOnBoard, ',') + " " + Movables).Replace("(", " ").Replace(")", " ").Replace(",", " ").Replace("|", " ").split(' ');
-        AllPattern = U.Util.Format("^(?<All>[{0},])*$", [this.GetFlatList2(All)]);
-        var AllDict = this.GetCountDict(All);
-
-        var WordsDictionary = WL.WordLoader.LoadWords(file, (bot == null)); //Large Set of Words
-        WordsDictionary = this.ShortList(WordsDictionary, AllPattern, AllDict); // Probables 
-
-        //if (console) { console.log("\t\tProbables: V1: " + WordsDictionary.length); }
-
-        if (EverySyllableOnBoard.length > 0) {
-            var NonCornerTiles = [] as string[];
-            var NonCornerPattern = "";
-            //
-            NonCornerTiles = (this.GetFlatList2(NonCornerSyllables) + " " + Movables).Replace("(", " ").Replace(")", " ").Replace(",", " ").Replace("|", " ").split(' ');
-            NonCornerPattern = U.Util.Format("^(?<All>[{0},])*$", [this.GetFlatList2(NonCornerTiles)]);
-            var NonCornerDict = this.GetCountDict(NonCornerTiles);
-            var NonCornerProbables = this.ShortList(WordsDictionary, NonCornerPattern, NonCornerDict);  //Non Corner Probables
-
-            Moves = Moves.concat(RegexEngine.SyllableExtensions(cells, size, CharSet, WordsDictionary, NonCornerProbables, MovableList, SpeicalDict));
-            Moves = Moves.concat(RegexEngine.WordExtensions(cells, size, CharSet, WordsDictionary, MovableList, SpeicalDict));
-        }
-        else {
-            Moves = Moves.concat(RegexEngine.EmptyExtensions(cells, size, CharSet, start, WordsDictionary, MovableList, SpeicalDict));
-        }
-
-        WordsDictionary = null;
-        this.RefreshScores(Moves, weights, size);
-        return Moves;
-    }
-
-    static EmptyExtensions(Cells: string[], size: number, CharSet: C.CharSet, startIndex: number, AllWords: C.Word[], Movables: string[], SpeicalDict: any): C.ProbableMove[] {
-        //var st = performance.now();
-        var Moves = [] as C.ProbableMove[];
-        {
-            for (var indx in AllWords) {
-                var word: C.Word = AllWords[indx];
-                var Pre = "";
-                var Center = "";
-                var Post = "";
-                var f = word.Tiles.indexOf(',');
-
-                Center = word.Tiles.substring(0, f);
-                Post = word.Tiles.substring(f + 1);
-
-                var Pres = Pre == "" ? [] as string[] : Pre.TrimEnd(',').split(',');
-                var Centers = Center.split(',');
-                var Posts = Post == "" ? [] as string[] : Post.TrimStart(',').split(',');
-
-                var Tiles = Movables.slice(0, Movables.length);
-                var res = RegexEngine.Resolve(Pres, Centers, Posts, Tiles, SpeicalDict);
-                if (!res) {
-                    continue;
-                }
-                var totalCells = Pres.length + Centers.length + Posts.length;
-                var centroid = totalCells % 2 == 0 ? (Math.floor(totalCells / 2) - 1) : Math.floor(totalCells / 2);
-
-                var WH = RegexEngine.TryHarizontal(Cells, size, startIndex - centroid, 0, Pres, Centers, Posts);
-                var WV = RegexEngine.TryVertical(Cells, size, startIndex - centroid, 0, Pres, Centers, Posts);
-
-                var WHValid = RegexEngine.Validate3(WH, AllWords);
-                var WVValid = RegexEngine.Validate3(WV, AllWords);
-
-                if (WHValid) {
-                    Moves.push(WH);
-                }
-                if (WVValid) {
-                    Moves.push(WV);
-                }
-            }
-        }
-        //if (console) { console.log(U.Util.Format("\tEmpty Extensions: V1: {1} {0}", [U.Util.ElapsedTime(performance.now() - st), AllWords.length])); }
-        return Moves;
-    }
-    static SyllableExtensions(Cells: string[], size: number, CharSet: C.CharSet, AllWords: C.Word[], Probables: C.Word[], Movables: string[], SpeicalDict: any): C.ProbableMove[] {
-        //var st = performance.now();
-        var Moves = [] as C.ProbableMove[];
-        {
-            var All = RegexEngine.GetSyllableList2(Cells, size, false, true);
-            for (var indx in All) {
-                var syllable = All[indx];
-                var pattern = RegexEngine.GetSyllablePattern2(CharSet, syllable.Tiles.Replace("(", "").Replace(")", ""), "(?<Center>.*?)", "(?<Pre>.*?)", "(?<Post>.*?)");
-                pattern = U.Util.Format("^{0}$", [pattern]);
-                var R = new RegExp(pattern);
-                {
-                    for (var indx2 in Probables) {
-                        var probable: C.Word = Probables[indx2];
-
-                        if (!R.test(probable.Tiles)) {
-                            continue;
-                        }
-                        var M: any = R.exec(probable.Tiles);
-                        var Pre = RegexEngine.MatchedString(M.groups["Pre"], "");
-                        var Center = RegexEngine.MatchedString(M.groups["Conso"], "");
-                        var Post = RegexEngine.MatchedString(M.groups["Post"], "");
-
-                        var Pres = Pre == "" ? [] as string[] : Pre.TrimEnd(',').split(',');
-                        var Centers = Center == "" ? [] as string[] : Center.split(',');
-                        var Posts = Post == "" ? [] as string[] : Post.TrimStart(',').split(',');
-
-                        if (!Post.StartsWith(",") && Posts.length > 0) {
-                            Centers = (Center + Posts[0]).split(',');
-                            Posts = Posts.slice(1);
-                        }
-                        var Tiles = Movables.slice(0, Movables.length);
-                        var res = RegexEngine.Resolve(Pres, Centers, Posts, Tiles, SpeicalDict);
-                        if (!res) {
-                            continue;
-                        }
-
-                        var WH = RegexEngine.TryHarizontal(Cells, size, syllable.Index, 0, Pres, Centers, Posts);
-                        var WV = RegexEngine.TryVertical(Cells, size, syllable.Index, 0, Pres, Centers, Posts);
-
-                        var WHValid = RegexEngine.Validate3(WH, AllWords);
-                        var WVValid = RegexEngine.Validate3(WV, AllWords);
-
-                        if (WHValid) {
-                            Moves.push(WH);
-                        }
-                        if (WVValid) {
-                            Moves.push(WV);
-                        }
-                    }
-                }
-            }
-        }
-        //if (console) { console.log(U.Util.Format("\tSyllable Extensions: V1: {0}", [U.Util.ElapsedTime(performance.now() - st)])); }
-        return Moves;
-    }
-    static WordExtensions(Cells: string[], size: number, CharSet: C.CharSet, AllWords: C.Word[], Movables: string[], SpeicalDict: any): C.ProbableMove[] {
-        //var st = performance.now();
-        var Moves = [] as C.ProbableMove[];
-        {
-            var WordsOnBoard = RegexEngine.GetWordsOnBoard(Cells, size, false);
-            for (var indx in WordsOnBoard) {
-                var wordOnBoard: C.Word = WordsOnBoard[indx];
-                var raw = wordOnBoard.Tiles.Replace("(", "").Replace(")", "").Replace(",", "").Replace("|", ",");
-                var len: number = raw.split(',').length;
-
-                var pattern = RegexEngine.GenWordPattern(CharSet, wordOnBoard.Tiles, "(?<Center{0}>.*?)", "", "(?<Center{0}>.*?)", "(?<Pre>.*?)", "(?<Post>.*?)", true);
-                pattern = U.Util.Format("^{0}$", [pattern.TrimEnd('|')]);
-                var R = new RegExp(pattern);
-                {
-                    for (var indx2 in AllWords) {
-                        var word: C.Word = AllWords[indx2];
-                        if (raw == word.Tiles) {
-                            continue;
-                        }
-
-                        if (!R.test(word.Tiles)) {
-                            continue;
-                        }
-
-                        var M: any = R.exec(word.Tiles);
-                        var Pre = "";
-                        var Post = "";
-                        var Center = "";
-
-                        Pre = RegexEngine.MatchedString(M.groups["Pre"], "");
-                        for (var i = 0; i < word.Syllables; i++) {
-                            Center = Center + RegexEngine.MatchedString(M.groups["Center" + (i + 1)], ",") + ":";
-                        }
-                        Center = Center.TrimEnd(':');
-                        Post = RegexEngine.MatchedString(M.groups["Post"], "");
-
-
-                        var Pres = Pre == "" ? [] as string[] : Pre.TrimEnd(',').split(',');
-                        var Centers: string[] = Center.split(':');
-                        var Posts = Post == "" ? [] as string[] : Post.TrimStart(',').split(',');
-
-                        if (Centers.length != len) {
-                            if (!Post.StartsWith(",") && Posts.length > 0) {
-                                Centers.push(Posts[0]);
-                                Posts = Posts.slice(1);
-                            }
-                        }
-
-                        var Tiles = Movables.slice(0, Movables.length);
-                        var res = RegexEngine.Resolve(Pres, Centers, Posts, Tiles, SpeicalDict);
-                        if (!res) {
-                            continue;
-                        }
-
-                        if (wordOnBoard.Position == "R") {
-                            var WH = RegexEngine.TryHarizontal(Cells, size, wordOnBoard.Index, wordOnBoard.Syllables - 1, Pres, Centers, Posts);
-                            var WHValid = RegexEngine.Validate3(WH, AllWords);
-                            if (WHValid) {
-                                Moves.push(WH);
-                            }
-                        }
-                        if (wordOnBoard.Position == "C") {
-                            var WH = RegexEngine.TryVertical(Cells, size, wordOnBoard.Index, wordOnBoard.Syllables - 1, Pres, Centers, Posts);
-                            var WHValid = RegexEngine.Validate3(WH, AllWords);
-                            if (WHValid) {
-                                Moves.push(WH);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        //if (console) { console.log(U.Util.Format("\tWord Extensions: V1: {0}", [U.Util.ElapsedTime(performance.now() - st)])); }
-        return Moves;
-    }
-
+export class EngineBase {
     static TryHarizontal(Cells: string[], size: number, Index: number, offset: number, Pre: string[], Centers: string[], Post: string[]): C.ProbableMove {
         var Moves: C.Word[] = [] as C.Word[];
         var PreCount = Pre.length;
@@ -514,7 +253,7 @@ export class RegexEngine {
         var W = [] as C.ProbableWord[];
         for (var i in Impacted) {
             var index = Impacted[i];
-            W = W.concat(RegexEngine.WordsAt(NewCells, size, index));
+            W = W.concat(EngineBase.WordsAt(NewCells, size, index));
         }
         return { Words: W, Moves: Moves, WordsCount: W.length, Direction: "H" } as C.ProbableMove;
     }
@@ -580,12 +319,12 @@ export class RegexEngine {
         var W: C.ProbableWord[] = [] as C.ProbableWord[];
         for (var i in Impacted) {
             var index = Impacted[i];
-            W = W.concat(RegexEngine.WordsAt(NewCells, size, index));
+            W = W.concat(EngineBase.WordsAt(NewCells, size, index));
         }
         return { Words: W, Moves: Moves, WordsCount: W.length, Direction: "V" } as C.ProbableMove;
     }
 
-    RefreshScores(Moves: C.ProbableMove[], Weights: number[], size: number): void {
+    static RefreshScores(Moves: C.ProbableMove[], Weights: number[], size: number): void {
         for (var indx in Moves) {
             var Move = Moves[indx];
             var score: number = 0;
@@ -607,53 +346,142 @@ export class RegexEngine {
         Moves.reverse();
     }
 
-    ShortList(Words: C.Word[], NonCornerPattern: string, Dict: any): C.Word[] {
-        if (U.Util.IsNullOrEmpty(NonCornerPattern)) {
-            return [] as C.Word[];
+    static WordsAt(Cells: string[], size: number, index: number): C.ProbableWord[] {
+        var List: C.ProbableWord[] = [] as C.ProbableWord[];
+        var Neighbor: C.Neighbor = BoardUtil.FindNeighbors(index, size);
+
+        var r = Neighbor.Right != -1 ? Cells[Neighbor.Right] : "";
+        var l = Neighbor.Left != -1 ? Cells[Neighbor.Left] : "";
+        var t = Neighbor.Top != -1 ? Cells[Neighbor.Top] : "";
+        var b = Neighbor.Bottom != -1 ? Cells[Neighbor.Bottom] : "";
+
+        var Lefties: C.Word[] = [] as C.Word[];
+        var Righties: C.Word[] = [] as C.Word[];
+
+        if (r != "") {
+            //Move Right..
+            Righties.push({ Tiles: r, Index: Neighbor.Right } as C.Word);
+            var index_: number = Neighbor.Right;
+            var flg: boolean = true;
+            while (flg) {
+                var n = BoardUtil.FindNeighbors(index_, size);
+                var r_ = n.Right != -1 ? Cells[n.Right] : "";
+                if (r_ == "") {
+                    flg = false;
+                    break;
+                }
+                Righties.push({ Tiles: r_, Index: n.Right } as C.Word);
+                index_ = n.Right;
+            }
+        }
+        if (l != "") {
+            //Move Left..
+            Lefties.push({ Tiles: l, Index: Neighbor.Left } as C.Word);
+
+            var index_ = Neighbor.Left;
+            var flg: boolean = true;
+            while (flg) {
+                var n: C.Neighbor = BoardUtil.FindNeighbors(index_, size);
+                var l_ = n.Left != -1 ? Cells[n.Left] : "";
+                if (l_ == "") {
+                    flg = false;
+                    break;
+                }
+                Lefties.push({ Tiles: l_, Index: n.Left } as C.Word);
+                index_ = n.Left;
+            }
         }
 
-        //var st = performance.now();
+        var Topies: C.Word[] = [] as C.Word[];
+        var Downies: C.Word[] = [] as C.Word[];
 
-        var Matches = this.MatchedWords(Words, NonCornerPattern);
-        var Shortlisted = [] as C.Word[];
+        if (t != "") {
+            //Move Top..
+            Topies.push({ Tiles: t, Index: Neighbor.Top } as C.Word);
+            var index_ = Neighbor.Top;
+            var flg = true;
+            while (flg) {
+                var n = BoardUtil.FindNeighbors(index_, size);
+                var t_: string = n.Top != -1 ? Cells[n.Top] : "";
+                if (t_ == "") {
+                    flg = false;
+                    break;
+                }
+                Topies.push({ Tiles: t_, Index: n.Top } as C.Word);
+                index_ = n.Top;
+            }
+        }
+
+        if (b != "") {
+            //Move Bottom..
+            Downies.push({ Tiles: b, Index: Neighbor.Bottom } as C.Word);
+            var index_ = Neighbor.Bottom;
+            var flg = true;
+            while (flg) {
+                var n = BoardUtil.FindNeighbors(index_, size);
+                var d_ = n.Bottom != -1 ? Cells[n.Bottom] : "";
+                if (d_ == "") {
+                    flg = false;
+                    break;
+                }
+                Downies.push({ Tiles: d_, Index: n.Bottom } as C.Word);
+                index_ = n.Bottom;
+            }
+        }
+
+        Topies.reverse();
+        Lefties.reverse();
+
+        if (Topies.length + Downies.length > 0) {
+            var Vertical = EngineBase.MakeAWord(Topies, { Tiles: Cells[index], Index: index } as C.Word, Downies);
+            List.push(Vertical);
+        }
+        if (Lefties.length + Righties.length > 0) {
+            var Harizontal = EngineBase.MakeAWord(Lefties, { Tiles: Cells[index], Index: index } as C.Word, Righties);
+            List.push(Harizontal);
+        }
+        return List;
+    }
+    static MakeAWord(F1: C.Word[], C: C.Word, F2: C.Word[]): C.ProbableWord {
+        var W = {} as C.ProbableWord;
+        var List: C.TargetCell[] = [] as C.TargetCell[];
+        var ret: string = "";
+        for (var indx in F1) {
+            var s = F1[indx];
+            ret = ret + s.Tiles.Replace(",", "") + ",";
+            var Cell: C.TargetCell = { Target: s.Tiles, Index: s.Index } as C.TargetCell;
+            List.push(Cell);
+        }
         {
-            for (var indx in Matches) {
-                var word: C.Word = Matches[indx];
-                if (word.Syllables == 1) {
-                    continue;
-                }
-
-                var CharCount = this.GetCountDict2(word.Tiles);
-                var isValid = this.Validate(Dict, CharCount);
-                if (!isValid) {
-                    continue;
-                }
-
-                Shortlisted.push(word);
-            }
+            ret = ret + C.Tiles.Replace(",", "") + ",";
+            var Cell: C.TargetCell = { Target: C.Tiles, Index: C.Index } as C.TargetCell;
+            List.push(Cell);
         }
-        //if (console) { console.log(U.Util.Format("\tContextual: V1: {1} {0}", [U.Util.ElapsedTime(performance.now() - st), Shortlisted.length])); }
-        return Shortlisted;
+        for (var indx in F2) {
+            var s = F2[indx];
+            ret = ret + s.Tiles.Replace(",", "") + ",";
+            var Cell: C.TargetCell = { Target: s.Tiles, Index: s.Index } as C.TargetCell;
+            List.push(Cell);
+        }
+        ret = ret.Trim(',');
+        W.String = ret;
+        W.Cells = List;
+        return W;
+    }
+}
+export class RegexEngineBase extends EngineBase {
+    public BestMove(Board: C.ScrabbleBoard): C.ProbableMove {
+        var Moves = this.Probables(Board);
+        if (Moves.length == 0) {
+            return null;
+        }
+        return Moves[0];
     }
 
-    static Validate3(WV: C.ProbableMove, AllWords: C.Word[]): boolean {
-        WV.Words = ProbableWordComparer.Distinct(WV.Words);
-        WV.WordsCount = WV.Words.length;
-        if (WV.Words.length == 0 || WV.Moves.length == 0) {
-            return false;
-        }
-        return RegexEngine.Validate2(WV.Words, AllWords);
+    public Probables(Board: C.ScrabbleBoard): C.ProbableMove[] {
+        return [];
     }
-    static Validate2(WV: C.ProbableWord[], AllWords: C.Word[]): boolean {
-        for (var indx in WV) {
-            var w: C.ProbableWord = WV[indx];
-            var v = AllWords.filter(function (x: C.Word) { return x.Tiles == w.String });
-            if (v == null || v.length == 0) {
-                return false;
-            }
-        }
-        return true;
-    }
+
     Validate(InputDict: any, CharCount: any): boolean {
         if (InputDict == null) {
             return true;
@@ -886,128 +714,7 @@ export class RegexEngine {
         }
         return Words;
     }
-    static WordsAt(Cells: string[], size: number, index: number): C.ProbableWord[] {
-        var List: C.ProbableWord[] = [] as C.ProbableWord[];
-        var Neighbor: C.Neighbor = BoardUtil.FindNeighbors(index, size);
 
-        var r = Neighbor.Right != -1 ? Cells[Neighbor.Right] : "";
-        var l = Neighbor.Left != -1 ? Cells[Neighbor.Left] : "";
-        var t = Neighbor.Top != -1 ? Cells[Neighbor.Top] : "";
-        var b = Neighbor.Bottom != -1 ? Cells[Neighbor.Bottom] : "";
-
-        var Lefties: C.Word[] = [] as C.Word[];
-        var Righties: C.Word[] = [] as C.Word[];
-
-        if (r != "") {
-            //Move Right..
-            Righties.push({ Tiles: r, Index: Neighbor.Right } as C.Word);
-            var index_: number = Neighbor.Right;
-            var flg: boolean = true;
-            while (flg) {
-                var n = BoardUtil.FindNeighbors(index_, size);
-                var r_ = n.Right != -1 ? Cells[n.Right] : "";
-                if (r_ == "") {
-                    flg = false;
-                    break;
-                }
-                Righties.push({ Tiles: r_, Index: n.Right } as C.Word);
-                index_ = n.Right;
-            }
-        }
-        if (l != "") {
-            //Move Left..
-            Lefties.push({ Tiles: l, Index: Neighbor.Left } as C.Word);
-
-            var index_ = Neighbor.Left;
-            var flg: boolean = true;
-            while (flg) {
-                var n: C.Neighbor = BoardUtil.FindNeighbors(index_, size);
-                var l_ = n.Left != -1 ? Cells[n.Left] : "";
-                if (l_ == "") {
-                    flg = false;
-                    break;
-                }
-                Lefties.push({ Tiles: l_, Index: n.Left } as C.Word);
-                index_ = n.Left;
-            }
-        }
-
-        var Topies: C.Word[] = [] as C.Word[];
-        var Downies: C.Word[] = [] as C.Word[];
-
-        if (t != "") {
-            //Move Top..
-            Topies.push({ Tiles: t, Index: Neighbor.Top } as C.Word);
-            var index_ = Neighbor.Top;
-            var flg = true;
-            while (flg) {
-                var n = BoardUtil.FindNeighbors(index_, size);
-                var t_: string = n.Top != -1 ? Cells[n.Top] : "";
-                if (t_ == "") {
-                    flg = false;
-                    break;
-                }
-                Topies.push({ Tiles: t_, Index: n.Top } as C.Word);
-                index_ = n.Top;
-            }
-        }
-
-        if (b != "") {
-            //Move Bottom..
-            Downies.push({ Tiles: b, Index: Neighbor.Bottom } as C.Word);
-            var index_ = Neighbor.Bottom;
-            var flg = true;
-            while (flg) {
-                var n = BoardUtil.FindNeighbors(index_, size);
-                var d_ = n.Bottom != -1 ? Cells[n.Bottom] : "";
-                if (d_ == "") {
-                    flg = false;
-                    break;
-                }
-                Downies.push({ Tiles: d_, Index: n.Bottom } as C.Word);
-                index_ = n.Bottom;
-            }
-        }
-
-        Topies.reverse();
-        Lefties.reverse();
-
-        if (Topies.length + Downies.length > 0) {
-            var Vertical = RegexEngine.MakeAWord(Topies, { Tiles: Cells[index], Index: index } as C.Word, Downies);
-            List.push(Vertical);
-        }
-        if (Lefties.length + Righties.length > 0) {
-            var Harizontal = RegexEngine.MakeAWord(Lefties, { Tiles: Cells[index], Index: index } as C.Word, Righties);
-            List.push(Harizontal);
-        }
-        return List;
-    }
-    static MakeAWord(F1: C.Word[], C: C.Word, F2: C.Word[]): C.ProbableWord {
-        var W = {} as C.ProbableWord;
-        var List: C.TargetCell[] = [] as C.TargetCell[];
-        var ret: string = "";
-        for (var indx in F1) {
-            var s = F1[indx];
-            ret = ret + s.Tiles.Replace(",", "") + ",";
-            var Cell: C.TargetCell = { Target: s.Tiles, Index: s.Index } as C.TargetCell;
-            List.push(Cell);
-        }
-        {
-            ret = ret + C.Tiles.Replace(",", "") + ",";
-            var Cell: C.TargetCell = { Target: C.Tiles, Index: C.Index } as C.TargetCell;
-            List.push(Cell);
-        }
-        for (var indx in F2) {
-            var s = F2[indx];
-            ret = ret + s.Tiles.Replace(",", "") + ",";
-            var Cell: C.TargetCell = { Target: s.Tiles, Index: s.Index } as C.TargetCell;
-            List.push(Cell);
-        }
-        ret = ret.Trim(',');
-        W.String = ret;
-        W.Cells = List;
-        return W;
-    }
     static GetStartIndex(option: string, r: number, pos: number, size: number, move: number): number {
         switch (option) {
             case "R":
@@ -1094,7 +801,7 @@ export class RegexEngine {
 
             var Consos: string[] = [] as string[];
             var Vowels: string[] = [] as string[];
-            RegexEngine.Classify2(CharSet, specialOptions, Consos, Vowels);
+            RegexEngineBase.Classify2(CharSet, specialOptions, Consos, Vowels);
 
             if (Vowels.length > 0 && Consos.length > 0) {
                 //Both Exists
@@ -1131,7 +838,7 @@ export class RegexEngine {
         var temp: string = "";
         var Consos: string[] = [] as string[];
         var Vowels: string[] = [] as string[];
-        RegexEngine.Classify(CharSet, syllable, Consos, Vowels);
+        RegexEngineBase.Classify(CharSet, syllable, Consos, Vowels);
 
         if (Vowels.length > 0 && Consos.length > 0) {
             // H-V:
@@ -1181,7 +888,7 @@ export class RegexEngine {
         var temp: string = "";
         var Consos: string[] = [] as string[];
         var Vowels: string[] = [] as string[];
-        RegexEngine.Classify(CharSet, syllable, Consos, Vowels);
+        RegexEngineBase.Classify(CharSet, syllable, Consos, Vowels);
 
         if (Vowels.length > 0 && Consos.length > 0) {
             // H-V:
@@ -1405,7 +1112,314 @@ export class RegexEngine {
         return maxIndex;
     }
 }
-export class RegexV2Engine extends RegexEngine {
+export class RegexEngine extends RegexEngineBase {
+    public Probables(Board: C.ScrabbleBoard): C.ProbableMove[] {
+        var Moves = [] as C.ProbableMove[];
+
+        if (Board == null) {
+            return;
+        }
+
+        var bot: C.Bot = GameConfig.GetBot(Board.Bot);
+
+        //
+        var board: C.KnownBoard = GameConfig.GetBoard(Board.Name);
+        if (board == null) {
+            return;
+        }
+
+        //
+        var CharSet = GameConfig.GetCharSet(board.Language);
+        var id = bot.Id + Board.Id;
+        //
+        var size = board.Size;
+        var weights = board.Weights;
+        var start = board.Star;
+        //
+        var cells = Board.Cells;
+        var vowels = Board.Vowels;
+        var conso = Board.Conso;
+        var special = Board.Special;
+        var file = (bot == null) ? CharSet.Dictionary : bot.Dictionary;
+
+        if (CharSet == null || cells == null || weights == null || U.Util.IsNullOrEmpty(file) ||
+            (U.Util.IsNullOrEmpty(vowels) && U.Util.IsNullOrEmpty(conso) && U.Util.IsNullOrEmpty(special))) {
+            return Moves;
+        }
+        if (cells.length != size * size || weights.length != size * size) {
+            return Moves;
+        }
+
+        var All = [] as string[];
+        var AllPattern = "";
+
+        var Movables = (vowels + " " + conso + " " + special);
+        var MovableList = Movables.Replace("(", " ").Replace(")", " ").Replace(",", "").split(' ');
+        MovableList = MovableList.filter(function (x) { return x.length != 0; });
+
+        var SpecialList = this.DistinctList(special.Replace("(", " ").Replace(")", " ").Replace(",", ""), ' ');
+        var SpeicalDict = this.GetSpecialDict(CharSet, SpecialList);
+
+        var EverySyllableOnBoard = this.GetSyllableList(cells, size, false, true);
+        var NonCornerSyllables = this.GetSyllableList(cells, size, true, false);
+        //
+        All = (this.GetFlatList(EverySyllableOnBoard, ',') + " " + Movables).Replace("(", " ").Replace(")", " ").Replace(",", " ").Replace("|", " ").split(' ');
+        AllPattern = U.Util.Format("^(?<All>[{0},])*$", [this.GetFlatList2(All)]);
+        var AllDict = this.GetCountDict(All);
+
+        var WordsDictionary = WL.WordLoader.LoadWords(file, (bot == null)); //Large Set of Words
+        WordsDictionary = this.ShortList(WordsDictionary, AllPattern, AllDict); // Probables 
+
+        //if (console) { console.log("\t\tProbables: V1: " + WordsDictionary.length); }
+
+        if (EverySyllableOnBoard.length > 0) {
+            var NonCornerTiles = [] as string[];
+            var NonCornerPattern = "";
+            //
+            NonCornerTiles = (this.GetFlatList2(NonCornerSyllables) + " " + Movables).Replace("(", " ").Replace(")", " ").Replace(",", " ").Replace("|", " ").split(' ');
+            NonCornerPattern = U.Util.Format("^(?<All>[{0},])*$", [this.GetFlatList2(NonCornerTiles)]);
+            var NonCornerDict = this.GetCountDict(NonCornerTiles);
+            var NonCornerProbables = this.ShortList(WordsDictionary, NonCornerPattern, NonCornerDict);  //Non Corner Probables
+
+            Moves = Moves.concat(RegexEngine.SyllableExtensions(cells, size, CharSet, WordsDictionary, NonCornerProbables, MovableList, SpeicalDict));
+            Moves = Moves.concat(RegexEngine.WordExtensions(cells, size, CharSet, WordsDictionary, MovableList, SpeicalDict));
+        }
+        else {
+            Moves = Moves.concat(RegexEngine.EmptyExtensions(cells, size, CharSet, start, WordsDictionary, MovableList, SpeicalDict));
+        }
+
+        WordsDictionary = null;
+        EngineBase.RefreshScores(Moves, weights, size);
+        return Moves;
+    }
+
+    static EmptyExtensions(Cells: string[], size: number, CharSet: C.CharSet, startIndex: number, AllWords: C.Word[], Movables: string[], SpeicalDict: any): C.ProbableMove[] {
+        //var st = performance.now();
+        var Moves = [] as C.ProbableMove[];
+        {
+            for (var indx in AllWords) {
+                var word: C.Word = AllWords[indx];
+                var Pre = "";
+                var Center = "";
+                var Post = "";
+                var f = word.Tiles.indexOf(',');
+
+                Center = word.Tiles.substring(0, f);
+                Post = word.Tiles.substring(f + 1);
+
+                var Pres = Pre == "" ? [] as string[] : Pre.TrimEnd(',').split(',');
+                var Centers = Center.split(',');
+                var Posts = Post == "" ? [] as string[] : Post.TrimStart(',').split(',');
+
+                var Tiles = Movables.slice(0, Movables.length);
+                var res = RegexEngine.Resolve(Pres, Centers, Posts, Tiles, SpeicalDict);
+                if (!res) {
+                    continue;
+                }
+                var totalCells = Pres.length + Centers.length + Posts.length;
+                var centroid = totalCells % 2 == 0 ? (Math.floor(totalCells / 2) - 1) : Math.floor(totalCells / 2);
+
+                var WH = EngineBase.TryHarizontal(Cells, size, startIndex - centroid, 0, Pres, Centers, Posts);
+                var WV = EngineBase.TryVertical(Cells, size, startIndex - centroid, 0, Pres, Centers, Posts);
+
+                var WHValid = RegexEngine.Validate3(WH, AllWords);
+                var WVValid = RegexEngine.Validate3(WV, AllWords);
+
+                if (WHValid) {
+                    Moves.push(WH);
+                }
+                if (WVValid) {
+                    Moves.push(WV);
+                }
+            }
+        }
+        //if (console) { console.log(U.Util.Format("\tEmpty Extensions: V1: {1} {0}", [U.Util.ElapsedTime(performance.now() - st), AllWords.length])); }
+        return Moves;
+    }
+    static SyllableExtensions(Cells: string[], size: number, CharSet: C.CharSet, AllWords: C.Word[], Probables: C.Word[], Movables: string[], SpeicalDict: any): C.ProbableMove[] {
+        //var st = performance.now();
+        var Moves = [] as C.ProbableMove[];
+        {
+            var All = RegexEngine.GetSyllableList2(Cells, size, false, true);
+            for (var indx in All) {
+                var syllable = All[indx];
+                var pattern = RegexEngine.GetSyllablePattern2(CharSet, syllable.Tiles.Replace("(", "").Replace(")", ""), "(?<Center>.*?)", "(?<Pre>.*?)", "(?<Post>.*?)");
+                pattern = U.Util.Format("^{0}$", [pattern]);
+                var R = new RegExp(pattern);
+                {
+                    for (var indx2 in Probables) {
+                        var probable: C.Word = Probables[indx2];
+
+                        if (!R.test(probable.Tiles)) {
+                            continue;
+                        }
+                        var M: any = R.exec(probable.Tiles);
+                        var Pre = RegexEngine.MatchedString(M.groups["Pre"], "");
+                        var Center = RegexEngine.MatchedString(M.groups["Conso"], "");
+                        var Post = RegexEngine.MatchedString(M.groups["Post"], "");
+
+                        var Pres = Pre == "" ? [] as string[] : Pre.TrimEnd(',').split(',');
+                        var Centers = Center == "" ? [] as string[] : Center.split(',');
+                        var Posts = Post == "" ? [] as string[] : Post.TrimStart(',').split(',');
+
+                        if (!Post.StartsWith(",") && Posts.length > 0) {
+                            Centers = (Center + Posts[0]).split(',');
+                            Posts = Posts.slice(1);
+                        }
+                        var Tiles = Movables.slice(0, Movables.length);
+                        var res = RegexEngine.Resolve(Pres, Centers, Posts, Tiles, SpeicalDict);
+                        if (!res) {
+                            continue;
+                        }
+
+                        var WH = EngineBase.TryHarizontal(Cells, size, syllable.Index, 0, Pres, Centers, Posts);
+                        var WV = EngineBase.TryVertical(Cells, size, syllable.Index, 0, Pres, Centers, Posts);
+
+                        var WHValid = RegexEngine.Validate3(WH, AllWords);
+                        var WVValid = RegexEngine.Validate3(WV, AllWords);
+
+                        if (WHValid) {
+                            Moves.push(WH);
+                        }
+                        if (WVValid) {
+                            Moves.push(WV);
+                        }
+                    }
+                }
+            }
+        }
+        //if (console) { console.log(U.Util.Format("\tSyllable Extensions: V1: {0}", [U.Util.ElapsedTime(performance.now() - st)])); }
+        return Moves;
+    }
+    static WordExtensions(Cells: string[], size: number, CharSet: C.CharSet, AllWords: C.Word[], Movables: string[], SpeicalDict: any): C.ProbableMove[] {
+        //var st = performance.now();
+        var Moves = [] as C.ProbableMove[];
+        {
+            var WordsOnBoard = RegexEngine.GetWordsOnBoard(Cells, size, false);
+            for (var indx in WordsOnBoard) {
+                var wordOnBoard: C.Word = WordsOnBoard[indx];
+                var raw = wordOnBoard.Tiles.Replace("(", "").Replace(")", "").Replace(",", "").Replace("|", ",");
+                var len: number = raw.split(',').length;
+
+                var pattern = RegexEngine.GenWordPattern(CharSet, wordOnBoard.Tiles, "(?<Center{0}>.*?)", "", "(?<Center{0}>.*?)", "(?<Pre>.*?)", "(?<Post>.*?)", true);
+                pattern = U.Util.Format("^{0}$", [pattern.TrimEnd('|')]);
+                var R = new RegExp(pattern);
+                {
+                    for (var indx2 in AllWords) {
+                        var word: C.Word = AllWords[indx2];
+                        if (raw == word.Tiles) {
+                            continue;
+                        }
+
+                        if (!R.test(word.Tiles)) {
+                            continue;
+                        }
+
+                        var M: any = R.exec(word.Tiles);
+                        var Pre = "";
+                        var Post = "";
+                        var Center = "";
+
+                        Pre = RegexEngine.MatchedString(M.groups["Pre"], "");
+                        for (var i = 0; i < word.Syllables; i++) {
+                            Center = Center + RegexEngine.MatchedString(M.groups["Center" + (i + 1)], ",") + ":";
+                        }
+                        Center = Center.TrimEnd(':');
+                        Post = RegexEngine.MatchedString(M.groups["Post"], "");
+
+
+                        var Pres = Pre == "" ? [] as string[] : Pre.TrimEnd(',').split(',');
+                        var Centers: string[] = Center.split(':');
+                        var Posts = Post == "" ? [] as string[] : Post.TrimStart(',').split(',');
+
+                        if (Centers.length != len) {
+                            if (!Post.StartsWith(",") && Posts.length > 0) {
+                                Centers.push(Posts[0]);
+                                Posts = Posts.slice(1);
+                            }
+                        }
+
+                        var Tiles = Movables.slice(0, Movables.length);
+                        var res = RegexEngine.Resolve(Pres, Centers, Posts, Tiles, SpeicalDict);
+                        if (!res) {
+                            continue;
+                        }
+
+                        if (wordOnBoard.Position == "R") {
+                            var WH = EngineBase.TryHarizontal(Cells, size, wordOnBoard.Index, wordOnBoard.Syllables - 1, Pres, Centers, Posts);
+                            var WHValid = RegexEngine.Validate3(WH, AllWords);
+                            if (WHValid) {
+                                Moves.push(WH);
+                            }
+                        }
+                        if (wordOnBoard.Position == "C") {
+                            var WH = EngineBase.TryVertical(Cells, size, wordOnBoard.Index, wordOnBoard.Syllables - 1, Pres, Centers, Posts);
+                            var WHValid = RegexEngine.Validate3(WH, AllWords);
+                            if (WHValid) {
+                                Moves.push(WH);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        //if (console) { console.log(U.Util.Format("\tWord Extensions: V1: {0}", [U.Util.ElapsedTime(performance.now() - st)])); }
+        return Moves;
+    }
+
+    ShortList(Words: C.Word[], NonCornerPattern: string, Dict: any): C.Word[] {
+        if (U.Util.IsNullOrEmpty(NonCornerPattern)) {
+            return [] as C.Word[];
+        }
+
+        //var st = performance.now();
+
+        var Matches = this.MatchedWords(Words, NonCornerPattern);
+        var Shortlisted = [] as C.Word[];
+        {
+            for (var indx in Matches) {
+                var word: C.Word = Matches[indx];
+                if (word.Syllables == 1) {
+                    continue;
+                }
+
+                var CharCount = this.GetCountDict2(word.Tiles);
+                var isValid = this.Validate(Dict, CharCount);
+                if (!isValid) {
+                    continue;
+                }
+
+                Shortlisted.push(word);
+            }
+        }
+        //if (console) { console.log(U.Util.Format("\tContextual: V1: {1} {0}", [U.Util.ElapsedTime(performance.now() - st), Shortlisted.length])); }
+        return Shortlisted;
+    }
+
+    static Validate3(WV: C.ProbableMove, AllWords: C.Word[]): boolean {
+        WV.Words = ProbableWordComparer.Distinct(WV.Words);
+        WV.WordsCount = WV.Words.length;
+        if (WV.Words.length == 0 || WV.Moves.length == 0) {
+            return false;
+        }
+        return RegexEngine.Validate2(WV.Words, AllWords);
+    }
+    static Validate2(WV: C.ProbableWord[], AllWords: C.Word[]): boolean {
+        for (var indx in WV) {
+            var w: C.ProbableWord = WV[indx];
+            var v = AllWords.filter(function (x: C.Word) { return x.Tiles == w.String });
+            if (v == null || v.length == 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+}
+export class RegexV2Engine extends RegexEngineBase {
+    static SM: boolean = false;
+    static WM: boolean = false;
+
     public Probables(Board: C.ScrabbleBoard): C.ProbableMove[] {
         var Moves = [] as C.ProbableMove[];
 
@@ -1421,7 +1435,7 @@ export class RegexV2Engine extends RegexEngine {
         }
         //
         var CharSet = GameConfig.GetCharSet(board.Language);
-        var id = (bot == null ? board.Name: bot.Id) + Board.Id;
+        var id = (bot == null ? board.Name : bot.Id) + Board.Id;
         //
         var size = board.Size;
         var weights = board.Weights;
@@ -1481,7 +1495,7 @@ export class RegexV2Engine extends RegexEngine {
         }
 
         WordsDictionary = null;
-        this.RefreshScores(Moves, weights, size);
+        EngineBase.RefreshScores(Moves, weights, size);
         return Moves;
     }
 
@@ -1546,6 +1560,7 @@ export class RegexV2Engine extends RegexEngine {
         }
         return Shortlisted;
     }
+
     static ShortList4(r: RegExp, words: C.Word[]): number[] {
         //var st = performance.now();
         var List = words.filter(function (s: C.Word) { return r.test(s.Tiles); });
@@ -1622,8 +1637,8 @@ export class RegexV2Engine extends RegexEngine {
                 var totalCells = Pres.length + Centers.length + Posts.length;
                 var centroid = totalCells % 2 == 0 ? (Math.floor(totalCells / 2) - 1) : Math.floor(totalCells / 2);
 
-                var WH = RegexEngine.TryHarizontal(Cells, size, startIndex - centroid, 0, Pres, Centers, Posts);
-                var WV = RegexEngine.TryVertical(Cells, size, startIndex - centroid, 0, Pres, Centers, Posts);
+                var WH = EngineBase.TryHarizontal(Cells, size, startIndex - centroid, 0, Pres, Centers, Posts);
+                var WV = EngineBase.TryVertical(Cells, size, startIndex - centroid, 0, Pres, Centers, Posts);
 
                 var WHValid = RegexV2Engine.Validate4(WH, AllWords, Probables);
                 var WVValid = RegexV2Engine.Validate4(WV, AllWords, Probables);
@@ -1644,16 +1659,19 @@ export class RegexV2Engine extends RegexEngine {
         var Moves = [] as C.ProbableMove[];
         {
             var All = RegexEngine.GetSyllableList2(Cells, size, false, true);
-            //EngineMemory.RefreshCache(botId + ":S", All);
+            if (RegexV2Engine.SM) { EngineMemory.RefreshCache(botId + ":S", All); }
             for (var indx in All) {
                 var syllable = All[indx];
                 var pattern = RegexEngine.GetSyllablePattern2(CharSet, syllable.Tiles.Replace("(", "").Replace(")", ""), "(?<Center>.*?)", "(?<Pre>.*?)", "(?<Post>.*?)");
                 pattern = U.Util.Format("^{0}$", [pattern]);
                 var R = new RegExp(pattern);
                 {
-                    //var Probables2: number[] = RegexV2Engine.ShortList5(botId + ":S", syllable.Tiles, R, AllWords, Probables);
-                    for (var indx2 in Probables) {
-                        var probableIndx: number = Probables[indx2];
+                    var Probables2: number[] = [];
+                    if (RegexV2Engine.SM) {
+                        Probables2 = RegexV2Engine.ShortList5(botId + ":S", syllable.Tiles, R, AllWords, Probables);
+                    }
+                    for (var indx2 in (RegexV2Engine.SM ? Probables2 : Probables)) {
+                        var probableIndx: number = RegexV2Engine.SM ? Probables2[indx2] : Probables[indx2];
                         var probable: C.Word = AllWords[probableIndx];
                         if (!R.test(probable.Tiles)) {
                             continue;
@@ -1677,8 +1695,8 @@ export class RegexV2Engine extends RegexEngine {
                             continue;
                         }
 
-                        var WH = RegexEngine.TryHarizontal(Cells, size, syllable.Index, 0, Pres, Centers, Posts);
-                        var WV = RegexEngine.TryVertical(Cells, size, syllable.Index, 0, Pres, Centers, Posts);
+                        var WH = EngineBase.TryHarizontal(Cells, size, syllable.Index, 0, Pres, Centers, Posts);
+                        var WV = EngineBase.TryVertical(Cells, size, syllable.Index, 0, Pres, Centers, Posts);
 
                         var WHValid = RegexV2Engine.Validate4(WH, AllWords, Probables);
                         var WVValid = RegexV2Engine.Validate4(WV, AllWords, Probables);
@@ -1700,20 +1718,21 @@ export class RegexV2Engine extends RegexEngine {
         //var st = performance.now();
         var Moves = [] as C.ProbableMove[];
         {
-            var WordsOnBoard = RegexEngine.GetWordsOnBoard(Cells, size, false);
-            //EngineMemory.RefreshCache(botId + ":W", WordsOnBoard);
+            var WordsOnBoard = RegexEngineBase.GetWordsOnBoard(Cells, size, false);
+            if (RegexV2Engine.WM) { EngineMemory.RefreshCache(botId + ":W", WordsOnBoard); }
 
             for (var indx in WordsOnBoard) {
                 var wordOnBoard: C.Word = WordsOnBoard[indx];
                 var raw = wordOnBoard.Tiles.Replace("(", "").Replace(")", "").Replace(",", "").Replace("|", ",");
                 var len: number = raw.split(',').length;
 
-                var pattern = RegexEngine.GenWordPattern(CharSet, wordOnBoard.Tiles, "(?<Center{0}>.*?)", "", "(?<Center{0}>.*?)", "(?<Pre>.*?)", "(?<Post>.*?)", true);
+                var pattern = RegexEngineBase.GenWordPattern(CharSet, wordOnBoard.Tiles, "(?<Center{0}>.*?)", "", "(?<Center{0}>.*?)", "(?<Pre>.*?)", "(?<Post>.*?)", true);
                 pattern = U.Util.Format("^{0}$", [pattern.TrimEnd('|')]);
                 var R = new RegExp(pattern);
                 {
-                    //var Probables2: number[] = RegexV2Engine.ShortList5(botId + ":W", wordOnBoard.Tiles, R, AllWords, Probables);
-                    for (var indx2 in Probables) {
+                    var Probables2: number[] = [];
+                    if (RegexV2Engine.WM) { RegexV2Engine.ShortList5(botId + ":W", wordOnBoard.Tiles, R, AllWords, Probables); }
+                    for (var indx2 in (RegexV2Engine.WM ? Probables2 : Probables)) {
                         var wordIndx: number = Probables[indx2];
                         var word: C.Word = AllWords[wordIndx];
                         if (raw == word.Tiles) {
@@ -1736,7 +1755,6 @@ export class RegexV2Engine extends RegexEngine {
                         Center = Center.TrimEnd(':');
                         Post = RegexEngine.MatchedString(M.groups["Post"], "");
 
-
                         var Pres = Pre == "" ? [] as string[] : Pre.TrimEnd(',').split(',');
                         var Centers: string[] = Center.split(':');
                         var Posts = Post == "" ? [] as string[] : Post.TrimStart(',').split(',');
@@ -1755,14 +1773,14 @@ export class RegexV2Engine extends RegexEngine {
                         }
 
                         if (wordOnBoard.Position == "R") {
-                            var WH = RegexEngine.TryHarizontal(Cells, size, wordOnBoard.Index, wordOnBoard.Syllables - 1, Pres, Centers, Posts);
+                            var WH = EngineBase.TryHarizontal(Cells, size, wordOnBoard.Index, wordOnBoard.Syllables - 1, Pres, Centers, Posts);
                             var WHValid = RegexV2Engine.Validate4(WH, AllWords, Probables);
                             if (WHValid) {
                                 Moves.push(WH);
                             }
                         }
                         if (wordOnBoard.Position == "C") {
-                            var WH = RegexEngine.TryVertical(Cells, size, wordOnBoard.Index, wordOnBoard.Syllables - 1, Pres, Centers, Posts);
+                            var WH = EngineBase.TryVertical(Cells, size, wordOnBoard.Index, wordOnBoard.Syllables - 1, Pres, Centers, Posts);
                             var WHValid = RegexV2Engine.Validate4(WH, AllWords, Probables);
                             if (WHValid) {
                                 Moves.push(WH);
@@ -1784,7 +1802,6 @@ export class RegexV2Engine extends RegexEngine {
         }
         return RegexV2Engine.Validate5(WV.Words, AllWords, Probables);
     }
-
     static Validate5(WV: C.ProbableWord[], AllWords: C.Word[], Probables: number[]): boolean {
         for (var indx in WV) {
             var w: C.ProbableWord = WV[indx];
