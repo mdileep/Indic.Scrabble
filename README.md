@@ -29,8 +29,8 @@ This project is another attempt to build Scrabble for Indian Languages by custom
 
 * Telugu
 * Kannada
+* Hindi (Devanagari Script)
 * Other Languages (Immediate Targets)
-    * Hindi (Devanagari Script)
     * Sinhala
     * Nepali
     * Tamil

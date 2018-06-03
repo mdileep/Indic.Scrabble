@@ -1,4 +1,12 @@
 ﻿{
+  "andhra.bharati":{
+    "Name": "ఆంధ్రభారతి",
+    "FullName": "ఆంధ్రభారతి",
+    "Language": "te",
+    "Algorithm": "Default",
+    "Dictionary": "te.ab.txt",
+    "Endpoint": null
+  },
   "tebha": {
     "Name": "పోతన",
     "FullName": "పోతన",

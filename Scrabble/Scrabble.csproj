@@ -49,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="bots\te.txt" />
+    <Content Include="bots\te.ab.txt" />
     <Content Include="bots\kn.txt" />
     <Content Include="bots\hi.bbc.txt" />
     <Content Include="bots\te.gallery.txt" />
@@ -155,7 +156,7 @@
     <Content Include="scripts\redux.js" />
     <Content Include="scripts\require.js" />
     <Content Include="scripts\axios.js" />
-        <Content Include="scripts\bundle.ini" />
+    <Content Include="scripts\bundle.ini" />
     <Content Include="scripts\Bundle.targets" />
   </ItemGroup>
   <ItemGroup>
@@ -171,7 +172,6 @@
     <Content Include="images\help.svg" />
   </ItemGroup>
   <ItemGroup>
-
     <None Include="web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>
