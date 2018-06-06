@@ -20,5 +20,6 @@ namespace Scrabble.Server
 		public const string NextMove = "nextmove";
 		public const string Probables = "probables";
 		public const string Validate = "validate";
+		public const string PostMetrics = "postmetrics";
 	}
 }

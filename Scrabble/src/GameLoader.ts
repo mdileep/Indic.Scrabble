@@ -45,22 +45,8 @@ export class GameLoader {
             //Not Loading the Referee if there is a Bot..
             list.push(Config.CharSet.Dictionary);
         }
-        WL.WordLoader.Total = list.length;
-        if (list.length == 0) {
-            GS.GameStore.Dispatch({
-                type: Contracts.Actions.Init,
-                args: {
-                }
-            });
-            return;
-        }
-        GameLoader.LoadVocabularies(list);
-    }
-
-    static LoadVocabularies(list: string[]): void {
-        for (var indx in list) {
-            WL.WordLoader.Init(list[indx]);
-        }
+        WL.WordLoader.Prepare(list);
+       
     }
 
     static Vocabularies(players: Contracts.iPlayer[]): string[] {

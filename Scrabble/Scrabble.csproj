@@ -30,7 +30,7 @@
     <Content Include="scrabble.aspx" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="scripts\scrabble.bundle.js" />
+    <Content Include="scripts\external.js" />
     <Content Include="scripts\scrabble.js" />
     <Content Include="styles\css\index.min.css" />
     <Content Include="styles\css\bn.min.css" />

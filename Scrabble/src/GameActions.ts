@@ -30,15 +30,14 @@ export class Settings {
     static RefreeWait: number = 100;
     static ServerWait: number = 100;
 }
-
 export class GameActions {
     //Move to Seperate Config File
-
     static Init(state: Contracts.iGameState, args: Contracts.iArgs): void {
         GameActions.Render();
         var players = state.Players.Players;
         var currentPlayer = state.Players.CurrentPlayer;
         state.GameTable.Message = Util.Util.Format(Messages.Messages.YourTurn, [players[currentPlayer].Name]);
+        PubSub.Subscribe(Contracts.Events.GameOver, GameActions.GameOver);
         setTimeout(GameActions.PinchPlayer, Settings.PinchWait);
     }
     static PinchPlayer(): void {
@@ -68,16 +67,6 @@ export class GameActions {
         var state: any = GS.GameStore.GetState();
         var left = React.createElement(((Game.default as any) as React.ComponentClass<Contracts.iGameState>), state);
         return ReactDOM.render(left, rootEl);
-    }
-    static VocabularyLoaded(file: string): void {
-        if (WL.WordLoader.Loaded != WL.WordLoader.Total) {
-            return;
-        }
-        GS.GameStore.Dispatch({
-            type: Contracts.Actions.Init,
-            args: {
-            }
-        });
     }
     static RequestSuggestion(state: Contracts.iGameState, args: Contracts.iArgs): void {
         state.Suggestion.Loaded = false;
@@ -154,9 +143,13 @@ export class GameActions {
         GameActions.SetStats(state);
         if (state.GameOver) {
             GameActions.SetWinner(state);
+            PubSub.Publish(Contracts.Events.GameOver, state);
             return;
         }
         setTimeout(GameActions.PinchPlayer, Settings.PinchWait);
+    }
+    static GameOver(state: Contracts.iGameState): void {
+
     }
     static SetWinner(state: Contracts.iGameState) {
         state.ReadOnly = true;
@@ -794,4 +787,53 @@ export class GameActions {
         var pickedConso = Util.Util.Draw(conso, maxConsos);
         return pickedConso;
     }
+}
+export class PubSub {
+    //Rewritten based on https://msdn.microsoft.com/en-us/magazine/hh201955.aspx
+    static Counter: number = -1;
+    static Events: any = {};
+
+    static Subscribe(eventId: number, handler: (args: Contracts.iArgs) => void): number {
+        if (!PubSub.Events.hasOwnProperty(eventId.toString())) {
+            PubSub.Events[eventId] = [];
+        }
+
+        var token: number = (++PubSub.Counter);
+        PubSub.Events[eventId].push({ id: token, handler: handler });
+        return token;
+    }
+
+    static UnSubscribe(eventId: number): void {
+        for (var m in PubSub.Events) {
+            if (!PubSub.Events.hasOwnProperty(m)) {
+                continue;
+            }
+            for (var i = 0, j = PubSub.Events[m].length; i < j; i++) {
+                if (PubSub.Events[m][i].id != eventId) {
+                    continue;
+                }
+                PubSub.Events[m].splice(i, 1);
+                return;
+            }
+        }
+    }
+
+    static Publish(eventId: number, args: Contracts.iArgs): void {
+        if (!PubSub.Events.hasOwnProperty(eventId.toString())) {
+            return;
+        }
+        setTimeout(function () { PubSub.Notify(eventId, args) }, 0);
+        return;
+    }
+
+    static Notify(eventId: number, args: Contracts.iArgs) {
+        var subscribers = PubSub.Events[eventId];
+        for (var i = 0, j = subscribers.length; i < j; i++) {
+            try {
+                subscribers[i].handler(eventId, args);
+            } catch (e) {
+                setTimeout(function () { throw e; }, 0);
+            }
+        }
+    };
 }

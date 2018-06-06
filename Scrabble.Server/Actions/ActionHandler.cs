@@ -30,6 +30,9 @@ namespace Scrabble.Server
 				case ActionNames.Validate:
 					return new ValidateAction();
 
+				case ActionNames.PostMetrics:
+					return new PostMetricsAction();
+
 				default:
 				case ActionNames.Help:
 					return new HelpAction();

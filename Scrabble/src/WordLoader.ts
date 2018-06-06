@@ -10,10 +10,10 @@
 // </copyright>
 //---------------------------------------------------------------------------------------------
 
-
 import * as C from 'Contracts';
 import * as axios from 'axios';
 import * as GA from 'GameActions';
+import * as GS from 'GameStore';
 
 export class WordLoader {
     static Loaded = 0;
@@ -80,7 +80,6 @@ export class WordLoader {
         }
         return unResolved;
     }
-
     static IsValid(word: string): boolean {
         var res = false;
         for (var indx in WordLoader.Lists) {
@@ -94,5 +93,34 @@ export class WordLoader {
             }
         }
         return res;
+    }
+    static Prepare(list: string[]) {
+        WordLoader.Total = list.length;
+        if (list.length == 0) {
+            WordLoader.LoadComplete();
+            return;
+        }
+        WordLoader.LoadVocabularies(list);
+    }
+    static LoadVocabularies(list: string[]): void {
+        for (var indx in list) {
+            WordLoader.Init(list[indx]);
+        }
+    }
+    static VocabularyLoaded(file: string): void {
+        if (WordLoader.Loaded != WordLoader.Total) {
+            return;
+        }
+        WordLoader.LoadComplete();
+    }
+    static LoadComplete() {
+        GS.GameStore.Dispatch({
+            type: C.Actions.Init,
+            args: {
+            }
+        });
+    }
+    static Dispose() {
+        WordLoader.Lists = null;
     }
 }

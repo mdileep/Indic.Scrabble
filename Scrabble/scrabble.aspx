@@ -47,7 +47,10 @@
         <br />
         <span id="Author2" runat="server" class="author">~ Dileep Miriyala(దిలీపు మిరియాల)</span>
     </div>
-    <script type="text/javascript">requirejs.config({ paths: { react: 'scripts\\react', "react-dom": 'scripts\\react-dom', "redux": 'scripts\\redux', "axios": 'scripts\\axios', } }); require(['Game'])</script>
+    <script type="text/javascript">
+        requirejs.config({ paths: { react: 'scripts\\react', "react-dom": 'scripts\\react-dom', "redux": 'scripts\\redux', "axios": 'scripts\\axios', } });
+        require(['Game'])
+    </script>
     <script>window.dataLayer = window.dataLayer || []; function gtag() { dataLayer.push(arguments); } gtag('js', new Date()); gtag('config', 'UA-118249672-1');</script>
 </body>
 </html>

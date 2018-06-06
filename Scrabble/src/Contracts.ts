@@ -147,6 +147,9 @@ export interface iArgs {
     Origin?: string;
     SrcCell?: number;
 }
+export class Events {
+    public static GameOver: number = 0;
+}
 export class Actions {
     public static Init: number = 0;
     public static ReRender: number = 1;

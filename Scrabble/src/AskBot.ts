@@ -33,6 +33,8 @@ export class AskServer {
             args: {}
         });
     }
+    static SendMetrics(): void {
+    }
 
     static Suggest(post: any): void {
         //Decide between Server or Client

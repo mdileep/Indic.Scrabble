@@ -1,8 +1,8 @@
 ﻿//---------------------------------------------------------------------------------------------
-// <copyright file="PingAction.cs" company="Chandam-ఛందం">
+// <copyright file="StorageConfig.cs" company="Chandam-ఛందం">
 //    Copyright © 2013 - 2018 'Chandam-ఛందం' : http://chandam.apphb.com
 //    Original Author : Dileep Miriyala (m.dileep@gmail.com)
-//    Last Updated    : 21-Mar-2018 23:32EST
+//    Last Updated    : 05-Jun-2018 20:56EST
 //    Revisions:
 //       Version    | Author                   | Email                     | Remarks
 //       1.0        | Dileep Miriyala          | m.dileep@gmail.com        | Initial Commit
@@ -10,15 +10,22 @@
 // </copyright>
 //---------------------------------------------------------------------------------------------
 
-using System.Collections.Generic;
+using System.Configuration;
 
-namespace Scrabble.Server
+namespace Scrabble.Storage
 {
-	public class PingAction : iAPIAction
+	public class StorageConfig
 	{
-		public object Process(Dictionary<string, object> dict)
+		public static readonly string ConnectionString = "";
+		public const string Metrics = "Metrics";
+
+		static StorageConfig()
 		{
-			return dict; //It's a Echo Action 
+			try
+			{
+				ConnectionString = ConfigurationManager.AppSettings["MONGOLAB_URI"].ToString();
+			}
+			catch { }
 		}
 	}
 }
