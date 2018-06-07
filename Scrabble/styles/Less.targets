@@ -1,0 +1,13 @@
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Target Name="BeforeBuildLess">
+    <Message Importance="High" Text="Before Building $(TargetName) $(OutputType)" />
+  </Target>
+  <Target Name="AfterBuildLess">
+    <Message Importance="High" Text="Project Directory:  $(ProjectDir)" />
+    <Message Importance="High" Text="lessc %(LessFiles.RootDir)%(LessFiles.Directory)%(LessFiles.Filename)%(LessFiles.Extension) %(LessFiles.RootDir)%(LessFiles.Directory)/../css/%(LessFiles.Filename).css" />
+    <Exec IgnoreExitCode="false" Command="lessc %(LessFiles.RootDir)%(LessFiles.Directory)%(LessFiles.Filename)%(LessFiles.Extension) %(LessFiles.RootDir)%(LessFiles.Directory)/../css/%(LessFiles.Filename).css" />
+    <Exec IgnoreExitCode="false" Command="lessc %(LessFiles.RootDir)%(LessFiles.Directory)%(LessFiles.Filename)%(LessFiles.Extension) %(LessFiles.RootDir)%(LessFiles.Directory)/../css/%(LessFiles.Filename).min.css -x" />
+    <Message Importance="High" Text="Bundling CSS: $(ProjectDir)\..\External\Worker.exe Merge $(ProjectDir)\Styles\MergeRules.ini" />
+    <Exec IgnoreExitCode="false" Command="$(ProjectDir)\..\External\Worker.exe Merge $(ProjectDir)\Styles\MergeRules.ini" />
+  </Target>
+</Project>
