@@ -156,8 +156,6 @@
     <Content Include="scripts\redux.js" />
     <Content Include="scripts\require.js" />
     <Content Include="scripts\axios.js" />
-    <Content Include="scripts\bundle.ini" />
-    <Content Include="scripts\Bundle.targets" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Scrabble.png" />
@@ -178,6 +176,11 @@
     <None Include="web.Release.config">
       <DependentUpon>web.config</DependentUpon>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="styles\Less.targets" />
+    <Content Include="scripts\bundle.ini" />
+    <Content Include="scripts\Bundle.targets" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

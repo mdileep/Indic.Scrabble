@@ -298,6 +298,7 @@ export interface Word {
 }
 export interface ProbableMove {
     Direction: string;
+    Mode: number;
     Score: number;
     Moves: Word[];
     WordsCount: number;

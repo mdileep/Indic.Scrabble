@@ -71,20 +71,17 @@ namespace Scrabble.Engines
 			}
 
 			string[] All = new string[] { };
-
-
 			string AllPattern = "";
 
-
 			string Movables = (vowels + " " + conso + " " + special);
-			var MovableList = Movables.Replace("(", " ").Replace(")", " ").Replace(",", "").Split(' ').ToList();
-			MovableList.RemoveAll(x => x.Length == 0);
+			var MovableTiles = Movables.Replace("(", " ").Replace(")", " ").Replace(",", "").Split(' ').ToList();
+			MovableTiles.RemoveAll(x => x.Length == 0);
 
 			var SpecialList = DistinctList(special.Replace("(", " ").Replace(")", " ").Replace(",", ""), ' ');
 			var SpeicalDict = GetSpecialDict(SpecialList);
 
-			List<string> EverySyllableOnBoard = GetSyllableList(cells, size, false, true);
-			List<string> NonCornerSyllables = GetSyllableList(cells, size, true, false);
+			List<string> EverySyllableOnBoard = GetSyllableList(cells, size, true, false, true);
+			List<string> NonCornerSyllables = GetSyllableList(cells, size, false, true, false);
 
 			//
 			All = (GetFlatList(EverySyllableOnBoard, ',') + " " + Movables).Replace("(", " ").Replace(")", " ").Replace(",", " ").Replace("|", " ").Split(' ');
@@ -106,12 +103,12 @@ namespace Scrabble.Engines
 
 				Thread t1 = new Thread(() =>
 				{
-					Moves.AddRange(SyllableExtensions(cells, size, CharSet, WordsDictionary, NonCornerProbables, MovableList, SpeicalDict));
+					Moves.AddRange(SyllableExtensions(cells, size, CharSet, WordsDictionary, NonCornerProbables, MovableTiles, SpeicalDict));
 				});
 
 				Thread t2 = new Thread(() =>
 				{
-					Moves.AddRange(WordExtensions(cells, size, CharSet, WordsDictionary, MovableList, SpeicalDict));
+					Moves.AddRange(WordExtensions(cells, size, CharSet, WordsDictionary, MovableTiles, SpeicalDict));
 				});
 
 				t1.Start(); t2.Start();
@@ -119,7 +116,7 @@ namespace Scrabble.Engines
 			}
 			else
 			{
-				Moves.AddRange(EmptyExtensions(cells, size, CharSet, star, WordsDictionary, MovableList, SpeicalDict));
+				Moves.AddRange(EmptyExtensions(cells, size, CharSet, star, WordsDictionary, MovableTiles, SpeicalDict));
 			}
 
 			WordsDictionary = null; WordsDictionary = null;
@@ -157,8 +154,8 @@ namespace Scrabble.Engines
 						int totalCells = Pres.Length + Centers.Length + Posts.Length;
 						int centroid = totalCells % 2 == 0 ? (totalCells / 2 - 1) : totalCells / 2;
 
-						ProbableMove WH = TryHarizontal(Cells, size, star - centroid, 0, Pres, Centers, Posts);
-						ProbableMove WV = TryVertical(Cells, size, star - centroid, 0, Pres, Centers, Posts);
+						ProbableMove WH = TryHarizontal(0, Cells, size, star - centroid, 0, Pres, Centers, Posts);
+						ProbableMove WV = TryVertical(0, Cells, size, star - centroid, 0, Pres, Centers, Posts);
 
 						bool WHValid = Validate(WH, AllWords);
 						bool WVValid = Validate(WV, AllWords);
@@ -222,8 +219,8 @@ namespace Scrabble.Engines
 									continue;
 								}
 
-								ProbableMove WH = TryHarizontal(Cells, size, syllable.Index, 0, Pres, Centers, Posts);
-								ProbableMove WV = TryVertical(Cells, size, syllable.Index, 0, Pres, Centers, Posts);
+								ProbableMove WH = TryHarizontal(1, Cells, size, syllable.Index, 0, Pres, Centers, Posts);
+								ProbableMove WV = TryVertical(1, Cells, size, syllable.Index, 0, Pres, Centers, Posts);
 
 								bool WHValid = Validate(WH, AllWords);
 								bool WVValid = Validate(WV, AllWords);
@@ -311,7 +308,7 @@ namespace Scrabble.Engines
 
 								if (wordOnBoard.Position == "R")
 								{
-									ProbableMove WH = TryHarizontal(Cells, size, wordOnBoard.Index, wordOnBoard.Syllables - 1, Pres, Centers, Posts);
+									ProbableMove WH = TryHarizontal(2, Cells, size, wordOnBoard.Index, wordOnBoard.Syllables - 1, Pres, Centers, Posts);
 									bool WHValid = Validate(WH, AllWords);
 									if (WHValid)
 									{
@@ -320,7 +317,7 @@ namespace Scrabble.Engines
 								}
 								if (wordOnBoard.Position == "C")
 								{
-									ProbableMove WH = TryVertical(Cells, size, wordOnBoard.Index, wordOnBoard.Syllables - 1, Pres, Centers, Posts);
+									ProbableMove WH = TryVertical(2, Cells, size, wordOnBoard.Index, wordOnBoard.Syllables - 1, Pres, Centers, Posts);
 									bool WHValid = Validate(WH, AllWords);
 									if (WHValid)
 									{

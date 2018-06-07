@@ -17,7 +17,7 @@ body {
 .actionBar {
   height: 8vmin;
   float: right;
-  width: 80vmin;
+  width: auto;
 }
 .gameTable {
   clear: both;

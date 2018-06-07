@@ -22,8 +22,11 @@ namespace Scrabble.Engines
 {
 	internal class RegexV2Engine : RegexEngine
 	{
-		static bool SM = false;
-		static bool WM = false;
+		static bool SM = false;//Memorize Syllables
+		static bool WM = true;//Memorize Words
+		static bool CL = true;//Use Contextual List
+		static decimal Threshlod = 0.33M;//Threshold to use switch Contextual List
+		static int WS = 2;//Skip Memorizing Words with Syllables Length upto.
 
 		public RegexV2Engine(ScrabbleBoard Board) : base(Board)
 		{
@@ -48,10 +51,7 @@ namespace Scrabble.Engines
 			}
 
 			string[] All = new string[] { };
-
-
 			string AllPattern = "";
-
 
 			string Movables = (vowels + " " + conso + " " + special);
 			var MovableList = Movables.Replace("(", " ").Replace(")", " ").Replace(",", "").Split(' ').ToList();
@@ -60,31 +60,67 @@ namespace Scrabble.Engines
 			var SpecialList = DistinctList(special.Replace("(", " ").Replace(")", " ").Replace(",", ""), ' ');
 			var SpeicalDict = GetSpecialDict(SpecialList);
 
-			List<string> EverySyllableOnBoard = GetSyllableList(cells, size, false, true);
-			List<string> NonCornerSyllables = GetSyllableList(cells, size, true, false);
-
+			List<string> EverySyllableOnBoard = GetSyllableList(cells, size, true, false, true);
 			//
 			All = (GetFlatList(EverySyllableOnBoard, ',') + " " + Movables).Replace("(", " ").Replace(")", " ").Replace(",", " ").Replace("|", " ").Split(' ');
 			AllPattern = string.Format("^(?<All>[{0},])*$", GetFlatList2(All));
 			Dictionary<string, int> AllDict = GetCountDict(All);
 
 			var WordsDictionary = WordLoader.Load(file); //Large Set of Words
-			var ContextualList = ShortList(WordsDictionary, AllPattern, AllDict); // Probables 
-
+			var ContextualList = new List<int>() { };
+			if (CL)
+			{
+				ContextualList = ShortList(WordsDictionary, AllPattern, AllDict); // Probables 
+				if (ContextualList.Count > WordsDictionary.Count * Threshlod)
+				{
+					CL = false;
+				}
+			}
 
 			if (EverySyllableOnBoard.Count > 0)
 			{
-				var NonCornerPattern = "";
-				string[] NonCornerTiles = new string[] { };
-				//
-				NonCornerTiles = (GetFlatList2(NonCornerSyllables.ToArray()) + " " + Movables).Replace("(", " ").Replace(")", " ").Replace(",", " ").Replace("|", " ").Split(' ');
-				NonCornerPattern = string.Format("^(?<All>[{0},])*$", GetFlatList2(NonCornerTiles));
-				//
-				Dictionary<string, int> NonCornerDict = GetCountDict(NonCornerTiles);
-				var NonCornerProbables = ShortList(WordsDictionary, ContextualList, NonCornerPattern, NonCornerDict);  //Non Corner Probables
-
-				Moves.AddRange(SyllableExtensions(cells, size, CharSet, id, WordsDictionary, NonCornerProbables, MovableList, SpeicalDict));
-				Moves.AddRange(WordExtensions(cells, size, CharSet, id, WordsDictionary, ContextualList, MovableList, SpeicalDict));
+				{
+					var NonCornerSyllables = GetSyllableList(cells, size, false, true, false);
+					var NonCornerPattern = "";
+					var NonCornerTiles = new string[] { };
+					var NonCornerDict = new Dictionary<string, int>();
+					//
+					NonCornerTiles = (GetFlatList2(NonCornerSyllables.ToArray()) + " " + Movables).Replace("(", " ").Replace(")", " ").Replace(",", " ").Replace("|", " ").Split(' ');
+					NonCornerPattern = string.Format("^(?<All>[{0},])*$", GetFlatList2(NonCornerTiles));
+					NonCornerDict = GetCountDict(NonCornerTiles);
+					//
+					var NonCornerProbables = new List<int>() { };
+					if (CL)
+					{
+						NonCornerProbables = ShortList(WordsDictionary, ContextualList, NonCornerPattern, NonCornerDict);  //Non Corner Probables
+					}
+					else
+					{
+						NonCornerProbables = this.ShortList(WordsDictionary, NonCornerPattern, NonCornerDict);
+					}
+					Moves.AddRange(SyllableExtensions(cells, size, CharSet, id, WordsDictionary, NonCornerProbables, MovableList, SpeicalDict));
+				}
+				{
+					var CornerSyllables = GetSyllableList(cells, size, false, true, false);
+					var CornerPattern = "";
+					var CornerTiles = new string[] { };
+					var CornerDict = new Dictionary<string, int>();
+					//
+					CornerTiles = (GetFlatList2(CornerSyllables.ToArray()) + " " + Movables).Replace("(", " ").Replace(")", " ").Replace(",", " ").Replace("|", " ").Split(' ');
+					CornerPattern = string.Format("^(?<All>[{0},])*$", GetFlatList2(CornerTiles));
+					CornerDict = GetCountDict(CornerTiles);
+					//
+					var CornerProbables = new List<int>() { };
+					if (CL)
+					{
+						CornerProbables = ShortList(WordsDictionary, ContextualList, CornerPattern, CornerDict);  //Corner Probables
+					}
+					else
+					{
+						CornerProbables = this.ShortList(WordsDictionary, CornerPattern, CornerDict);
+					}
+					Moves.AddRange(WordExtensions(cells, size, CharSet, id, WordsDictionary, CornerProbables, MovableList, SpeicalDict));
+				}
 			}
 			else
 			{
@@ -127,8 +163,8 @@ namespace Scrabble.Engines
 						int totalCells = Pres.Length + Centers.Length + Posts.Length;
 						int centroid = totalCells % 2 == 0 ? (totalCells / 2 - 1) : totalCells / 2;
 
-						ProbableMove WH = TryHarizontal(Cells, size, star - centroid, 0, Pres, Centers, Posts);
-						ProbableMove WV = TryVertical(Cells, size, star - centroid, 0, Pres, Centers, Posts);
+						ProbableMove WH = TryHarizontal(0,Cells, size, star - centroid, 0, Pres, Centers, Posts);
+						ProbableMove WV = TryVertical(0, Cells, size, star - centroid, 0, Pres, Centers, Posts);
 
 						bool WHValid = Validate(WH, AllWords, Probables);
 						bool WVValid = Validate(WV, AllWords, Probables);
@@ -168,7 +204,11 @@ namespace Scrabble.Engines
 							{
 								Probables2 = ShortList(botId + ":S", syllable.Tiles, R, AllWords, Probables);
 							}
-							foreach (int indx in (SM ? Probables : Probables2))
+							else
+							{
+								Probables2 = ShortList(R, AllWords, Probables);
+							}
+							foreach (int indx in Probables2)
 							{
 								Word probable = AllWords[indx];
 								Match M = R.Match(probable.Tiles);
@@ -198,8 +238,8 @@ namespace Scrabble.Engines
 									continue;
 								}
 
-								ProbableMove WH = TryHarizontal(Cells, size, syllable.Index, 0, Pres, Centers, Posts);
-								ProbableMove WV = TryVertical(Cells, size, syllable.Index, 0, Pres, Centers, Posts);
+								ProbableMove WH = TryHarizontal(1, Cells, size, syllable.Index, 0, Pres, Centers, Posts);
+								ProbableMove WV = TryVertical(1, Cells, size, syllable.Index, 0, Pres, Centers, Posts);
 
 								bool WHValid = Validate(WH, AllWords, Probables);
 								bool WVValid = Validate(WV, AllWords, Probables);
@@ -241,11 +281,17 @@ namespace Scrabble.Engines
 						//using (new Watcher("\t\t Match Word: ", true))
 						{
 							List<int> Probables2 = new List<int>();
-							if (WM)
+
+							if (WM && len > WS)
 							{
 								Probables2 = ShortList(botId + ":W", wordOnBoard.Tiles, R, AllWords, Probables);
 							}
-							foreach (int indx in (WM ? Probables : Probables2))
+							else
+							{
+								Probables2 = ShortList(R, AllWords, Probables);
+							}
+
+							foreach (int indx in Probables2)
 							{
 								var word = AllWords[indx];
 								if (raw == word.Tiles)
@@ -294,7 +340,7 @@ namespace Scrabble.Engines
 
 								if (wordOnBoard.Position == "R")
 								{
-									ProbableMove WH = TryHarizontal(Cells, size, wordOnBoard.Index, wordOnBoard.Syllables - 1, Pres, Centers, Posts);
+									ProbableMove WH = TryHarizontal(2,Cells, size, wordOnBoard.Index, wordOnBoard.Syllables - 1, Pres, Centers, Posts);
 									bool WHValid = Validate(WH, AllWords, Probables);
 									if (WHValid)
 									{
@@ -303,7 +349,7 @@ namespace Scrabble.Engines
 								}
 								if (wordOnBoard.Position == "C")
 								{
-									ProbableMove WH = TryVertical(Cells, size, wordOnBoard.Index, wordOnBoard.Syllables - 1, Pres, Centers, Posts);
+									ProbableMove WH = TryVertical(2, Cells, size, wordOnBoard.Index, wordOnBoard.Syllables - 1, Pres, Centers, Posts);
 									bool WHValid = Validate(WH, AllWords, Probables);
 									if (WHValid)
 									{
@@ -341,42 +387,6 @@ namespace Scrabble.Engines
 			return true;
 		}
 
-		static List<int> ShortList(string block, string key, Regex R, List<Word> AllWords, List<int> Probables)
-		{
-			//Cache Mechanism:
-			//	Word Extension: WW1
-			//		CachedList: Cache all Possible Extesnsion Indexes
-			//	ShortListed: Intersection of Probables and CachedList
-			//
-			List<int> CachedList = CacheManager.GetSession<List<int>, Regex, List<Word>>(block, key, R, AllWords, ShortList);
-			List<int> ShortListed = new List<int>();
-			foreach (var probable in Probables)
-			{
-				if (!CachedList.Contains(probable))
-				{
-					continue;
-				}
-				ShortListed.Add(probable);
-			}
-			//Simply use Linq..:)
-			//ShortListed = CachedList.Intersect(Probables).ToList<int>();
-			return ShortListed;
-		}
-		static List<int> ShortList(Regex R, List<Word> AllWords)
-		{
-			List<int> Probables = new List<int>();
-			foreach (var word in AllWords)
-			{
-				Match M = R.Match(word.Tiles);
-				if (!M.Success)
-				{
-					continue;
-				}
-				Probables.Add(word.Index);
-			}
-			return Probables;
-		}
-
 		static void RefreshCache(string block, List<Word> Items)
 		{
 			var Dict = CacheManager.GetSession<Dictionary<string, List<int>>>(block);
@@ -406,16 +416,66 @@ namespace Scrabble.Engines
 			}
 		}
 
-		List<int> ShortList(List<Word> Words, List<int> Probables, string NonCornerPattern, Dictionary<string, int> Dict)
+		static List<int> ShortList(string block, string key, Regex R, List<Word> AllWords, List<int> Probables)
 		{
-			if (string.IsNullOrEmpty(NonCornerPattern))
+			//Cache Mechanism:
+			//	Word Extension: WW1
+			//		CachedList: Cache all Possible Extesnsion Indexes
+			//	ShortListed: Intersection of Probables and CachedList
+			//
+			List<int> CachedList = CacheManager.GetSession<List<int>, Regex, List<Word>>(block, key, R, AllWords, ShortList);
+			List<int> ShortListed = new List<int>();
+			foreach (var probable in CachedList)
+			{
+				if (!Probables.Contains(probable))
+				{
+					continue;
+				}
+				ShortListed.Add(probable);
+			}
+			//Simply use Linq..:)
+			//ShortListed = CachedList.Intersect(Probables).ToList<int>();
+			return ShortListed;
+		}
+		static List<int> ShortList(Regex R, List<Word> AllWords)
+		{
+			List<int> Probables = new List<int>();
+			foreach (var word in AllWords)
+			{
+				Match M = R.Match(word.Tiles);
+				if (!M.Success)
+				{
+					continue;
+				}
+				Probables.Add(word.Index);
+			}
+			return Probables;
+		}
+		static List<int> ShortList(Regex R, List<Word> AllWords, List<int> Probables)
+		{
+			List<int> Shortlisted = new List<int>();
+			foreach (var indx in Probables)
+			{
+				Word word = AllWords[indx];
+				Match M = R.Match(word.Tiles);
+				if (!M.Success)
+				{
+					continue;
+				}
+				Shortlisted.Add(word.Index);
+			}
+			return Shortlisted;
+		}
+		List<int> ShortList(List<Word> Words, List<int> Probables, string Pattern, Dictionary<string, int> Dict)
+		{
+			if (string.IsNullOrEmpty(Pattern))
 			{
 				return new List<int>();
 			}
 
 			using (new Watcher("\tShortList "))
 			{
-				Regex R = new Regex(NonCornerPattern, RegexOptions.Compiled);
+				Regex R = new Regex(Pattern, RegexOptions.Compiled);
 
 				List<int> Shortlisted = new List<int>();
 
@@ -450,18 +510,18 @@ namespace Scrabble.Engines
 				return Shortlisted;
 			}
 		}
-		List<int> ShortList(List<Word> Words, string NonCornerPattern, Dictionary<string, int> Dict)
+		new List<int> ShortList(List<Word> Words, string Pattern, Dictionary<string, int> Dict)
 		{
-			if (string.IsNullOrEmpty(NonCornerPattern))
+			if (string.IsNullOrEmpty(Pattern))
 			{
 				return new List<int>();
 			}
 
 			using (new Watcher("\tShortList "))
 			{
-				Regex R = new Regex(NonCornerPattern, RegexOptions.Compiled);
+				Regex R = new Regex(Pattern, RegexOptions.Compiled);
 
-				List<Word> Matches = MatchedWords(Words, NonCornerPattern);
+				List<Word> Matches = MatchedWords(Words, Pattern);
 				List<int> Shortlisted = new List<int>();
 
 				using (new Watcher("\t\tShortList2 "))

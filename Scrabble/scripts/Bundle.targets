@@ -1,8 +1,8 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Target Name="BeforeBuild">
+  <Target Name="BeforeBuildBundle">
     <Message Importance="High" Text="Before Building $(TargetName) $(OutputType)" />
   </Target>
-  <Target Name="AfterBuild">
+  <Target Name="AfterBuildBundle">
     <Message Importance="High" Text="Project Directory:  $(ProjectDir)" />
     <Message Importance="High" Text="Bundling JS: $(ProjectDir)\..\External\Worker.exe Merge $(ProjectDir)\Scripts\bundle.ini" />
     <Exec IgnoreExitCode="false" Command="$(ProjectDir)\..\External\Worker.exe Merge $(ProjectDir)\Scripts\bundle.ini" />

@@ -18,6 +18,7 @@ namespace Scrabble
 	public class ProbableMove
 	{
 		public string Direction;
+		public int Mode;
 		public int Score;
 		public int WordsCount { get { return Words.Count; } }
 		public List<Word> Moves;

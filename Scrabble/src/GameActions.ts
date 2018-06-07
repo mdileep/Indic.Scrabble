@@ -230,6 +230,10 @@ export class GameActions {
             var tiles: string[] = Move.Tiles.split(',');
             for (var j in tiles) {
                 var tile = tiles[j];
+                if (tile == "") {
+                    debugger; //Response shouldn't contain a Blank Tile:To be Investigated
+                    continue;
+                }
                 if (Indic.Indic.HasSyllableSynonym(tile)) {
                     tile = Indic.Indic.GetSyllableSynonym(tile);
                 }

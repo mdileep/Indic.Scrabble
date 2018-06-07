@@ -24,6 +24,13 @@ define("AksharaSets", ["require", "exports"], function (require, exports) {
 });
 define("Contracts", ["require", "exports"], function (require, exports) {
     "use strict";
+    var Events = (function () {
+        function Events() {
+        }
+        Events.GameOver = 0;
+        return Events;
+    }());
+    exports.Events = Events;
     var Actions = (function () {
         function Actions() {
         }
@@ -1278,7 +1285,7 @@ define("GameStore", ["require", "exports", "GameState", 'redux'], function (requ
     }());
     exports.GameStore = GameStore;
 });
-define("WordLoader", ["require", "exports", 'axios', "GameActions"], function (require, exports, axios, GA) {
+define("WordLoader", ["require", "exports", "Contracts", 'axios', "GameStore"], function (require, exports, C, axios, GS) {
     "use strict";
     var WordLoader = (function () {
         function WordLoader() {
@@ -1325,7 +1332,7 @@ define("WordLoader", ["require", "exports", 'axios', "GameActions"], function (r
                 .get("/bots/" + file)
                 .then(function (response) {
                 WordLoader.Load(file, response.data);
-                GA.GameActions.VocabularyLoaded(file);
+                WordLoader.VocabularyLoaded(file);
             })
                 .catch(function (error) {
             });
@@ -1357,6 +1364,34 @@ define("WordLoader", ["require", "exports", 'axios', "GameActions"], function (r
             }
             return res;
         };
+        WordLoader.Prepare = function (list) {
+            WordLoader.Total = list.length;
+            if (list.length == 0) {
+                WordLoader.LoadComplete();
+                return;
+            }
+            WordLoader.LoadVocabularies(list);
+        };
+        WordLoader.LoadVocabularies = function (list) {
+            for (var indx in list) {
+                WordLoader.Init(list[indx]);
+            }
+        };
+        WordLoader.VocabularyLoaded = function (file) {
+            if (WordLoader.Loaded != WordLoader.Total) {
+                return;
+            }
+            WordLoader.LoadComplete();
+        };
+        WordLoader.LoadComplete = function () {
+            GS.GameStore.Dispatch({
+                type: C.Actions.Init,
+                args: {}
+            });
+        };
+        WordLoader.Dispose = function () {
+            WordLoader.Lists = null;
+        };
         WordLoader.Loaded = 0;
         WordLoader.Total = 0;
         WordLoader.Lists = { Custom: [] };
@@ -1380,6 +1415,8 @@ define("AskBot", ["require", "exports", 'axios', "GameStore", "GameActions", "Co
                 type: C.Actions.ResolveWords,
                 args: {}
             });
+        };
+        AskServer.SendMetrics = function () {
         };
         AskServer.Suggest = function (post) {
             AskServer.SuggestClient(post);
@@ -1529,7 +1566,7 @@ define("AskBot", ["require", "exports", 'axios', "GameStore", "GameActions", "Co
     var EngineBase = (function () {
         function EngineBase() {
         }
-        EngineBase.TryHarizontal = function (Cells, size, Index, offset, Pre, Centers, Post) {
+        EngineBase.TryHarizontal = function (Mode, Cells, size, Index, offset, Pre, Centers, Post) {
             var Moves = [];
             var PreCount = Pre.length;
             var PostCount = Post.length;
@@ -1586,9 +1623,9 @@ define("AskBot", ["require", "exports", 'axios', "GameStore", "GameActions", "Co
                 var index = Impacted[i];
                 W = W.concat(EngineBase.WordsAt(NewCells, size, index));
             }
-            return { Words: W, Moves: Moves, WordsCount: W.length, Direction: "H" };
+            return { Mode: Mode, Words: W, Moves: Moves, WordsCount: W.length, Direction: "H" };
         };
-        EngineBase.TryVertical = function (Cells, size, Index, offset, Pre, Centers, Post) {
+        EngineBase.TryVertical = function (Mode, Cells, size, Index, offset, Pre, Centers, Post) {
             var Moves = [];
             var PreCount = Pre.length;
             var PostCount = Post.length;
@@ -1648,7 +1685,7 @@ define("AskBot", ["require", "exports", 'axios', "GameStore", "GameActions", "Co
                 var index = Impacted[i];
                 W = W.concat(EngineBase.WordsAt(NewCells, size, index));
             }
-            return { Words: W, Moves: Moves, WordsCount: W.length, Direction: "V" };
+            return { Mode: Mode, Words: W, Moves: Moves, WordsCount: W.length, Direction: "V" };
         };
         EngineBase.RefreshScores = function (Moves, Weights, size) {
             for (var indx in Moves) {
@@ -2054,7 +2091,7 @@ define("AskBot", ["require", "exports", 'axios', "GameStore", "GameActions", "Co
             }
             return List;
         };
-        RegexEngineBase.prototype.GetSyllableList = function (Cells, size, filterEdges, asGroups) {
+        RegexEngineBase.prototype.GetSyllableList = function (Cells, size, fetchAll, filterEdges, asGroups) {
             var List = [];
             for (var index = 0; index < Cells.length; index++) {
                 var cell = Cells[index];
@@ -2066,13 +2103,21 @@ define("AskBot", ["require", "exports", 'axios', "GameStore", "GameActions", "Co
                 var l = Neighbor.Left != -1 ? Cells[Neighbor.Left] : "";
                 var t = Neighbor.Top != -1 ? Cells[Neighbor.Top] : "";
                 var b = Neighbor.Bottom != -1 ? Cells[Neighbor.Bottom] : "";
-                if (filterEdges) {
+                if (!fetchAll) {
                     if ((r != "" || l != "") && (t != "" || b != "")) {
+                        if (!filterEdges) {
+                            var x = asGroups ? cell : "(" + cell + ")";
+                            if (!List.Contains(x)) {
+                                List.push(x);
+                            }
+                        }
                     }
                     else {
-                        var x = asGroups ? cell : "(" + cell + ")";
-                        if (!List.Contains(x)) {
-                            List.push(x);
+                        if (filterEdges) {
+                            var x = asGroups ? cell : "(" + cell + ")";
+                            if (!List.Contains(x)) {
+                                List.push(x);
+                            }
                         }
                     }
                 }
@@ -2408,8 +2453,8 @@ define("AskBot", ["require", "exports", 'axios', "GameStore", "GameActions", "Co
             MovableList = MovableList.filter(function (x) { return x.length != 0; });
             var SpecialList = this.DistinctList(special.Replace("(", " ").Replace(")", " ").Replace(",", ""), ' ');
             var SpeicalDict = this.GetSpecialDict(CharSet, SpecialList);
-            var EverySyllableOnBoard = this.GetSyllableList(cells, size, false, true);
-            var NonCornerSyllables = this.GetSyllableList(cells, size, true, false);
+            var EverySyllableOnBoard = this.GetSyllableList(cells, size, true, false, true);
+            var NonCornerSyllables = this.GetSyllableList(cells, size, false, true, false);
             All = (this.GetFlatList(EverySyllableOnBoard, ',') + " " + Movables).Replace("(", " ").Replace(")", " ").Replace(",", " ").Replace("|", " ").split(' ');
             AllPattern = U.Util.Format("^(?<All>[{0},])*$", [this.GetFlatList2(All)]);
             var AllDict = this.GetCountDict(All);
@@ -2453,8 +2498,8 @@ define("AskBot", ["require", "exports", 'axios', "GameStore", "GameActions", "Co
                     }
                     var totalCells = Pres.length + Centers.length + Posts.length;
                     var centroid = totalCells % 2 == 0 ? (Math.floor(totalCells / 2) - 1) : Math.floor(totalCells / 2);
-                    var WH = EngineBase.TryHarizontal(Cells, size, startIndex - centroid, 0, Pres, Centers, Posts);
-                    var WV = EngineBase.TryVertical(Cells, size, startIndex - centroid, 0, Pres, Centers, Posts);
+                    var WH = EngineBase.TryHarizontal(0, Cells, size, startIndex - centroid, 0, Pres, Centers, Posts);
+                    var WV = EngineBase.TryVertical(0, Cells, size, startIndex - centroid, 0, Pres, Centers, Posts);
                     var WHValid = RegexEngine.Validate3(WH, AllWords);
                     var WVValid = RegexEngine.Validate3(WV, AllWords);
                     if (WHValid) {
@@ -2498,8 +2543,8 @@ define("AskBot", ["require", "exports", 'axios', "GameStore", "GameActions", "Co
                             if (!res) {
                                 continue;
                             }
-                            var WH = EngineBase.TryHarizontal(Cells, size, syllable.Index, 0, Pres, Centers, Posts);
-                            var WV = EngineBase.TryVertical(Cells, size, syllable.Index, 0, Pres, Centers, Posts);
+                            var WH = EngineBase.TryHarizontal(1, Cells, size, syllable.Index, 0, Pres, Centers, Posts);
+                            var WV = EngineBase.TryVertical(1, Cells, size, syllable.Index, 0, Pres, Centers, Posts);
                             var WHValid = RegexEngine.Validate3(WH, AllWords);
                             var WVValid = RegexEngine.Validate3(WV, AllWords);
                             if (WHValid) {
@@ -2559,14 +2604,14 @@ define("AskBot", ["require", "exports", 'axios', "GameStore", "GameActions", "Co
                                 continue;
                             }
                             if (wordOnBoard.Position == "R") {
-                                var WH = EngineBase.TryHarizontal(Cells, size, wordOnBoard.Index, wordOnBoard.Syllables - 1, Pres, Centers, Posts);
+                                var WH = EngineBase.TryHarizontal(3, Cells, size, wordOnBoard.Index, wordOnBoard.Syllables - 1, Pres, Centers, Posts);
                                 var WHValid = RegexEngine.Validate3(WH, AllWords);
                                 if (WHValid) {
                                     Moves.push(WH);
                                 }
                             }
                             if (wordOnBoard.Position == "C") {
-                                var WH = EngineBase.TryVertical(Cells, size, wordOnBoard.Index, wordOnBoard.Syllables - 1, Pres, Centers, Posts);
+                                var WH = EngineBase.TryVertical(3, Cells, size, wordOnBoard.Index, wordOnBoard.Syllables - 1, Pres, Centers, Posts);
                                 var WHValid = RegexEngine.Validate3(WH, AllWords);
                                 if (WHValid) {
                                     Moves.push(WH);
@@ -2627,6 +2672,7 @@ define("AskBot", ["require", "exports", 'axios', "GameStore", "GameActions", "Co
             _super.apply(this, arguments);
         }
         RegexV2Engine.prototype.Probables = function (Board) {
+            var st = performance.now();
             var Moves = [];
             if (Board == null) {
                 return;
@@ -2656,40 +2702,87 @@ define("AskBot", ["require", "exports", 'axios', "GameStore", "GameActions", "Co
             var All = [];
             var AllPattern = "";
             var Movables = (vowels + " " + conso + " " + special);
-            var MovableList = Movables.Replace("(", " ").Replace(")", " ").Replace(",", "").split(' ');
-            MovableList = MovableList.filter(function (x) { return x.length != 0; });
+            var MovableTiles = Movables.Replace("(", " ").Replace(")", " ").Replace(",", "").split(' ');
+            MovableTiles = MovableTiles.filter(function (x) { return x.length != 0; });
             var SpecialList = this.DistinctList(special.Replace("(", " ").Replace(")", " ").Replace(",", ""), ' ');
             var SpeicalDict = this.GetSpecialDict(CharSet, SpecialList);
-            var EverySyllableOnBoard = this.GetSyllableList(cells, size, false, true);
-            var NonCornerSyllables = this.GetSyllableList(cells, size, true, false);
+            var EverySyllableOnBoard = this.GetSyllableList(cells, size, true, false, true);
             All = (this.GetFlatList(EverySyllableOnBoard, ',') + " " + Movables).Replace("(", " ").Replace(")", " ").Replace(",", " ").Replace("|", " ").split(' ');
             AllPattern = U.Util.Format("^(?<All>[{0},])*$", [this.GetFlatList2(All)]);
             var AllDict = this.GetCountDict(All);
             var WordsDictionary = WL.WordLoader.LoadWords(file, (bot == null));
-            var ContextualList = this.ShortList2(WordsDictionary, AllPattern, AllDict);
+            var ContextualList = [];
+            if (RegexV2Engine.CL) {
+                ContextualList = this.ShortList2(WordsDictionary, AllPattern, AllDict);
+                if (ContextualList.length > WordsDictionary.length * RegexV2Engine.Threshlod) {
+                    RegexV2Engine.CL = false;
+                }
+            }
             if (EverySyllableOnBoard.length > 0) {
-                var NonCornerTiles = [];
-                var NonCornerPattern = "";
-                NonCornerTiles = (this.GetFlatList2(NonCornerSyllables) + " " + Movables).Replace("(", " ").Replace(")", " ").Replace(",", " ").Replace("|", " ").split(' ');
-                var NonCornerDict = this.GetCountDict(NonCornerTiles);
-                NonCornerPattern = U.Util.Format("^(?<All>[{0},])*$", [this.GetFlatList2(NonCornerTiles)]);
-                var NonCornerProbables = this.ShortList3(WordsDictionary, ContextualList, NonCornerPattern, NonCornerDict);
-                Moves = Moves.concat(RegexV2Engine.SyllableExtensions2(cells, size, CharSet, id, WordsDictionary, NonCornerProbables, MovableList, SpeicalDict));
-                Moves = Moves.concat(RegexV2Engine.WordExtensions2(cells, size, CharSet, id, WordsDictionary, ContextualList, MovableList, SpeicalDict));
+                {
+                    var NonCornerSyllables = this.GetSyllableList(cells, size, false, true, false);
+                    var NonCornerTiles = [];
+                    var NonCornerPattern = "";
+                    var NonCornerDict = {};
+                    NonCornerTiles = (this.GetFlatList2(NonCornerSyllables) + " " + Movables).Replace("(", " ").Replace(")", " ").Replace(",", " ").Replace("|", " ").split(' ');
+                    NonCornerPattern = U.Util.Format("^(?<All>[{0},])*$", [this.GetFlatList2(NonCornerTiles)]);
+                    NonCornerDict = this.GetCountDict(NonCornerTiles);
+                    var NonCornerProbables = [];
+                    if (RegexV2Engine.CL) {
+                        NonCornerProbables = this.ShortList3(WordsDictionary, ContextualList, NonCornerPattern, NonCornerDict);
+                    }
+                    else {
+                        NonCornerProbables = this.ShortList2(WordsDictionary, NonCornerPattern, NonCornerDict);
+                    }
+                    Moves = Moves.concat(RegexV2Engine.SyllableExtensions2(cells, size, CharSet, id, WordsDictionary, NonCornerProbables, MovableTiles, SpeicalDict));
+                    NonCornerDict = null;
+                    NonCornerProbables = null;
+                    NonCornerTiles = null;
+                }
+                {
+                    var CornerSyllables = this.GetSyllableList(cells, size, false, false, false);
+                    var CornerTiles = [];
+                    var CornerPattern = "";
+                    var CornerDict = {};
+                    CornerTiles = (this.GetFlatList2(CornerSyllables) + " " + Movables).Replace("(", " ").Replace(")", " ").Replace(",", " ").Replace("|", " ").split(' ');
+                    CornerPattern = U.Util.Format("^(?<All>[{0},])*$", [this.GetFlatList2(CornerTiles)]);
+                    CornerDict = this.GetCountDict(CornerTiles);
+                    var CornerProbables = [];
+                    if (RegexV2Engine.CL) {
+                        CornerProbables = this.ShortList3(WordsDictionary, ContextualList, CornerPattern, CornerDict);
+                    }
+                    else {
+                        CornerProbables = this.ShortList2(WordsDictionary, CornerPattern, CornerDict);
+                    }
+                    Moves = Moves.concat(RegexV2Engine.WordExtensions2(cells, size, CharSet, id, WordsDictionary, CornerProbables, MovableTiles, SpeicalDict));
+                    CornerDict = null;
+                    CornerProbables = null;
+                    CornerTiles = null;
+                }
             }
             else {
-                Moves = Moves.concat(RegexV2Engine.EmptyExtensions2(cells, size, CharSet, star, WordsDictionary, ContextualList, MovableList, SpeicalDict));
+                Moves = Moves.concat(RegexV2Engine.EmptyExtensions2(cells, size, CharSet, star, WordsDictionary, ContextualList, MovableTiles, SpeicalDict));
             }
             WordsDictionary = null;
             EngineBase.RefreshScores(Moves, weights, size);
+            if (console) {
+                console.log(U.Util.Format("Moves: V2: {0}", [U.Util.ElapsedTime(performance.now() - st)]));
+            }
+            if (console && Moves.length > 0) {
+                console.log(U.Util.Format("Mode: {0}", [Moves[0].Mode]));
+            }
+            if (console) {
+                console.log("\t\t");
+            }
             return Moves;
         };
-        RegexV2Engine.prototype.ShortList2 = function (Words, NonCornerPattern, Dict) {
-            if (U.Util.IsNullOrEmpty(NonCornerPattern)) {
+        RegexV2Engine.prototype.ShortList2 = function (Words, Pattern, Dict) {
+            if (U.Util.IsNullOrEmpty(Pattern)) {
                 return [];
             }
-            var R = RegExp(NonCornerPattern);
-            var Matches = this.MatchedWords(Words, NonCornerPattern);
+            var st = performance.now();
+            var R = RegExp(Pattern);
+            var Matches = this.MatchedWords(Words, Pattern);
             var Shortlisted = [];
             {
                 for (var indx in Matches) {
@@ -2705,12 +2798,16 @@ define("AskBot", ["require", "exports", 'axios', "GameStore", "GameActions", "Co
                     Shortlisted.push(word.Index);
                 }
             }
+            if (console) {
+                console.log(U.Util.Format("\tContextual: V2: {1} {0}", [U.Util.ElapsedTime(performance.now() - st), Shortlisted.length]));
+            }
             return Shortlisted;
         };
         RegexV2Engine.prototype.ShortList3 = function (Words, Probables, NonCornerPattern, Dict) {
             if (U.Util.IsNullOrEmpty(NonCornerPattern)) {
                 return [];
             }
+            var st = performance.now();
             var R = RegExp(NonCornerPattern);
             var Shortlisted = [];
             {
@@ -2731,6 +2828,9 @@ define("AskBot", ["require", "exports", 'axios', "GameStore", "GameActions", "Co
                     }
                     Shortlisted.push(word.Index);
                 }
+                if (console) {
+                    console.log(U.Util.Format("\tShortlist: V2: {1} {0}", [U.Util.ElapsedTime(performance.now() - st), Shortlisted.length]));
+                }
             }
             return Shortlisted;
         };
@@ -2744,18 +2844,22 @@ define("AskBot", ["require", "exports", 'axios', "GameStore", "GameActions", "Co
             return Probables;
         };
         RegexV2Engine.ShortList5 = function (block, key, R, AllWords, Probables) {
-            var CachedList = EngineMemory.Memorize(block, key, R, AllWords, RegexV2Engine.ShortList4, RegexV2Engine.CanCache);
+            var CachedList = EngineMemory.Memorize(block, key, R, AllWords, RegexV2Engine.ShortList4, RegexV2Engine.ShouldCache);
             var ShortListed = [];
-            for (var indx in Probables) {
-                var probable = Probables[indx];
-                if (!CachedList.Contains(probable)) {
+            for (var indx in CachedList) {
+                var probable = CachedList[indx];
+                if (!Probables.Contains(probable)) {
                     continue;
                 }
                 ShortListed.push(probable);
             }
             return ShortListed;
         };
-        RegexV2Engine.CanCache = function (t1, t2) {
+        RegexV2Engine.ShortList6 = function (r, words, Probables) {
+            var List = Probables.filter(function (s) { return r.test(words[s].Tiles); });
+            return List;
+        };
+        RegexV2Engine.ShouldCache = function (t1, t2) {
             return t1 < t2;
         };
         RegexV2Engine.EmptyExtensions2 = function (Cells, size, CharSet, startIndex, AllWords, Probables, Movables, SpeicalDict) {
@@ -2780,8 +2884,8 @@ define("AskBot", ["require", "exports", 'axios', "GameStore", "GameActions", "Co
                     }
                     var totalCells = Pres.length + Centers.length + Posts.length;
                     var centroid = totalCells % 2 == 0 ? (Math.floor(totalCells / 2) - 1) : Math.floor(totalCells / 2);
-                    var WH = EngineBase.TryHarizontal(Cells, size, startIndex - centroid, 0, Pres, Centers, Posts);
-                    var WV = EngineBase.TryVertical(Cells, size, startIndex - centroid, 0, Pres, Centers, Posts);
+                    var WH = EngineBase.TryHarizontal(0, Cells, size, startIndex - centroid, 0, Pres, Centers, Posts);
+                    var WV = EngineBase.TryVertical(0, Cells, size, startIndex - centroid, 0, Pres, Centers, Posts);
                     var WHValid = RegexV2Engine.Validate4(WH, AllWords, Probables);
                     var WVValid = RegexV2Engine.Validate4(WV, AllWords, Probables);
                     if (WHValid) {
@@ -2795,13 +2899,15 @@ define("AskBot", ["require", "exports", 'axios', "GameStore", "GameActions", "Co
             return Moves;
         };
         RegexV2Engine.SyllableExtensions2 = function (Cells, size, CharSet, botId, AllWords, Probables, Movables, SpeicalDict) {
+            var st = performance.now();
             var Moves = [];
             {
-                var All = RegexEngine.GetSyllableList2(Cells, size, false, true);
+                var All = RegexEngine.GetSyllableList2(Cells, size, true, true);
                 if (RegexV2Engine.SM) {
                     EngineMemory.RefreshCache(botId + ":S", All);
                 }
                 for (var indx in All) {
+                    var st2 = performance.now();
                     var syllable = All[indx];
                     var pattern = RegexEngine.GetSyllablePattern2(CharSet, syllable.Tiles.Replace("(", "").Replace(")", ""), "(?<Center>.*?)", "(?<Pre>.*?)", "(?<Post>.*?)");
                     pattern = U.Util.Format("^{0}$", [pattern]);
@@ -2811,8 +2917,11 @@ define("AskBot", ["require", "exports", 'axios', "GameStore", "GameActions", "Co
                         if (RegexV2Engine.SM) {
                             Probables2 = RegexV2Engine.ShortList5(botId + ":S", syllable.Tiles, R, AllWords, Probables);
                         }
-                        for (var indx2 in (RegexV2Engine.SM ? Probables2 : Probables)) {
-                            var probableIndx = RegexV2Engine.SM ? Probables2[indx2] : Probables[indx2];
+                        else {
+                            Probables2 = RegexV2Engine.ShortList6(R, AllWords, Probables);
+                        }
+                        for (var indx2 in Probables2) {
+                            var probableIndx = Probables2[indx2];
                             var probable = AllWords[probableIndx];
                             if (!R.test(probable.Tiles)) {
                                 continue;
@@ -2833,8 +2942,8 @@ define("AskBot", ["require", "exports", 'axios', "GameStore", "GameActions", "Co
                             if (!res) {
                                 continue;
                             }
-                            var WH = EngineBase.TryHarizontal(Cells, size, syllable.Index, 0, Pres, Centers, Posts);
-                            var WV = EngineBase.TryVertical(Cells, size, syllable.Index, 0, Pres, Centers, Posts);
+                            var WH = EngineBase.TryHarizontal(1, Cells, size, syllable.Index, 0, Pres, Centers, Posts);
+                            var WV = EngineBase.TryVertical(1, Cells, size, syllable.Index, 0, Pres, Centers, Posts);
                             var WHValid = RegexV2Engine.Validate4(WH, AllWords, Probables);
                             var WVValid = RegexV2Engine.Validate4(WV, AllWords, Probables);
                             if (WHValid) {
@@ -2845,11 +2954,18 @@ define("AskBot", ["require", "exports", 'axios', "GameStore", "GameActions", "Co
                             }
                         }
                     }
+                    if (console) {
+                        console.log(U.Util.Format("\t\tSyllable Extension: {1}: {0}", [U.Util.ElapsedTime(performance.now() - st2), syllable.Tiles]));
+                    }
                 }
+            }
+            if (console) {
+                console.log(U.Util.Format("\tSyllable Extensions: V2: {0}", [U.Util.ElapsedTime(performance.now() - st)]));
             }
             return Moves;
         };
         RegexV2Engine.WordExtensions2 = function (Cells, size, CharSet, botId, AllWords, Probables, Movables, SpeicalDict) {
+            var st = performance.now();
             var Moves = [];
             {
                 var WordsOnBoard = RegexEngineBase.GetWordsOnBoard(Cells, size, false);
@@ -2857,6 +2973,7 @@ define("AskBot", ["require", "exports", 'axios', "GameStore", "GameActions", "Co
                     EngineMemory.RefreshCache(botId + ":W", WordsOnBoard);
                 }
                 for (var indx in WordsOnBoard) {
+                    var st2 = performance.now();
                     var wordOnBoard = WordsOnBoard[indx];
                     var raw = wordOnBoard.Tiles.Replace("(", "").Replace(")", "").Replace(",", "").Replace("|", ",");
                     var len = raw.split(',').length;
@@ -2865,11 +2982,14 @@ define("AskBot", ["require", "exports", 'axios', "GameStore", "GameActions", "Co
                     var R = new RegExp(pattern);
                     {
                         var Probables2 = [];
-                        if (RegexV2Engine.WM) {
-                            RegexV2Engine.ShortList5(botId + ":W", wordOnBoard.Tiles, R, AllWords, Probables);
+                        if (RegexV2Engine.WM && len > RegexV2Engine.WS) {
+                            Probables2 = RegexV2Engine.ShortList5(botId + ":W", wordOnBoard.Tiles, R, AllWords, Probables);
                         }
-                        for (var indx2 in (RegexV2Engine.WM ? Probables2 : Probables)) {
-                            var wordIndx = Probables[indx2];
+                        else {
+                            Probables2 = RegexV2Engine.ShortList6(R, AllWords, Probables);
+                        }
+                        for (var indx2 in Probables2) {
+                            var wordIndx = Probables2[indx2];
                             var word = AllWords[wordIndx];
                             if (raw == word.Tiles) {
                                 continue;
@@ -2902,14 +3022,14 @@ define("AskBot", ["require", "exports", 'axios', "GameStore", "GameActions", "Co
                                 continue;
                             }
                             if (wordOnBoard.Position == "R") {
-                                var WH = EngineBase.TryHarizontal(Cells, size, wordOnBoard.Index, wordOnBoard.Syllables - 1, Pres, Centers, Posts);
+                                var WH = EngineBase.TryHarizontal(2, Cells, size, wordOnBoard.Index, wordOnBoard.Syllables - 1, Pres, Centers, Posts);
                                 var WHValid = RegexV2Engine.Validate4(WH, AllWords, Probables);
                                 if (WHValid) {
                                     Moves.push(WH);
                                 }
                             }
                             if (wordOnBoard.Position == "C") {
-                                var WH = EngineBase.TryVertical(Cells, size, wordOnBoard.Index, wordOnBoard.Syllables - 1, Pres, Centers, Posts);
+                                var WH = EngineBase.TryVertical(2, Cells, size, wordOnBoard.Index, wordOnBoard.Syllables - 1, Pres, Centers, Posts);
                                 var WHValid = RegexV2Engine.Validate4(WH, AllWords, Probables);
                                 if (WHValid) {
                                     Moves.push(WH);
@@ -2917,7 +3037,13 @@ define("AskBot", ["require", "exports", 'axios', "GameStore", "GameActions", "Co
                             }
                         }
                     }
+                    if (console) {
+                        console.log(U.Util.Format("\t\tWord Extension: {1}: {0}", [U.Util.ElapsedTime(performance.now() - st2), wordOnBoard.Tiles]));
+                    }
                 }
+            }
+            if (console) {
+                console.log(U.Util.Format("\tWord Extensions: V2: {0}", [U.Util.ElapsedTime(performance.now() - st)]));
             }
             return Moves;
         };
@@ -2940,7 +3066,10 @@ define("AskBot", ["require", "exports", 'axios', "GameStore", "GameActions", "Co
             return true;
         };
         RegexV2Engine.SM = false;
-        RegexV2Engine.WM = false;
+        RegexV2Engine.WM = true;
+        RegexV2Engine.CL = true;
+        RegexV2Engine.Threshlod = 0.33;
+        RegexV2Engine.WS = 2;
         return RegexV2Engine;
     }(RegexEngineBase));
     exports.RegexV2Engine = RegexV2Engine;
@@ -2950,7 +3079,7 @@ define("AskBot", ["require", "exports", 'axios', "GameStore", "GameActions", "Co
         EngineMemory.Memorize = function (Block, Key, r, Words, Callback, CanCache) {
             var Dict = EngineMemory.Cache[Block];
             if (Dict == null) {
-                Dict = [];
+                Dict = {};
             }
             if (Dict[Key] != null) {
                 return Dict[Key];
@@ -2992,7 +3121,6 @@ define("AskBot", ["require", "exports", 'axios', "GameStore", "GameActions", "Co
             for (var indx3 in RemoveList) {
                 var item = RemoveList[indx3];
                 delete Dict[item];
-                Dict.Remove(item);
             }
         };
         EngineMemory.Cache = {};
@@ -4167,6 +4295,7 @@ define("GameActions", ["require", "exports", "react", "react-dom", "Contracts", 
             var players = state.Players.Players;
             var currentPlayer = state.Players.CurrentPlayer;
             state.GameTable.Message = Util.Util.Format(Messages.Messages.YourTurn, [players[currentPlayer].Name]);
+            PubSub.Subscribe(Contracts.Events.GameOver, GameActions.GameOver);
             setTimeout(GameActions.PinchPlayer, Settings.PinchWait);
         };
         GameActions.PinchPlayer = function () {
@@ -4194,15 +4323,6 @@ define("GameActions", ["require", "exports", "react", "react-dom", "Contracts", 
             var state = GS.GameStore.GetState();
             var left = React.createElement(Game.default, state);
             return ReactDOM.render(left, rootEl);
-        };
-        GameActions.VocabularyLoaded = function (file) {
-            if (WL.WordLoader.Loaded != WL.WordLoader.Total) {
-                return;
-            }
-            GS.GameStore.Dispatch({
-                type: Contracts.Actions.Init,
-                args: {}
-            });
         };
         GameActions.RequestSuggestion = function (state, args) {
             state.Suggestion.Loaded = false;
@@ -4278,9 +4398,12 @@ define("GameActions", ["require", "exports", "react", "react-dom", "Contracts", 
             GameActions.SetStats(state);
             if (state.GameOver) {
                 GameActions.SetWinner(state);
+                PubSub.Publish(Contracts.Events.GameOver, state);
                 return;
             }
             setTimeout(GameActions.PinchPlayer, Settings.PinchWait);
+        };
+        GameActions.GameOver = function (state) {
         };
         GameActions.SetWinner = function (state) {
             state.ReadOnly = true;
@@ -4359,6 +4482,10 @@ define("GameActions", ["require", "exports", "react", "react-dom", "Contracts", 
                 var tiles = Move.Tiles.split(',');
                 for (var j in tiles) {
                     var tile = tiles[j];
+                    if (tile == "") {
+                        debugger;
+                        continue;
+                    }
                     if (Indic.Indic.HasSyllableSynonym(tile)) {
                         tile = Indic.Indic.GetSyllableSynonym(tile);
                     }
@@ -4903,8 +5030,57 @@ define("GameActions", ["require", "exports", "react", "react-dom", "Contracts", 
         return GameActions;
     }());
     exports.GameActions = GameActions;
+    var PubSub = (function () {
+        function PubSub() {
+        }
+        PubSub.Subscribe = function (eventId, handler) {
+            if (!PubSub.Events.hasOwnProperty(eventId.toString())) {
+                PubSub.Events[eventId] = [];
+            }
+            var token = (++PubSub.Counter);
+            PubSub.Events[eventId].push({ id: token, handler: handler });
+            return token;
+        };
+        PubSub.UnSubscribe = function (eventId) {
+            for (var m in PubSub.Events) {
+                if (!PubSub.Events.hasOwnProperty(m)) {
+                    continue;
+                }
+                for (var i = 0, j = PubSub.Events[m].length; i < j; i++) {
+                    if (PubSub.Events[m][i].id != eventId) {
+                        continue;
+                    }
+                    PubSub.Events[m].splice(i, 1);
+                    return;
+                }
+            }
+        };
+        PubSub.Publish = function (eventId, args) {
+            if (!PubSub.Events.hasOwnProperty(eventId.toString())) {
+                return;
+            }
+            setTimeout(function () { PubSub.Notify(eventId, args); }, 0);
+            return;
+        };
+        PubSub.Notify = function (eventId, args) {
+            var subscribers = PubSub.Events[eventId];
+            for (var i = 0, j = subscribers.length; i < j; i++) {
+                try {
+                    subscribers[i].handler(eventId, args);
+                }
+                catch (e) {
+                    setTimeout(function () { throw e; }, 0);
+                }
+            }
+        };
+        ;
+        PubSub.Counter = -1;
+        PubSub.Events = {};
+        return PubSub;
+    }());
+    exports.PubSub = PubSub;
 });
-define("GameLoader", ["require", "exports", "Contracts", "AksharaSets", "Messages", "DragDropTouch", "GameActions", "GameStore", "WordLoader"], function (require, exports, Contracts, Sets, M, DragDropTouch, GA, GS, WL) {
+define("GameLoader", ["require", "exports", "AksharaSets", "Messages", "DragDropTouch", "GameActions", "GameStore", "WordLoader"], function (require, exports, Sets, M, DragDropTouch, GA, GS, WL) {
     "use strict";
     var GameLoader = (function () {
         function GameLoader() {
@@ -4929,20 +5105,7 @@ define("GameLoader", ["require", "exports", "Contracts", "AksharaSets", "Message
             if (list.length == 0) {
                 list.push(Config.CharSet.Dictionary);
             }
-            WL.WordLoader.Total = list.length;
-            if (list.length == 0) {
-                GS.GameStore.Dispatch({
-                    type: Contracts.Actions.Init,
-                    args: {}
-                });
-                return;
-            }
-            GameLoader.LoadVocabularies(list);
-        };
-        GameLoader.LoadVocabularies = function (list) {
-            for (var indx in list) {
-                WL.WordLoader.Init(list[indx]);
-            }
+            WL.WordLoader.Prepare(list);
         };
         GameLoader.Vocabularies = function (players) {
             var dicts = [];

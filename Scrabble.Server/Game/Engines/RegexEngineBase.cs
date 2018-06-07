@@ -23,7 +23,7 @@ namespace Scrabble.Engines
 		public abstract ProbableMove BestMove();
 		public abstract List<ProbableMove> Probables();
 
-		protected static ProbableMove TryHarizontal(string[] Cells, int size, int Index, int offset, string[] Pre, string[] Centers, string[] Post)
+		protected static ProbableMove TryHarizontal(int Mode, string[] Cells, int size, int Index, int offset, string[] Pre, string[] Centers, string[] Post)
 		{
 			List<Word> Moves = new List<Word>();
 			int PreCount = Pre.Length;
@@ -100,9 +100,9 @@ namespace Scrabble.Engines
 			{
 				W.AddRange(WordsAt(NewCells, size, index));
 			}
-			return new ProbableMove { Words = W, Moves = Moves, Direction = "H" };
+			return new ProbableMove { Mode = Mode, Words = W, Moves = Moves, Direction = "H" };
 		}
-		protected static ProbableMove TryVertical(string[] Cells, int size, int Index, int offset, string[] Pre, string[] Centers, string[] Post)
+		protected static ProbableMove TryVertical(int Mode, string[] Cells, int size, int Index, int offset, string[] Pre, string[] Centers, string[] Post)
 		{
 			List<Word> Moves = new List<Word>();
 			int PreCount = Pre.Length;
@@ -185,7 +185,7 @@ namespace Scrabble.Engines
 			{
 				W.AddRange(WordsAt(NewCells, size, index));
 			}
-			return new ProbableMove { Words = W, Moves = Moves, Direction = "V" };
+			return new ProbableMove { Mode = Mode, Words = W, Moves = Moves, Direction = "V" };
 		}
 
 		static List<ProbableWord> WordsAt(string[] Cells, int size, int index)
@@ -367,7 +367,7 @@ namespace Scrabble.Engines
 			}
 			return Moves[0];
 		}
-	
+
 		protected static bool Resolve(string prev, List<string> Tiles, Dictionary<string, Regex> SpeicalList, ref string ordered)
 		{
 			if (string.IsNullOrEmpty(prev))
@@ -633,7 +633,7 @@ namespace Scrabble.Engines
 			}
 			return Words;
 		}
-		
+
 		static int GetStartIndex(string option, int r, int pos, int size, int move)
 		{
 			switch (option)
@@ -687,7 +687,7 @@ namespace Scrabble.Engines
 			}
 			return List;
 		}
-		protected List<string> GetSyllableList(string[] Cells, int size, bool filterEdges, bool asGroups)
+		protected List<string> GetSyllableList(string[] Cells, int size, bool fetchAll, bool filterEdges, bool asGroups)
 		{
 			List<string> List = new List<string>();
 			for (int index = 0; index < Cells.Length; index++)
@@ -704,18 +704,28 @@ namespace Scrabble.Engines
 				string t = Neighbor.Top != -1 ? Cells[Neighbor.Top] : "";
 				string b = Neighbor.Bottom != -1 ? Cells[Neighbor.Bottom] : "";
 
-				if (filterEdges)
+				if (!fetchAll)
 				{
 					if ((r != "" || l != "") && (t != "" || b != ""))
 					{
-
+						if (!filterEdges)
+						{
+							string x = asGroups ? cell : "(" + cell + ")";
+							if (!List.Contains(x))
+							{
+								List.Add(x);
+							}
+						}
 					}
 					else
 					{
-						string x = asGroups ? cell : "(" + cell + ")";
-						if (!List.Contains(x))
+						if (filterEdges)
 						{
-							List.Add(x);
+							string x = asGroups ? cell : "(" + cell + ")";
+							if (!List.Contains(x))
+							{
+								List.Add(x);
+							}
 						}
 					}
 				}

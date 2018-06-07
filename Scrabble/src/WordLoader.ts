@@ -63,7 +63,7 @@ export class WordLoader {
             .get("/bots/" + file)
             .then(response => {
                 WordLoader.Load(file, response.data as string);
-                GA.GameActions.VocabularyLoaded(file);
+                WordLoader.VocabularyLoaded(file);
             })
             .catch(error => {
                 //TODO...
