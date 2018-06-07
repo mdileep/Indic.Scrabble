@@ -42,7 +42,6 @@
     <Content Include="styles\css\pa.min.css" />
     <Content Include="styles\css\ta.min.css" />
     <Content Include="styles\css\te.min.css" />
-    <Content Include="web.config" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="log.txt" />
@@ -178,9 +177,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="styles\Less.targets" />
-    <Content Include="scripts\bundle.ini" />
-    <Content Include="scripts\Bundle.targets" />
+    <None Include="styles\Less.targets" />
+    <None Include="scripts\bundle.ini" />
+    <None Include="scripts\Bundle.targets" />
+    <Content Include="web.config" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -248,5 +248,11 @@
     <TypeScriptRemoveComments>true</TypeScriptRemoveComments>
     <TypeScriptSourceMap>false</TypeScriptSourceMap>
   </PropertyGroup>
+  <Import Project="styles\Less.targets" />
+  <Import Project="scripts\Bundle.targets" />
+  <!--
+  <Target Name="BeforeBuild" DependsOnTargets="BeforeBuildLess;BeforeBuildBundle" />
+  <Target Name="AfterBuild" DependsOnTargets="AfterBuildLess;AfterBuildBundle" />
+  -->
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
 </Project>
