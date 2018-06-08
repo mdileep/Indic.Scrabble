@@ -198,7 +198,7 @@ export interface iRawConfig {
 }
 export interface iRawBoard {
     Id: string;
-    Lanaguage: string;
+    Language: string;
     GameTable: iRawGameTable;
     Trays: iRawTray[];
     Name: string;

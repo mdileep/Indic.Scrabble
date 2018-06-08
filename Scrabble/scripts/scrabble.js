@@ -1055,7 +1055,7 @@ define("Parser", ["require", "exports", "GameActions", "Indic"], function (requi
             raw.Size = JSON.Size;
             raw.Name = JSON.Name;
             raw.Star = JSON.Star;
-            raw.Language = JSON.Lanaguage;
+            raw.Language = JSON.Language;
             raw.Cells = [];
             var index = 0;
             for (var i = 0; i < JSON.Size; i++) {
