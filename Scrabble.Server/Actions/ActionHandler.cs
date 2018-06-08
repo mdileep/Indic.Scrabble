@@ -33,6 +33,9 @@ namespace Scrabble.Server
 				case ActionNames.PostMetrics:
 					return new PostMetricsAction();
 
+				case ActionNames.ReportWords:
+					return new ReportWordsAction();
+
 				default:
 				case ActionNames.Help:
 					return new HelpAction();

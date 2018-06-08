@@ -75,6 +75,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Actions\PostMetricsAction.cs" />
+    <Compile Include="Actions\ReportWordsAction.cs" />
     <Compile Include="Game\Engines\RegexEngineBase.cs" />
     <Compile Include="Game\Engines\RegexEngineV2.cs" />
     <Compile Include="Game\Engines\RegexEngine.cs" />

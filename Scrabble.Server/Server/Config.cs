@@ -23,7 +23,7 @@ namespace Scrabble.Server
 		public const string DefaultBoard = "11x11";
 
 		public static readonly List<string> Languages = new List<string> { "te", "kn", "hi" };
-		public static readonly List<string> Actions = new List<string> { ActionNames.Ping, ActionNames.Help, ActionNames.NextMove, ActionNames.Probables, ActionNames.Validate };
+		public static readonly List<string> Actions = new List<string> { ActionNames.Ping, ActionNames.Help, ActionNames.NextMove, ActionNames.Probables, ActionNames.Validate, ActionNames.ReportWords, ActionNames.PostMetrics };
 		public static readonly List<string> BoardNames = new List<string> { "11x11" };
 
 		static Dictionary<string, object> Dictionary = null;

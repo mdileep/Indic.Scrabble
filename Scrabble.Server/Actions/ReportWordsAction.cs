@@ -1,8 +1,8 @@
 ﻿//---------------------------------------------------------------------------------------------
-// <copyright file="StorageConfig.cs" company="Chandam-ఛందం">
+// <copyright file="ReportWordsAction.cs" company="Chandam-ఛందం">
 //    Copyright © 2013 - 2018 'Chandam-ఛందం' : http://chandam.apphb.com
 //    Original Author : Dileep Miriyala (m.dileep@gmail.com)
-//    Last Updated    : 05-Jun-2018 20:56EST
+//    Last Updated    : 07-Jun-2018 18:59EST
 //    Revisions:
 //       Version    | Author                   | Email                     | Remarks
 //       1.0        | Dileep Miriyala          | m.dileep@gmail.com        | Initial Commit
@@ -10,23 +10,17 @@
 // </copyright>
 //---------------------------------------------------------------------------------------------
 
-using System.Configuration;
+using System.Collections.Generic;
 
-namespace Scrabble.Storage
+namespace Scrabble.Server
 {
-	public class StorageConfig
-	{
-		public static readonly string ConnectionString = "";
-		public const string Metrics = "Metrics";
-		public const string Words = "Words";
 
-		static StorageConfig()
+	internal class ReportWordsAction : iAPIAction
+	{
+		public object Process(Dictionary<string, object> dict)
 		{
-			try
-			{
-				ConnectionString = ConfigurationManager.AppSettings["MONGOLAB_URI"].ToString();
-			}
-			catch { }
+			new Storage.StorageUtil().AddWords(dict["words"] as string[]);
+			return true;
 		}
 	}
 }

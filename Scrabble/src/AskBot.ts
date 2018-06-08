@@ -33,8 +33,6 @@ export class AskServer {
             args: {}
         });
     }
-    static SendMetrics(): void {
-    }
 
     static Suggest(post: any): void {
         //Decide between Server or Client
@@ -47,6 +45,17 @@ export class AskServer {
     static Resolve(words: string[]): void {
         //Decide between Server or Client
         AskServer.ResolveClient(words);
+    }
+
+    static SendMetrics(metrics: any): void {
+        axios
+            .post("/API.ashx?postmetrics", metrics)
+            .then(response => {
+
+            })
+            .catch(error => {
+                //TODO...
+            });
     }
 
     static SuggestServer(post: any): void {

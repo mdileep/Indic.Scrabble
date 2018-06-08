@@ -148,9 +148,6 @@ export class GameActions {
         }
         setTimeout(GameActions.PinchPlayer, Settings.PinchWait);
     }
-    static GameOver(state: Contracts.iGameState): void {
-
-    }
     static SetWinner(state: Contracts.iGameState) {
         state.ReadOnly = true;
         var winner: Contracts.iPlayer = GameActions.FindWinner(state);
@@ -791,6 +788,34 @@ export class GameActions {
         var pickedConso = Util.Util.Draw(conso, maxConsos);
         return pickedConso;
     }
+    static GameOver(state: Contracts.iGameState): void {
+        GameActions.Post(state);
+        GameActions.Dispose(state);
+    }
+    static Post(state: Contracts.iGameState): void {
+        GameActions.PostMetrics(state);
+        WL.WordLoader.Post(state.GameId);
+    }
+    static PostMetrics(state: Contracts.iGameState): void {
+        var players: any[] = [];
+        for (var indx in state.Players.Players) {
+            var Player: Contracts.iPlayer = state.Players.Players[indx];
+            var p = { id: Player.Bot == null ? "player" : Player.Bot.Id, score: Player.Score, words: Player.Awarded.length };
+            players.push(p);
+        }
+        var winner: Contracts.iPlayer = GameActions.FindWinner(state);
+        var stats = { "EC": state.Stats.EmptyCells, "TW": state.Stats.TotalWords, "UU": Math.round(state.Stats.UnUsed * 100) / 100, "O": Math.round(state.Stats.Occupancy * 100) / 100 };
+        var metrics: any = {};
+        metrics["I"] = state.GameId;
+        metrics["L"] = state.Board.Language;
+        metrics["W"] = winner.Bot == null ? "player" : winner.Bot.Id;
+        metrics["P"] = players;
+        metrics["S"] = stats;
+        AskBot.AskServer.SendMetrics(metrics);
+    }
+    static Dispose(staste: Contracts.iGameState): void {
+        WL.WordLoader.Dispose();
+    }
 }
 export class PubSub {
     //Rewritten based on https://msdn.microsoft.com/en-us/magazine/hh201955.aspx
@@ -834,7 +859,7 @@ export class PubSub {
         var subscribers = PubSub.Events[eventId];
         for (var i = 0, j = subscribers.length; i < j; i++) {
             try {
-                subscribers[i].handler(eventId, args);
+                subscribers[i].handler(args);
             } catch (e) {
                 setTimeout(function () { throw e; }, 0);
             }

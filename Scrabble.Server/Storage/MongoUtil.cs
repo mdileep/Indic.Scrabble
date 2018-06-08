@@ -12,6 +12,7 @@
 
 using MongoDB.Bson;
 using MongoDB.Driver;
+using Scrabble.Server;
 using System.Collections.Generic;
 
 namespace Scrabble.Storage
@@ -19,6 +20,7 @@ namespace Scrabble.Storage
 	public class StorageUtil
 	{
 		IMongoCollection<BsonDocument> Metrics;
+		IMongoCollection<BsonDocument> Words;
 
 		public StorageUtil()
 		{
@@ -26,12 +28,19 @@ namespace Scrabble.Storage
 			var client = new MongoClient(StorageConfig.ConnectionString);
 			var db = new MongoClient(url).GetDatabase(url.DatabaseName);
 			Metrics = db.GetCollection<BsonDocument>(StorageConfig.Metrics);
+			Words = db.GetCollection<BsonDocument>(StorageConfig.Words);
+		}
+
+		internal void AddWords(string[] words)
+		{
+			var doc = BsonDocument.Parse(ParseUtil.ToJSON(words));
+			Words.InsertOne(doc);
 		}
 
 		public void AddMetric(Dictionary<string, object> dict)
 		{
-			var document = dict.ToBsonDocument<Dictionary<string, object>>();
-			Metrics.InsertOne(document);
+			var doc = BsonDocument.Parse(ParseUtil.ToJSON(dict));
+			Metrics.InsertOne(doc);
 		}
 	}
 }

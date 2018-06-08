@@ -42,6 +42,7 @@ export interface iBoardProps extends iComponent {
     Size: number;
     Name: string;
     Star: number;
+    Language: string;
     Cells: iCellProps[];
 }
 export interface iCellProps extends iComponent {

@@ -136,6 +136,7 @@ export class Parser {
         raw.Size = JSON.Size;
         raw.Name = JSON.Name;
         raw.Star = JSON.Star;
+        raw.Language = JSON.Lanaguage;
         raw.Cells = [];
         var index = 0;
         for (var i = 0; i < JSON.Size; i++) {

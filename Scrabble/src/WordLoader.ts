@@ -18,24 +18,34 @@ import * as GS from 'GameStore';
 export class WordLoader {
     static Loaded = 0;
     static Total = 0;
-    static Lists: any = { Custom: [] };
-    static LoadWords(file: string, force: boolean): C.Word[] {
-        if (WordLoader.Lists != null && WordLoader.Lists[file] != null) {
+    static Custom: string = "Custom";
+    static Lists: any = {};
+    //
+    static LoadWords(file: string, askOpponent: boolean): C.Word[] {
+        if (WordLoader.Lists == null) {
+            return [] as C.Word[];
+        }
+
+        if (WordLoader.Lists[file] != null) {
             return WordLoader.Lists[file];
         }
-        //Pick Non-Custom
-        if (force && WordLoader.Lists != null) {
-            for (var key in WordLoader.Lists) {
-                if (key != "Custom") {
-                    return WordLoader.Lists[key];
-                }
+
+        if (!askOpponent) {
+            return [] as C.Word[];
+        }
+
+        //Pick First Non-Custom
+        for (var key in WordLoader.Lists) {
+            if (key == WordLoader.Custom) {
+                continue;
             }
+            return WordLoader.Lists[key];
         }
         return [] as C.Word[];
     }
     static AddWord(word: string): void {
-        var cnt = WordLoader.Lists["Custom"].length;
-        WordLoader.Lists["Custom"].push({
+        var cnt = WordLoader.Lists[WordLoader.Custom].length;
+        WordLoader.Lists[WordLoader.Custom].push({
             Tiles: word,
             Index: cnt++,
             Syllables: word.split(',').length,
@@ -64,6 +74,17 @@ export class WordLoader {
             .then(response => {
                 WordLoader.Load(file, response.data as string);
                 WordLoader.VocabularyLoaded(file);
+            })
+            .catch(error => {
+                //TODO...
+            });
+    }
+    static Report(gameId: number, words: string[]): void {
+        if (words.length == 0) { return; }
+        axios
+            .post("API.ashx?reportwords", { id: gameId, words: words })
+            .then(response => {
+
             })
             .catch(error => {
                 //TODO...
@@ -114,11 +135,15 @@ export class WordLoader {
         WordLoader.LoadComplete();
     }
     static LoadComplete() {
+        WordLoader.Lists[WordLoader.Custom] = [];
         GS.GameStore.Dispatch({
             type: C.Actions.Init,
             args: {
             }
         });
+    }
+    static Post(gameId: number): void {
+        WordLoader.Report(gameId, WordLoader.Lists[WordLoader.Custom] as string[]);
     }
     static Dispose() {
         WordLoader.Lists = null;

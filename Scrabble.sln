@@ -10,14 +10,20 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Words", "Words", "{4D21702C-A04F-4576-9B3B-E4837E5544DC}"
 	ProjectSection(SolutionItems) = preProject
 		Scrabble\words\hi.bbc.words = Scrabble\words\hi.bbc.words
+		Scrabble\words\hi.bible.words = Scrabble\words\hi.bible.words
 		Scrabble\words\hi.words = Scrabble\words\hi.words
+		Scrabble\words\kn.bible.words = Scrabble\words\kn.bible.words
+		Scrabble\words\kn.udayavani.words = Scrabble\words\kn.udayavani.words
 		Scrabble\words\kn.vijaykarnataka.com.words = Scrabble\words\kn.vijaykarnataka.com.words
 		Scrabble\words\kn.words = Scrabble\words\kn.words
+		Scrabble\words\te.ab.words = Scrabble\words\te.ab.words
 		Scrabble\words\te.andhrajyothy.words = Scrabble\words\te.andhrajyothy.words
 		Scrabble\words\te.bbc.words = Scrabble\words\te.bbc.words
+		Scrabble\words\te.bible.words = Scrabble\words\te.bible.words
 		Scrabble\words\te.eenadu.words = Scrabble\words\te.eenadu.words
 		Scrabble\words\te.gallery.words = Scrabble\words\te.gallery.words
 		Scrabble\words\te.kinige.com.words = Scrabble\words\te.kinige.com.words
+		Scrabble\words\te.tebha.words = Scrabble\words\te.tebha.words
 		Scrabble\words\te.veeven.words = Scrabble\words\te.veeven.words
 		Scrabble\words\te.words = Scrabble\words\te.words
 	EndProjectSection
@@ -41,7 +47,7 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {0EFE05FF-8ECC-42CB-8C32-692E1201251F}
 		LessCompiler = 7e7047e6-51cb-4d07-ba22-ea6b4193fa89
+		SolutionGuid = {0EFE05FF-8ECC-42CB-8C32-692E1201251F}
 	EndGlobalSection
 EndGlobal

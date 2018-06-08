@@ -11,7 +11,9 @@
 //---------------------------------------------------------------------------------------------
 
 
+using System;
 using System.Collections.Generic;
+using System.Web;
 
 namespace Scrabble.Server
 {
@@ -19,9 +21,22 @@ namespace Scrabble.Server
 	{
 		public object Process(Dictionary<string, object> dict)
 		{
+			AddIP(dict);
 			//Ideally Should define a Structure.
 			new Storage.StorageUtil().AddMetric(dict);
 			return true;
+		}
+
+		void AddIP(Dictionary<string, object> dict)
+		{
+			try
+			{
+				string clientIp = null;
+				clientIp = (HttpContext.Current.Request.ServerVariables["HTTP_X_FORWARDED_FOR"] ?? context.Request.ServerVariables["REMOTE_ADDR"]).Split(',')[0].Trim();
+				clientIp = (clientIp.Length < 4) ? null : clientIp;
+				dict["IP"] = clientIp;
+			}
+			catch { }
 		}
 	}
 }

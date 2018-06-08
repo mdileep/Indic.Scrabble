@@ -1055,6 +1055,7 @@ define("Parser", ["require", "exports", "GameActions", "Indic"], function (requi
             raw.Size = JSON.Size;
             raw.Name = JSON.Name;
             raw.Star = JSON.Star;
+            raw.Language = JSON.Lanaguage;
             raw.Cells = [];
             var index = 0;
             for (var i = 0; i < JSON.Size; i++) {
@@ -1290,22 +1291,27 @@ define("WordLoader", ["require", "exports", "Contracts", 'axios', "GameStore"], 
     var WordLoader = (function () {
         function WordLoader() {
         }
-        WordLoader.LoadWords = function (file, force) {
-            if (WordLoader.Lists != null && WordLoader.Lists[file] != null) {
+        WordLoader.LoadWords = function (file, askOpponent) {
+            if (WordLoader.Lists == null) {
+                return [];
+            }
+            if (WordLoader.Lists[file] != null) {
                 return WordLoader.Lists[file];
             }
-            if (force && WordLoader.Lists != null) {
-                for (var key in WordLoader.Lists) {
-                    if (key != "Custom") {
-                        return WordLoader.Lists[key];
-                    }
+            if (!askOpponent) {
+                return [];
+            }
+            for (var key in WordLoader.Lists) {
+                if (key == WordLoader.Custom) {
+                    continue;
                 }
+                return WordLoader.Lists[key];
             }
             return [];
         };
         WordLoader.AddWord = function (word) {
-            var cnt = WordLoader.Lists["Custom"].length;
-            WordLoader.Lists["Custom"].push({
+            var cnt = WordLoader.Lists[WordLoader.Custom].length;
+            WordLoader.Lists[WordLoader.Custom].push({
                 Tiles: word,
                 Index: cnt++,
                 Syllables: word.split(',').length,
@@ -1333,6 +1339,17 @@ define("WordLoader", ["require", "exports", "Contracts", 'axios', "GameStore"], 
                 .then(function (response) {
                 WordLoader.Load(file, response.data);
                 WordLoader.VocabularyLoaded(file);
+            })
+                .catch(function (error) {
+            });
+        };
+        WordLoader.Report = function (gameId, words) {
+            if (words.length == 0) {
+                return;
+            }
+            axios
+                .post("API.ashx?reportwords", { id: gameId, words: words })
+                .then(function (response) {
             })
                 .catch(function (error) {
             });
@@ -1384,17 +1401,22 @@ define("WordLoader", ["require", "exports", "Contracts", 'axios', "GameStore"], 
             WordLoader.LoadComplete();
         };
         WordLoader.LoadComplete = function () {
+            WordLoader.Lists[WordLoader.Custom] = [];
             GS.GameStore.Dispatch({
                 type: C.Actions.Init,
                 args: {}
             });
+        };
+        WordLoader.Post = function (gameId) {
+            WordLoader.Report(gameId, WordLoader.Lists[WordLoader.Custom]);
         };
         WordLoader.Dispose = function () {
             WordLoader.Lists = null;
         };
         WordLoader.Loaded = 0;
         WordLoader.Total = 0;
-        WordLoader.Lists = { Custom: [] };
+        WordLoader.Custom = "Custom";
+        WordLoader.Lists = {};
         return WordLoader;
     }());
     exports.WordLoader = WordLoader;
@@ -1416,8 +1438,6 @@ define("AskBot", ["require", "exports", 'axios', "GameStore", "GameActions", "Co
                 args: {}
             });
         };
-        AskServer.SendMetrics = function () {
-        };
         AskServer.Suggest = function (post) {
             AskServer.SuggestClient(post);
         };
@@ -1426,6 +1446,14 @@ define("AskBot", ["require", "exports", 'axios', "GameStore", "GameActions", "Co
         };
         AskServer.Resolve = function (words) {
             AskServer.ResolveClient(words);
+        };
+        AskServer.SendMetrics = function (metrics) {
+            axios
+                .post("/API.ashx?postmetrics", metrics)
+                .then(function (response) {
+            })
+                .catch(function (error) {
+            });
         };
         AskServer.SuggestServer = function (post) {
         };
@@ -4403,8 +4431,6 @@ define("GameActions", ["require", "exports", "react", "react-dom", "Contracts", 
             }
             setTimeout(GameActions.PinchPlayer, Settings.PinchWait);
         };
-        GameActions.GameOver = function (state) {
-        };
         GameActions.SetWinner = function (state) {
             state.ReadOnly = true;
             var winner = GameActions.FindWinner(state);
@@ -5027,6 +5053,34 @@ define("GameActions", ["require", "exports", "react", "react-dom", "Contracts", 
             var pickedConso = Util.Util.Draw(conso, maxConsos);
             return pickedConso;
         };
+        GameActions.GameOver = function (state) {
+            GameActions.Post(state);
+            GameActions.Dispose(state);
+        };
+        GameActions.Post = function (state) {
+            GameActions.PostMetrics(state);
+            WL.WordLoader.Post(state.GameId);
+        };
+        GameActions.PostMetrics = function (state) {
+            var players = [];
+            for (var indx in state.Players.Players) {
+                var Player = state.Players.Players[indx];
+                var p = { id: Player.Bot == null ? "player" : Player.Bot.Id, score: Player.Score, words: Player.Awarded.length };
+                players.push(p);
+            }
+            var winner = GameActions.FindWinner(state);
+            var stats = { "EC": state.Stats.EmptyCells, "TW": state.Stats.TotalWords, "UU": Math.round(state.Stats.UnUsed * 100) / 100, "O": Math.round(state.Stats.Occupancy * 100) / 100 };
+            var metrics = {};
+            metrics["I"] = state.GameId;
+            metrics["L"] = state.Board.Language;
+            metrics["W"] = winner.Bot == null ? "player" : winner.Bot.Id;
+            metrics["P"] = players;
+            metrics["S"] = stats;
+            AskBot.AskServer.SendMetrics(metrics);
+        };
+        GameActions.Dispose = function (staste) {
+            WL.WordLoader.Dispose();
+        };
         return GameActions;
     }());
     exports.GameActions = GameActions;
@@ -5066,7 +5120,7 @@ define("GameActions", ["require", "exports", "react", "react-dom", "Contracts", 
             var subscribers = PubSub.Events[eventId];
             for (var i = 0, j = subscribers.length; i < j; i++) {
                 try {
-                    subscribers[i].handler(eventId, args);
+                    subscribers[i].handler(args);
                 }
                 catch (e) {
                     setTimeout(function () { throw e; }, 0);

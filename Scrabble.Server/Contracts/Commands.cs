@@ -21,5 +21,6 @@ namespace Scrabble.Server
 		public const string Probables = "probables";
 		public const string Validate = "validate";
 		public const string PostMetrics = "postmetrics";
+		public const string ReportWords = "reportwords";
 	}
 }
