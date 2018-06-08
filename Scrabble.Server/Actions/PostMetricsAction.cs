@@ -32,7 +32,7 @@ namespace Scrabble.Server
 			try
 			{
 				string clientIp = null;
-				clientIp = (HttpContext.Current.Request.ServerVariables["HTTP_X_FORWARDED_FOR"] ?? context.Request.ServerVariables["REMOTE_ADDR"]).Split(',')[0].Trim();
+				clientIp = (HttpContext.Current.Request.ServerVariables["HTTP_X_FORWARDED_FOR"] ?? HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"]).Split(',')[0].Trim();
 				clientIp = (clientIp.Length < 4) ? null : clientIp;
 				dict["IP"] = clientIp;
 			}
