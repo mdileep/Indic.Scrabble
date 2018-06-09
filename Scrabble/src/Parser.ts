@@ -58,11 +58,11 @@ export class Parser {
         return gameState;
     }
     public static BuildGameTable(JSON: Contracts.iRawGameTable, cache: Contracts.iCachedTile): Contracts.iGameTable {
-        var vAvailable = GameActions.GameActions.DrawVowelTiles(cache, JSON.MaxVowels);
+        var vAvailable = GameActions.GameActions.DrawVowelTiles(cache, {}, JSON.MaxVowels);
         var vTray = GameActions.GameActions.SetTableTray(vAvailable, "Vowels");
         GameActions.GameActions.SetOnBoard(cache, vAvailable);
 
-        var cAvailable = GameActions.GameActions.DrawConsoTiles(cache, JSON.MaxOnTable - JSON.MaxVowels);
+        var cAvailable = GameActions.GameActions.DrawConsoTiles(cache, {}, JSON.MaxOnTable - JSON.MaxVowels);
         var cTray = GameActions.GameActions.SetTableTray(cAvailable, "Conso");
         GameActions.GameActions.SetOnBoard(cache, cAvailable);
 

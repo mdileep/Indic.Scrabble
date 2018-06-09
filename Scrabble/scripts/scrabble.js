@@ -979,10 +979,10 @@ define("Parser", ["require", "exports", "GameActions", "Indic"], function (requi
             return gameState;
         };
         Parser.BuildGameTable = function (JSON, cache) {
-            var vAvailable = GameActions.GameActions.DrawVowelTiles(cache, JSON.MaxVowels);
+            var vAvailable = GameActions.GameActions.DrawVowelTiles(cache, {}, JSON.MaxVowels);
             var vTray = GameActions.GameActions.SetTableTray(vAvailable, "Vowels");
             GameActions.GameActions.SetOnBoard(cache, vAvailable);
-            var cAvailable = GameActions.GameActions.DrawConsoTiles(cache, JSON.MaxOnTable - JSON.MaxVowels);
+            var cAvailable = GameActions.GameActions.DrawConsoTiles(cache, {}, JSON.MaxOnTable - JSON.MaxVowels);
             var cTray = GameActions.GameActions.SetTableTray(cAvailable, "Conso");
             GameActions.GameActions.SetOnBoard(cache, cAvailable);
             var raw = {};
@@ -4915,13 +4915,13 @@ define("GameActions", ["require", "exports", "react", "react-dom", "Contracts", 
         GameActions.ReDraw = function (state, args) {
             GameActions.ResetOnBoard(state.Cache);
             {
-                var available = GameActions.DrawVowelTiles(state.Cache, state.GameTable.MaxVowels);
+                var available = GameActions.DrawVowelTiles(state.Cache, {}, state.GameTable.MaxVowels);
                 var tray = GameActions.SetTableTray(available, "Vowels");
                 state.GameTable.VowelTray = tray;
                 GameActions.SetOnBoard(state.Cache, available);
             }
             {
-                var available = GameActions.DrawConsoTiles(state.Cache, state.GameTable.MaxOnTable - state.GameTable.MaxVowels);
+                var available = GameActions.DrawConsoTiles(state.Cache, {}, state.GameTable.MaxOnTable - state.GameTable.MaxVowels);
                 var tray = GameActions.SetTableTray(available, "Conso");
                 state.GameTable.ConsoTray = tray;
                 GameActions.SetOnBoard(state.Cache, available);
@@ -4941,42 +4941,46 @@ define("GameActions", ["require", "exports", "react", "react-dom", "Contracts", 
         GameActions.ResetVowelsTray = function (state) {
             var gameTable = state.GameTable;
             var vtray = state.GameTable.VowelTray;
-            var Moved = GameActions.CountTiles(vtray, true);
-            for (var indx in Moved) {
-                var toRemove = Moved[indx];
+            var movedTiles = GameActions.CountTiles(vtray, true);
+            for (var indx in movedTiles) {
+                var toRemove = movedTiles[indx];
                 GameActions.SetRemaining(state.Cache, toRemove, -1);
             }
-            var unMoved = GameActions.CountTiles(vtray, false);
+            var unMovedTiles = GameActions.CountTiles(vtray, false);
             var vCount = 0;
-            for (var i = 0; i < unMoved.length; i++) {
-                var prop = unMoved[i];
+            var unMoved = {};
+            for (var i = 0; i < unMovedTiles.length; i++) {
+                var prop = unMovedTiles[i];
                 if (Indic.Indic.IsVowel(prop) || Indic.Indic.IsSunnaSet(prop)) {
                     vCount++;
+                    unMoved[prop] = (unMoved[prop] == null) ? 1 : (unMoved[prop] + 1);
                 }
             }
-            var fresh = GameActions.DrawVowelTiles(state.Cache, gameTable.MaxVowels - vCount);
-            var available = unMoved.concat(fresh);
+            var fresh = GameActions.DrawVowelTiles(state.Cache, unMoved, gameTable.MaxVowels - vCount);
+            var available = unMovedTiles.concat(fresh);
             available.sort();
             state.GameTable.VowelTray = GameActions.SetTableTray(available, "Vowels");
         };
         GameActions.ResetConsoTray = function (state) {
             var gameTable = state.GameTable;
             var ctray = state.GameTable.ConsoTray;
-            var Moved = GameActions.CountTiles(ctray, true);
-            for (var indx in Moved) {
-                var toRemove = Moved[indx];
+            var movedTiles = GameActions.CountTiles(ctray, true);
+            for (var indx in movedTiles) {
+                var toRemove = movedTiles[indx];
                 GameActions.SetRemaining(state.Cache, toRemove, -1);
             }
-            var unMoved = GameActions.CountTiles(ctray, false);
+            var unMovedTiles = GameActions.CountTiles(ctray, false);
             var vCount = 0;
-            for (var i = 0; i < unMoved.length; i++) {
-                var prop = unMoved[i];
+            var unMoved = {};
+            for (var i = 0; i < unMovedTiles.length; i++) {
+                var prop = unMovedTiles[i];
                 if (Indic.Indic.IsConsonent(prop)) {
                     vCount++;
+                    unMoved[prop] = (unMoved[prop] == null) ? 1 : (unMoved[prop] + 1);
                 }
             }
-            var fresh = GameActions.DrawConsoTiles(state.Cache, (gameTable.MaxOnTable - gameTable.MaxVowels) - vCount);
-            var available = unMoved.concat(fresh);
+            var fresh = GameActions.DrawConsoTiles(state.Cache, unMoved, (gameTable.MaxOnTable - gameTable.MaxVowels) - vCount);
+            var available = unMovedTiles.concat(fresh);
             available.sort();
             state.GameTable.ConsoTray = GameActions.SetTableTray(available, "Conso");
         };
@@ -5021,10 +5025,11 @@ define("GameActions", ["require", "exports", "react", "react-dom", "Contracts", 
             }
             return tray;
         };
-        GameActions.AvailableVowels = function (cache) {
+        GameActions.AvailableVowels = function (cache, unMoved) {
             var available = [];
             for (var prop in cache) {
-                if ((Indic.Indic.IsVowel(prop) || Indic.Indic.IsSunnaSet(prop)) && (cache[prop].Remaining - cache[prop].OnBoard > 0)) {
+                var pending = unMoved[prop] == null ? 0 : unMoved[prop];
+                if ((Indic.Indic.IsVowel(prop) || Indic.Indic.IsSunnaSet(prop)) && (cache[prop].Remaining - cache[prop].OnBoard - pending > 0)) {
                     for (var i = 0; i < cache[prop].Remaining - cache[prop].OnBoard; i++) {
                         available.push(prop);
                     }
@@ -5032,10 +5037,11 @@ define("GameActions", ["require", "exports", "react", "react-dom", "Contracts", 
             }
             return available;
         };
-        GameActions.AvailableConso = function (cache) {
+        GameActions.AvailableConso = function (cache, unMoved) {
             var available = [];
             for (var prop in cache) {
-                if (Indic.Indic.IsConsonent(prop) && (cache[prop].Remaining - cache[prop].OnBoard > 0)) {
+                var pending = unMoved[prop] == null ? 0 : unMoved[prop];
+                if (Indic.Indic.IsConsonent(prop) && (cache[prop].Remaining - cache[prop].OnBoard - pending > 0)) {
                     for (var i = 0; i < cache[prop].Remaining - cache[prop].OnBoard; i++) {
                         available.push(prop);
                     }
@@ -5043,13 +5049,13 @@ define("GameActions", ["require", "exports", "react", "react-dom", "Contracts", 
             }
             return available;
         };
-        GameActions.DrawVowelTiles = function (cache, maxVowels) {
-            var vowels = GameActions.AvailableVowels(cache);
+        GameActions.DrawVowelTiles = function (cache, unMoved, maxVowels) {
+            var vowels = GameActions.AvailableVowels(cache, unMoved);
             var pickedVowels = Util.Util.Draw(vowels, maxVowels);
             return pickedVowels;
         };
-        GameActions.DrawConsoTiles = function (cache, maxConsos) {
-            var conso = GameActions.AvailableConso(cache);
+        GameActions.DrawConsoTiles = function (cache, unMoved, maxConsos) {
+            var conso = GameActions.AvailableConso(cache, unMoved);
             var pickedConso = Util.Util.Draw(conso, maxConsos);
             return pickedConso;
         };

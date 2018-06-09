@@ -1,7 +1,6 @@
 # Indic Scrabble 
 
-*Scrabble* is a popular word game originally designed for *English*. Later it was adopted in many other languages.
-This an attempt to bring the Scrabble like game to Indian Languages targeted to work on mobiles and tablets by customizing some of the rules.
+*Scrabble* is a popular word game originally designed for *English*. Later it was adopted in many other languages.This an attempt to bring the Scrabble like game to Indian Languages targeted to work on mobiles and tablets.
 
 ## Dynamic Nature of Scripts
 
@@ -36,14 +35,31 @@ This an attempt to bring the Scrabble like game to Indian Languages targeted to 
 
 ## Bots and Vocabularies
 
-* AI based Agents are planned to develop. Current Bot Intelligence is State based.
+* AI based Agents are planned. Current Bot Intelligence is State based.
 * Current Bots have the same level of intelligence but have different levels of vocabulries.
 * Bots uses the browser resources to think But it is possible to configure bots to have their own intelligence (Remote/in-memory etc).
 * Average response time of the Bot to select a move is between 80ms to 8sec. Bots take more time as the size of vocabulary and state of the board.
 * Current Framework uses *Regular Expressions* to shortlist the words.
 * Vocabulary source is pre-complied in to tile format.
-* Currently *Telugu* has 10 Bots , Kananada has 3 Bots  and Hindi has 2 Bots.
-* Agents were named after the source of vocabulary.
+* Currently Telugu has 9 Bots , Kananada has 3 Bots  and Hindi has 2 Bots.
+* Bots were named after the source of vocabulary.
+* Bots: Telugu:
+    * ఆంధ్రభారతి 
+    * పోతన      
+    * ఈనాడు     
+    * బీబీసీ        
+    * బైబిలు        
+    * ఆంధ్రజ్యోతి
+    * కినిగె
+    * వసారా
+    * వీవెనుడు
+* Bots: Kannada:
+    * ವಿಜಯ
+    * ಉದಯವಾಣಿ
+    * ಬೈಬಲ್
+* Bots: Hindi
+    * बीबीसी
+    * बाइबिल
 
 ## Technologies
 
@@ -54,8 +70,3 @@ This an attempt to bring the Scrabble like game to Indian Languages targeted to 
 
 ## Demo
     http://indicscrabble.apphb.com/
-
-
-
-
-

@@ -649,13 +649,13 @@ export class GameActions {
     static ReDraw(state: Contracts.iGameState, args: Contracts.iArgs): void {
         GameActions.ResetOnBoard(state.Cache);
         {
-            var available: string[] = GameActions.DrawVowelTiles(state.Cache, state.GameTable.MaxVowels);
+            var available: string[] = GameActions.DrawVowelTiles(state.Cache, {}, state.GameTable.MaxVowels);
             var tray: Contracts.iTrayProps = GameActions.SetTableTray(available, "Vowels");
             state.GameTable.VowelTray = tray;
             GameActions.SetOnBoard(state.Cache, available);
         }
         {
-            var available = GameActions.DrawConsoTiles(state.Cache, state.GameTable.MaxOnTable - state.GameTable.MaxVowels);
+            var available = GameActions.DrawConsoTiles(state.Cache, {}, state.GameTable.MaxOnTable - state.GameTable.MaxVowels);
             var tray = GameActions.SetTableTray(available, "Conso");
             state.GameTable.ConsoTray = tray;
             GameActions.SetOnBoard(state.Cache, available);
@@ -675,42 +675,46 @@ export class GameActions {
     static ResetVowelsTray(state: Contracts.iGameState): void {
         var gameTable: Contracts.iGameTable = state.GameTable;
         var vtray: Contracts.iTrayProps = state.GameTable.VowelTray;
-        var Moved: string[] = GameActions.CountTiles(vtray, true);
-        for (var indx in Moved) {
-            var toRemove = Moved[indx];
+        var movedTiles: string[] = GameActions.CountTiles(vtray, true);
+        for (var indx in movedTiles) {
+            var toRemove = movedTiles[indx];
             GameActions.SetRemaining(state.Cache, toRemove, -1);
         }
-        var unMoved: string[] = GameActions.CountTiles(vtray, false);
+        var unMovedTiles: string[] = GameActions.CountTiles(vtray, false);
         var vCount = 0;
-        for (var i = 0; i < unMoved.length; i++) {
-            var prop = unMoved[i];
+        var unMoved: any = {};
+        for (var i = 0; i < unMovedTiles.length; i++) {
+            var prop = unMovedTiles[i];
             if (Indic.Indic.IsVowel(prop) || Indic.Indic.IsSunnaSet(prop)) {
                 vCount++;
+                unMoved[prop] = (unMoved[prop] == null) ? 1 : (unMoved[prop] + 1);
             }
         }
-        var fresh = GameActions.DrawVowelTiles(state.Cache, gameTable.MaxVowels - vCount);
-        var available = unMoved.concat(fresh);
+        var fresh = GameActions.DrawVowelTiles(state.Cache, unMoved, gameTable.MaxVowels - vCount);
+        var available = unMovedTiles.concat(fresh);
         available.sort();
         state.GameTable.VowelTray = GameActions.SetTableTray(available, "Vowels");
     }
     static ResetConsoTray(state: Contracts.iGameState): void {
         var gameTable: Contracts.iGameTable = state.GameTable;
         var ctray: Contracts.iTrayProps = state.GameTable.ConsoTray;
-        var Moved: string[] = GameActions.CountTiles(ctray, true);
-        for (var indx in Moved) {
-            var toRemove = Moved[indx];
+        var movedTiles: string[] = GameActions.CountTiles(ctray, true);
+        for (var indx in movedTiles) {
+            var toRemove = movedTiles[indx];
             GameActions.SetRemaining(state.Cache, toRemove, -1);
         }
-        var unMoved: string[] = GameActions.CountTiles(ctray, false);
+        var unMovedTiles: string[] = GameActions.CountTiles(ctray, false);
         var vCount = 0;
-        for (var i = 0; i < unMoved.length; i++) {
-            var prop = unMoved[i];
+        var unMoved: any = {};
+        for (var i = 0; i < unMovedTiles.length; i++) {
+            var prop = unMovedTiles[i];
             if (Indic.Indic.IsConsonent(prop)) {
                 vCount++;
+                unMoved[prop] = (unMoved[prop] == null) ? 1 : (unMoved[prop] + 1);
             }
         }
-        var fresh = GameActions.DrawConsoTiles(state.Cache, (gameTable.MaxOnTable - gameTable.MaxVowels) - vCount);
-        var available = unMoved.concat(fresh);
+        var fresh = GameActions.DrawConsoTiles(state.Cache, unMoved, (gameTable.MaxOnTable - gameTable.MaxVowels) - vCount);
+        var available = unMovedTiles.concat(fresh);
         available.sort();
         state.GameTable.ConsoTray = GameActions.SetTableTray(available, "Conso");
     }
@@ -756,10 +760,11 @@ export class GameActions {
         }
         return tray;
     }
-    static AvailableVowels(cache: Contracts.iCachedTile): string[] {
+    static AvailableVowels(cache: Contracts.iCachedTile, unMoved: any): string[] {
         var available: string[] = [];
         for (var prop in cache) {
-            if ((Indic.Indic.IsVowel(prop) || Indic.Indic.IsSunnaSet(prop)) && (cache[prop].Remaining - cache[prop].OnBoard > 0)) {
+            var pending: number = unMoved[prop] == null ? 0 : unMoved[prop];
+            if ((Indic.Indic.IsVowel(prop) || Indic.Indic.IsSunnaSet(prop)) && (cache[prop].Remaining - cache[prop].OnBoard - pending > 0)) {
                 for (var i = 0; i < cache[prop].Remaining - cache[prop].OnBoard; i++) {
                     available.push(prop)
                 }
@@ -767,10 +772,11 @@ export class GameActions {
         }
         return available;
     }
-    static AvailableConso(cache: Contracts.iCachedTile): string[] {
+    static AvailableConso(cache: Contracts.iCachedTile, unMoved: any): string[] {
         var available: string[] = [];
         for (var prop in cache) {
-            if (Indic.Indic.IsConsonent(prop) && (cache[prop].Remaining - cache[prop].OnBoard > 0)) {
+            var pending: number = unMoved[prop] == null ? 0 : unMoved[prop];
+            if (Indic.Indic.IsConsonent(prop) && (cache[prop].Remaining - cache[prop].OnBoard - pending > 0)) {
                 for (var i = 0; i < cache[prop].Remaining - cache[prop].OnBoard; i++) {
                     available.push(prop)
                 }
@@ -778,13 +784,13 @@ export class GameActions {
         }
         return available;
     }
-    static DrawVowelTiles(cache: Contracts.iCachedTile, maxVowels: number): string[] {
-        var vowels = GameActions.AvailableVowels(cache);
+    static DrawVowelTiles(cache: Contracts.iCachedTile, unMoved: any, maxVowels: number): string[] {
+        var vowels = GameActions.AvailableVowels(cache, unMoved);
         var pickedVowels = Util.Util.Draw(vowels, maxVowels);
         return pickedVowels;
     }
-    static DrawConsoTiles(cache: Contracts.iCachedTile, maxConsos: number): string[] {
-        var conso = GameActions.AvailableConso(cache);
+    static DrawConsoTiles(cache: Contracts.iCachedTile, unMoved: any, maxConsos: number): string[] {
+        var conso = GameActions.AvailableConso(cache, unMoved);
         var pickedConso = Util.Util.Draw(conso, maxConsos);
         return pickedConso;
     }
