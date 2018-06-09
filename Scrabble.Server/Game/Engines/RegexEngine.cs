@@ -154,8 +154,8 @@ namespace Scrabble.Engines
 						int totalCells = Pres.Length + Centers.Length + Posts.Length;
 						int centroid = totalCells % 2 == 0 ? (totalCells / 2 - 1) : totalCells / 2;
 
-						ProbableMove WH = TryHarizontal(0, Cells, size, star - centroid, 0, Pres, Centers, Posts);
-						ProbableMove WV = TryVertical(0, Cells, size, star - centroid, 0, Pres, Centers, Posts);
+						ProbableMove WH = TryHarizontal(0, star, Cells, size, star - centroid, 0, Pres, Centers, Posts);
+						ProbableMove WV = TryVertical(0, star, Cells, size, star - centroid, 0, Pres, Centers, Posts);
 
 						bool WHValid = Validate(WH, AllWords);
 						bool WVValid = Validate(WV, AllWords);
@@ -219,8 +219,8 @@ namespace Scrabble.Engines
 									continue;
 								}
 
-								ProbableMove WH = TryHarizontal(1, Cells, size, syllable.Index, 0, Pres, Centers, Posts);
-								ProbableMove WV = TryVertical(1, Cells, size, syllable.Index, 0, Pres, Centers, Posts);
+								ProbableMove WH = TryHarizontal(1, -1, Cells, size, syllable.Index, 0, Pres, Centers, Posts);
+								ProbableMove WV = TryVertical(1, -1, Cells, size, syllable.Index, 0, Pres, Centers, Posts);
 
 								bool WHValid = Validate(WH, AllWords);
 								bool WVValid = Validate(WV, AllWords);
@@ -308,7 +308,7 @@ namespace Scrabble.Engines
 
 								if (wordOnBoard.Position == "R")
 								{
-									ProbableMove WH = TryHarizontal(2, Cells, size, wordOnBoard.Index, wordOnBoard.Syllables - 1, Pres, Centers, Posts);
+									ProbableMove WH = TryHarizontal(2,-1, Cells, size, wordOnBoard.Index, wordOnBoard.Syllables - 1, Pres, Centers, Posts);
 									bool WHValid = Validate(WH, AllWords);
 									if (WHValid)
 									{
@@ -317,7 +317,7 @@ namespace Scrabble.Engines
 								}
 								if (wordOnBoard.Position == "C")
 								{
-									ProbableMove WH = TryVertical(2, Cells, size, wordOnBoard.Index, wordOnBoard.Syllables - 1, Pres, Centers, Posts);
+									ProbableMove WH = TryVertical(2, -1, Cells, size, wordOnBoard.Index, wordOnBoard.Syllables - 1, Pres, Centers, Posts);
 									bool WHValid = Validate(WH, AllWords);
 									if (WHValid)
 									{

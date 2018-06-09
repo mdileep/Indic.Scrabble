@@ -204,7 +204,7 @@ export class ProbableWordComparer {
     }
 }
 export class EngineBase {
-    static TryHarizontal(Mode: number, Cells: string[], size: number, Index: number, offset: number, Pre: string[], Centers: string[], Post: string[]): C.ProbableMove {
+    static TryHarizontal(Mode: number, Star: number, Cells: string[], size: number, Index: number, offset: number, Pre: string[], Centers: string[], Post: string[]): C.ProbableMove {
         var Moves: C.Word[] = [] as C.Word[];
         var PreCount = Pre.length;
         var PostCount = Post.length;
@@ -262,13 +262,15 @@ export class EngineBase {
         }
 
         var W = [] as C.ProbableWord[];
-        for (var i in Impacted) {
-            var index = Impacted[i];
-            W = W.concat(EngineBase.WordsAt(NewCells, size, index));
+        if (Star >= 0 && NewCells[Star] != "") {
+            for (var i in Impacted) {
+                var index = Impacted[i];
+                W = W.concat(EngineBase.WordsAt(NewCells, size, index));
+            }
         }
         return { Mode: Mode, Words: W, Moves: Moves, WordsCount: W.length, Direction: "H" } as C.ProbableMove;
     }
-    static TryVertical(Mode: number, Cells: string[], size: number, Index: number, offset: number, Pre: string[], Centers: string[], Post: string[]): C.ProbableMove {
+    static TryVertical(Mode: number, Star: number, Cells: string[], size: number, Index: number, offset: number, Pre: string[], Centers: string[], Post: string[]): C.ProbableMove {
         var Moves = [] as C.Word[];
         var PreCount = Pre.length;
         var PostCount = Post.length;
@@ -328,9 +330,11 @@ export class EngineBase {
         }
 
         var W: C.ProbableWord[] = [] as C.ProbableWord[];
-        for (var i in Impacted) {
-            var index = Impacted[i];
-            W = W.concat(EngineBase.WordsAt(NewCells, size, index));
+        if (Star >= 0 && NewCells[Star] != "") {
+            for (var i in Impacted) {
+                var index = Impacted[i];
+                W = W.concat(EngineBase.WordsAt(NewCells, size, index));
+            }
         }
         return { Mode: Mode, Words: W, Moves: Moves, WordsCount: W.length, Direction: "V" } as C.ProbableMove;
     }
@@ -1241,8 +1245,8 @@ export class RegexEngine extends RegexEngineBase {
                 var totalCells = Pres.length + Centers.length + Posts.length;
                 var centroid = totalCells % 2 == 0 ? (Math.floor(totalCells / 2) - 1) : Math.floor(totalCells / 2);
 
-                var WH = EngineBase.TryHarizontal(0, Cells, size, startIndex - centroid, 0, Pres, Centers, Posts);
-                var WV = EngineBase.TryVertical(0, Cells, size, startIndex - centroid, 0, Pres, Centers, Posts);
+                var WH = EngineBase.TryHarizontal(0, startIndex, Cells, size, startIndex - centroid, 0, Pres, Centers, Posts);
+                var WV = EngineBase.TryVertical(0, startIndex, Cells, size, startIndex - centroid, 0, Pres, Centers, Posts);
 
                 var WHValid = RegexEngine.Validate3(WH, AllWords);
                 var WVValid = RegexEngine.Validate3(WV, AllWords);
@@ -1294,8 +1298,8 @@ export class RegexEngine extends RegexEngineBase {
                             continue;
                         }
 
-                        var WH = EngineBase.TryHarizontal(1, Cells, size, syllable.Index, 0, Pres, Centers, Posts);
-                        var WV = EngineBase.TryVertical(1, Cells, size, syllable.Index, 0, Pres, Centers, Posts);
+                        var WH = EngineBase.TryHarizontal(1, -1, Cells, size, syllable.Index, 0, Pres, Centers, Posts);
+                        var WV = EngineBase.TryVertical(1, -1, Cells, size, syllable.Index, 0, Pres, Centers, Posts);
 
                         var WHValid = RegexEngine.Validate3(WH, AllWords);
                         var WVValid = RegexEngine.Validate3(WV, AllWords);
@@ -1368,14 +1372,14 @@ export class RegexEngine extends RegexEngineBase {
                         }
 
                         if (wordOnBoard.Position == "R") {
-                            var WH = EngineBase.TryHarizontal(3, Cells, size, wordOnBoard.Index, wordOnBoard.Syllables - 1, Pres, Centers, Posts);
+                            var WH = EngineBase.TryHarizontal(3, -1, Cells, size, wordOnBoard.Index, wordOnBoard.Syllables - 1, Pres, Centers, Posts);
                             var WHValid = RegexEngine.Validate3(WH, AllWords);
                             if (WHValid) {
                                 Moves.push(WH);
                             }
                         }
                         if (wordOnBoard.Position == "C") {
-                            var WH = EngineBase.TryVertical(3, Cells, size, wordOnBoard.Index, wordOnBoard.Syllables - 1, Pres, Centers, Posts);
+                            var WH = EngineBase.TryVertical(3, -1, Cells, size, wordOnBoard.Index, wordOnBoard.Syllables - 1, Pres, Centers, Posts);
                             var WHValid = RegexEngine.Validate3(WH, AllWords);
                             if (WHValid) {
                                 Moves.push(WH);
@@ -1701,8 +1705,8 @@ export class RegexV2Engine extends RegexEngineBase {
                 var totalCells = Pres.length + Centers.length + Posts.length;
                 var centroid = totalCells % 2 == 0 ? (Math.floor(totalCells / 2) - 1) : Math.floor(totalCells / 2);
 
-                var WH = EngineBase.TryHarizontal(0, Cells, size, startIndex - centroid, 0, Pres, Centers, Posts);
-                var WV = EngineBase.TryVertical(0, Cells, size, startIndex - centroid, 0, Pres, Centers, Posts);
+                var WH = EngineBase.TryHarizontal(0, startIndex, Cells, size, startIndex - centroid, 0, Pres, Centers, Posts);
+                var WV = EngineBase.TryVertical(0, startIndex, Cells, size, startIndex - centroid, 0, Pres, Centers, Posts);
 
                 var WHValid = RegexV2Engine.Validate4(WH, AllWords, Probables);
                 var WVValid = RegexV2Engine.Validate4(WV, AllWords, Probables);
@@ -1763,8 +1767,8 @@ export class RegexV2Engine extends RegexEngineBase {
                             continue;
                         }
 
-                        var WH = EngineBase.TryHarizontal(1, Cells, size, syllable.Index, 0, Pres, Centers, Posts);
-                        var WV = EngineBase.TryVertical(1, Cells, size, syllable.Index, 0, Pres, Centers, Posts);
+                        var WH = EngineBase.TryHarizontal(1, -1, Cells, size, syllable.Index, 0, Pres, Centers, Posts);
+                        var WV = EngineBase.TryVertical(1, -1, Cells, size, syllable.Index, 0, Pres, Centers, Posts);
 
                         var WHValid = RegexV2Engine.Validate4(WH, AllWords, Probables);
                         var WVValid = RegexV2Engine.Validate4(WV, AllWords, Probables);
@@ -1849,14 +1853,14 @@ export class RegexV2Engine extends RegexEngineBase {
                         }
 
                         if (wordOnBoard.Position == "R") {
-                            var WH = EngineBase.TryHarizontal(2, Cells, size, wordOnBoard.Index, wordOnBoard.Syllables - 1, Pres, Centers, Posts);
+                            var WH = EngineBase.TryHarizontal(2, -1, Cells, size, wordOnBoard.Index, wordOnBoard.Syllables - 1, Pres, Centers, Posts);
                             var WHValid = RegexV2Engine.Validate4(WH, AllWords, Probables);
                             if (WHValid) {
                                 Moves.push(WH);
                             }
                         }
                         if (wordOnBoard.Position == "C") {
-                            var WH = EngineBase.TryVertical(2, Cells, size, wordOnBoard.Index, wordOnBoard.Syllables - 1, Pres, Centers, Posts);
+                            var WH = EngineBase.TryVertical(2, -1, Cells, size, wordOnBoard.Index, wordOnBoard.Syllables - 1, Pres, Centers, Posts);
                             var WHValid = RegexV2Engine.Validate4(WH, AllWords, Probables);
                             if (WHValid) {
                                 Moves.push(WH);

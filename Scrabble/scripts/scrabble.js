@@ -1594,7 +1594,7 @@ define("AskBot", ["require", "exports", 'axios', "GameStore", "GameActions", "Co
     var EngineBase = (function () {
         function EngineBase() {
         }
-        EngineBase.TryHarizontal = function (Mode, Cells, size, Index, offset, Pre, Centers, Post) {
+        EngineBase.TryHarizontal = function (Mode, Star, Cells, size, Index, offset, Pre, Centers, Post) {
             var Moves = [];
             var PreCount = Pre.length;
             var PostCount = Post.length;
@@ -1647,13 +1647,15 @@ define("AskBot", ["require", "exports", 'axios', "GameStore", "GameActions", "Co
                 }
             }
             var W = [];
-            for (var i in Impacted) {
-                var index = Impacted[i];
-                W = W.concat(EngineBase.WordsAt(NewCells, size, index));
+            if (Star >= 0 && NewCells[Star] != "") {
+                for (var i in Impacted) {
+                    var index = Impacted[i];
+                    W = W.concat(EngineBase.WordsAt(NewCells, size, index));
+                }
             }
             return { Mode: Mode, Words: W, Moves: Moves, WordsCount: W.length, Direction: "H" };
         };
-        EngineBase.TryVertical = function (Mode, Cells, size, Index, offset, Pre, Centers, Post) {
+        EngineBase.TryVertical = function (Mode, Star, Cells, size, Index, offset, Pre, Centers, Post) {
             var Moves = [];
             var PreCount = Pre.length;
             var PostCount = Post.length;
@@ -1709,9 +1711,11 @@ define("AskBot", ["require", "exports", 'axios', "GameStore", "GameActions", "Co
                 }
             }
             var W = [];
-            for (var i in Impacted) {
-                var index = Impacted[i];
-                W = W.concat(EngineBase.WordsAt(NewCells, size, index));
+            if (Star >= 0 && NewCells[Star] != "") {
+                for (var i in Impacted) {
+                    var index = Impacted[i];
+                    W = W.concat(EngineBase.WordsAt(NewCells, size, index));
+                }
             }
             return { Mode: Mode, Words: W, Moves: Moves, WordsCount: W.length, Direction: "V" };
         };
@@ -2526,8 +2530,8 @@ define("AskBot", ["require", "exports", 'axios', "GameStore", "GameActions", "Co
                     }
                     var totalCells = Pres.length + Centers.length + Posts.length;
                     var centroid = totalCells % 2 == 0 ? (Math.floor(totalCells / 2) - 1) : Math.floor(totalCells / 2);
-                    var WH = EngineBase.TryHarizontal(0, Cells, size, startIndex - centroid, 0, Pres, Centers, Posts);
-                    var WV = EngineBase.TryVertical(0, Cells, size, startIndex - centroid, 0, Pres, Centers, Posts);
+                    var WH = EngineBase.TryHarizontal(0, startIndex, Cells, size, startIndex - centroid, 0, Pres, Centers, Posts);
+                    var WV = EngineBase.TryVertical(0, startIndex, Cells, size, startIndex - centroid, 0, Pres, Centers, Posts);
                     var WHValid = RegexEngine.Validate3(WH, AllWords);
                     var WVValid = RegexEngine.Validate3(WV, AllWords);
                     if (WHValid) {
@@ -2571,8 +2575,8 @@ define("AskBot", ["require", "exports", 'axios', "GameStore", "GameActions", "Co
                             if (!res) {
                                 continue;
                             }
-                            var WH = EngineBase.TryHarizontal(1, Cells, size, syllable.Index, 0, Pres, Centers, Posts);
-                            var WV = EngineBase.TryVertical(1, Cells, size, syllable.Index, 0, Pres, Centers, Posts);
+                            var WH = EngineBase.TryHarizontal(1, -1, Cells, size, syllable.Index, 0, Pres, Centers, Posts);
+                            var WV = EngineBase.TryVertical(1, -1, Cells, size, syllable.Index, 0, Pres, Centers, Posts);
                             var WHValid = RegexEngine.Validate3(WH, AllWords);
                             var WVValid = RegexEngine.Validate3(WV, AllWords);
                             if (WHValid) {
@@ -2632,14 +2636,14 @@ define("AskBot", ["require", "exports", 'axios', "GameStore", "GameActions", "Co
                                 continue;
                             }
                             if (wordOnBoard.Position == "R") {
-                                var WH = EngineBase.TryHarizontal(3, Cells, size, wordOnBoard.Index, wordOnBoard.Syllables - 1, Pres, Centers, Posts);
+                                var WH = EngineBase.TryHarizontal(3, -1, Cells, size, wordOnBoard.Index, wordOnBoard.Syllables - 1, Pres, Centers, Posts);
                                 var WHValid = RegexEngine.Validate3(WH, AllWords);
                                 if (WHValid) {
                                     Moves.push(WH);
                                 }
                             }
                             if (wordOnBoard.Position == "C") {
-                                var WH = EngineBase.TryVertical(3, Cells, size, wordOnBoard.Index, wordOnBoard.Syllables - 1, Pres, Centers, Posts);
+                                var WH = EngineBase.TryVertical(3, -1, Cells, size, wordOnBoard.Index, wordOnBoard.Syllables - 1, Pres, Centers, Posts);
                                 var WHValid = RegexEngine.Validate3(WH, AllWords);
                                 if (WHValid) {
                                     Moves.push(WH);
@@ -2912,8 +2916,8 @@ define("AskBot", ["require", "exports", 'axios', "GameStore", "GameActions", "Co
                     }
                     var totalCells = Pres.length + Centers.length + Posts.length;
                     var centroid = totalCells % 2 == 0 ? (Math.floor(totalCells / 2) - 1) : Math.floor(totalCells / 2);
-                    var WH = EngineBase.TryHarizontal(0, Cells, size, startIndex - centroid, 0, Pres, Centers, Posts);
-                    var WV = EngineBase.TryVertical(0, Cells, size, startIndex - centroid, 0, Pres, Centers, Posts);
+                    var WH = EngineBase.TryHarizontal(0, startIndex, Cells, size, startIndex - centroid, 0, Pres, Centers, Posts);
+                    var WV = EngineBase.TryVertical(0, startIndex, Cells, size, startIndex - centroid, 0, Pres, Centers, Posts);
                     var WHValid = RegexV2Engine.Validate4(WH, AllWords, Probables);
                     var WVValid = RegexV2Engine.Validate4(WV, AllWords, Probables);
                     if (WHValid) {
@@ -2970,8 +2974,8 @@ define("AskBot", ["require", "exports", 'axios', "GameStore", "GameActions", "Co
                             if (!res) {
                                 continue;
                             }
-                            var WH = EngineBase.TryHarizontal(1, Cells, size, syllable.Index, 0, Pres, Centers, Posts);
-                            var WV = EngineBase.TryVertical(1, Cells, size, syllable.Index, 0, Pres, Centers, Posts);
+                            var WH = EngineBase.TryHarizontal(1, -1, Cells, size, syllable.Index, 0, Pres, Centers, Posts);
+                            var WV = EngineBase.TryVertical(1, -1, Cells, size, syllable.Index, 0, Pres, Centers, Posts);
                             var WHValid = RegexV2Engine.Validate4(WH, AllWords, Probables);
                             var WVValid = RegexV2Engine.Validate4(WV, AllWords, Probables);
                             if (WHValid) {
@@ -3050,14 +3054,14 @@ define("AskBot", ["require", "exports", 'axios', "GameStore", "GameActions", "Co
                                 continue;
                             }
                             if (wordOnBoard.Position == "R") {
-                                var WH = EngineBase.TryHarizontal(2, Cells, size, wordOnBoard.Index, wordOnBoard.Syllables - 1, Pres, Centers, Posts);
+                                var WH = EngineBase.TryHarizontal(2, -1, Cells, size, wordOnBoard.Index, wordOnBoard.Syllables - 1, Pres, Centers, Posts);
                                 var WHValid = RegexV2Engine.Validate4(WH, AllWords, Probables);
                                 if (WHValid) {
                                     Moves.push(WH);
                                 }
                             }
                             if (wordOnBoard.Position == "C") {
-                                var WH = EngineBase.TryVertical(2, Cells, size, wordOnBoard.Index, wordOnBoard.Syllables - 1, Pres, Centers, Posts);
+                                var WH = EngineBase.TryVertical(2, -1, Cells, size, wordOnBoard.Index, wordOnBoard.Syllables - 1, Pres, Centers, Posts);
                                 var WHValid = RegexV2Engine.Validate4(WH, AllWords, Probables);
                                 if (WHValid) {
                                     Moves.push(WH);

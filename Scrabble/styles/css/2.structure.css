@@ -103,6 +103,7 @@ body {
 }
 .board .weight {
   margin: 1vmin;
+  visibility: hidden;
 }
 .players {
   float: left;

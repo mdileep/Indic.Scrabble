@@ -23,7 +23,7 @@ namespace Scrabble.Engines
 		public abstract ProbableMove BestMove();
 		public abstract List<ProbableMove> Probables();
 
-		protected static ProbableMove TryHarizontal(int Mode, string[] Cells, int size, int Index, int offset, string[] Pre, string[] Centers, string[] Post)
+		protected static ProbableMove TryHarizontal(int Mode, int Star, string[] Cells, int size, int Index, int offset, string[] Pre, string[] Centers, string[] Post)
 		{
 			List<Word> Moves = new List<Word>();
 			int PreCount = Pre.Length;
@@ -94,15 +94,17 @@ namespace Scrabble.Engines
 					}
 				}
 			}
-
 			List<ProbableWord> W = new List<ProbableWord>();
-			foreach (int index in Impacted)
+			if (Star >= 0 && NewCells[Star].Trim() != "")
 			{
-				W.AddRange(WordsAt(NewCells, size, index));
+				foreach (int index in Impacted)
+				{
+					W.AddRange(WordsAt(NewCells, size, index));
+				}
 			}
 			return new ProbableMove { Mode = Mode, Words = W, Moves = Moves, Direction = "H" };
 		}
-		protected static ProbableMove TryVertical(int Mode, string[] Cells, int size, int Index, int offset, string[] Pre, string[] Centers, string[] Post)
+		protected static ProbableMove TryVertical(int Mode, int Star, string[] Cells, int size, int Index, int offset, string[] Pre, string[] Centers, string[] Post)
 		{
 			List<Word> Moves = new List<Word>();
 			int PreCount = Pre.Length;
@@ -181,9 +183,12 @@ namespace Scrabble.Engines
 			}
 
 			List<ProbableWord> W = new List<ProbableWord>();
-			foreach (int index in Impacted)
+			if (Star >= 0 && NewCells[Star].Trim() != "")
 			{
-				W.AddRange(WordsAt(NewCells, size, index));
+				foreach (int index in Impacted)
+				{
+					W.AddRange(WordsAt(NewCells, size, index));
+				}
 			}
 			return new ProbableMove { Mode = Mode, Words = W, Moves = Moves, Direction = "V" };
 		}
