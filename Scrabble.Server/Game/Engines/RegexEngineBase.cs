@@ -95,7 +95,7 @@ namespace Scrabble.Engines
 				}
 			}
 			List<ProbableWord> W = new List<ProbableWord>();
-			if (Star >= 0 && NewCells[Star].Trim() != "")
+			if (Star < 0 || (Star >= 0 && NewCells[Star].Trim() != ""))
 			{
 				foreach (int index in Impacted)
 				{
@@ -183,7 +183,7 @@ namespace Scrabble.Engines
 			}
 
 			List<ProbableWord> W = new List<ProbableWord>();
-			if (Star >= 0 && NewCells[Star].Trim() != "")
+			if (Star < 0 || (Star >= 0 && NewCells[Star].Trim() != ""))
 			{
 				foreach (int index in Impacted)
 				{

@@ -262,7 +262,7 @@ export class EngineBase {
         }
 
         var W = [] as C.ProbableWord[];
-        if (Star >= 0 && NewCells[Star] != "") {
+        if (Star < 0 || (Star >= 0 && NewCells[Star] != "")) {
             for (var i in Impacted) {
                 var index = Impacted[i];
                 W = W.concat(EngineBase.WordsAt(NewCells, size, index));
@@ -330,7 +330,7 @@ export class EngineBase {
         }
 
         var W: C.ProbableWord[] = [] as C.ProbableWord[];
-        if (Star >= 0 && NewCells[Star] != "") {
+        if (Star < 0 || (Star >= 0 && NewCells[Star] != "")) {
             for (var i in Impacted) {
                 var index = Impacted[i];
                 W = W.concat(EngineBase.WordsAt(NewCells, size, index));

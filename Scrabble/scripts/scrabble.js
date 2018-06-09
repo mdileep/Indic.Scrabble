@@ -1647,7 +1647,7 @@ define("AskBot", ["require", "exports", 'axios', "GameStore", "GameActions", "Co
                 }
             }
             var W = [];
-            if (Star >= 0 && NewCells[Star] != "") {
+            if (Star < 0 || (Star >= 0 && NewCells[Star] != "")) {
                 for (var i in Impacted) {
                     var index = Impacted[i];
                     W = W.concat(EngineBase.WordsAt(NewCells, size, index));
@@ -1711,7 +1711,7 @@ define("AskBot", ["require", "exports", 'axios', "GameStore", "GameActions", "Co
                 }
             }
             var W = [];
-            if (Star >= 0 && NewCells[Star] != "") {
+            if (Star < 0 || (Star >= 0 && NewCells[Star] != "")) {
                 for (var i in Impacted) {
                     var index = Impacted[i];
                     W = W.concat(EngineBase.WordsAt(NewCells, size, index));
