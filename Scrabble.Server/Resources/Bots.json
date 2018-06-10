@@ -124,5 +124,14 @@
     "Dictionary": "hi.bible.txt",
     "Credits": "https://github.com/christos-c/bible-corpus/tree/master/bibles",
     "Endpoint": null
+  },
+  "bbc.si": {
+    "Name": "BBC",
+    "FullName": "BBC Sinhala",
+    "Language": "si",
+    "Algorithm": "Default",
+    "Dictionary": "si.bbc.txt",
+    "Credits": "https://www.bbc.com/sinhala",
+    "Endpoint": null
   }
 }

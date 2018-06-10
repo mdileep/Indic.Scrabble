@@ -26,8 +26,8 @@
 * Telugu
 * Kannada
 * Hindi (Devanagari Script)
+* Sinhala
 * Other Languages (Immediate Targets)
-    * Sinhala
     * Nepali
     * Tamil
     * Punjabi
