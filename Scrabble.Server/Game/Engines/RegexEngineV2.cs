@@ -128,7 +128,7 @@ namespace Scrabble.Engines
 			}
 
 			WordsDictionary = null; WordsDictionary = null;
-			RefreshScores(Moves, weights, size);
+			RefreshScores(Moves, weights, tileWeights, size);
 			return Moves;
 		}
 

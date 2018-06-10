@@ -47,9 +47,6 @@
         display: block;
         float: left;
     }
-
-
-
     .tray {
         width: 100%;
     }
@@ -98,14 +95,23 @@
         position: relative;
         display: block;
         float: left;
-    }
 
-    .tile span {
-        position: absolute;
-        transform: translate(-50%, -50%);
-        overflow: hidden;
-        text-overflow: clip;
-        display: block;
+        span {
+            position: absolute;
+            transform: translate(-50%, -50%);
+            overflow: hidden;
+            text-overflow: clip;
+            display: block;
+        }
+
+        .count {
+        }
+
+        .weight {
+            right: 0px;
+            bottom:0px;
+            transform:translate(50%, 50%)
+        }
     }
 }
 

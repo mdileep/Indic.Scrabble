@@ -24,7 +24,7 @@ export class Parser {
         //
         var cache: Contracts.iCachedTile = Parser.BuildCache(cabinet);
         var infoBar: Contracts.iInfoBar = Parser.BuildInfoBar();
-        var gameTable: Contracts.iGameTable = Parser.BuildGameTable(Config.Board.GameTable, cache);
+        var gameTable: Contracts.iGameTable = Parser.BuildGameTable(Config.Board.GameTable, board.TileWeights, cache);
         var consent: Contracts.iConsent = Parser.BuildConsent();
         var suggest: Contracts.iSuggestion = Parser.BuildSuggestion();
         var stats: Contracts.iBoardsStats = { EmptyCells: 0, Occupancy: 0, TotalWords: 0, UnUsed: 0 };
@@ -57,13 +57,13 @@ export class Parser {
         };
         return gameState;
     }
-    public static BuildGameTable(JSON: Contracts.iRawGameTable, cache: Contracts.iCachedTile): Contracts.iGameTable {
+    public static BuildGameTable(JSON: Contracts.iRawGameTable, tileWeights: any, cache: Contracts.iCachedTile): Contracts.iGameTable {
         var vAvailable = GameActions.GameActions.DrawVowelTiles(cache, {}, JSON.MaxVowels);
-        var vTray = GameActions.GameActions.SetTableTray(vAvailable, "Vowels");
+        var vTray = GameActions.GameActions.SetTableTray(vAvailable, tileWeights, "Vowels");
         GameActions.GameActions.SetOnBoard(cache, vAvailable);
 
         var cAvailable = GameActions.GameActions.DrawConsoTiles(cache, {}, JSON.MaxOnTable - JSON.MaxVowels);
-        var cTray = GameActions.GameActions.SetTableTray(cAvailable, "Conso");
+        var cTray = GameActions.GameActions.SetTableTray(cAvailable, tileWeights, "Conso");
         GameActions.GameActions.SetOnBoard(cache, cAvailable);
 
         var raw: Contracts.iGameTable = ({} as any) as Contracts.iGameTable;
@@ -105,8 +105,9 @@ export class Parser {
                 var KVP = item.Set[j];
                 for (var key in KVP) {
                     prop.Text = key;
-                    prop.Remaining = KVP[key];
-                    prop.Total = KVP[key];
+                    prop.Remaining = KVP[key].C;
+                    prop.Total = prop.Remaining;
+                    prop.Weight = KVP[key].W;
                 }
                 prop.Index = j;
                 prop.TrayIndex = i;
@@ -124,7 +125,7 @@ export class Parser {
             var item = JSON.Trays[i];
             for (var j = 0; j < item.Tiles.length; j++) {
                 var prop: Contracts.iTileProps = item.Tiles[j];
-                Parser.RefreshCache(tilesDict, { Text: prop.Text, Remaining: prop.Remaining, Total: prop.Total });
+                Parser.RefreshCache(tilesDict, { Text: prop.Text, Remaining: prop.Remaining, Total: prop.Total, Weight: prop.Weight });
             }
         }
         return tilesDict;
@@ -138,6 +139,7 @@ export class Parser {
         raw.Star = JSON.Star;
         raw.Language = JSON.Language;
         raw.Cells = [];
+        raw.TileWeights = Parser.GetTileWeights(JSON.Trays);
         var index = 0;
         for (var i = 0; i < JSON.Size; i++) {
             for (var j = 0; j < JSON.Size; j++) {
@@ -239,23 +241,6 @@ export class Parser {
     }
     public static RefreshCache(cache: Contracts.iCachedTile, prop: any): void {
         var text = prop.Text;
-        if (cache[text] != null) {
-            if (cache[text].Total < prop.Total) {
-                cache[text].Remaining = prop.Remaining;
-                cache[text].Total = prop.Total;
-                cache[text].OnBoard = 0;
-            }
-            return;
-        }
-        var sym = Indic.Indic.GetSynonym(text);
-        if (sym != null && cache[sym] != null) {
-            if (cache[sym].Total < prop.Total) {
-                cache[sym].Remaining = prop.Remaining;
-                cache[sym].Total = prop.Total;
-                cache[text].OnBoard = 0;
-            }
-            return;
-        }
         cache[text] =
             {
                 Remaining: prop.Remaining,
@@ -263,5 +248,23 @@ export class Parser {
                 OnBoard: 0
             };
         return;
+    }
+    static GetTileWeights(trays: Contracts.GameTray[]): any {
+        var Weights: any = {};
+        for (var indx in trays) {
+            var tray = trays[indx];
+            for (var indx2 in tray.Set) {
+                var tiles = tray.Set[indx2];
+                for (var indx3 in tiles) {
+                    var tile: Contracts.WC = tiles[indx3];
+                    Weights[indx3] = tile.W;
+                    var sym = Indic.Indic.GetSynonym(indx3);
+                    if (sym != null) {
+                        Weights[sym] = tile.W;
+                    }
+                }
+            }
+        }
+        return Weights;
     }
 }

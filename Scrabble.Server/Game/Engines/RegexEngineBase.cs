@@ -332,7 +332,7 @@ namespace Scrabble.Engines
 			return W;
 		}
 
-		protected void RefreshScores(List<ProbableMove> Moves, int[] Weights, int size)
+		protected void RefreshScores(List<ProbableMove> Moves, int[] Weights, Dictionary<string, int> TileWeights, int size)
 		{
 			//using (new Watcher("\tRefresh Scores"))
 			{
@@ -345,11 +345,22 @@ namespace Scrabble.Engines
 						foreach (var cell in w.Cells)
 						{
 							var weight = Weights[cell.Index];
-							wordScore = wordScore + weight;
-							cell.Score = weight;
+							var cellScore = weight;
+							var tiles = cell.Target.Split(',');
+							foreach (var tile in tiles)
+							{
+								if (!TileWeights.ContainsKey(tile))
+								{
+									//Shouldn't reach here..
+									continue;
+								}
+								cellScore += TileWeights[tile];
+							}
+							cell.Score = cellScore;
+							wordScore += cellScore;
 						}
 						w.Score = wordScore;
-						score = score + wordScore;
+						score += wordScore;
 					}
 					Move.Score = score;
 				}
@@ -359,6 +370,25 @@ namespace Scrabble.Engines
 				});
 				Moves.Reverse();
 			}
+		}
+		protected Dictionary<string, int> GetTileWeights(GameTray[] trays, CharSet CS)
+		{
+			Dictionary<string, int> Weights = new Dictionary<string, int>();
+			foreach (var tray in trays)
+			{
+				foreach (var tiles in tray.Set)
+				{
+					foreach (var tile in tiles)
+					{
+						Weights[tile.Key] = tile.Value.W;
+						if (CS.Synonyms.ContainsKey(tile.Key))
+						{
+							Weights[CS.Synonyms[tile.Key]] = tile.Value.W;
+						}
+					}
+				}
+			}
+			return Weights;
 		}
 	}
 	abstract class RegexEngineBase : EngineBase

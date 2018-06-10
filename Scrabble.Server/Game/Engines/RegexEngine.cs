@@ -45,6 +45,7 @@ namespace Scrabble.Engines
 			//
 			size = board.Size;
 			weights = board.Weights;
+			tileWeights = GetTileWeights(board.Trays, CharSet);
 			star = board.Star;
 			//
 			cells = Board.Cells;
@@ -120,7 +121,7 @@ namespace Scrabble.Engines
 			}
 
 			WordsDictionary = null; WordsDictionary = null;
-			RefreshScores(Moves, weights, size);
+			RefreshScores(Moves, weights, tileWeights, size);
 			return Moves;
 		}
 
@@ -308,7 +309,7 @@ namespace Scrabble.Engines
 
 								if (wordOnBoard.Position == "R")
 								{
-									ProbableMove WH = TryHarizontal(2,-1, Cells, size, wordOnBoard.Index, wordOnBoard.Syllables - 1, Pres, Centers, Posts);
+									ProbableMove WH = TryHarizontal(2, -1, Cells, size, wordOnBoard.Index, wordOnBoard.Syllables - 1, Pres, Centers, Posts);
 									bool WHValid = Validate(WH, AllWords);
 									if (WHValid)
 									{
@@ -337,6 +338,7 @@ namespace Scrabble.Engines
 		protected int size;
 		protected string[] cells;
 		protected int[] weights;
+		protected Dictionary<string, int> tileWeights;
 		protected string vowels;
 		protected string conso;
 		protected string special;

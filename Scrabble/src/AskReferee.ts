@@ -45,7 +45,7 @@ export class AskReferee {
         var player: C.iPlayer = state.Players.Players[state.Players.CurrentPlayer];
         state.GameTable.Message = U.Util.Format(M.Messages.LookupDict, [player.Name]);
         state.ReadOnly = true;
-        setTimeout(AskServer.AskServer.Validate, GA.Settings.RefreeWait);
+        setTimeout(AskServer.AskServer.Validate, C.Settings.RefreeWait);
     }
     static HasMoves(state: C.iGameState): boolean {
         var Board: C.iBoardProps = state.Board;

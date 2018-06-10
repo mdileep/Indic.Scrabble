@@ -15,6 +15,9 @@
 .tray .count {
   color: black;
 }
+.tray .weight {
+  color: darkslategray;
+}
 .tray .tile {
   color: red;
   background-color: lightgoldenrodyellow;

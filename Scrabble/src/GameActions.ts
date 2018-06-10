@@ -23,13 +23,6 @@ import * as WL from 'WordLoader';
 import * as AskReferee from 'AskReferee';
 declare var Config: Contracts.iRawConfig;
 
-export class Settings {
-    static NoWords: number = 5;
-    static BotWait: number = 300;
-    static PinchWait: number = 300;
-    static RefreeWait: number = 100;
-    static ServerWait: number = 100;
-}
 export class GameActions {
     //Move to Seperate Config File
     static Init(state: Contracts.iGameState, args: Contracts.iArgs): void {
@@ -38,7 +31,7 @@ export class GameActions {
         var currentPlayer = state.Players.CurrentPlayer;
         state.GameTable.Message = Util.Util.Format(Messages.Messages.YourTurn, [players[currentPlayer].Name]);
         PubSub.Subscribe(Contracts.Events.GameOver, GameActions.GameOver);
-        setTimeout(GameActions.PinchPlayer, Settings.PinchWait);
+        setTimeout(GameActions.PinchPlayer, Contracts.Settings.PinchWait);
     }
     static PinchPlayer(): void {
         GS.GameStore.Dispatch({
@@ -60,7 +53,7 @@ export class GameActions {
         }
         state.GameTable.Message = Util.Util.Format(Messages.Messages.Thinking, [players[currentPlayer].Name]);
         //
-        setTimeout(AskBot.AskServer.NextMove, Settings.BotWait);
+        setTimeout(AskBot.AskServer.NextMove, Contracts.Settings.BotWait);
     }
     static Render(): any {
         var rootEl = document.getElementById('root');
@@ -146,7 +139,7 @@ export class GameActions {
             PubSub.Publish(Contracts.Events.GameOver, state);
             return;
         }
-        setTimeout(GameActions.PinchPlayer, Settings.PinchWait);
+        setTimeout(GameActions.PinchPlayer, Contracts.Settings.PinchWait);
     }
     static SetWinner(state: Contracts.iGameState) {
         state.ReadOnly = true;
@@ -408,7 +401,7 @@ export class GameActions {
                 else { player.NoWords = 0; }
             }
             player.Score = score;
-            if (player.NoWords >= Settings.NoWords) {
+            if (player.NoWords >= Contracts.Settings.NoWords) {
                 state.InfoBar.Messages.push(Util.Util.Format(Messages.Messages.WhyGameOver, [player.Name, player.NoWords]));
                 state.GameOver = true;
             }
@@ -554,17 +547,6 @@ export class GameActions {
             }
         }
     }
-    static UnConfirmed(Board: Contracts.iBoardProps): number {
-        //Currently It's a single player game
-        var weight = 0;
-        for (var i = 0; i < Board.Cells.length; i++) {
-            var cell: Contracts.iCellProps = Board.Cells[i];
-            if (cell.Waiting.length > 0) {
-                weight = weight + cell.Weight;
-            }
-        }
-        return weight;
-    }
     static SetRemaining(cache: Contracts.iCachedTile, text: string, incBy: number) {
         if (cache[text] != null) {
             cache[text].Remaining = cache[text].Remaining + incBy;
@@ -605,6 +587,12 @@ export class GameActions {
                 cnt++;
                 if (cell.Waiting.length > 0) {
                     waiting = true;
+                }
+                for (var x in cell.Waiting) {
+                    score += Board.TileWeights[cell.Waiting[x]];
+                }
+                for (var x in cell.Confirmed) {
+                    score += Board.TileWeights[cell.Confirmed[x]];
                 }
                 score += cell.Weight;
                 continue;
@@ -650,13 +638,13 @@ export class GameActions {
         GameActions.ResetOnBoard(state.Cache);
         {
             var available: string[] = GameActions.DrawVowelTiles(state.Cache, {}, state.GameTable.MaxVowels);
-            var tray: Contracts.iTrayProps = GameActions.SetTableTray(available, "Vowels");
+            var tray: Contracts.iTrayProps = GameActions.SetTableTray(available, state.Board.TileWeights, "Vowels");
             state.GameTable.VowelTray = tray;
             GameActions.SetOnBoard(state.Cache, available);
         }
         {
             var available = GameActions.DrawConsoTiles(state.Cache, {}, state.GameTable.MaxOnTable - state.GameTable.MaxVowels);
-            var tray = GameActions.SetTableTray(available, "Conso");
+            var tray = GameActions.SetTableTray(available, state.Board.TileWeights, "Conso");
             state.GameTable.ConsoTray = tray;
             GameActions.SetOnBoard(state.Cache, available);
         }
@@ -693,7 +681,7 @@ export class GameActions {
         var fresh = GameActions.DrawVowelTiles(state.Cache, unMoved, gameTable.MaxVowels - vCount);
         var available = unMovedTiles.concat(fresh);
         available.sort();
-        state.GameTable.VowelTray = GameActions.SetTableTray(available, "Vowels");
+        state.GameTable.VowelTray = GameActions.SetTableTray(available, state.Board.TileWeights, "Vowels");
     }
     static ResetConsoTray(state: Contracts.iGameState): void {
         var gameTable: Contracts.iGameTable = state.GameTable;
@@ -716,7 +704,7 @@ export class GameActions {
         var fresh = GameActions.DrawConsoTiles(state.Cache, unMoved, (gameTable.MaxOnTable - gameTable.MaxVowels) - vCount);
         var available = unMovedTiles.concat(fresh);
         available.sort();
-        state.GameTable.ConsoTray = GameActions.SetTableTray(available, "Conso");
+        state.GameTable.ConsoTray = GameActions.SetTableTray(available, state.Board.TileWeights, "Conso");
     }
     static ResetTable(state: Contracts.iGameState): void {
         GameActions.ResetVowelsTray(state);
@@ -732,7 +720,7 @@ export class GameActions {
         }
         return set;
     }
-    static SetTableTray(picked: string[], id: string): Contracts.iTrayProps {
+    static SetTableTray(picked: string[], tileWeights: any, id: string): Contracts.iTrayProps {
         var tray: Contracts.iTrayProps = ({} as any) as Contracts.iTrayProps;
         tray.Id = id;
         tray.key = tray.Id;
@@ -752,6 +740,7 @@ export class GameActions {
             prop.Text = picked[j];
             prop.Remaining = 1;
             prop.Total = 1;
+            prop.Weight = tileWeights[picked[j]];
             prop.Index = j;
             prop.TrayIndex = -1;
             prop.ReadOnly = false;

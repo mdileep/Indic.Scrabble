@@ -81,6 +81,11 @@ body {
   text-overflow: clip;
   display: block;
 }
+.tray .tile .weight {
+  right: 0px;
+  bottom: 0px;
+  transform: translate(50%, 50%);
+}
 .board {
   clear: both;
   float: left;

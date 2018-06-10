@@ -23,15 +23,16 @@ class Tile extends React.Component<Contracts.iTileProps, Contracts.iTileProps> {
         var childs: React.ReactElement<Contracts.iProps>[] = [];
         var classList: string[] = ["tile"];
 
-
         if (this.props.Remaining > 1) {
             childs.push(this.renderCount());
         }
 
         childs.push(this.renderContent());
 
-        if (this.props.Remaining > 1) {
+        if (this.props.Weight == 1) {
             childs.push(this.renderEmpty());
+        } else {
+            childs.push(this.renderWeight());
         }
 
         if (this.props.Remaining == 0 || this.props.Remaining - this.props.OnBoard == 0) {
@@ -68,7 +69,18 @@ class Tile extends React.Component<Contracts.iTileProps, Contracts.iTileProps> {
             }, [], this.props.Text);
         return content;
     }
-
+    public renderWeight(): React.ReactElement<Contracts.iProps> {
+        var countId = "weight_" + this.props.Id;
+        var count = React.createElement('span',
+            {
+                id: countId,
+                ref: countId,
+                key: countId,
+                className: "weight",
+                title: this.props.Weight
+            }, [], this.props.Weight);
+        return count;
+    }
     public renderCount(): React.ReactElement<Contracts.iProps> {
         var countId = "count_" + this.props.Id;
         var count = React.createElement('span',

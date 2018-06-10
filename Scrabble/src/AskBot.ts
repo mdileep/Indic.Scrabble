@@ -80,7 +80,7 @@ export class AskServer {
                 args: response
             });
 
-        }, GA.Settings.ServerWait);
+        }, C.Settings.ServerWait);
     }
 
     static BotMoveServer(post: any): void {
@@ -115,7 +115,7 @@ export class AskServer {
                 args: response
             });
 
-        }, GA.Settings.ServerWait);
+        }, C.Settings.ServerWait);
     }
 
     static ResolveServer(words: string[]): void {
@@ -143,7 +143,7 @@ export class AskServer {
                     args: response.Result
                 });
 
-        }, GA.Settings.ServerWait);
+        }, C.Settings.ServerWait);
     }
 }
 export class BoardUtil {
@@ -338,8 +338,7 @@ export class EngineBase {
         }
         return { Mode: Mode, Words: W, Moves: Moves, WordsCount: W.length, Direction: "V" } as C.ProbableMove;
     }
-
-    static RefreshScores(Moves: C.ProbableMove[], Weights: number[], size: number): void {
+    static RefreshScores(Moves: C.ProbableMove[], Weights: number[], tileWeights: any, size: number): void {
         for (var indx in Moves) {
             var Move = Moves[indx];
             var score: number = 0;
@@ -349,8 +348,18 @@ export class EngineBase {
                 for (var indx3 in w.Cells) {
                     var cell = w.Cells[indx3];
                     var weight = Weights[cell.Index];
-                    wordScore = wordScore + weight;
-                    cell.Score = weight;
+                    var cellScore = weight;
+                    var tiles = cell.Target.split(',');
+                    for (var indx4 in tiles) {
+                        var tile = tiles[indx4];
+                        if (tileWeights[tile] == null) {
+                            debugger;//Shouldn't reach here..
+                            continue;
+                        }
+                        cellScore += tileWeights[tile];
+                    }
+                    cell.Score = cellScore;
+                    wordScore += cellScore;
                 }
                 w.Score = wordScore;
                 score = score + wordScore;
@@ -1160,6 +1169,7 @@ export class RegexEngine extends RegexEngineBase {
         //
         var size = board.Size;
         var weights = board.Weights;
+        var tileWeights = board.TileWeights;
         var start = board.Star;
         //
         var cells = Board.Cells;
@@ -1215,7 +1225,7 @@ export class RegexEngine extends RegexEngineBase {
         }
 
         WordsDictionary = null;
-        EngineBase.RefreshScores(Moves, weights, size);
+        EngineBase.RefreshScores(Moves, weights, tileWeights, size);
         return Moves;
     }
 
@@ -1470,6 +1480,7 @@ export class RegexV2Engine extends RegexEngineBase {
         //
         var size = board.Size;
         var weights = board.Weights;
+        var tileWeights = board.TileWeights;
         var star = board.Star;
         //
         var cells = Board.Cells;
@@ -1562,7 +1573,7 @@ export class RegexV2Engine extends RegexEngineBase {
             Moves = Moves.concat(RegexV2Engine.EmptyExtensions2(cells, size, CharSet, star, WordsDictionary, ContextualList, MovableTiles, SpeicalDict));
         }
         WordsDictionary = null;
-        EngineBase.RefreshScores(Moves, weights, size);
+        EngineBase.RefreshScores(Moves, weights, tileWeights, size);
 
         if (console) { console.log(U.Util.Format("Moves: V2: {0}", [U.Util.ElapsedTime(performance.now() - st)])); }
         if (console && Moves.length > 0) { console.log(U.Util.Format("Mode: {0}", [Moves[0].Mode])); }
@@ -1964,9 +1975,26 @@ export class GameConfig {
         return null;
     }
     static GetBoard(name: string): C.KnownBoard {
+        if (Config.Board.TileWeights == null) {
+            Config.Board.TileWeights = GameConfig.GetTileWeights(Config.Board.Trays as C.GameTray[]);
+        }
         return Config.Board;
     }
     static GetCharSet(lang: string): C.CharSet {
         return Config.CharSet;
+    }
+    static GetTileWeights(trays: C.GameTray[]): any {
+        var Weights: any = {};
+        for (var indx in trays) {
+            var tray = trays[indx];
+            for (var indx2 in tray.Set) {
+                var tiles = tray.Set[indx2];
+                for (var indx3 in tiles) {
+                    var tile: C.WC = tiles[indx3];
+                    Weights[indx3] = tile.W;
+                }
+            }
+        }
+        return Weights;
     }
 }

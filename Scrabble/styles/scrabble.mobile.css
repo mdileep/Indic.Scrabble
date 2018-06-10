@@ -86,7 +86,8 @@
   .tray .content {
     margin: 4vmin;
   }
-  .tray .count {
+  .tray .count,
+  .tray .weight {
     margin: 1vmin;
   }
   .board {

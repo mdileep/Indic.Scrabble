@@ -107,6 +107,11 @@ body {
   text-overflow: clip;
   display: block;
 }
+.tray .tile .weight {
+  right: 0px;
+  bottom: 0px;
+  transform: translate(50%, 50%);
+}
 .board {
   clear: both;
   float: left;
@@ -221,7 +226,8 @@ body {
 .tray .content {
   margin: 3vmin;
 }
-.tray .count {
+.tray .count,
+.tray .weight {
   margin: 1vmin;
 }
 .board {
@@ -261,6 +267,9 @@ body {
 }
 .tray .count {
   color: black;
+}
+.tray .weight {
+  color: darkslategray;
 }
 .tray .tile {
   color: red;
@@ -385,6 +394,10 @@ body {
 }
 .tray .count {
   text-align: left;
+  vertical-align: top;
+}
+.tray .weight {
+  text-align: right;
   vertical-align: top;
 }
 .board .weight {

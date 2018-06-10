@@ -65,7 +65,12 @@ namespace Shared
 		public string Id;
 		public string Title;
 		public bool Show;
-		public Dictionary<string, int>[] Set;
+		public Dictionary<string, WC>[] Set;
+	}
+	public class WC
+	{
+		public int W;
+		public int C;
 	}
 	public class GameTable
 	{

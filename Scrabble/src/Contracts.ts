@@ -34,6 +34,7 @@ export interface iTileProps extends iComponent {
     Text: string;
     Remaining: number;
     Total: number;
+    Weight: number;
     OnBoard: number;
     Index: number;
     TrayIndex: number;
@@ -44,6 +45,7 @@ export interface iBoardProps extends iComponent {
     Star: number;
     Language: string;
     Cells: iCellProps[];
+    TileWeights: any;
 }
 export interface iCellProps extends iComponent {
     Title: string;
@@ -353,9 +355,28 @@ export interface KnownBoard {
     Size: number;
     Language: string;
     Weights: number[];
+    Trays: GameTray[];
     Star: number;
+    TileWeights: any;
+}
+export interface GameTray {
+    Id: string;
+    Title: string;
+    Show: boolean;
+    Set: any;
+}
+export interface WC {
+    W: number;
+    C: number;
 }
 export interface iGameEngine {
     BestMove(Board: ScrabbleBoard): ProbableMove;
     Probables(Board: ScrabbleBoard): ProbableMove[];
+}
+export class Settings {
+    static NoWords: number = 5;
+    static BotWait: number = 300;
+    static PinchWait: number = 300;
+    static RefreeWait: number = 100;
+    static ServerWait: number = 100;
 }

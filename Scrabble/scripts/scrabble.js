@@ -57,6 +57,17 @@ define("Contracts", ["require", "exports"], function (require, exports) {
         return Actions;
     }());
     exports.Actions = Actions;
+    var Settings = (function () {
+        function Settings() {
+        }
+        Settings.NoWords = 5;
+        Settings.BotWait = 300;
+        Settings.PinchWait = 300;
+        Settings.RefreeWait = 100;
+        Settings.ServerWait = 100;
+        return Settings;
+    }());
+    exports.Settings = Settings;
 });
 define("_OverlayDialog", ["require", "exports", "react"], function (require, exports, React) {
     "use strict";
@@ -950,7 +961,7 @@ define("Parser", ["require", "exports", "GameActions", "Indic"], function (requi
             var players = Parser.ParsePlayers(Config.Players);
             var cache = Parser.BuildCache(cabinet);
             var infoBar = Parser.BuildInfoBar();
-            var gameTable = Parser.BuildGameTable(Config.Board.GameTable, cache);
+            var gameTable = Parser.BuildGameTable(Config.Board.GameTable, board.TileWeights, cache);
             var consent = Parser.BuildConsent();
             var suggest = Parser.BuildSuggestion();
             var stats = { EmptyCells: 0, Occupancy: 0, TotalWords: 0, UnUsed: 0 };
@@ -978,12 +989,12 @@ define("Parser", ["require", "exports", "GameActions", "Indic"], function (requi
             };
             return gameState;
         };
-        Parser.BuildGameTable = function (JSON, cache) {
+        Parser.BuildGameTable = function (JSON, tileWeights, cache) {
             var vAvailable = GameActions.GameActions.DrawVowelTiles(cache, {}, JSON.MaxVowels);
-            var vTray = GameActions.GameActions.SetTableTray(vAvailable, "Vowels");
+            var vTray = GameActions.GameActions.SetTableTray(vAvailable, tileWeights, "Vowels");
             GameActions.GameActions.SetOnBoard(cache, vAvailable);
             var cAvailable = GameActions.GameActions.DrawConsoTiles(cache, {}, JSON.MaxOnTable - JSON.MaxVowels);
-            var cTray = GameActions.GameActions.SetTableTray(cAvailable, "Conso");
+            var cTray = GameActions.GameActions.SetTableTray(cAvailable, tileWeights, "Conso");
             GameActions.GameActions.SetOnBoard(cache, cAvailable);
             var raw = {};
             raw.key = "gameTable";
@@ -1024,8 +1035,9 @@ define("Parser", ["require", "exports", "GameActions", "Indic"], function (requi
                     var KVP = item.Set[j];
                     for (var key in KVP) {
                         prop.Text = key;
-                        prop.Remaining = KVP[key];
-                        prop.Total = KVP[key];
+                        prop.Remaining = KVP[key].C;
+                        prop.Total = prop.Remaining;
+                        prop.Weight = KVP[key].W;
                     }
                     prop.Index = j;
                     prop.TrayIndex = i;
@@ -1043,7 +1055,7 @@ define("Parser", ["require", "exports", "GameActions", "Indic"], function (requi
                 var item = JSON.Trays[i];
                 for (var j = 0; j < item.Tiles.length; j++) {
                     var prop = item.Tiles[j];
-                    Parser.RefreshCache(tilesDict, { Text: prop.Text, Remaining: prop.Remaining, Total: prop.Total });
+                    Parser.RefreshCache(tilesDict, { Text: prop.Text, Remaining: prop.Remaining, Total: prop.Total, Weight: prop.Weight });
                 }
             }
             return tilesDict;
@@ -1057,6 +1069,7 @@ define("Parser", ["require", "exports", "GameActions", "Indic"], function (requi
             raw.Star = JSON.Star;
             raw.Language = JSON.Language;
             raw.Cells = [];
+            raw.TileWeights = Parser.GetTileWeights(JSON.Trays);
             var index = 0;
             for (var i = 0; i < JSON.Size; i++) {
                 for (var j = 0; j < JSON.Size; j++) {
@@ -1151,23 +1164,6 @@ define("Parser", ["require", "exports", "GameActions", "Indic"], function (requi
         };
         Parser.RefreshCache = function (cache, prop) {
             var text = prop.Text;
-            if (cache[text] != null) {
-                if (cache[text].Total < prop.Total) {
-                    cache[text].Remaining = prop.Remaining;
-                    cache[text].Total = prop.Total;
-                    cache[text].OnBoard = 0;
-                }
-                return;
-            }
-            var sym = Indic.Indic.GetSynonym(text);
-            if (sym != null && cache[sym] != null) {
-                if (cache[sym].Total < prop.Total) {
-                    cache[sym].Remaining = prop.Remaining;
-                    cache[sym].Total = prop.Total;
-                    cache[text].OnBoard = 0;
-                }
-                return;
-            }
             cache[text] =
                 {
                     Remaining: prop.Remaining,
@@ -1175,6 +1171,24 @@ define("Parser", ["require", "exports", "GameActions", "Indic"], function (requi
                     OnBoard: 0
                 };
             return;
+        };
+        Parser.GetTileWeights = function (trays) {
+            var Weights = {};
+            for (var indx in trays) {
+                var tray = trays[indx];
+                for (var indx2 in tray.Set) {
+                    var tiles = tray.Set[indx2];
+                    for (var indx3 in tiles) {
+                        var tile = tiles[indx3];
+                        Weights[indx3] = tile.W;
+                        var sym = Indic.Indic.GetSynonym(indx3);
+                        if (sym != null) {
+                            Weights[sym] = tile.W;
+                        }
+                    }
+                }
+            }
+            return Weights;
         };
         return Parser;
     }());
@@ -1421,7 +1435,7 @@ define("WordLoader", ["require", "exports", "Contracts", 'axios', "GameStore"], 
     }());
     exports.WordLoader = WordLoader;
 });
-define("AskBot", ["require", "exports", 'axios', "GameStore", "GameActions", "Contracts", "Util", "WordLoader"], function (require, exports, axios, GS, GA, C, U, WL) {
+define("AskBot", ["require", "exports", 'axios', "GameStore", "Contracts", "Util", "WordLoader"], function (require, exports, axios, GS, C, U, WL) {
     "use strict";
     var AskServer = (function () {
         function AskServer() {
@@ -1471,7 +1485,7 @@ define("AskBot", ["require", "exports", 'axios', "GameStore", "GameActions", "Co
                     type: C.Actions.ReciveSuggestion,
                     args: response
                 });
-            }, GA.Settings.ServerWait);
+            }, C.Settings.ServerWait);
         };
         AskServer.BotMoveServer = function (post) {
             axios
@@ -1499,7 +1513,7 @@ define("AskBot", ["require", "exports", 'axios', "GameStore", "GameActions", "Co
                     type: C.Actions.BotMoveResponse,
                     args: response
                 });
-            }, GA.Settings.ServerWait);
+            }, C.Settings.ServerWait);
         };
         AskServer.ResolveServer = function (words) {
         };
@@ -1519,7 +1533,7 @@ define("AskBot", ["require", "exports", 'axios', "GameStore", "GameActions", "Co
                         C.Actions.TakeConsent,
                     args: response.Result
                 });
-            }, GA.Settings.ServerWait);
+            }, C.Settings.ServerWait);
         };
         return AskServer;
     }());
@@ -1719,7 +1733,7 @@ define("AskBot", ["require", "exports", 'axios', "GameStore", "GameActions", "Co
             }
             return { Mode: Mode, Words: W, Moves: Moves, WordsCount: W.length, Direction: "V" };
         };
-        EngineBase.RefreshScores = function (Moves, Weights, size) {
+        EngineBase.RefreshScores = function (Moves, Weights, tileWeights, size) {
             for (var indx in Moves) {
                 var Move = Moves[indx];
                 var score = 0;
@@ -1729,8 +1743,18 @@ define("AskBot", ["require", "exports", 'axios', "GameStore", "GameActions", "Co
                     for (var indx3 in w.Cells) {
                         var cell = w.Cells[indx3];
                         var weight = Weights[cell.Index];
-                        wordScore = wordScore + weight;
-                        cell.Score = weight;
+                        var cellScore = weight;
+                        var tiles = cell.Target.split(',');
+                        for (var indx4 in tiles) {
+                            var tile = tiles[indx4];
+                            if (tileWeights[tile] == null) {
+                                debugger;
+                                continue;
+                            }
+                            cellScore += tileWeights[tile];
+                        }
+                        cell.Score = cellScore;
+                        wordScore += cellScore;
                     }
                     w.Score = wordScore;
                     score = score + wordScore;
@@ -2465,6 +2489,7 @@ define("AskBot", ["require", "exports", 'axios', "GameStore", "GameActions", "Co
             var id = bot.Id + Board.Id;
             var size = board.Size;
             var weights = board.Weights;
+            var tileWeights = board.TileWeights;
             var start = board.Star;
             var cells = Board.Cells;
             var vowels = Board.Vowels;
@@ -2506,7 +2531,7 @@ define("AskBot", ["require", "exports", 'axios', "GameStore", "GameActions", "Co
                 Moves = Moves.concat(RegexEngine.EmptyExtensions(cells, size, CharSet, start, WordsDictionary, MovableList, SpeicalDict));
             }
             WordsDictionary = null;
-            EngineBase.RefreshScores(Moves, weights, size);
+            EngineBase.RefreshScores(Moves, weights, tileWeights, size);
             return Moves;
         };
         RegexEngine.EmptyExtensions = function (Cells, size, CharSet, startIndex, AllWords, Movables, SpeicalDict) {
@@ -2718,6 +2743,7 @@ define("AskBot", ["require", "exports", 'axios', "GameStore", "GameActions", "Co
             var id = (bot == null ? board.Name : bot.Id) + Board.Id;
             var size = board.Size;
             var weights = board.Weights;
+            var tileWeights = board.TileWeights;
             var star = board.Star;
             var cells = Board.Cells;
             var vowels = Board.Vowels;
@@ -2796,7 +2822,7 @@ define("AskBot", ["require", "exports", 'axios', "GameStore", "GameActions", "Co
                 Moves = Moves.concat(RegexV2Engine.EmptyExtensions2(cells, size, CharSet, star, WordsDictionary, ContextualList, MovableTiles, SpeicalDict));
             }
             WordsDictionary = null;
-            EngineBase.RefreshScores(Moves, weights, size);
+            EngineBase.RefreshScores(Moves, weights, tileWeights, size);
             if (console) {
                 console.log(U.Util.Format("Moves: V2: {0}", [U.Util.ElapsedTime(performance.now() - st)]));
             }
@@ -3177,10 +3203,27 @@ define("AskBot", ["require", "exports", 'axios', "GameStore", "GameActions", "Co
             return null;
         };
         GameConfig.GetBoard = function (name) {
+            if (Config.Board.TileWeights == null) {
+                Config.Board.TileWeights = GameConfig.GetTileWeights(Config.Board.Trays);
+            }
             return Config.Board;
         };
         GameConfig.GetCharSet = function (lang) {
             return Config.CharSet;
+        };
+        GameConfig.GetTileWeights = function (trays) {
+            var Weights = {};
+            for (var indx in trays) {
+                var tray = trays[indx];
+                for (var indx2 in tray.Set) {
+                    var tiles = tray.Set[indx2];
+                    for (var indx3 in tiles) {
+                        var tile = tiles[indx3];
+                        Weights[indx3] = tile.W;
+                    }
+                }
+            }
+            return Weights;
         };
         return GameConfig;
     }());
@@ -3202,8 +3245,11 @@ define("Tile", ["require", "exports", "react"], function (require, exports, Reac
                 childs.push(this.renderCount());
             }
             childs.push(this.renderContent());
-            if (this.props.Remaining > 1) {
+            if (this.props.Weight == 1) {
                 childs.push(this.renderEmpty());
+            }
+            else {
+                childs.push(this.renderWeight());
             }
             if (this.props.Remaining == 0 || this.props.Remaining - this.props.OnBoard == 0) {
                 classList.push("readonly");
@@ -3237,6 +3283,17 @@ define("Tile", ["require", "exports", "react"], function (require, exports, Reac
                 title: this.props.Text,
             }, [], this.props.Text);
             return content;
+        };
+        Tile.prototype.renderWeight = function () {
+            var countId = "weight_" + this.props.Id;
+            var count = React.createElement('span', {
+                id: countId,
+                ref: countId,
+                key: countId,
+                className: "weight",
+                title: this.props.Weight
+            }, [], this.props.Weight);
+            return count;
         };
         Tile.prototype.renderCount = function () {
             var countId = "count_" + this.props.Id;
@@ -3311,6 +3368,7 @@ define("Tray", ["require", "exports", "react", "Tile"], function (require, expor
                 Remaining: tileProp.Remaining,
                 OnBoard: tileProp.OnBoard,
                 Total: tileProp.Total,
+                Weight: tileProp.Weight,
                 Index: tileProp.Index,
                 TrayIndex: tileProp.TrayIndex
             });
@@ -4113,7 +4171,7 @@ define("GameRoom", ["require", "exports", "react", "Cabinet", "Board", "InfoBar"
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.default = GameRoom;
 });
-define("AskReferee", ["require", "exports", "Messages", "Util", "AskBot", "Indic", "GameActions"], function (require, exports, M, U, AskServer, Indic, GA) {
+define("AskReferee", ["require", "exports", "Contracts", "Messages", "Util", "AskBot", "Indic", "GameActions"], function (require, exports, C, M, U, AskServer, Indic, GA) {
     "use strict";
     var AskReferee = (function () {
         function AskReferee() {
@@ -4145,7 +4203,7 @@ define("AskReferee", ["require", "exports", "Messages", "Util", "AskBot", "Indic
             var player = state.Players.Players[state.Players.CurrentPlayer];
             state.GameTable.Message = U.Util.Format(M.Messages.LookupDict, [player.Name]);
             state.ReadOnly = true;
-            setTimeout(AskServer.AskServer.Validate, GA.Settings.RefreeWait);
+            setTimeout(AskServer.AskServer.Validate, C.Settings.RefreeWait);
         };
         AskReferee.HasMoves = function (state) {
             var Board = state.Board;
@@ -4308,17 +4366,6 @@ define("AskReferee", ["require", "exports", "Messages", "Util", "AskBot", "Indic
 });
 define("GameActions", ["require", "exports", "react", "react-dom", "Contracts", "Messages", "Indic", "Util", "AskBot", "GameStore", "GameRoom", "WordLoader", "AskReferee"], function (require, exports, React, ReactDOM, Contracts, Messages, Indic, Util, AskBot, GS, Game, WL, AskReferee) {
     "use strict";
-    var Settings = (function () {
-        function Settings() {
-        }
-        Settings.NoWords = 5;
-        Settings.BotWait = 300;
-        Settings.PinchWait = 300;
-        Settings.RefreeWait = 100;
-        Settings.ServerWait = 100;
-        return Settings;
-    }());
-    exports.Settings = Settings;
     var GameActions = (function () {
         function GameActions() {
         }
@@ -4328,7 +4375,7 @@ define("GameActions", ["require", "exports", "react", "react-dom", "Contracts", 
             var currentPlayer = state.Players.CurrentPlayer;
             state.GameTable.Message = Util.Util.Format(Messages.Messages.YourTurn, [players[currentPlayer].Name]);
             PubSub.Subscribe(Contracts.Events.GameOver, GameActions.GameOver);
-            setTimeout(GameActions.PinchPlayer, Settings.PinchWait);
+            setTimeout(GameActions.PinchPlayer, Contracts.Settings.PinchWait);
         };
         GameActions.PinchPlayer = function () {
             GS.GameStore.Dispatch({
@@ -4348,7 +4395,7 @@ define("GameActions", ["require", "exports", "react", "react-dom", "Contracts", 
                 return;
             }
             state.GameTable.Message = Util.Util.Format(Messages.Messages.Thinking, [players[currentPlayer].Name]);
-            setTimeout(AskBot.AskServer.NextMove, Settings.BotWait);
+            setTimeout(AskBot.AskServer.NextMove, Contracts.Settings.BotWait);
         };
         GameActions.Render = function () {
             var rootEl = document.getElementById('root');
@@ -4433,7 +4480,7 @@ define("GameActions", ["require", "exports", "react", "react-dom", "Contracts", 
                 PubSub.Publish(Contracts.Events.GameOver, state);
                 return;
             }
-            setTimeout(GameActions.PinchPlayer, Settings.PinchWait);
+            setTimeout(GameActions.PinchPlayer, Contracts.Settings.PinchWait);
         };
         GameActions.SetWinner = function (state) {
             state.ReadOnly = true;
@@ -4689,7 +4736,7 @@ define("GameActions", ["require", "exports", "react", "react-dom", "Contracts", 
                     }
                 }
                 player.Score = score;
-                if (player.NoWords >= Settings.NoWords) {
+                if (player.NoWords >= Contracts.Settings.NoWords) {
                     state.InfoBar.Messages.push(Util.Util.Format(Messages.Messages.WhyGameOver, [player.Name, player.NoWords]));
                     state.GameOver = true;
                 }
@@ -4827,16 +4874,6 @@ define("GameActions", ["require", "exports", "react", "react-dom", "Contracts", 
                 }
             }
         };
-        GameActions.UnConfirmed = function (Board) {
-            var weight = 0;
-            for (var i = 0; i < Board.Cells.length; i++) {
-                var cell = Board.Cells[i];
-                if (cell.Waiting.length > 0) {
-                    weight = weight + cell.Weight;
-                }
-            }
-            return weight;
-        };
         GameActions.SetRemaining = function (cache, text, incBy) {
             if (cache[text] != null) {
                 cache[text].Remaining = cache[text].Remaining + incBy;
@@ -4876,6 +4913,12 @@ define("GameActions", ["require", "exports", "react", "react-dom", "Contracts", 
                     cnt++;
                     if (cell.Waiting.length > 0) {
                         waiting = true;
+                    }
+                    for (var x in cell.Waiting) {
+                        score += Board.TileWeights[cell.Waiting[x]];
+                    }
+                    for (var x in cell.Confirmed) {
+                        score += Board.TileWeights[cell.Confirmed[x]];
                     }
                     score += cell.Weight;
                     continue;
@@ -4920,13 +4963,13 @@ define("GameActions", ["require", "exports", "react", "react-dom", "Contracts", 
             GameActions.ResetOnBoard(state.Cache);
             {
                 var available = GameActions.DrawVowelTiles(state.Cache, {}, state.GameTable.MaxVowels);
-                var tray = GameActions.SetTableTray(available, "Vowels");
+                var tray = GameActions.SetTableTray(available, state.Board.TileWeights, "Vowels");
                 state.GameTable.VowelTray = tray;
                 GameActions.SetOnBoard(state.Cache, available);
             }
             {
                 var available = GameActions.DrawConsoTiles(state.Cache, {}, state.GameTable.MaxOnTable - state.GameTable.MaxVowels);
-                var tray = GameActions.SetTableTray(available, "Conso");
+                var tray = GameActions.SetTableTray(available, state.Board.TileWeights, "Conso");
                 state.GameTable.ConsoTray = tray;
                 GameActions.SetOnBoard(state.Cache, available);
             }
@@ -4963,7 +5006,7 @@ define("GameActions", ["require", "exports", "react", "react-dom", "Contracts", 
             var fresh = GameActions.DrawVowelTiles(state.Cache, unMoved, gameTable.MaxVowels - vCount);
             var available = unMovedTiles.concat(fresh);
             available.sort();
-            state.GameTable.VowelTray = GameActions.SetTableTray(available, "Vowels");
+            state.GameTable.VowelTray = GameActions.SetTableTray(available, state.Board.TileWeights, "Vowels");
         };
         GameActions.ResetConsoTray = function (state) {
             var gameTable = state.GameTable;
@@ -4986,7 +5029,7 @@ define("GameActions", ["require", "exports", "react", "react-dom", "Contracts", 
             var fresh = GameActions.DrawConsoTiles(state.Cache, unMoved, (gameTable.MaxOnTable - gameTable.MaxVowels) - vCount);
             var available = unMovedTiles.concat(fresh);
             available.sort();
-            state.GameTable.ConsoTray = GameActions.SetTableTray(available, "Conso");
+            state.GameTable.ConsoTray = GameActions.SetTableTray(available, state.Board.TileWeights, "Conso");
         };
         GameActions.ResetTable = function (state) {
             GameActions.ResetVowelsTray(state);
@@ -5002,7 +5045,7 @@ define("GameActions", ["require", "exports", "react", "react-dom", "Contracts", 
             }
             return set;
         };
-        GameActions.SetTableTray = function (picked, id) {
+        GameActions.SetTableTray = function (picked, tileWeights, id) {
             var tray = {};
             tray.Id = id;
             tray.key = tray.Id;
@@ -5021,6 +5064,7 @@ define("GameActions", ["require", "exports", "react", "react-dom", "Contracts", 
                 prop.Text = picked[j];
                 prop.Remaining = 1;
                 prop.Total = 1;
+                prop.Weight = tileWeights[picked[j]];
                 prop.Index = j;
                 prop.TrayIndex = -1;
                 prop.ReadOnly = false;
