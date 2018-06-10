@@ -63,6 +63,7 @@
     <Content Include="bots\hi.bible.txt" />
     <Content Include="bots\kn.bible.txt" />
     <Content Include="bots\te.bible.txt" />
+     <Content Include="bots\si.bbc.txt" />
   </ItemGroup>
   <ItemGroup>
     <LessFiles Include="styles\less\4.colors.mobile.less" />
