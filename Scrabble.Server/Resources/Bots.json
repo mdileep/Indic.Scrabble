@@ -133,5 +133,14 @@
     "Dictionary": "si.bbc.txt",
     "Credits": "https://www.bbc.com/sinhala",
     "Endpoint": null
+  },
+  "tharunaya.si":{
+    "Name": "Tharunaya",
+    "FullName": "Tharunaya",
+    "Language": "si",
+    "Algorithm": "Default",
+    "Dictionary": "si.tharunaya.txt",
+    "Credits": "http://www.tharunaya.us/",
+    "Endpoint": null
   }
 }
