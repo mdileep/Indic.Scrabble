@@ -162,11 +162,11 @@ export class Parser {
         raw.Id = "Players";
         raw.key = raw.Id;
         raw.Players = [];
-        raw.CurrentPlayer = 0;
+        raw.Current = 0;
         raw.HasClaims = false;
         for (var i = 0; i < players.length; i++) {
             var player: Contracts.iPlayer = players[i] as Contracts.iPlayer;
-            player.CurrentTurn = (i == raw.CurrentPlayer);
+            player.CurrentTurn = (i == raw.Current);
             player.Score = 0;
             player.Unconfirmed = 0;
             player.Awarded = [];

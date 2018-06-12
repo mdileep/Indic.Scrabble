@@ -47,6 +47,9 @@ class GameTable extends React.Component<Contracts.iGameTable, Contracts.iGameTab
         var consoTray = React.createElement(((Tray.default as any) as React.ComponentClass<Contracts.iTrayProps>), Util.Util.Merge(this.props.ConsoTray, { ShowLabel: false, ReadOnly: this.props.ReadOnly }));
         childs.push(consoTray);
 
+        //var brand = this.renderBrand();
+        //childs.push(brand);
+
         var id: string = "GameTable";
         var elem = React.createElement('div',
             {
@@ -60,6 +63,19 @@ class GameTable extends React.Component<Contracts.iGameTable, Contracts.iGameTab
             }, childs);
         return elem;
     }
+
+    //public renderBrand(): React.ReactElement<Contracts.iProps> {
+    //    var id = "brand";
+    //    var brand = React.createElement('h2',
+    //        {
+    //            id: id,
+    //            key: id,
+    //            ref: id,
+    //            className: "h2",
+    //            title: 'padakaeLi'
+    //        }, [], 'padakaeLi');
+    //    return brand;
+    //}
 
     public renderMessage(): React.ReactElement<Contracts.iProps> {
         var id = "message";

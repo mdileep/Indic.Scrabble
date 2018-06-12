@@ -65,7 +65,7 @@ export class AskServer {
         setTimeout(function () {
 
             var st = performance.now();
-            var move: C.ProbableMove = new RegexV2Engine().BestMove(post);
+            var move: C.ProbableMove = new RegexV2Engine().BestMove(post.Board);
             var effort = U.Util.ElapsedTime(performance.now() - st);
 
             var response =
@@ -85,7 +85,7 @@ export class AskServer {
 
     static BotMoveServer(post: any): void {
         axios
-            .post("/API.ashx?nextmove", post)
+            .post("/API.ashx?nextmove", post.Board)
             .then(response => {
                 GS.GameStore.Dispatch({
                     type: C.Actions.BotMoveResponse,
@@ -100,7 +100,7 @@ export class AskServer {
         setTimeout(function () {
 
             var st2 = performance.now();
-            var move2: C.ProbableMove = new RegexV2Engine().BestMove(post);
+            var move2: C.ProbableMove = new RegexV2Engine().BestMove(post.Board);
             var effort2 = U.Util.ElapsedTime(performance.now() - st2);
 
             var response =

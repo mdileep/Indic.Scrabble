@@ -28,8 +28,8 @@ export class GameActions {
     static Init(state: Contracts.iGameState, args: Contracts.iArgs): void {
         GameActions.Render();
         var players = state.Players.Players;
-        var currentPlayer = state.Players.CurrentPlayer;
-        state.GameTable.Message = Util.Util.Format(Messages.Messages.YourTurn, [players[currentPlayer].Name]);
+        var current = state.Players.Current;
+        state.GameTable.Message = Util.Util.Format(Messages.Messages.YourTurn, [players[current].Name]);
         PubSub.Subscribe(Contracts.Events.GameOver, GameActions.GameOver);
         setTimeout(GameActions.PinchPlayer, Contracts.Settings.PinchWait);
     }
@@ -45,7 +45,7 @@ export class GameActions {
             return;
         }
         var players = state.Players.Players;
-        var currentPlayer = state.Players.CurrentPlayer;
+        var currentPlayer = state.Players.Current;
         var isBot: boolean = players[currentPlayer].Bot !== null;
         state.ReadOnly = isBot;
         if (!isBot) {
@@ -84,7 +84,7 @@ export class GameActions {
         state.Consent.Pending = GameActions.BuildWordPairs(words);
         state.Consent.UnResolved = [];
         state.ReadOnly = true;
-        var player: Contracts.iPlayer = state.Players.Players[state.Players.CurrentPlayer];
+        var player: Contracts.iPlayer = state.Players.Players[state.Players.Current];
         state.GameTable.Message = Util.Util.Format(Messages.Messages.YourTurn, [player.Name]);
     }
     static ResolveWord(state: Contracts.iGameState, args: Contracts.iArgs): void {
@@ -117,7 +117,7 @@ export class GameActions {
         return list;
     }
     static ResolveWords(state: Contracts.iGameState, args: Contracts.iArgs): void {
-        var player = state.Players.Players[state.Players.CurrentPlayer];
+        var player = state.Players.Players[state.Players.Current];
         if (player.Bot != null) {
             GameActions.Award(state, args);
         }
@@ -207,7 +207,7 @@ export class GameActions {
     }
     static BotMoveResponse(state: Contracts.iGameState, response: Contracts.iBotMoveResponse): void {
         var result = response.Result;
-        var player: Contracts.iPlayer = state.Players.Players[state.Players.CurrentPlayer];
+        var player: Contracts.iPlayer = state.Players.Players[state.Players.Current];
         if (result == null) {
             state.InfoBar.Messages.push(Util.Util.Format(Messages.Messages.BotNoWords, [response.Effort, player.Name]));
             GameActions.ReDraw(state, {});
@@ -280,13 +280,16 @@ export class GameActions {
             Cosos.push(Tile.Text);
         }
 
+        var myScore = state.Players.Players[state.Players.Current].Score;
+        var oppScore = state.Players.Players[state.Players.Current == 1 ? 0 : 1].Score;
+
         var Name: string = state.Board.Name;
         var players = state.Players.Players;
-        var currentPlayer = state.Players.CurrentPlayer;
+        var currentPlayer = state.Players.Current;
         var bot: Contracts.Bot = players[currentPlayer].Bot;
         var BotName: string = bot == null ? null : bot.Id;
         var reference = Math.floor(Math.random() * 1000).toString();
-        var post = {
+        var board = {
             "Reference": reference,
             "Name": Name,
             "Bot": BotName,
@@ -296,7 +299,8 @@ export class GameActions {
             "Conso": Cosos.join(' '),
             "Special": Special.join(' ')
         };
-        return post;
+        var scores = { "MyScore": myScore, "OppScore": oppScore };
+        return { "Board": board, "Scores": scores };
     }
     static SaveBoard(state: Contracts.iGameState): void {
         for (var i = 0; i < state.Board.Cells.length; i++) {
@@ -312,7 +316,7 @@ export class GameActions {
     }
     static RefreshClaims(state: Contracts.iGameState): void {
         var Claims: Contracts.iWord[] = GameActions.WordsOnBoard(state.Board, true, false);
-        var playerId: number = state.Players.CurrentPlayer;
+        var playerId: number = state.Players.Current;
         var player: Contracts.iPlayer = state.Players.Players[playerId];
         player.Claimed = Claims;
         state.Players.HasClaims = Claims.length > 0;
@@ -373,7 +377,7 @@ export class GameActions {
     }
     static AwardClaims(state: Contracts.iGameState): void {
         var Claims: Contracts.iWord[] = GameActions.WordsOnBoard(state.Board, true, false);
-        var playerId: number = state.Players.CurrentPlayer;
+        var playerId: number = state.Players.Current;
         var player: Contracts.iPlayer = state.Players.Players[playerId];
         player.Awarded = player.Awarded.concat(Claims);
         player.Claimed = [];
@@ -412,7 +416,7 @@ export class GameActions {
             var player: Contracts.iPlayer = state.Players.Players[i];
             player.CurrentTurn = !player.CurrentTurn;
             if (player.CurrentTurn) {
-                state.Players.CurrentPlayer = i;
+                state.Players.Current = i;
                 state.GameTable.Message = Util.Util.Format(Messages.Messages.YourTurn, [player.Name]);
             }
         }

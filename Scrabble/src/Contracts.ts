@@ -58,7 +58,7 @@ export interface iCellProps extends iComponent {
 }
 export interface iPlayers extends iComponent {
     Players: iPlayer[];
-    CurrentPlayer: number;
+    Current: number;
     HasClaims: boolean;
 }
 export interface iInfoBar extends iComponent {

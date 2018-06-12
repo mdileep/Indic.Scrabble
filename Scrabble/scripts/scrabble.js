@@ -1093,11 +1093,11 @@ define("Parser", ["require", "exports", "GameActions", "Indic"], function (requi
             raw.Id = "Players";
             raw.key = raw.Id;
             raw.Players = [];
-            raw.CurrentPlayer = 0;
+            raw.Current = 0;
             raw.HasClaims = false;
             for (var i = 0; i < players.length; i++) {
                 var player = players[i];
-                player.CurrentTurn = (i == raw.CurrentPlayer);
+                player.CurrentTurn = (i == raw.Current);
                 player.Score = 0;
                 player.Unconfirmed = 0;
                 player.Awarded = [];
@@ -1474,7 +1474,7 @@ define("AskBot", ["require", "exports", 'axios', "GameStore", "Contracts", "Util
         AskServer.SuggestClient = function (post) {
             setTimeout(function () {
                 var st = performance.now();
-                var move = new RegexV2Engine().BestMove(post);
+                var move = new RegexV2Engine().BestMove(post.Board);
                 var effort = U.Util.ElapsedTime(performance.now() - st);
                 var response = {
                     Action: "suggest",
@@ -1489,7 +1489,7 @@ define("AskBot", ["require", "exports", 'axios', "GameStore", "Contracts", "Util
         };
         AskServer.BotMoveServer = function (post) {
             axios
-                .post("/API.ashx?nextmove", post)
+                .post("/API.ashx?nextmove", post.Board)
                 .then(function (response) {
                 GS.GameStore.Dispatch({
                     type: C.Actions.BotMoveResponse,
@@ -1502,7 +1502,7 @@ define("AskBot", ["require", "exports", 'axios', "GameStore", "Contracts", "Util
         AskServer.BotMoveClient = function (post) {
             setTimeout(function () {
                 var st2 = performance.now();
-                var move2 = new RegexV2Engine().BestMove(post);
+                var move2 = new RegexV2Engine().BestMove(post.Board);
                 var effort2 = U.Util.ElapsedTime(performance.now() - st2);
                 var response = {
                     Action: "nextmove",
@@ -4200,7 +4200,7 @@ define("AskReferee", ["require", "exports", "Contracts", "Messages", "Util", "As
                     return;
                 }
             }
-            var player = state.Players.Players[state.Players.CurrentPlayer];
+            var player = state.Players.Players[state.Players.Current];
             state.GameTable.Message = U.Util.Format(M.Messages.LookupDict, [player.Name]);
             state.ReadOnly = true;
             setTimeout(AskServer.AskServer.Validate, C.Settings.RefreeWait);
@@ -4372,8 +4372,8 @@ define("GameActions", ["require", "exports", "react", "react-dom", "Contracts", 
         GameActions.Init = function (state, args) {
             GameActions.Render();
             var players = state.Players.Players;
-            var currentPlayer = state.Players.CurrentPlayer;
-            state.GameTable.Message = Util.Util.Format(Messages.Messages.YourTurn, [players[currentPlayer].Name]);
+            var current = state.Players.Current;
+            state.GameTable.Message = Util.Util.Format(Messages.Messages.YourTurn, [players[current].Name]);
             PubSub.Subscribe(Contracts.Events.GameOver, GameActions.GameOver);
             setTimeout(GameActions.PinchPlayer, Contracts.Settings.PinchWait);
         };
@@ -4388,7 +4388,7 @@ define("GameActions", ["require", "exports", "react", "react-dom", "Contracts", 
                 return;
             }
             var players = state.Players.Players;
-            var currentPlayer = state.Players.CurrentPlayer;
+            var currentPlayer = state.Players.Current;
             var isBot = players[currentPlayer].Bot !== null;
             state.ReadOnly = isBot;
             if (!isBot) {
@@ -4425,7 +4425,7 @@ define("GameActions", ["require", "exports", "react", "react-dom", "Contracts", 
             state.Consent.Pending = GameActions.BuildWordPairs(words);
             state.Consent.UnResolved = [];
             state.ReadOnly = true;
-            var player = state.Players.Players[state.Players.CurrentPlayer];
+            var player = state.Players.Players[state.Players.Current];
             state.GameTable.Message = Util.Util.Format(Messages.Messages.YourTurn, [player.Name]);
         };
         GameActions.ResolveWord = function (state, args) {
@@ -4458,7 +4458,7 @@ define("GameActions", ["require", "exports", "react", "react-dom", "Contracts", 
             return list;
         };
         GameActions.ResolveWords = function (state, args) {
-            var player = state.Players.Players[state.Players.CurrentPlayer];
+            var player = state.Players.Players[state.Players.Current];
             if (player.Bot != null) {
                 GameActions.Award(state, args);
             }
@@ -4546,7 +4546,7 @@ define("GameActions", ["require", "exports", "react", "react-dom", "Contracts", 
         };
         GameActions.BotMoveResponse = function (state, response) {
             var result = response.Result;
-            var player = state.Players.Players[state.Players.CurrentPlayer];
+            var player = state.Players.Players[state.Players.Current];
             if (result == null) {
                 state.InfoBar.Messages.push(Util.Util.Format(Messages.Messages.BotNoWords, [response.Effort, player.Name]));
                 GameActions.ReDraw(state, {});
@@ -4613,13 +4613,15 @@ define("GameActions", ["require", "exports", "react", "react-dom", "Contracts", 
                 }
                 Cosos.push(Tile.Text);
             }
+            var myScore = state.Players.Players[state.Players.Current].Score;
+            var oppScore = state.Players.Players[state.Players.Current == 1 ? 0 : 1].Score;
             var Name = state.Board.Name;
             var players = state.Players.Players;
-            var currentPlayer = state.Players.CurrentPlayer;
+            var currentPlayer = state.Players.Current;
             var bot = players[currentPlayer].Bot;
             var BotName = bot == null ? null : bot.Id;
             var reference = Math.floor(Math.random() * 1000).toString();
-            var post = {
+            var board = {
                 "Reference": reference,
                 "Name": Name,
                 "Bot": BotName,
@@ -4629,7 +4631,8 @@ define("GameActions", ["require", "exports", "react", "react-dom", "Contracts", 
                 "Conso": Cosos.join(' '),
                 "Special": Special.join(' ')
             };
-            return post;
+            var scores = { "MyScore": myScore, "OppScore": oppScore };
+            return { "Board": board, "Scores": scores };
         };
         GameActions.SaveBoard = function (state) {
             for (var i = 0; i < state.Board.Cells.length; i++) {
@@ -4645,7 +4648,7 @@ define("GameActions", ["require", "exports", "react", "react-dom", "Contracts", 
         };
         GameActions.RefreshClaims = function (state) {
             var Claims = GameActions.WordsOnBoard(state.Board, true, false);
-            var playerId = state.Players.CurrentPlayer;
+            var playerId = state.Players.Current;
             var player = state.Players.Players[playerId];
             player.Claimed = Claims;
             state.Players.HasClaims = Claims.length > 0;
@@ -4706,7 +4709,7 @@ define("GameActions", ["require", "exports", "react", "react-dom", "Contracts", 
         };
         GameActions.AwardClaims = function (state) {
             var Claims = GameActions.WordsOnBoard(state.Board, true, false);
-            var playerId = state.Players.CurrentPlayer;
+            var playerId = state.Players.Current;
             var player = state.Players.Players[playerId];
             player.Awarded = player.Awarded.concat(Claims);
             player.Claimed = [];
@@ -4747,7 +4750,7 @@ define("GameActions", ["require", "exports", "react", "react-dom", "Contracts", 
                 var player = state.Players.Players[i];
                 player.CurrentTurn = !player.CurrentTurn;
                 if (player.CurrentTurn) {
-                    state.Players.CurrentPlayer = i;
+                    state.Players.Current = i;
                     state.GameTable.Message = Util.Util.Format(Messages.Messages.YourTurn, [player.Name]);
                 }
             }

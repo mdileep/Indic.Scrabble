@@ -42,7 +42,7 @@ export class AskReferee {
                 return;
             }
         }
-        var player: C.iPlayer = state.Players.Players[state.Players.CurrentPlayer];
+        var player: C.iPlayer = state.Players.Players[state.Players.Current];
         state.GameTable.Message = U.Util.Format(M.Messages.LookupDict, [player.Name]);
         state.ReadOnly = true;
         setTimeout(AskServer.AskServer.Validate, C.Settings.RefreeWait);
