@@ -9,10 +9,9 @@
 //       _._        | <TODO>                   |   <TODO>                  | <TODO>
 // </copyright>
 //---------------------------------------------------------------------------------------------
-import * as React from "react";
-import * as ReactDOM from "react-dom";
-import * as Tile from 'Tile';
+import * as React from 'react';
 import * as Contracts from 'Contracts';
+import * as Tile from 'Tile';
 
 class Tray extends React.Component<Contracts.iTrayView, Contracts.iTrayView> {
     constructor(props: Contracts.iTrayView) {

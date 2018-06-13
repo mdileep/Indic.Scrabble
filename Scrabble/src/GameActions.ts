@@ -10,7 +10,7 @@
 // </copyright>
 //---------------------------------------------------------------------------------------------
 
-import * as React from "react";
+import * as React from 'react';
 import * as ReactDOM from "react-dom";
 import * as Contracts from 'Contracts';
 import * as Messages from 'Messages';
@@ -136,7 +136,7 @@ export class GameActions {
         GameActions.SetStats(state);
         if (state.GameOver) {
             GameActions.SetWinner(state);
-            PubSub.Publish(Contracts.Events.GameOver, state);
+            PubSub.Publish(Contracts.Events.GameOver, state as Contracts.iArgs);
             return;
         }
         setTimeout(GameActions.PinchPlayer, Contracts.Settings.PinchWait);
@@ -787,9 +787,9 @@ export class GameActions {
         var pickedConso = Util.Util.Draw(conso, maxConsos);
         return pickedConso;
     }
-    static GameOver(state: Contracts.iGameState): void {
-        GameActions.Post(state);
-        GameActions.Dispose(state);
+    static GameOver(state: Contracts.iArgs): void {
+        GameActions.Post(state as Contracts.iGameState);
+        GameActions.Dispose(state as Contracts.iGameState);
     }
     static Post(state: Contracts.iGameState): void {
         GameActions.PostMetrics(state);

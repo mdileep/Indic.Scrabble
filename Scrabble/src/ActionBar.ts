@@ -10,11 +10,10 @@
 // </copyright>
 //---------------------------------------------------------------------------------------------
 
-import * as React from "react";
-import * as ReactDOM from "react-dom";
-import * as Contracts from 'Contracts';
+import * as React from 'react';
 import * as GS from 'GameStore';
 import * as M from 'Messages';
+import * as Contracts from 'Contracts';
 
 class ActionBar extends React.Component<Contracts.iActionBar, Contracts.iActionBar> {
     constructor(props: Contracts.iActionBar) {
@@ -83,6 +82,5 @@ class ActionBar extends React.Component<Contracts.iActionBar, Contracts.iActionB
             }
         });
     }
-
 }
 export default ActionBar;

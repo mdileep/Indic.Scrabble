@@ -1,5 +1,4 @@
-﻿/// <reference path="es6-promise.d.ts" />
-declare namespace Axios {
+﻿declare namespace Axios {
     export interface AxiosTransformer {
         (data: any, headers?: any): any;
     }

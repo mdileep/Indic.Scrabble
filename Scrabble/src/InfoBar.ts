@@ -9,12 +9,9 @@
 //       _._        | <TODO>                   |   <TODO>                  | <TODO>
 // </copyright>
 //---------------------------------------------------------------------------------------------
-import * as React from "react";
-import * as ReactDOM from "react-dom";
+import * as React from 'react';
 import * as Contracts from 'Contracts';
 import * as GamePlayer from 'GamePlayer';
-import * as GameLoader from 'GameLoader';
-import * as Indic from "Indic"
 import * as M from "Messages"
 
 class InfoBar extends React.Component<Contracts.iInfoBar, Contracts.iInfoBar> {
@@ -26,7 +23,7 @@ class InfoBar extends React.Component<Contracts.iInfoBar, Contracts.iInfoBar> {
         if (this.refs["ul"] == null) {
             return;
         }
-        ReactDOM.findDOMNode(this.refs["ul"]).scrollTop = 10000;
+        //ReactDOM.findDOMNode(this.refs["ul"]).scrollTop = 10000;
     }
     render() {
         var childs: React.ReactElement<Contracts.iProps>[] = [];
@@ -57,7 +54,7 @@ class InfoBar extends React.Component<Contracts.iInfoBar, Contracts.iInfoBar> {
             }, items);
         childs.push(ul);
 
-        var elem = React.createElement('div',
+        var elem: React.DetailedReactHTMLElement<{}, HTMLElement> = React.createElement('div',
             {
                 id: "infoBar",
                 key: "infoBar",

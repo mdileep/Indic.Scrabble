@@ -10,7 +10,7 @@
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <DebugType>full</DebugType>
     <DebugSymbols>true</DebugSymbols>
-    <TypeScriptToolsVersion>1.8</TypeScriptToolsVersion>
+    <TypeScriptToolsVersion>2.6</TypeScriptToolsVersion>
     <UseIISExpress>true</UseIISExpress>
     <IISExpressSSLPort />
     <IISExpressAnonymousAuthentication />
@@ -102,7 +102,6 @@
     <Content Include="styles\scrabble.mobile.min.css" />
   </ItemGroup>
   <ItemGroup>
-    <TypeScriptCompile Include="src\AksharaSets.ts" />
     <TypeScriptCompile Include="src\SuggestionForm.ts" />
     <TypeScriptCompile Include="src\AskReferee.ts" />
     <TypeScriptCompile Include="src\_SuggestionDialog.ts" />
@@ -141,13 +140,14 @@
     <TypeScriptCompile Include="src\GameState.ts" />
   </ItemGroup>
   <ItemGroup>
-    <TypeScriptCompile Include="typings\axios.d.ts" />
-    <TypeScriptCompile Include="typings\Custom.d.ts" />
-    <TypeScriptCompile Include="typings\es6-promise.d.ts" />
-    <TypeScriptCompile Include="typings\react-dom.d.ts" />
-    <TypeScriptCompile Include="typings\react.d.ts" />
-    <TypeScriptCompile Include="typings\redux.d.ts" />
-    <TypeScriptCompile Include="typings\require.d.ts" />
+    <TypeScriptCompile Include="src\axios.d.ts" />
+    <TypeScriptCompile Include="src\csstype.d.ts" />
+    <TypeScriptCompile Include="src\Custom.d.ts" />
+    <TypeScriptCompile Include="src\global.d.ts" />
+    <TypeScriptCompile Include="src\react-dom.d.ts" />
+    <TypeScriptCompile Include="src\react.d.ts" />
+    <TypeScriptCompile Include="src\redux.d.ts" />
+    <TypeScriptCompile Include="src\require.d.ts" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="scripts\react-dom.js" />
@@ -247,8 +247,19 @@
     <Optimize>true</Optimize>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
-    <TypeScriptRemoveComments>true</TypeScriptRemoveComments>
-    <TypeScriptSourceMap>false</TypeScriptSourceMap>
+    <TypeScriptRemoveComments>True</TypeScriptRemoveComments>
+    <TypeScriptSourceMap>False</TypeScriptSourceMap>
+    <TypeScriptTarget>ES5</TypeScriptTarget>
+    <TypeScriptJSXEmit>None</TypeScriptJSXEmit>
+    <TypeScriptModuleKind>AMD</TypeScriptModuleKind>
+    <TypeScriptCompileOnSaveEnabled>True</TypeScriptCompileOnSaveEnabled>
+    <TypeScriptNoImplicitAny>False</TypeScriptNoImplicitAny>
+    <TypeScriptOutFile>scripts\scrabble.js</TypeScriptOutFile>
+    <TypeScriptOutDir />
+    <TypeScriptGeneratesDeclarations>False</TypeScriptGeneratesDeclarations>
+    <TypeScriptNoEmitOnError>True</TypeScriptNoEmitOnError>
+    <TypeScriptMapRoot />
+    <TypeScriptSourceRoot />
   </PropertyGroup>
   <Import Project="styles\Less.targets" />
   <Import Project="scripts\Bundle.targets" />

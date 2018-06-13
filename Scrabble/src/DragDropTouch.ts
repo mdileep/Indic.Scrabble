@@ -1,7 +1,4 @@
-﻿//module DragDropTouch {
-//    'use strict';
-
-/**
+﻿/**
  * Object used to hold the data that is being dragged during drag and drop operations. 
  *
  * It may hold one or more data items of different types. For more information about 
@@ -442,4 +439,3 @@ export class DragDropTouch {
         return null;
     }
 }
-//}

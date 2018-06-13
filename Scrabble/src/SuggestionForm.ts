@@ -9,12 +9,10 @@
 //       _._        | <TODO>                   |   <TODO>                  | <TODO>
 // </copyright>
 //---------------------------------------------------------------------------------------------
-
-import * as React from "react";
+import * as React from 'react';
 import * as Contracts from 'Contracts';
 import * as _SuggestionDialog from '_SuggestionDialog';
 import * as Util from 'Util';
-import * as GameLoader from 'GameLoader';
 import * as Messages from 'Messages';
 import * as GS from 'GameStore';
 

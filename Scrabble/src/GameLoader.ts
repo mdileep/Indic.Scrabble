@@ -11,7 +11,7 @@
 //---------------------------------------------------------------------------------------------
 
 import * as Contracts from 'Contracts';
-import * as Sets from 'AksharaSets';
+import * as Indic from 'Indic';
 import * as M from 'Messages';
 import * as DragDropTouch from 'DragDropTouch';
 import * as GA from 'GameActions';
@@ -22,8 +22,8 @@ declare var Config: Contracts.iRawConfig;
 
 export class GameLoader {
     public static ConfigGame(): void {
-        for (var key in Sets.AksharaSets) {
-            (Sets.AksharaSets as any)[key] = Config.CharSet[key];
+        for (var key in Indic.AksharaSets) {
+            (Indic.AksharaSets as any)[key] = Config.CharSet[key];
         }
 
         for (var key in M.Messages) {

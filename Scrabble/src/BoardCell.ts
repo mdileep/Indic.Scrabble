@@ -10,10 +10,8 @@
 // </copyright>
 //---------------------------------------------------------------------------------------------
 
-import * as React from "react";
-import * as ReactDOM from "react-dom";
+import * as React from 'react';
 import * as Contracts from 'Contracts';
-import * as GameLoader from 'GameLoader';
 import * as GS from 'GameStore';
 
 class BoardCell extends React.Component<Contracts.iCellProps, Contracts.iCellProps> {

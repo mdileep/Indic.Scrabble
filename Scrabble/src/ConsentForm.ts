@@ -10,8 +10,7 @@
 // </copyright>
 //---------------------------------------------------------------------------------------------
 
-import * as React from "react";
-import * as ReactDOM from "react-dom";
+import * as React from 'react';
 import * as Contracts from 'Contracts';
 import * as Confirm from 'ConfirmDialog';
 import * as Util from 'Util';

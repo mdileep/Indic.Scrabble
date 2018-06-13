@@ -1,29 +1,79 @@
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
-define("AksharaSets", ["require", "exports"], function (require, exports) {
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+define("Messages", ["require", "exports"], function (require, exports) {
     "use strict";
-    var AksharaSets = (function () {
-        function AksharaSets() {
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var Messages = (function () {
+        function Messages() {
         }
-        AksharaSets.FullSpecialSet = [];
-        AksharaSets.SpecialSet = [];
-        AksharaSets.SunnaSet = [];
-        AksharaSets.Vowels = [];
-        AksharaSets.Consonents = [];
-        AksharaSets.Virama = "";
-        AksharaSets.Synonyms = {};
-        AksharaSets.SyllableTiles = {};
-        AksharaSets.SyllableChars = {};
-        AksharaSets.SyllableSynonym = {};
-        return AksharaSets;
+        Messages.Title = "";
+        Messages.Name = "";
+        Messages.Keywords = "";
+        Messages.Description = "";
+        Messages.Author = "";
+        Messages.Author2 = "";
+        Messages.Player = "";
+        Messages.PlayerName = "";
+        Messages.InvalidMove = "";
+        Messages.UseSynonym = "";
+        Messages.Messages = "";
+        Messages.CrossCells = "";
+        Messages.HasIslands = "";
+        Messages.HasOraphans = "";
+        Messages.OrphanCell = "";
+        Messages.HasDupliates = "";
+        Messages.Claimed = "";
+        Messages.Thinking = "";
+        Messages.YourTurn = "";
+        Messages.BotEffort = "";
+        Messages.BotNoWords = "";
+        Messages.BotEffort2 = "";
+        Messages.GameOver = "";
+        Messages.Winner = "";
+        Messages.MatchTied = "";
+        Messages.WhyGameOver = "";
+        Messages.NoWordsAdded = "";
+        Messages.Stats = "";
+        Messages.LookupDict = "";
+        Messages.ResolveWord = "";
+        Messages.Referee = "";
+        Messages.OK = "";
+        Messages.Yes = "";
+        Messages.No = "";
+        Messages.IsStarCovered = "";
+        Messages.ActionBar = "";
+        Messages.Help = "";
+        Messages.Suggest = "";
+        Messages.Board = "";
+        Messages.Row = "";
+        Messages.Cabinet = "";
+        Messages.TrayLabels = "";
+        Messages.Words = "";
+        Messages.Players = "";
+        Messages.Brand = "";
+        Messages.List = "";
+        Messages.GameTable = "";
+        Messages.ReDraw = "";
+        Messages.Pass = "";
+        Messages.Actions = "";
+        Messages.NoGap = "";
+        Messages.SuggestLoading = "";
+        Messages.NoSuggestions = "";
+        return Messages;
     }());
-    exports.AksharaSets = AksharaSets;
+    exports.Messages = Messages;
 });
 define("Contracts", ["require", "exports"], function (require, exports) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     var Events = (function () {
         function Events() {
         }
@@ -71,13 +121,15 @@ define("Contracts", ["require", "exports"], function (require, exports) {
 });
 define("_OverlayDialog", ["require", "exports", "react"], function (require, exports, React) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     var _OverlayDialog = (function (_super) {
         __extends(_OverlayDialog, _super);
         function _OverlayDialog(props) {
-            _super.call(this, props);
-            this.state = props;
-            this.OnConfirm = this.OnConfirm.bind(this);
-            this.OnDismiss = this.OnDismiss.bind(this);
+            var _this = _super.call(this, props) || this;
+            _this.state = props;
+            _this.OnConfirm = _this.OnConfirm.bind(_this);
+            _this.OnDismiss = _this.OnDismiss.bind(_this);
+            return _this;
         }
         _OverlayDialog.prototype.render = function () {
             return this.renderDialog(null);
@@ -156,11 +208,69 @@ define("_OverlayDialog", ["require", "exports", "react"], function (require, exp
         };
         return _OverlayDialog;
     }(React.Component));
-    Object.defineProperty(exports, "__esModule", { value: true });
     exports.default = _OverlayDialog;
+});
+define("_SuggestionDialog", ["require", "exports", "react", "Messages", "_OverlayDialog"], function (require, exports, React, Messages, OverlayDialog) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var _SuggestionDialog = (function (_super) {
+        __extends(_SuggestionDialog, _super);
+        function _SuggestionDialog(props) {
+            var _this = _super.call(this, props) || this;
+            _this.state = props;
+            return _this;
+        }
+        _SuggestionDialog.prototype.render = function () {
+            var childs = [];
+            if (!this.props.Loaded) {
+                var content = React.createElement('div', {
+                    key: "suggest_" + this.props.Id,
+                    className: "oFContent"
+                }, Messages.Messages.SuggestLoading);
+                childs.push(content);
+            }
+            else {
+                var items = [];
+                var hasMoves = this.props.Moves.length != 0;
+                for (var i = 0; i < this.props.Moves.length; i++) {
+                    var move = this.props.Moves[i];
+                    {
+                        var li = React.createElement("li", { key: "li" + i }, "Direction: " + move.Direction);
+                        items.push(li);
+                    }
+                    hasMoves = move.Moves.length != 0;
+                    for (var indx in move.Moves) {
+                        var li = React.createElement("li", { key: "li" + i + indx }, move.Moves[indx].Tiles + "  at " + move.Moves[indx].Index);
+                        items.push(li);
+                    }
+                }
+                if (!hasMoves) {
+                    var li = React.createElement("li", { key: "li" + i }, Messages.Messages.NoSuggestions);
+                    items.push(li);
+                }
+                var id = "ul";
+                var ul = React.createElement("ul", {
+                    id: id,
+                    key: id,
+                    ref: id,
+                    className: "ul",
+                    title: ""
+                }, items);
+                childs.push(ul);
+            }
+            var content = React.createElement('div', {
+                key: "suggest_" + this.props.Id,
+                className: "oFContent"
+            }, childs);
+            return this.renderDialog(content);
+        };
+        return _SuggestionDialog;
+    }(OverlayDialog.default));
+    exports.default = _SuggestionDialog;
 });
 define("Util", ["require", "exports"], function (require, exports) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     var Util = (function () {
         function Util() {
         }
@@ -189,7 +299,7 @@ define("Util", ["require", "exports"], function (require, exports) {
         Util.Merge = function () {
             var args = [];
             for (var _i = 0; _i < arguments.length; _i++) {
-                args[_i - 0] = arguments[_i];
+                args[_i] = arguments[_i];
             }
             var resObj = {};
             for (var i = 0; i < arguments.length; i += 1) {
@@ -379,379 +489,25 @@ define("Util", ["require", "exports"], function (require, exports) {
         }
     });
 });
-define("_AlertDialog", ["require", "exports", "react", "_OverlayDialog"], function (require, exports, React, OverlayDialog) {
+define("Indic", ["require", "exports"], function (require, exports) {
     "use strict";
-    var _AlertDialog = (function (_super) {
-        __extends(_AlertDialog, _super);
-        function _AlertDialog(props) {
-            _super.call(this, props);
-            this.state = props;
-        }
-        _AlertDialog.prototype.render = function () {
-            var message = React.createElement('div', {
-                key: "msg_" + this.props.Id,
-                className: "oFContent"
-            }, this.props.Message);
-            return this.renderDialog(message);
-        };
-        return _AlertDialog;
-    }(OverlayDialog.default));
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.default = _AlertDialog;
-});
-define("Messages", ["require", "exports"], function (require, exports) {
-    "use strict";
-    var Messages = (function () {
-        function Messages() {
+    var AksharaSets = (function () {
+        function AksharaSets() {
         }
-        Messages.Title = "";
-        Messages.Name = "";
-        Messages.Keywords = "";
-        Messages.Description = "";
-        Messages.Author = "";
-        Messages.Author2 = "";
-        Messages.Player = "";
-        Messages.PlayerName = "";
-        Messages.InvalidMove = "";
-        Messages.UseSynonym = "";
-        Messages.Messages = "";
-        Messages.CrossCells = "";
-        Messages.HasIslands = "";
-        Messages.HasOraphans = "";
-        Messages.OrphanCell = "";
-        Messages.HasDupliates = "";
-        Messages.Claimed = "";
-        Messages.Thinking = "";
-        Messages.YourTurn = "";
-        Messages.BotEffort = "";
-        Messages.BotNoWords = "";
-        Messages.BotEffort2 = "";
-        Messages.GameOver = "";
-        Messages.Winner = "";
-        Messages.MatchTied = "";
-        Messages.WhyGameOver = "";
-        Messages.NoWordsAdded = "";
-        Messages.Stats = "";
-        Messages.LookupDict = "";
-        Messages.ResolveWord = "";
-        Messages.Referee = "";
-        Messages.OK = "";
-        Messages.Yes = "";
-        Messages.No = "";
-        Messages.IsStarCovered = "";
-        Messages.ActionBar = "";
-        Messages.Help = "";
-        Messages.Suggest = "";
-        Messages.Board = "";
-        Messages.Row = "";
-        Messages.Cabinet = "";
-        Messages.TrayLabels = "";
-        Messages.Words = "";
-        Messages.Players = "";
-        Messages.Brand = "";
-        Messages.List = "";
-        Messages.GameTable = "";
-        Messages.ReDraw = "";
-        Messages.Pass = "";
-        Messages.Actions = "";
-        Messages.NoGap = "";
-        Messages.SuggestLoading = "";
-        Messages.NoSuggestions = "";
-        return Messages;
+        AksharaSets.FullSpecialSet = [];
+        AksharaSets.SpecialSet = [];
+        AksharaSets.SunnaSet = [];
+        AksharaSets.Vowels = [];
+        AksharaSets.Consonents = [];
+        AksharaSets.Virama = "";
+        AksharaSets.Synonyms = {};
+        AksharaSets.SyllableTiles = {};
+        AksharaSets.SyllableChars = {};
+        AksharaSets.SyllableSynonym = {};
+        return AksharaSets;
     }());
-    exports.Messages = Messages;
-});
-define("DragDropTouch", ["require", "exports"], function (require, exports) {
-    "use strict";
-    var DataTransfer = (function () {
-        function DataTransfer() {
-            this._dropEffect = 'move';
-            this._effectAllowed = 'all';
-            this._data = {};
-        }
-        Object.defineProperty(DataTransfer.prototype, "dropEffect", {
-            get: function () {
-                return this._dropEffect;
-            },
-            set: function (value) {
-                this._dropEffect = value;
-            },
-            enumerable: true,
-            configurable: true
-        });
-        Object.defineProperty(DataTransfer.prototype, "effectAllowed", {
-            get: function () {
-                return this._effectAllowed;
-            },
-            set: function (value) {
-                this._effectAllowed = value;
-            },
-            enumerable: true,
-            configurable: true
-        });
-        Object.defineProperty(DataTransfer.prototype, "types", {
-            get: function () {
-                return Object.keys(this._data);
-            },
-            enumerable: true,
-            configurable: true
-        });
-        DataTransfer.prototype.clearData = function (type) {
-            if (type != null) {
-                delete this._data[type];
-            }
-            else {
-                this._data = null;
-            }
-        };
-        DataTransfer.prototype.getData = function (type) {
-            return this._data[type] || '';
-        };
-        DataTransfer.prototype.setData = function (type, value) {
-            this._data[type] = value;
-        };
-        DataTransfer.prototype.setDragImage = function (img, offsetX, offsetY) {
-            var ddt = DragDropTouch._instance;
-            ddt._imgCustom = img;
-            ddt._imgOffset = { x: offsetX, y: offsetY };
-        };
-        return DataTransfer;
-    }());
-    exports.DataTransfer = DataTransfer;
-    var DragDropTouch = (function () {
-        function DragDropTouch() {
-            this._lastClick = 0;
-            if (DragDropTouch._instance) {
-                throw 'DragDropTouch instance already created.';
-            }
-            var supportsPassive = false;
-            document.addEventListener('test', null, {
-                get passive() {
-                    supportsPassive = true;
-                    return true;
-                }
-            });
-            if ('ontouchstart' in document) {
-                var d = document, ts = this._touchstart.bind(this), tm = this._touchmove.bind(this), te = this._touchend.bind(this), opt = supportsPassive ? { passive: false, capture: false } : false;
-                d.addEventListener('touchstart', ts, opt);
-                d.addEventListener('touchmove', tm, opt);
-                d.addEventListener('touchend', te);
-                d.addEventListener('touchcancel', te);
-            }
-        }
-        DragDropTouch.getInstance = function () {
-            return DragDropTouch._instance;
-        };
-        DragDropTouch.prototype._touchstart = function (e) {
-            var _this = this;
-            if (this._shouldHandle(e)) {
-                if (Date.now() - this._lastClick < DragDropTouch._DBLCLICK) {
-                    if (this._dispatchEvent(e, 'dblclick', e.target)) {
-                        e.preventDefault();
-                        this._reset();
-                        return;
-                    }
-                }
-                this._reset();
-                var src = this._closestDraggable(e.target);
-                if (src) {
-                    if (!this._dispatchEvent(e, 'mousemove', e.target) &&
-                        !this._dispatchEvent(e, 'mousedown', e.target)) {
-                        this._dragSource = src;
-                        this._ptDown = this._getPoint(e);
-                        this._lastTouch = e;
-                        e.preventDefault();
-                        setTimeout(function () {
-                            if (_this._dragSource == src && _this._img == null) {
-                                if (_this._dispatchEvent(e, 'contextmenu', src)) {
-                                    _this._reset();
-                                }
-                            }
-                        }, DragDropTouch._CTXMENU);
-                    }
-                }
-            }
-        };
-        DragDropTouch.prototype._touchmove = function (e) {
-            if (this._shouldHandle(e)) {
-                var target = this._getTarget(e);
-                if (this._dispatchEvent(e, 'mousemove', target)) {
-                    this._lastTouch = e;
-                    e.preventDefault();
-                    return;
-                }
-                if (this._dragSource && !this._img) {
-                    var delta = this._getDelta(e);
-                    if (delta > DragDropTouch._THRESHOLD) {
-                        this._dispatchEvent(e, 'dragstart', this._dragSource);
-                        this._createImage(e);
-                        this._dispatchEvent(e, 'dragenter', target);
-                    }
-                }
-                if (this._img) {
-                    this._lastTouch = e;
-                    e.preventDefault();
-                    if (target != this._lastTarget) {
-                        this._dispatchEvent(this._lastTouch, 'dragleave', this._lastTarget);
-                        this._dispatchEvent(e, 'dragenter', target);
-                        this._lastTarget = target;
-                    }
-                    this._moveImage(e);
-                    this._dispatchEvent(e, 'dragover', target);
-                }
-            }
-        };
-        DragDropTouch.prototype._touchend = function (e) {
-            if (this._shouldHandle(e)) {
-                if (this._dispatchEvent(this._lastTouch, 'mouseup', e.target)) {
-                    e.preventDefault();
-                    return;
-                }
-                if (!this._img) {
-                    this._dragSource = null;
-                    this._dispatchEvent(this._lastTouch, 'click', e.target);
-                    this._lastClick = Date.now();
-                }
-                this._destroyImage();
-                if (this._dragSource) {
-                    if (e.type.indexOf('cancel') < 0) {
-                        this._dispatchEvent(this._lastTouch, 'drop', this._lastTarget);
-                    }
-                    this._dispatchEvent(this._lastTouch, 'dragend', this._dragSource);
-                    this._reset();
-                }
-            }
-        };
-        DragDropTouch.prototype._shouldHandle = function (e) {
-            return e &&
-                !e.defaultPrevented &&
-                e.touches && e.touches.length < 2;
-        };
-        DragDropTouch.prototype._reset = function () {
-            this._destroyImage();
-            this._dragSource = null;
-            this._lastTouch = null;
-            this._lastTarget = null;
-            this._ptDown = null;
-            this._dataTransfer = new DataTransfer();
-        };
-        DragDropTouch.prototype._getPoint = function (e, page) {
-            if (e && e.touches) {
-                e = e.touches[0];
-            }
-            return { x: page ? e.pageX : e.clientX, y: page ? e.pageY : e.clientY };
-        };
-        DragDropTouch.prototype._getDelta = function (e) {
-            var p = this._getPoint(e);
-            return Math.abs(p.x - this._ptDown.x) + Math.abs(p.y - this._ptDown.y);
-        };
-        DragDropTouch.prototype._getTarget = function (e) {
-            var pt = this._getPoint(e), el = document.elementFromPoint(pt.x, pt.y);
-            while (el && getComputedStyle(el).pointerEvents == 'none') {
-                el = el.parentElement;
-            }
-            return el;
-        };
-        DragDropTouch.prototype._createImage = function (e) {
-            if (this._img) {
-                this._destroyImage();
-            }
-            var src = this._imgCustom || this._dragSource;
-            this._img = src.cloneNode(true);
-            this._copyStyle(src, this._img);
-            this._img.style.top = this._img.style.left = '-9999px';
-            if (!this._imgCustom) {
-                var rc = src.getBoundingClientRect(), pt = this._getPoint(e);
-                this._imgOffset = { x: pt.x - rc.left, y: pt.y - rc.top };
-                this._img.style.opacity = DragDropTouch._OPACITY.toString();
-            }
-            this._moveImage(e);
-            document.body.appendChild(this._img);
-        };
-        DragDropTouch.prototype._destroyImage = function () {
-            if (this._img && this._img.parentElement) {
-                this._img.parentElement.removeChild(this._img);
-            }
-            this._img = null;
-            this._imgCustom = null;
-        };
-        DragDropTouch.prototype._moveImage = function (e) {
-            var _this = this;
-            if (this._img) {
-                requestAnimationFrame(function () {
-                    var pt = _this._getPoint(e, true), s = _this._img.style;
-                    s.position = 'absolute';
-                    s.pointerEvents = 'none';
-                    s.zIndex = '999999';
-                    s.left = Math.round(pt.x - _this._imgOffset.x) + 'px';
-                    s.top = Math.round(pt.y - _this._imgOffset.y) + 'px';
-                });
-            }
-        };
-        DragDropTouch.prototype._copyProps = function (dst, src, props) {
-            for (var i = 0; i < props.length; i++) {
-                var p = props[i];
-                dst[p] = src[p];
-            }
-        };
-        DragDropTouch.prototype._copyStyle = function (src, dst) {
-            DragDropTouch._rmvAtts.forEach(function (att) {
-                dst.removeAttribute(att);
-            });
-            if (src instanceof HTMLCanvasElement) {
-                var cSrc = src, cDst = dst;
-                cDst.width = cSrc.width;
-                cDst.height = cSrc.height;
-                cDst.getContext('2d').drawImage(cSrc, 0, 0);
-            }
-            var cs = getComputedStyle(src);
-            for (var i = 0; i < cs.length; i++) {
-                var key = cs[i];
-                if (key.indexOf('transition') < 0) {
-                    dst.style[key] = cs[key];
-                }
-            }
-            dst.style.pointerEvents = 'none';
-            for (var i = 0; i < src.children.length; i++) {
-                this._copyStyle(src.children[i], dst.children[i]);
-            }
-        };
-        DragDropTouch.prototype._dispatchEvent = function (e, type, target) {
-            if (e && target) {
-                var evt = document.createEvent('Event'), t = e.touches ? e.touches[0] : e;
-                evt.initEvent(type, true, true);
-                evt.button = 0;
-                evt.which = evt.buttons = 1;
-                this._copyProps(evt, e, DragDropTouch._kbdProps);
-                this._copyProps(evt, t, DragDropTouch._ptProps);
-                evt.dataTransfer = this._dataTransfer;
-                target.dispatchEvent(evt);
-                return evt.defaultPrevented;
-            }
-            return false;
-        };
-        DragDropTouch.prototype._closestDraggable = function (e) {
-            for (; e; e = e.parentElement) {
-                if (e.hasAttribute('draggable') && e.draggable) {
-                    return e;
-                }
-            }
-            return null;
-        };
-        DragDropTouch._instance = new DragDropTouch();
-        DragDropTouch._THRESHOLD = 5;
-        DragDropTouch._OPACITY = 0.5;
-        DragDropTouch._DBLCLICK = 500;
-        DragDropTouch._CTXMENU = 900;
-        DragDropTouch._rmvAtts = 'id,class,style,draggable'.split(',');
-        DragDropTouch._kbdProps = 'altKey,ctrlKey,metaKey,shiftKey'.split(',');
-        DragDropTouch._ptProps = 'pageX,pageY,clientX,clientY,screenX,screenY'.split(',');
-        return DragDropTouch;
-    }());
-    exports.DragDropTouch = DragDropTouch;
-});
-define("Indic", ["require", "exports", "AksharaSets"], function (require, exports, AS) {
-    "use strict";
+    exports.AksharaSets = AksharaSets;
     var Indic = (function () {
         function Indic() {
         }
@@ -877,7 +633,7 @@ define("Indic", ["require", "exports", "AksharaSets"], function (require, export
                 }
                 var isCurrConso = Indic.IsConsonent(arr[i]);
                 if (isConso && isCurrConso) {
-                    res = res + AS.AksharaSets.Virama + arr[i];
+                    res = res + AksharaSets.Virama + arr[i];
                 }
                 else {
                     res = res + arr[i];
@@ -892,46 +648,46 @@ define("Indic", ["require", "exports", "AksharaSets"], function (require, export
             return index >= 0;
         };
         Indic.IsVowel = function (char) {
-            return Indic.Contains(AS.AksharaSets.Vowels, char);
+            return Indic.Contains(AksharaSets.Vowels, char);
         };
         Indic.IsConsonent = function (char) {
-            return Indic.Contains(AS.AksharaSets.Consonents, char);
+            return Indic.Contains(AksharaSets.Consonents, char);
         };
         Indic.IsSpecialSet = function (char) {
-            return Indic.Contains(AS.AksharaSets.SpecialSet, char);
+            return Indic.Contains(AksharaSets.SpecialSet, char);
         };
         Indic.IsZWNJ = function (char) {
             return char == String.fromCharCode(0x200C);
         };
         Indic.IsVirama = function (char) {
-            return char == AS.AksharaSets.Virama;
+            return char == AksharaSets.Virama;
         };
         Indic.IsFullSpecialSet = function (char) {
-            return Indic.Contains(AS.AksharaSets.FullSpecialSet, char);
+            return Indic.Contains(AksharaSets.FullSpecialSet, char);
         };
         Indic.IsSunnaSet = function (char) {
-            return Indic.Contains(AS.AksharaSets.SunnaSet, char);
+            return Indic.Contains(AksharaSets.SunnaSet, char);
         };
         Indic.IsSpecialSyllable = function (char) {
-            return AS.AksharaSets.SyllableChars[char] != null;
+            return AksharaSets.SyllableChars[char] != null;
         };
         Indic.GetSyllableChars = function (char) {
-            return AS.AksharaSets.SyllableChars[char];
+            return AksharaSets.SyllableChars[char];
         };
         Indic.GetSyllableTiles = function (char) {
-            return AS.AksharaSets.SyllableTiles[char];
+            return AksharaSets.SyllableTiles[char];
         };
         Indic.GetSyllableSynonym = function (char) {
-            return AS.AksharaSets.SyllableSynonym[char];
+            return AksharaSets.SyllableSynonym[char];
         };
         Indic.HasSyllableSynonym = function (char) {
-            return AS.AksharaSets.SyllableSynonym[char] != null;
+            return AksharaSets.SyllableSynonym[char] != null;
         };
         Indic.GetSynonym = function (akshara) {
-            return AS.AksharaSets.Synonyms[akshara];
+            return AksharaSets.Synonyms[akshara];
         };
         Indic.GetSynonyms = function () {
-            return AS.AksharaSets.Synonyms;
+            return AksharaSets.Synonyms;
         };
         Indic.ToChars = function (original) {
             var arr = [];
@@ -950,358 +706,9 @@ define("Indic", ["require", "exports", "AksharaSets"], function (require, export
     }());
     exports.Indic = Indic;
 });
-define("Parser", ["require", "exports", "GameActions", "Indic"], function (require, exports, GameActions, Indic) {
-    "use strict";
-    var Parser = (function () {
-        function Parser() {
-        }
-        Parser.Parse = function () {
-            var cabinet = Parser.ParseCabinet(Config.Board);
-            var board = Parser.ParseBoard(Config.Board);
-            var players = Parser.ParsePlayers(Config.Players);
-            var cache = Parser.BuildCache(cabinet);
-            var infoBar = Parser.BuildInfoBar();
-            var gameTable = Parser.BuildGameTable(Config.Board.GameTable, board.TileWeights, cache);
-            var consent = Parser.BuildConsent();
-            var suggest = Parser.BuildSuggestion();
-            var stats = { EmptyCells: 0, Occupancy: 0, TotalWords: 0, UnUsed: 0 };
-            GameActions.GameActions.RefreshTrays(cabinet.Trays, cache);
-            GameActions.GameActions.RefreshCabinet(cabinet, cache);
-            var dialog = Parser.BuildDialog();
-            var gameState = {
-                Id: "game",
-                key: "game",
-                GameId: Config.GameId,
-                className: "game",
-                ReadOnly: false,
-                Show: true,
-                GameOver: false,
-                Cache: cache,
-                Cabinet: cabinet,
-                Board: board,
-                Players: players,
-                InfoBar: infoBar,
-                Consent: consent,
-                Stats: stats,
-                GameTable: gameTable,
-                Dialog: dialog,
-                Suggestion: suggest
-            };
-            return gameState;
-        };
-        Parser.BuildGameTable = function (JSON, tileWeights, cache) {
-            var vAvailable = GameActions.GameActions.DrawVowelTiles(cache, {}, JSON.MaxVowels);
-            var vTray = GameActions.GameActions.SetTableTray(vAvailable, tileWeights, "Vowels");
-            GameActions.GameActions.SetOnBoard(cache, vAvailable);
-            var cAvailable = GameActions.GameActions.DrawConsoTiles(cache, {}, JSON.MaxOnTable - JSON.MaxVowels);
-            var cTray = GameActions.GameActions.SetTableTray(cAvailable, tileWeights, "Conso");
-            GameActions.GameActions.SetOnBoard(cache, cAvailable);
-            var raw = {};
-            raw.key = "gameTable";
-            raw.Id = raw.key;
-            raw.className = "gameTable";
-            raw.CanReDraw = true;
-            raw.ReadOnly = false;
-            raw.MaxOnTable = JSON.MaxOnTable;
-            raw.MaxVowels = JSON.MaxVowels;
-            raw.VowelTray = vTray;
-            raw.ConsoTray = cTray;
-            return raw;
-        };
-        Parser.ParseCabinet = function (JSON) {
-            var raw = {};
-            raw.key = "Cabinet";
-            raw.Trays = [];
-            raw.ReadOnly = true;
-            raw.Show = true;
-            var index = 0;
-            var tilesDict = {};
-            for (var i = 0; i < JSON.Trays.length; i++) {
-                var item = JSON.Trays[i];
-                var props = {};
-                props.Id = item.Id;
-                props.key = item.Id;
-                props.className = "tray";
-                props.Title = item.Title;
-                props.Show = item.Show;
-                props.Disabled = false;
-                props.ReadOnly = raw.ReadOnly;
-                props.Index = i;
-                props.Tiles = [];
-                for (var j = 0; j < item.Set.length; j++) {
-                    var prop = {};
-                    prop.Id = "T_" + (index + 1).toString();
-                    prop.key = prop.Id;
-                    var KVP = item.Set[j];
-                    for (var key in KVP) {
-                        prop.Text = key;
-                        prop.Remaining = KVP[key].C;
-                        prop.Total = prop.Remaining;
-                        prop.Weight = KVP[key].W;
-                    }
-                    prop.Index = j;
-                    prop.TrayIndex = i;
-                    prop.ReadOnly = raw.ReadOnly;
-                    props.Tiles.push(prop);
-                    index++;
-                }
-                raw.Trays.push(props);
-            }
-            return raw;
-        };
-        Parser.BuildCache = function (JSON) {
-            var tilesDict = {};
-            for (var i = 0; i < JSON.Trays.length; i++) {
-                var item = JSON.Trays[i];
-                for (var j = 0; j < item.Tiles.length; j++) {
-                    var prop = item.Tiles[j];
-                    Parser.RefreshCache(tilesDict, { Text: prop.Text, Remaining: prop.Remaining, Total: prop.Total, Weight: prop.Weight });
-                }
-            }
-            return tilesDict;
-        };
-        Parser.ParseBoard = function (JSON) {
-            var raw = {};
-            raw.Id = "Board";
-            raw.key = "Board";
-            raw.Size = JSON.Size;
-            raw.Name = JSON.Name;
-            raw.Star = JSON.Star;
-            raw.Language = JSON.Language;
-            raw.Cells = [];
-            raw.TileWeights = Parser.GetTileWeights(JSON.Trays);
-            var index = 0;
-            for (var i = 0; i < JSON.Size; i++) {
-                for (var j = 0; j < JSON.Size; j++) {
-                    var cell = {};
-                    cell.Id = "C_" + (index + 1).toString();
-                    cell.key = cell.Id;
-                    cell.Weight = JSON.Weights[index];
-                    cell.Current = " ";
-                    cell.Index = index;
-                    cell.Waiting = [];
-                    cell.Confirmed = [];
-                    cell.Star = (JSON.Star == index);
-                    raw.Cells.push(cell);
-                    index++;
-                }
-            }
-            return raw;
-        };
-        Parser.ParsePlayers = function (players) {
-            var raw = {};
-            raw.Id = "Players";
-            raw.key = raw.Id;
-            raw.Players = [];
-            raw.Current = 0;
-            raw.HasClaims = false;
-            for (var i = 0; i < players.length; i++) {
-                var player = players[i];
-                player.CurrentTurn = (i == raw.Current);
-                player.Score = 0;
-                player.Unconfirmed = 0;
-                player.Awarded = [];
-                player.Claimed = [];
-                player.Id = "P_" + (i + 1);
-                player.key = player.Id;
-                player.NoWords = 0;
-                player.Name = player.Name;
-                raw.Players.push(player);
-            }
-            return raw;
-        };
-        Parser.BuildInfoBar = function () {
-            var raw = {};
-            raw.key = "InfoBar";
-            raw.Messages = [];
-            return raw;
-        };
-        Parser.BuildDialog = function () {
-            var id = "Dialog";
-            var dialog = {
-                Id: id,
-                key: id,
-                Show: false,
-                ReadOnly: false,
-                className: "",
-                Title: "",
-                Message: "",
-            };
-            return dialog;
-        };
-        Parser.BuildSuggestion = function () {
-            var id = "Suggest";
-            var suggest = {
-                Id: id,
-                key: id,
-                Show: false,
-                ReadOnly: false,
-                className: "",
-                Loaded: false,
-                Moves: [],
-                Title: "",
-                ConfirmText: "",
-                CancelText: "",
-                ShowConfirm: true,
-                ShowClose: false,
-                OnConfirm: null,
-                OnDismiss: null
-            };
-            return suggest;
-        };
-        Parser.BuildConsent = function () {
-            var id = "Consent";
-            var consent = {
-                Id: id,
-                key: id,
-                Show: false,
-                ReadOnly: false,
-                className: "",
-                Pending: [],
-                UnResolved: []
-            };
-            return consent;
-        };
-        Parser.RefreshCache = function (cache, prop) {
-            var text = prop.Text;
-            cache[text] =
-                {
-                    Remaining: prop.Remaining,
-                    Total: prop.Total,
-                    OnBoard: 0
-                };
-            return;
-        };
-        Parser.GetTileWeights = function (trays) {
-            var Weights = {};
-            for (var indx in trays) {
-                var tray = trays[indx];
-                for (var indx2 in tray.Set) {
-                    var tiles = tray.Set[indx2];
-                    for (var indx3 in tiles) {
-                        var tile = tiles[indx3];
-                        Weights[indx3] = tile.W;
-                        var sym = Indic.Indic.GetSynonym(indx3);
-                        if (sym != null) {
-                            Weights[sym] = tile.W;
-                        }
-                    }
-                }
-            }
-            return Weights;
-        };
-        return Parser;
-    }());
-    exports.Parser = Parser;
-});
-define("GenericActions", ["require", "exports", "Contracts", "GameStore"], function (require, exports, Contracts, GS) {
-    "use strict";
-    var GenericActions = (function () {
-        function GenericActions() {
-        }
-        GenericActions.OnDismissDialog = function () {
-            GS.GameStore.Dispatch({
-                type: Contracts.Actions.DismissDialog,
-                args: {}
-            });
-        };
-        GenericActions.DismissDialog = function (state, args) {
-            state.Show = false;
-            state = null;
-        };
-        return GenericActions;
-    }());
-    exports.GenericActions = GenericActions;
-});
-define("GameState", ["require", "exports", "Contracts", "Parser", "GameActions", "GenericActions"], function (require, exports, Contracts, Parser, GameActions, GenericActions) {
+define("WordLoader", ["require", "exports", "Contracts", "axios", "GameStore"], function (require, exports, Contracts, axios, GS) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.default = function (state, action) {
-        if (state === void 0) { state = Parser.Parser.Parse(); }
-        var args = action.args;
-        switch (action.type) {
-            case Contracts.Actions.Init:
-                GameActions.GameActions.Init(state, args);
-                return state;
-            case Contracts.Actions.PunchAndPick:
-                GameActions.GameActions.PunchAndPick(state, args);
-                return state;
-            case Contracts.Actions.ToBoard:
-                GameActions.GameActions.ToBoard(state, args);
-                return state;
-            case Contracts.Actions.ToTray:
-                GameActions.GameActions.ToTray(state, args);
-                return state;
-            case Contracts.Actions.OpenOrClose:
-                GameActions.GameActions.OpenClose(state, args);
-                return state;
-            case Contracts.Actions.RequestSuggestion:
-                GameActions.GameActions.RequestSuggestion(state, args);
-                return state;
-            case Contracts.Actions.ReciveSuggestion:
-                GameActions.GameActions.ReciveSuggestion(state, args);
-                return state;
-            case Contracts.Actions.DismissSuggestion:
-                GameActions.GameActions.DismissSuggestion(state, args);
-                return state;
-            case Contracts.Actions.Pass:
-                GameActions.GameActions.Pass(state, args);
-                return state;
-            case Contracts.Actions.ReDraw:
-                GameActions.GameActions.ReDraw(state, args);
-                return state;
-            case Contracts.Actions.BotMove:
-                GameActions.GameActions.BotMove(state, args);
-                return state;
-            case Contracts.Actions.BotMoveResponse:
-                GameActions.GameActions.BotMoveResponse(state, args);
-                return state;
-            case Contracts.Actions.Award:
-                GameActions.GameActions.Award(state, args);
-                return state;
-            case Contracts.Actions.ResolveWords:
-                GameActions.GameActions.ResolveWords(state, args);
-                return state;
-            case Contracts.Actions.TakeConsent:
-                GameActions.GameActions.TakeConsent(state, args);
-                return state;
-            case Contracts.Actions.WordResolved:
-                GameActions.GameActions.ResolveWord(state, args);
-                return state;
-            case Contracts.Actions.WordRejected:
-                GameActions.GameActions.RejectWord(state, args);
-                return state;
-            default:
-                return state;
-            case Contracts.Actions.DismissDialog:
-                GenericActions.GenericActions.DismissDialog(state.Dialog, args);
-                return state;
-        }
-    };
-});
-define("GameStore", ["require", "exports", "GameState", 'redux'], function (require, exports, GameState_1, Redux) {
-    "use strict";
-    var GameStore = (function () {
-        function GameStore() {
-        }
-        GameStore.CreateStore = function () {
-            GameStore.store = Redux.createStore(GameState_1.default);
-        };
-        GameStore.GetState = function () {
-            return GameStore.store.getState();
-        };
-        GameStore.Subscribe = function (listener) {
-            return GameStore.store.subscribe(listener);
-        };
-        GameStore.Dispatch = function (action) {
-            return GameStore.store.dispatch(action);
-        };
-        return GameStore;
-    }());
-    exports.GameStore = GameStore;
-});
-define("WordLoader", ["require", "exports", "Contracts", 'axios', "GameStore"], function (require, exports, C, axios, GS) {
-    "use strict";
     var WordLoader = (function () {
         function WordLoader() {
         }
@@ -1417,7 +824,7 @@ define("WordLoader", ["require", "exports", "Contracts", 'axios', "GameStore"], 
         WordLoader.LoadComplete = function () {
             WordLoader.Lists[WordLoader.Custom] = [];
             GS.GameStore.Dispatch({
-                type: C.Actions.Init,
+                type: Contracts.Actions.Init,
                 args: {}
             });
         };
@@ -1435,20 +842,21 @@ define("WordLoader", ["require", "exports", "Contracts", 'axios', "GameStore"], 
     }());
     exports.WordLoader = WordLoader;
 });
-define("AskBot", ["require", "exports", 'axios', "GameStore", "Contracts", "Util", "WordLoader"], function (require, exports, axios, GS, C, U, WL) {
+define("AskBot", ["require", "exports", "axios", "Contracts", "GameStore", "Util", "WordLoader"], function (require, exports, axios, Contracts, GS, U, WL) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     var AskServer = (function () {
         function AskServer() {
         }
         AskServer.NextMove = function () {
             GS.GameStore.Dispatch({
-                type: C.Actions.BotMove,
+                type: Contracts.Actions.BotMove,
                 args: {}
             });
         };
         AskServer.Validate = function () {
             GS.GameStore.Dispatch({
-                type: C.Actions.ResolveWords,
+                type: Contracts.Actions.ResolveWords,
                 args: {}
             });
         };
@@ -1482,17 +890,17 @@ define("AskBot", ["require", "exports", 'axios', "GameStore", "Contracts", "Util
                     Effort: effort
                 };
                 GS.GameStore.Dispatch({
-                    type: C.Actions.ReciveSuggestion,
+                    type: Contracts.Actions.ReciveSuggestion,
                     args: response
                 });
-            }, C.Settings.ServerWait);
+            }, Contracts.Settings.ServerWait);
         };
         AskServer.BotMoveServer = function (post) {
             axios
                 .post("/API.ashx?nextmove", post.Board)
                 .then(function (response) {
                 GS.GameStore.Dispatch({
-                    type: C.Actions.BotMoveResponse,
+                    type: Contracts.Actions.BotMoveResponse,
                     args: response.data
                 });
             })
@@ -1510,10 +918,10 @@ define("AskBot", ["require", "exports", 'axios', "GameStore", "Contracts", "Util
                     Effort: effort2
                 };
                 GS.GameStore.Dispatch({
-                    type: C.Actions.BotMoveResponse,
+                    type: Contracts.Actions.BotMoveResponse,
                     args: response
                 });
-            }, C.Settings.ServerWait);
+            }, Contracts.Settings.ServerWait);
         };
         AskServer.ResolveServer = function (words) {
         };
@@ -1529,11 +937,11 @@ define("AskBot", ["require", "exports", 'axios', "GameStore", "Contracts", "Util
                 };
                 GS.GameStore.Dispatch({
                     type: response.Result.length == 0 ?
-                        C.Actions.Award :
-                        C.Actions.TakeConsent,
+                        Contracts.Actions.Award :
+                        Contracts.Actions.TakeConsent,
                     args: response.Result
                 });
-            }, C.Settings.ServerWait);
+            }, Contracts.Settings.ServerWait);
         };
         return AskServer;
     }());
@@ -1879,7 +1287,7 @@ define("AskBot", ["require", "exports", 'axios', "GameStore", "Contracts", "Util
     var RegexEngineBase = (function (_super) {
         __extends(RegexEngineBase, _super);
         function RegexEngineBase() {
-            _super.apply(this, arguments);
+            return _super !== null && _super.apply(this, arguments) || this;
         }
         RegexEngineBase.prototype.BestMove = function (Board) {
             var Moves = this.Probables(Board);
@@ -2473,7 +1881,7 @@ define("AskBot", ["require", "exports", 'axios', "GameStore", "Contracts", "Util
     var RegexEngine = (function (_super) {
         __extends(RegexEngine, _super);
         function RegexEngine() {
-            _super.apply(this, arguments);
+            return _super !== null && _super.apply(this, arguments) || this;
         }
         RegexEngine.prototype.Probables = function (Board) {
             var Moves = [];
@@ -2726,7 +2134,7 @@ define("AskBot", ["require", "exports", 'axios', "GameStore", "Contracts", "Util
     var RegexV2Engine = (function (_super) {
         __extends(RegexV2Engine, _super);
         function RegexV2Engine() {
-            _super.apply(this, arguments);
+            return _super !== null && _super.apply(this, arguments) || this;
         }
         RegexV2Engine.prototype.Probables = function (Board) {
             var st = performance.now();
@@ -3231,11 +2639,13 @@ define("AskBot", ["require", "exports", 'axios', "GameStore", "Contracts", "Util
 });
 define("Tile", ["require", "exports", "react"], function (require, exports, React) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     var Tile = (function (_super) {
         __extends(Tile, _super);
         function Tile(props) {
-            _super.call(this, props);
-            this.state = props;
+            var _this = _super.call(this, props) || this;
+            _this.state = props;
+            return _this;
         }
         Tile.prototype.render = function () {
             var _this = this;
@@ -3325,16 +2735,17 @@ define("Tile", ["require", "exports", "react"], function (require, exports, Reac
         };
         return Tile;
     }(React.Component));
-    Object.defineProperty(exports, "__esModule", { value: true });
     exports.default = Tile;
 });
 define("Tray", ["require", "exports", "react", "Tile"], function (require, exports, React, Tile) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     var Tray = (function (_super) {
         __extends(Tray, _super);
         function Tray(props) {
-            _super.call(this, props);
-            this.state = props;
+            var _this = _super.call(this, props) || this;
+            _this.state = props;
+            return _this;
         }
         Tray.prototype.render = function () {
             var childs = [];
@@ -3376,16 +2787,17 @@ define("Tray", ["require", "exports", "react", "Tile"], function (require, expor
         };
         return Tray;
     }(React.Component));
-    Object.defineProperty(exports, "__esModule", { value: true });
     exports.default = Tray;
 });
 define("TrayRack", ["require", "exports", "react", "Contracts", "GameStore"], function (require, exports, React, Contracts, GS) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     var TrayRack = (function (_super) {
         __extends(TrayRack, _super);
         function TrayRack(props) {
-            _super.call(this, props);
-            this.state = props;
+            var _this = _super.call(this, props) || this;
+            _this.state = props;
+            return _this;
         }
         TrayRack.prototype.render = function () {
             var _this = this;
@@ -3419,16 +2831,354 @@ define("TrayRack", ["require", "exports", "react", "Contracts", "GameStore"], fu
         };
         return TrayRack;
     }(React.Component));
-    Object.defineProperty(exports, "__esModule", { value: true });
     exports.default = TrayRack;
+});
+define("DragDropTouch", ["require", "exports"], function (require, exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var DataTransfer = (function () {
+        function DataTransfer() {
+            this._dropEffect = 'move';
+            this._effectAllowed = 'all';
+            this._data = {};
+        }
+        Object.defineProperty(DataTransfer.prototype, "dropEffect", {
+            get: function () {
+                return this._dropEffect;
+            },
+            set: function (value) {
+                this._dropEffect = value;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(DataTransfer.prototype, "effectAllowed", {
+            get: function () {
+                return this._effectAllowed;
+            },
+            set: function (value) {
+                this._effectAllowed = value;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(DataTransfer.prototype, "types", {
+            get: function () {
+                return Object.keys(this._data);
+            },
+            enumerable: true,
+            configurable: true
+        });
+        DataTransfer.prototype.clearData = function (type) {
+            if (type != null) {
+                delete this._data[type];
+            }
+            else {
+                this._data = null;
+            }
+        };
+        DataTransfer.prototype.getData = function (type) {
+            return this._data[type] || '';
+        };
+        DataTransfer.prototype.setData = function (type, value) {
+            this._data[type] = value;
+        };
+        DataTransfer.prototype.setDragImage = function (img, offsetX, offsetY) {
+            var ddt = DragDropTouch._instance;
+            ddt._imgCustom = img;
+            ddt._imgOffset = { x: offsetX, y: offsetY };
+        };
+        return DataTransfer;
+    }());
+    exports.DataTransfer = DataTransfer;
+    var DragDropTouch = (function () {
+        function DragDropTouch() {
+            this._lastClick = 0;
+            if (DragDropTouch._instance) {
+                throw 'DragDropTouch instance already created.';
+            }
+            var supportsPassive = false;
+            document.addEventListener('test', null, {
+                get passive() {
+                    supportsPassive = true;
+                    return true;
+                }
+            });
+            if ('ontouchstart' in document) {
+                var d = document, ts = this._touchstart.bind(this), tm = this._touchmove.bind(this), te = this._touchend.bind(this), opt = supportsPassive ? { passive: false, capture: false } : false;
+                d.addEventListener('touchstart', ts, opt);
+                d.addEventListener('touchmove', tm, opt);
+                d.addEventListener('touchend', te);
+                d.addEventListener('touchcancel', te);
+            }
+        }
+        DragDropTouch.getInstance = function () {
+            return DragDropTouch._instance;
+        };
+        DragDropTouch.prototype._touchstart = function (e) {
+            var _this = this;
+            if (this._shouldHandle(e)) {
+                if (Date.now() - this._lastClick < DragDropTouch._DBLCLICK) {
+                    if (this._dispatchEvent(e, 'dblclick', e.target)) {
+                        e.preventDefault();
+                        this._reset();
+                        return;
+                    }
+                }
+                this._reset();
+                var src = this._closestDraggable(e.target);
+                if (src) {
+                    if (!this._dispatchEvent(e, 'mousemove', e.target) &&
+                        !this._dispatchEvent(e, 'mousedown', e.target)) {
+                        this._dragSource = src;
+                        this._ptDown = this._getPoint(e);
+                        this._lastTouch = e;
+                        e.preventDefault();
+                        setTimeout(function () {
+                            if (_this._dragSource == src && _this._img == null) {
+                                if (_this._dispatchEvent(e, 'contextmenu', src)) {
+                                    _this._reset();
+                                }
+                            }
+                        }, DragDropTouch._CTXMENU);
+                    }
+                }
+            }
+        };
+        DragDropTouch.prototype._touchmove = function (e) {
+            if (this._shouldHandle(e)) {
+                var target = this._getTarget(e);
+                if (this._dispatchEvent(e, 'mousemove', target)) {
+                    this._lastTouch = e;
+                    e.preventDefault();
+                    return;
+                }
+                if (this._dragSource && !this._img) {
+                    var delta = this._getDelta(e);
+                    if (delta > DragDropTouch._THRESHOLD) {
+                        this._dispatchEvent(e, 'dragstart', this._dragSource);
+                        this._createImage(e);
+                        this._dispatchEvent(e, 'dragenter', target);
+                    }
+                }
+                if (this._img) {
+                    this._lastTouch = e;
+                    e.preventDefault();
+                    if (target != this._lastTarget) {
+                        this._dispatchEvent(this._lastTouch, 'dragleave', this._lastTarget);
+                        this._dispatchEvent(e, 'dragenter', target);
+                        this._lastTarget = target;
+                    }
+                    this._moveImage(e);
+                    this._dispatchEvent(e, 'dragover', target);
+                }
+            }
+        };
+        DragDropTouch.prototype._touchend = function (e) {
+            if (this._shouldHandle(e)) {
+                if (this._dispatchEvent(this._lastTouch, 'mouseup', e.target)) {
+                    e.preventDefault();
+                    return;
+                }
+                if (!this._img) {
+                    this._dragSource = null;
+                    this._dispatchEvent(this._lastTouch, 'click', e.target);
+                    this._lastClick = Date.now();
+                }
+                this._destroyImage();
+                if (this._dragSource) {
+                    if (e.type.indexOf('cancel') < 0) {
+                        this._dispatchEvent(this._lastTouch, 'drop', this._lastTarget);
+                    }
+                    this._dispatchEvent(this._lastTouch, 'dragend', this._dragSource);
+                    this._reset();
+                }
+            }
+        };
+        DragDropTouch.prototype._shouldHandle = function (e) {
+            return e &&
+                !e.defaultPrevented &&
+                e.touches && e.touches.length < 2;
+        };
+        DragDropTouch.prototype._reset = function () {
+            this._destroyImage();
+            this._dragSource = null;
+            this._lastTouch = null;
+            this._lastTarget = null;
+            this._ptDown = null;
+            this._dataTransfer = new DataTransfer();
+        };
+        DragDropTouch.prototype._getPoint = function (e, page) {
+            if (e && e.touches) {
+                e = e.touches[0];
+            }
+            return { x: page ? e.pageX : e.clientX, y: page ? e.pageY : e.clientY };
+        };
+        DragDropTouch.prototype._getDelta = function (e) {
+            var p = this._getPoint(e);
+            return Math.abs(p.x - this._ptDown.x) + Math.abs(p.y - this._ptDown.y);
+        };
+        DragDropTouch.prototype._getTarget = function (e) {
+            var pt = this._getPoint(e), el = document.elementFromPoint(pt.x, pt.y);
+            while (el && getComputedStyle(el).pointerEvents == 'none') {
+                el = el.parentElement;
+            }
+            return el;
+        };
+        DragDropTouch.prototype._createImage = function (e) {
+            if (this._img) {
+                this._destroyImage();
+            }
+            var src = this._imgCustom || this._dragSource;
+            this._img = src.cloneNode(true);
+            this._copyStyle(src, this._img);
+            this._img.style.top = this._img.style.left = '-9999px';
+            if (!this._imgCustom) {
+                var rc = src.getBoundingClientRect(), pt = this._getPoint(e);
+                this._imgOffset = { x: pt.x - rc.left, y: pt.y - rc.top };
+                this._img.style.opacity = DragDropTouch._OPACITY.toString();
+            }
+            this._moveImage(e);
+            document.body.appendChild(this._img);
+        };
+        DragDropTouch.prototype._destroyImage = function () {
+            if (this._img && this._img.parentElement) {
+                this._img.parentElement.removeChild(this._img);
+            }
+            this._img = null;
+            this._imgCustom = null;
+        };
+        DragDropTouch.prototype._moveImage = function (e) {
+            var _this = this;
+            if (this._img) {
+                requestAnimationFrame(function () {
+                    var pt = _this._getPoint(e, true), s = _this._img.style;
+                    s.position = 'absolute';
+                    s.pointerEvents = 'none';
+                    s.zIndex = '999999';
+                    s.left = Math.round(pt.x - _this._imgOffset.x) + 'px';
+                    s.top = Math.round(pt.y - _this._imgOffset.y) + 'px';
+                });
+            }
+        };
+        DragDropTouch.prototype._copyProps = function (dst, src, props) {
+            for (var i = 0; i < props.length; i++) {
+                var p = props[i];
+                dst[p] = src[p];
+            }
+        };
+        DragDropTouch.prototype._copyStyle = function (src, dst) {
+            DragDropTouch._rmvAtts.forEach(function (att) {
+                dst.removeAttribute(att);
+            });
+            if (src instanceof HTMLCanvasElement) {
+                var cSrc = src, cDst = dst;
+                cDst.width = cSrc.width;
+                cDst.height = cSrc.height;
+                cDst.getContext('2d').drawImage(cSrc, 0, 0);
+            }
+            var cs = getComputedStyle(src);
+            for (var i = 0; i < cs.length; i++) {
+                var key = cs[i];
+                if (key.indexOf('transition') < 0) {
+                    dst.style[key] = cs[key];
+                }
+            }
+            dst.style.pointerEvents = 'none';
+            for (var i = 0; i < src.children.length; i++) {
+                this._copyStyle(src.children[i], dst.children[i]);
+            }
+        };
+        DragDropTouch.prototype._dispatchEvent = function (e, type, target) {
+            if (e && target) {
+                var evt = document.createEvent('Event'), t = e.touches ? e.touches[0] : e;
+                evt.initEvent(type, true, true);
+                evt.button = 0;
+                evt.which = evt.buttons = 1;
+                this._copyProps(evt, e, DragDropTouch._kbdProps);
+                this._copyProps(evt, t, DragDropTouch._ptProps);
+                evt.dataTransfer = this._dataTransfer;
+                target.dispatchEvent(evt);
+                return evt.defaultPrevented;
+            }
+            return false;
+        };
+        DragDropTouch.prototype._closestDraggable = function (e) {
+            for (; e; e = e.parentElement) {
+                if (e.hasAttribute('draggable') && e.draggable) {
+                    return e;
+                }
+            }
+            return null;
+        };
+        DragDropTouch._instance = new DragDropTouch();
+        DragDropTouch._THRESHOLD = 5;
+        DragDropTouch._OPACITY = 0.5;
+        DragDropTouch._DBLCLICK = 500;
+        DragDropTouch._CTXMENU = 900;
+        DragDropTouch._rmvAtts = 'id,class,style,draggable'.split(',');
+        DragDropTouch._kbdProps = 'altKey,ctrlKey,metaKey,shiftKey'.split(',');
+        DragDropTouch._ptProps = 'pageX,pageY,clientX,clientY,screenX,screenY'.split(',');
+        return DragDropTouch;
+    }());
+    exports.DragDropTouch = DragDropTouch;
+});
+define("GameLoader", ["require", "exports", "Indic", "Messages", "DragDropTouch", "GameActions", "GameStore", "WordLoader"], function (require, exports, Indic, M, DragDropTouch, GA, GS, WL) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var GameLoader = (function () {
+        function GameLoader() {
+        }
+        GameLoader.ConfigGame = function () {
+            for (var key in Indic.AksharaSets) {
+                Indic.AksharaSets[key] = Config.CharSet[key];
+            }
+            for (var key in M.Messages) {
+                M.Messages[key] = Config.Localization[key];
+            }
+        };
+        GameLoader.Init = function () {
+            DragDropTouch.DragDropTouch._instance;
+            GameLoader.ConfigGame();
+            GS.GameStore.CreateStore();
+            GS.GameStore.Subscribe(GA.GameActions.Render);
+            GameLoader.Prepare();
+        };
+        GameLoader.Prepare = function () {
+            var list = GameLoader.Vocabularies(Config.Players);
+            if (list.length == 0) {
+                list.push(Config.CharSet.Dictionary);
+            }
+            WL.WordLoader.Prepare(list);
+        };
+        GameLoader.Vocabularies = function (players) {
+            var dicts = [];
+            for (var i = 0; i < players.length; i++) {
+                var player = players[i];
+                var IsBot = player.Bot != null;
+                if (!IsBot) {
+                    continue;
+                }
+                if (dicts.Contains(player.Bot.Dictionary)) {
+                    continue;
+                }
+                dicts.push(player.Bot.Dictionary);
+            }
+            return dicts;
+        };
+        return GameLoader;
+    }());
+    exports.GameLoader = GameLoader;
 });
 define("Cabinet", ["require", "exports", "react", "Contracts", "Tray", "TrayRack", "Util", "GameStore", "Messages"], function (require, exports, React, Contracts, Tray, TrayRack, Util, GS, M) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     var Cabinet = (function (_super) {
         __extends(Cabinet, _super);
         function Cabinet(props) {
-            _super.call(this, props);
-            this.state = props;
+            var _this = _super.call(this, props) || this;
+            _this.state = props;
+            return _this;
         }
         Cabinet.prototype.render = function () {
             var _this = this;
@@ -3491,16 +3241,17 @@ define("Cabinet", ["require", "exports", "react", "Contracts", "Tray", "TrayRack
         };
         return Cabinet;
     }(React.Component));
-    Object.defineProperty(exports, "__esModule", { value: true });
     exports.default = Cabinet;
 });
 define("BoardCell", ["require", "exports", "react", "Contracts", "GameStore"], function (require, exports, React, Contracts, GS) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     var BoardCell = (function (_super) {
         __extends(BoardCell, _super);
         function BoardCell(props) {
-            _super.call(this, props);
-            this.state = props;
+            var _this = _super.call(this, props) || this;
+            _this.state = props;
+            return _this;
         }
         BoardCell.prototype.render = function () {
             var _this = this;
@@ -3607,16 +3358,17 @@ define("BoardCell", ["require", "exports", "react", "Contracts", "GameStore"], f
         };
         return BoardCell;
     }(React.Component));
-    Object.defineProperty(exports, "__esModule", { value: true });
     exports.default = BoardCell;
 });
 define("Board", ["require", "exports", "react", "BoardCell", "Util", "Messages"], function (require, exports, React, BoardCell, U, M) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     var Board = (function (_super) {
         __extends(Board, _super);
         function Board(props) {
-            _super.call(this, props);
-            this.state = props;
+            var _this = _super.call(this, props) || this;
+            _this.state = props;
+            return _this;
         }
         Board.prototype.render = function () {
             var index = 0;
@@ -3656,16 +3408,17 @@ define("Board", ["require", "exports", "react", "BoardCell", "Util", "Messages"]
         };
         return Board;
     }(React.Component));
-    Object.defineProperty(exports, "__esModule", { value: true });
     exports.default = Board;
 });
 define("GamePlayer", ["require", "exports", "react", "Messages"], function (require, exports, React, M) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     var GamePlayer = (function (_super) {
         __extends(GamePlayer, _super);
         function GamePlayer(props) {
-            _super.call(this, props);
-            this.state = props;
+            var _this = _super.call(this, props) || this;
+            _this.state = props;
+            return _this;
         }
         GamePlayer.prototype.render = function () {
             var classList = [];
@@ -3753,22 +3506,22 @@ define("GamePlayer", ["require", "exports", "react", "Messages"], function (requ
         };
         return GamePlayer;
     }(React.Component));
-    Object.defineProperty(exports, "__esModule", { value: true });
     exports.default = GamePlayer;
 });
-define("InfoBar", ["require", "exports", "react", "react-dom", "Messages"], function (require, exports, React, ReactDOM, M) {
+define("InfoBar", ["require", "exports", "react", "Messages"], function (require, exports, React, M) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     var InfoBar = (function (_super) {
         __extends(InfoBar, _super);
         function InfoBar(props) {
-            _super.call(this, props);
-            this.state = props;
+            var _this = _super.call(this, props) || this;
+            _this.state = props;
+            return _this;
         }
         InfoBar.prototype.componentDidUpdate = function () {
             if (this.refs["ul"] == null) {
                 return;
             }
-            ReactDOM.findDOMNode(this.refs["ul"]).scrollTop = 10000;
         };
         InfoBar.prototype.render = function () {
             var childs = [];
@@ -3804,16 +3557,17 @@ define("InfoBar", ["require", "exports", "react", "react-dom", "Messages"], func
         };
         return InfoBar;
     }(React.Component));
-    Object.defineProperty(exports, "__esModule", { value: true });
     exports.default = InfoBar;
 });
 define("GamePlayers", ["require", "exports", "react", "GamePlayer", "Util", "Messages"], function (require, exports, React, GamePlayer, Util, M) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     var GamePlayers = (function (_super) {
         __extends(GamePlayers, _super);
         function GamePlayers(props) {
-            _super.call(this, props);
-            this.state = props;
+            var _this = _super.call(this, props) || this;
+            _this.state = props;
+            return _this;
         }
         GamePlayers.prototype.render = function () {
             var childs = [];
@@ -3844,16 +3598,17 @@ define("GamePlayers", ["require", "exports", "react", "GamePlayer", "Util", "Mes
         };
         return GamePlayers;
     }(React.Component));
-    Object.defineProperty(exports, "__esModule", { value: true });
     exports.default = GamePlayers;
 });
-define("ActionBar", ["require", "exports", "react", "Contracts", "GameStore", "Messages"], function (require, exports, React, Contracts, GS, M) {
+define("ActionBar", ["require", "exports", "react", "GameStore", "Messages", "Contracts"], function (require, exports, React, GS, M, Contracts) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     var ActionBar = (function (_super) {
         __extends(ActionBar, _super);
         function ActionBar(props) {
-            _super.call(this, props);
-            this.state = props;
+            var _this = _super.call(this, props) || this;
+            _this.state = props;
+            return _this;
         }
         ActionBar.prototype.render = function () {
             var childs = [];
@@ -3909,16 +3664,17 @@ define("ActionBar", ["require", "exports", "react", "Contracts", "GameStore", "M
         };
         return ActionBar;
     }(React.Component));
-    Object.defineProperty(exports, "__esModule", { value: true });
     exports.default = ActionBar;
 });
 define("GameTable", ["require", "exports", "react", "Contracts", "Tray", "Util", "GameStore", "Messages"], function (require, exports, React, Contracts, Tray, Util, GS, M) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     var GameTable = (function (_super) {
         __extends(GameTable, _super);
         function GameTable(props) {
-            _super.call(this, props);
-            this.state = props;
+            var _this = _super.call(this, props) || this;
+            _this.state = props;
+            return _this;
         }
         GameTable.prototype.render = function () {
             var _this = this;
@@ -4034,16 +3790,65 @@ define("GameTable", ["require", "exports", "react", "Contracts", "Tray", "Util",
         };
         return GameTable;
     }(React.Component));
-    Object.defineProperty(exports, "__esModule", { value: true });
     exports.default = GameTable;
+});
+define("_AlertDialog", ["require", "exports", "react", "_OverlayDialog"], function (require, exports, React, OverlayDialog) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var _AlertDialog = (function (_super) {
+        __extends(_AlertDialog, _super);
+        function _AlertDialog(props) {
+            var _this = _super.call(this, props) || this;
+            _this.state = props;
+            return _this;
+        }
+        _AlertDialog.prototype.render = function () {
+            var message = React.createElement('div', {
+                key: "msg_" + this.props.Id,
+                className: "oFContent"
+            }, this.props.Message);
+            return this.renderDialog(message);
+        };
+        return _AlertDialog;
+    }(OverlayDialog.default));
+    exports.default = _AlertDialog;
+});
+define("AlertDialog", ["require", "exports", "react", "_AlertDialog", "Util", "Messages"], function (require, exports, React, _AlertDialog, Util, Messages) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var AlertDialog = (function (_super) {
+        __extends(AlertDialog, _super);
+        function AlertDialog(props) {
+            var _this = _super.call(this, props) || this;
+            _this.state = props;
+            return _this;
+        }
+        AlertDialog.prototype.render = function () {
+            var id = "AlertDialog";
+            return React.createElement(_AlertDialog.default, Util.Util.Merge(this.props, {
+                Id: id,
+                key: id,
+                ref: id,
+                className: id,
+                ReadOnly: false,
+                ShowClose: false,
+                ConfirmText: Messages.Messages.OK, ShowConfirm: true,
+                OnConfirm: this.props.OnConfirm,
+            }));
+        };
+        return AlertDialog;
+    }(React.Component));
+    exports.default = AlertDialog;
 });
 define("_ConfirmDialog", ["require", "exports", "react", "_OverlayDialog"], function (require, exports, React, OverlayDialog) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     var _ConfirmDialog = (function (_super) {
         __extends(_ConfirmDialog, _super);
         function _ConfirmDialog(props) {
-            _super.call(this, props);
-            this.state = props;
+            var _this = _super.call(this, props) || this;
+            _this.state = props;
+            return _this;
         }
         _ConfirmDialog.prototype.render = function () {
             var message = React.createElement('div', {
@@ -4054,16 +3859,17 @@ define("_ConfirmDialog", ["require", "exports", "react", "_OverlayDialog"], func
         };
         return _ConfirmDialog;
     }(OverlayDialog.default));
-    Object.defineProperty(exports, "__esModule", { value: true });
     exports.default = _ConfirmDialog;
 });
 define("ConfirmDialog", ["require", "exports", "react", "_ConfirmDialog", "Util", "Messages"], function (require, exports, React, _ConfirmDialog, Util, Messages) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     var ConfirmDialog = (function (_super) {
         __extends(ConfirmDialog, _super);
         function ConfirmDialog(props) {
-            _super.call(this, props);
-            this.state = props;
+            var _this = _super.call(this, props) || this;
+            _this.state = props;
+            return _this;
         }
         ConfirmDialog.prototype.render = function () {
             var id = "ConfrimDialog";
@@ -4082,16 +3888,37 @@ define("ConfirmDialog", ["require", "exports", "react", "_ConfirmDialog", "Util"
         };
         return ConfirmDialog;
     }(React.Component));
-    Object.defineProperty(exports, "__esModule", { value: true });
     exports.default = ConfirmDialog;
+});
+define("GenericActions", ["require", "exports", "Contracts", "GameStore"], function (require, exports, Contracts, GS) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var GenericActions = (function () {
+        function GenericActions() {
+        }
+        GenericActions.OnDismissDialog = function () {
+            GS.GameStore.Dispatch({
+                type: Contracts.Actions.DismissDialog,
+                args: {}
+            });
+        };
+        GenericActions.DismissDialog = function (state, args) {
+            state.Show = false;
+            state = null;
+        };
+        return GenericActions;
+    }());
+    exports.GenericActions = GenericActions;
 });
 define("ConsentForm", ["require", "exports", "react", "Contracts", "ConfirmDialog", "Util", "Messages", "GameStore"], function (require, exports, React, Contracts, Confirm, Util, Messages, GS) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     var ConsentForm = (function (_super) {
         __extends(ConsentForm, _super);
         function ConsentForm(props) {
-            _super.call(this, props);
-            this.state = props;
+            var _this = _super.call(this, props) || this;
+            _this.state = props;
+            return _this;
         }
         ConsentForm.prototype.render = function () {
             var childs = [];
@@ -4126,16 +3953,17 @@ define("ConsentForm", ["require", "exports", "react", "Contracts", "ConfirmDialo
         };
         return ConsentForm;
     }(React.Component));
-    Object.defineProperty(exports, "__esModule", { value: true });
     exports.default = ConsentForm;
 });
 define("GameRoom", ["require", "exports", "react", "Cabinet", "Board", "InfoBar", "GamePlayers", "ActionBar", "GameTable", "AlertDialog", "SuggestionForm", "Util", "GenericActions", "ConsentForm", "Messages"], function (require, exports, React, Cabinet, Board, InfoBar, GamePlayers, ActionBar, GameTable, Alert, Suggest, Util, GA, ConsentForm, M) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     var GameRoom = (function (_super) {
         __extends(GameRoom, _super);
         function GameRoom(props) {
-            _super.call(this, props);
-            this.state = props;
+            var _this = _super.call(this, props) || this;
+            _this.state = props;
+            return _this;
         }
         GameRoom.prototype.render = function () {
             var childs = [];
@@ -4168,11 +3996,11 @@ define("GameRoom", ["require", "exports", "react", "Cabinet", "Board", "InfoBar"
         };
         return GameRoom;
     }(React.Component));
-    Object.defineProperty(exports, "__esModule", { value: true });
     exports.default = GameRoom;
 });
-define("AskReferee", ["require", "exports", "Contracts", "Messages", "Util", "AskBot", "Indic", "GameActions"], function (require, exports, C, M, U, AskServer, Indic, GA) {
+define("AskReferee", ["require", "exports", "Contracts", "Messages", "Util", "AskBot", "Indic", "GameActions"], function (require, exports, Contracts, M, U, AskServer, Indic, GA) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     var AskReferee = (function () {
         function AskReferee() {
         }
@@ -4203,7 +4031,7 @@ define("AskReferee", ["require", "exports", "Contracts", "Messages", "Util", "As
             var player = state.Players.Players[state.Players.Current];
             state.GameTable.Message = U.Util.Format(M.Messages.LookupDict, [player.Name]);
             state.ReadOnly = true;
-            setTimeout(AskServer.AskServer.Validate, C.Settings.RefreeWait);
+            setTimeout(AskServer.AskServer.Validate, Contracts.Settings.RefreeWait);
         };
         AskReferee.HasMoves = function (state) {
             var Board = state.Board;
@@ -4366,6 +4194,7 @@ define("AskReferee", ["require", "exports", "Contracts", "Messages", "Util", "As
 });
 define("GameActions", ["require", "exports", "react", "react-dom", "Contracts", "Messages", "Indic", "Util", "AskBot", "GameStore", "GameRoom", "WordLoader", "AskReferee"], function (require, exports, React, ReactDOM, Contracts, Messages, Indic, Util, AskBot, GS, Game, WL, AskReferee) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     var GameActions = (function () {
         function GameActions() {
         }
@@ -5191,142 +5020,348 @@ define("GameActions", ["require", "exports", "react", "react-dom", "Contracts", 
     }());
     exports.PubSub = PubSub;
 });
-define("GameLoader", ["require", "exports", "AksharaSets", "Messages", "DragDropTouch", "GameActions", "GameStore", "WordLoader"], function (require, exports, Sets, M, DragDropTouch, GA, GS, WL) {
+define("Parser", ["require", "exports", "GameActions", "Indic"], function (require, exports, GameActions, Indic) {
     "use strict";
-    var GameLoader = (function () {
-        function GameLoader() {
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var Parser = (function () {
+        function Parser() {
         }
-        GameLoader.ConfigGame = function () {
-            for (var key in Sets.AksharaSets) {
-                Sets.AksharaSets[key] = Config.CharSet[key];
-            }
-            for (var key in M.Messages) {
-                M.Messages[key] = Config.Localization[key];
-            }
+        Parser.Parse = function () {
+            var cabinet = Parser.ParseCabinet(Config.Board);
+            var board = Parser.ParseBoard(Config.Board);
+            var players = Parser.ParsePlayers(Config.Players);
+            var cache = Parser.BuildCache(cabinet);
+            var infoBar = Parser.BuildInfoBar();
+            var gameTable = Parser.BuildGameTable(Config.Board.GameTable, board.TileWeights, cache);
+            var consent = Parser.BuildConsent();
+            var suggest = Parser.BuildSuggestion();
+            var stats = { EmptyCells: 0, Occupancy: 0, TotalWords: 0, UnUsed: 0 };
+            GameActions.GameActions.RefreshTrays(cabinet.Trays, cache);
+            GameActions.GameActions.RefreshCabinet(cabinet, cache);
+            var dialog = Parser.BuildDialog();
+            var gameState = {
+                Id: "game",
+                key: "game",
+                GameId: Config.GameId,
+                className: "game",
+                ReadOnly: false,
+                Show: true,
+                GameOver: false,
+                Cache: cache,
+                Cabinet: cabinet,
+                Board: board,
+                Players: players,
+                InfoBar: infoBar,
+                Consent: consent,
+                Stats: stats,
+                GameTable: gameTable,
+                Dialog: dialog,
+                Suggestion: suggest
+            };
+            return gameState;
         };
-        GameLoader.Init = function () {
-            DragDropTouch.DragDropTouch._instance;
-            GameLoader.ConfigGame();
-            GS.GameStore.CreateStore();
-            GS.GameStore.Subscribe(GA.GameActions.Render);
-            GameLoader.Prepare();
+        Parser.BuildGameTable = function (JSON, tileWeights, cache) {
+            var vAvailable = GameActions.GameActions.DrawVowelTiles(cache, {}, JSON.MaxVowels);
+            var vTray = GameActions.GameActions.SetTableTray(vAvailable, tileWeights, "Vowels");
+            GameActions.GameActions.SetOnBoard(cache, vAvailable);
+            var cAvailable = GameActions.GameActions.DrawConsoTiles(cache, {}, JSON.MaxOnTable - JSON.MaxVowels);
+            var cTray = GameActions.GameActions.SetTableTray(cAvailable, tileWeights, "Conso");
+            GameActions.GameActions.SetOnBoard(cache, cAvailable);
+            var raw = {};
+            raw.key = "gameTable";
+            raw.Id = raw.key;
+            raw.className = "gameTable";
+            raw.CanReDraw = true;
+            raw.ReadOnly = false;
+            raw.MaxOnTable = JSON.MaxOnTable;
+            raw.MaxVowels = JSON.MaxVowels;
+            raw.VowelTray = vTray;
+            raw.ConsoTray = cTray;
+            return raw;
         };
-        GameLoader.Prepare = function () {
-            var list = GameLoader.Vocabularies(Config.Players);
-            if (list.length == 0) {
-                list.push(Config.CharSet.Dictionary);
+        Parser.ParseCabinet = function (JSON) {
+            var raw = {};
+            raw.key = "Cabinet";
+            raw.Trays = [];
+            raw.ReadOnly = true;
+            raw.Show = true;
+            var index = 0;
+            var tilesDict = {};
+            for (var i = 0; i < JSON.Trays.length; i++) {
+                var item = JSON.Trays[i];
+                var props = {};
+                props.Id = item.Id;
+                props.key = item.Id;
+                props.className = "tray";
+                props.Title = item.Title;
+                props.Show = item.Show;
+                props.Disabled = false;
+                props.ReadOnly = raw.ReadOnly;
+                props.Index = i;
+                props.Tiles = [];
+                for (var j = 0; j < item.Set.length; j++) {
+                    var prop = {};
+                    prop.Id = "T_" + (index + 1).toString();
+                    prop.key = prop.Id;
+                    var KVP = item.Set[j];
+                    for (var key in KVP) {
+                        prop.Text = key;
+                        prop.Remaining = KVP[key].C;
+                        prop.Total = prop.Remaining;
+                        prop.Weight = KVP[key].W;
+                    }
+                    prop.Index = j;
+                    prop.TrayIndex = i;
+                    prop.ReadOnly = raw.ReadOnly;
+                    props.Tiles.push(prop);
+                    index++;
+                }
+                raw.Trays.push(props);
             }
-            WL.WordLoader.Prepare(list);
+            return raw;
         };
-        GameLoader.Vocabularies = function (players) {
-            var dicts = [];
+        Parser.BuildCache = function (JSON) {
+            var tilesDict = {};
+            for (var i = 0; i < JSON.Trays.length; i++) {
+                var item = JSON.Trays[i];
+                for (var j = 0; j < item.Tiles.length; j++) {
+                    var prop = item.Tiles[j];
+                    Parser.RefreshCache(tilesDict, { Text: prop.Text, Remaining: prop.Remaining, Total: prop.Total, Weight: prop.Weight });
+                }
+            }
+            return tilesDict;
+        };
+        Parser.ParseBoard = function (JSON) {
+            var raw = {};
+            raw.Id = "Board";
+            raw.key = "Board";
+            raw.Size = JSON.Size;
+            raw.Name = JSON.Name;
+            raw.Star = JSON.Star;
+            raw.Language = JSON.Language;
+            raw.Cells = [];
+            raw.TileWeights = Parser.GetTileWeights(JSON.Trays);
+            var index = 0;
+            for (var i = 0; i < JSON.Size; i++) {
+                for (var j = 0; j < JSON.Size; j++) {
+                    var cell = {};
+                    cell.Id = "C_" + (index + 1).toString();
+                    cell.key = cell.Id;
+                    cell.Weight = JSON.Weights[index];
+                    cell.Current = " ";
+                    cell.Index = index;
+                    cell.Waiting = [];
+                    cell.Confirmed = [];
+                    cell.Star = (JSON.Star == index);
+                    raw.Cells.push(cell);
+                    index++;
+                }
+            }
+            return raw;
+        };
+        Parser.ParsePlayers = function (players) {
+            var raw = {};
+            raw.Id = "Players";
+            raw.key = raw.Id;
+            raw.Players = [];
+            raw.Current = 0;
+            raw.HasClaims = false;
             for (var i = 0; i < players.length; i++) {
                 var player = players[i];
-                var IsBot = player.Bot != null;
-                if (!IsBot) {
-                    continue;
-                }
-                if (dicts.Contains(player.Bot.Dictionary)) {
-                    continue;
-                }
-                dicts.push(player.Bot.Dictionary);
+                player.CurrentTurn = (i == raw.Current);
+                player.Score = 0;
+                player.Unconfirmed = 0;
+                player.Awarded = [];
+                player.Claimed = [];
+                player.Id = "P_" + (i + 1);
+                player.key = player.Id;
+                player.NoWords = 0;
+                player.Name = player.Name;
+                raw.Players.push(player);
             }
-            return dicts;
+            return raw;
         };
-        return GameLoader;
-    }());
-    exports.GameLoader = GameLoader;
-});
-define("AlertDialog", ["require", "exports", "react", "_AlertDialog", "Util", "Messages"], function (require, exports, React, _AlertDialog, Util, Messages) {
-    "use strict";
-    var AlertDialog = (function (_super) {
-        __extends(AlertDialog, _super);
-        function AlertDialog(props) {
-            _super.call(this, props);
-            this.state = props;
-        }
-        AlertDialog.prototype.render = function () {
-            var id = "AlertDialog";
-            return React.createElement(_AlertDialog.default, Util.Util.Merge(this.props, {
+        Parser.BuildInfoBar = function () {
+            var raw = {};
+            raw.key = "InfoBar";
+            raw.Messages = [];
+            return raw;
+        };
+        Parser.BuildDialog = function () {
+            var id = "Dialog";
+            var dialog = {
                 Id: id,
                 key: id,
-                ref: id,
-                className: id,
+                Show: false,
                 ReadOnly: false,
+                className: "",
+                Title: "",
+                Message: "",
+            };
+            return dialog;
+        };
+        Parser.BuildSuggestion = function () {
+            var id = "Suggest";
+            var suggest = {
+                Id: id,
+                key: id,
+                Show: false,
+                ReadOnly: false,
+                className: "",
+                Loaded: false,
+                Moves: [],
+                Title: "",
+                ConfirmText: "",
+                CancelText: "",
+                ShowConfirm: true,
                 ShowClose: false,
-                ConfirmText: Messages.Messages.OK, ShowConfirm: true,
-                OnConfirm: this.props.OnConfirm,
-            }));
+                OnConfirm: null,
+                OnDismiss: null
+            };
+            return suggest;
         };
-        return AlertDialog;
-    }(React.Component));
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.default = AlertDialog;
+        Parser.BuildConsent = function () {
+            var id = "Consent";
+            var consent = {
+                Id: id,
+                key: id,
+                Show: false,
+                ReadOnly: false,
+                className: "",
+                Pending: [],
+                UnResolved: []
+            };
+            return consent;
+        };
+        Parser.RefreshCache = function (cache, prop) {
+            var text = prop.Text;
+            cache[text] =
+                {
+                    Remaining: prop.Remaining,
+                    Total: prop.Total,
+                    OnBoard: 0
+                };
+            return;
+        };
+        Parser.GetTileWeights = function (trays) {
+            var Weights = {};
+            for (var indx in trays) {
+                var tray = trays[indx];
+                for (var indx2 in tray.Set) {
+                    var tiles = tray.Set[indx2];
+                    for (var indx3 in tiles) {
+                        var tile = tiles[indx3];
+                        Weights[indx3] = tile.W;
+                        var sym = Indic.Indic.GetSynonym(indx3);
+                        if (sym != null) {
+                            Weights[sym] = tile.W;
+                        }
+                    }
+                }
+            }
+            return Weights;
+        };
+        return Parser;
+    }());
+    exports.Parser = Parser;
 });
-define("_SuggestionDialog", ["require", "exports", "react", "Messages", "_OverlayDialog"], function (require, exports, React, Messages, OverlayDialog) {
+define("GameState", ["require", "exports", "Contracts", "Parser", "GameActions", "GenericActions"], function (require, exports, Contracts, Parser, GameActions, GenericActions) {
     "use strict";
-    var _SuggestionDialog = (function (_super) {
-        __extends(_SuggestionDialog, _super);
-        function _SuggestionDialog(props) {
-            _super.call(this, props);
-            this.state = props;
-        }
-        _SuggestionDialog.prototype.render = function () {
-            var childs = [];
-            if (!this.props.Loaded) {
-                var content = React.createElement('div', {
-                    key: "suggest_" + this.props.Id,
-                    className: "oFContent"
-                }, Messages.Messages.SuggestLoading);
-                childs.push(content);
-            }
-            else {
-                var items = [];
-                var hasMoves = this.props.Moves.length != 0;
-                for (var i = 0; i < this.props.Moves.length; i++) {
-                    var move = this.props.Moves[i];
-                    {
-                        var li = React.createElement("li", { key: "li" + i }, "Direction: " + move.Direction);
-                        items.push(li);
-                    }
-                    hasMoves = move.Moves.length != 0;
-                    for (var indx in move.Moves) {
-                        var li = React.createElement("li", { key: "li" + i + indx }, move.Moves[indx].Tiles + "  at " + move.Moves[indx].Index);
-                        items.push(li);
-                    }
-                }
-                if (!hasMoves) {
-                    var li = React.createElement("li", { key: "li" + i }, Messages.Messages.NoSuggestions);
-                    items.push(li);
-                }
-                var id = "ul";
-                var ul = React.createElement("ul", {
-                    id: id,
-                    key: id,
-                    ref: id,
-                    className: "ul",
-                    title: ""
-                }, items);
-                childs.push(ul);
-            }
-            var content = React.createElement('div', {
-                key: "suggest_" + this.props.Id,
-                className: "oFContent"
-            }, childs);
-            return this.renderDialog(content);
-        };
-        return _SuggestionDialog;
-    }(OverlayDialog.default));
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.default = _SuggestionDialog;
+    exports.default = function (state, action) {
+        if (state === void 0) { state = Parser.Parser.Parse(); }
+        var args = action.args;
+        switch (action.type) {
+            case Contracts.Actions.Init:
+                GameActions.GameActions.Init(state, args);
+                return state;
+            case Contracts.Actions.PunchAndPick:
+                GameActions.GameActions.PunchAndPick(state, args);
+                return state;
+            case Contracts.Actions.ToBoard:
+                GameActions.GameActions.ToBoard(state, args);
+                return state;
+            case Contracts.Actions.ToTray:
+                GameActions.GameActions.ToTray(state, args);
+                return state;
+            case Contracts.Actions.OpenOrClose:
+                GameActions.GameActions.OpenClose(state, args);
+                return state;
+            case Contracts.Actions.RequestSuggestion:
+                GameActions.GameActions.RequestSuggestion(state, args);
+                return state;
+            case Contracts.Actions.ReciveSuggestion:
+                GameActions.GameActions.ReciveSuggestion(state, args);
+                return state;
+            case Contracts.Actions.DismissSuggestion:
+                GameActions.GameActions.DismissSuggestion(state, args);
+                return state;
+            case Contracts.Actions.Pass:
+                GameActions.GameActions.Pass(state, args);
+                return state;
+            case Contracts.Actions.ReDraw:
+                GameActions.GameActions.ReDraw(state, args);
+                return state;
+            case Contracts.Actions.BotMove:
+                GameActions.GameActions.BotMove(state, args);
+                return state;
+            case Contracts.Actions.BotMoveResponse:
+                GameActions.GameActions.BotMoveResponse(state, args);
+                return state;
+            case Contracts.Actions.Award:
+                GameActions.GameActions.Award(state, args);
+                return state;
+            case Contracts.Actions.ResolveWords:
+                GameActions.GameActions.ResolveWords(state, args);
+                return state;
+            case Contracts.Actions.TakeConsent:
+                GameActions.GameActions.TakeConsent(state, args);
+                return state;
+            case Contracts.Actions.WordResolved:
+                GameActions.GameActions.ResolveWord(state, args);
+                return state;
+            case Contracts.Actions.WordRejected:
+                GameActions.GameActions.RejectWord(state, args);
+                return state;
+            default:
+                return state;
+            case Contracts.Actions.DismissDialog:
+                GenericActions.GenericActions.DismissDialog(state.Dialog, args);
+                return state;
+        }
+    };
+});
+define("GameStore", ["require", "exports", "GameState", "redux"], function (require, exports, GameState_1, Redux) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var GameStore = (function () {
+        function GameStore() {
+        }
+        GameStore.CreateStore = function () {
+            GameStore.store = Redux.createStore(GameState_1.default);
+        };
+        GameStore.GetState = function () {
+            return GameStore.store.getState();
+        };
+        GameStore.Subscribe = function (listener) {
+            return GameStore.store.subscribe(listener);
+        };
+        GameStore.Dispatch = function (action) {
+            return GameStore.store.dispatch(action);
+        };
+        return GameStore;
+    }());
+    exports.GameStore = GameStore;
 });
 define("SuggestionForm", ["require", "exports", "react", "Contracts", "_SuggestionDialog", "Util", "Messages", "GameStore"], function (require, exports, React, Contracts, _SuggestionDialog, Util, Messages, GS) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     var SuggestionForm = (function (_super) {
         __extends(SuggestionForm, _super);
         function SuggestionForm(props) {
-            _super.call(this, props);
-            this.state = props;
+            var _this = _super.call(this, props) || this;
+            _this.state = props;
+            return _this;
         }
         SuggestionForm.prototype.render = function () {
             var id = "SuggestDialog";
@@ -5350,11 +5385,11 @@ define("SuggestionForm", ["require", "exports", "react", "Contracts", "_Suggesti
         };
         return SuggestionForm;
     }(React.Component));
-    Object.defineProperty(exports, "__esModule", { value: true });
     exports.default = SuggestionForm;
 });
 define("Index", ["require", "exports", "Util"], function (require, exports, Util) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     var Index = (function () {
         function Index() {
         }
@@ -5381,5 +5416,6 @@ define("Index", ["require", "exports", "Util"], function (require, exports, Util
 });
 define("Game", ["require", "exports", "GameLoader"], function (require, exports, GameLoader) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     GameLoader.GameLoader.Init();
 });

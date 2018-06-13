@@ -10,11 +10,9 @@
 // </copyright>
 //---------------------------------------------------------------------------------------------
 
-import * as React from "react";
-import * as ReactDOM from "react-dom";
-import * as Contracts from 'Contracts';
+import * as React from 'react';
 import * as OverlayDialog from '_OverlayDialog';
-import * as Util from 'Util';
+import * as Contracts from 'Contracts';
 
 class _ConfirmDialog extends OverlayDialog.default<Contracts._iConfirmDialog, Contracts._iConfirmDialog>
 {

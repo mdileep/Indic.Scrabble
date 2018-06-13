@@ -10,11 +10,9 @@
 // </copyright>
 //---------------------------------------------------------------------------------------------
 
-import * as React from "react";
-import * as ReactDOM from "react-dom";
+import * as React from 'react';
 import * as Contracts from 'Contracts';
 import * as OverlayDialog from '_OverlayDialog';
-import * as Util from 'Util';
 
 class _AlertDialog extends OverlayDialog.default<Contracts._iAlertDialog, Contracts._iAlertDialog>
 {

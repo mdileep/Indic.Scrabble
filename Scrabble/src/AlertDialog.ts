@@ -10,12 +10,10 @@
 // </copyright>
 //---------------------------------------------------------------------------------------------
 
-import * as React from "react";
-import * as ReactDOM from "react-dom";
+import * as React from 'react';
 import * as Contracts from 'Contracts';
 import * as _AlertDialog from '_AlertDialog';
 import * as Util from 'Util';
-import * as GameLoader from 'GameLoader';
 import * as Messages from 'Messages';
 
 class AlertDialog extends React.Component<Contracts.iAlert, Contracts.iAlert>

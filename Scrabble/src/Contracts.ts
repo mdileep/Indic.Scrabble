@@ -150,39 +150,6 @@ export interface iArgs {
     Origin?: string;
     SrcCell?: number;
 }
-export class Events {
-    public static GameOver: number = 0;
-}
-export class Actions {
-    public static Init: number = 0;
-    public static ReRender: number = 1;
-    //
-    public static ToBoard: number = 20;
-    public static ToTray: number = 21;
-    public static OpenOrClose: number = 22;
-    //
-    public static Pass: number = 40;
-    public static ReDraw: number = 41;
-    //Suggestions
-    public static RequestSuggestion: number = 42;
-    public static ReciveSuggestion: number = 43;
-    public static DismissSuggestion: number = 44;
-    //
-    public static PunchAndPick: number = 45;
-    //
-    public static BotMove: number = 50;
-    public static BotMoveResponse: number = 51;
-    //
-    public static Award: number = 60;
-    public static ResolveWords: number = 61;
-    public static TakeConsent: number = 62;
-    public static WordResolved: number = 63;
-    public static WordRejected: number = 64;
-
-    //
-    public static DismissDialog: number = 90;
-    public static AskHelp: number = 91;
-}
 export interface iIndexConfig {
     Langs: string[];
     Boards: string[];
@@ -372,6 +339,40 @@ export interface WC {
 export interface iGameEngine {
     BestMove(Board: ScrabbleBoard): ProbableMove;
     Probables(Board: ScrabbleBoard): ProbableMove[];
+}
+// Following are not Contracts Exactly: To be moved to some other place.
+export class Events {
+    public static GameOver: number = 0;
+}
+export class Actions {
+    public static Init: number = 0;
+    public static ReRender: number = 1;
+    //
+    public static ToBoard: number = 20;
+    public static ToTray: number = 21;
+    public static OpenOrClose: number = 22;
+    //
+    public static Pass: number = 40;
+    public static ReDraw: number = 41;
+    //Suggestions
+    public static RequestSuggestion: number = 42;
+    public static ReciveSuggestion: number = 43;
+    public static DismissSuggestion: number = 44;
+    //
+    public static PunchAndPick: number = 45;
+    //
+    public static BotMove: number = 50;
+    public static BotMoveResponse: number = 51;
+    //
+    public static Award: number = 60;
+    public static ResolveWords: number = 61;
+    public static TakeConsent: number = 62;
+    public static WordResolved: number = 63;
+    public static WordRejected: number = 64;
+
+    //
+    public static DismissDialog: number = 90;
+    public static AskHelp: number = 91;
 }
 export class Settings {
     static NoWords: number = 5;

@@ -10,15 +10,15 @@
 // </copyright>
 //---------------------------------------------------------------------------------------------
 
+import * as Contracts from 'Contracts';
 import Reducers from 'GameState';
 import * as Redux from 'redux';
-import * as Contracts from 'Contracts';
 
 export class GameStore {
     static store: Redux.Store<Contracts.iGameState>;
 
     public static CreateStore(): void {
-        GameStore.store = Redux.createStore(Reducers)
+        GameStore.store = Redux.createStore(Reducers);
     }
 
     public static GetState(): Contracts.iGameState {

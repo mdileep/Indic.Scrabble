@@ -10,14 +10,9 @@
 // </copyright>
 //---------------------------------------------------------------------------------------------
 
-import * as React from "react";
-import * as ReactDOM from "react-dom";
+import * as React from 'react';
 import * as Contracts from 'Contracts';
-import * as Alert from 'AlertDialog';
-import * as Util from 'Util';
-import * as GameLoader from 'GameLoader';
 import * as Messages from 'Messages';
-import * as GS from 'GameStore';
 import * as OverlayDialog from '_OverlayDialog';
 
 class _SuggestionDialog extends OverlayDialog.default<Contracts.iSuggestion, Contracts.iSuggestion>

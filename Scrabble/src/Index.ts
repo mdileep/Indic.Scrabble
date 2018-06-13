@@ -9,6 +9,7 @@
 //       _._        | <TODO>                   |   <TODO>                  | <TODO>
 // </copyright>
 //---------------------------------------------------------------------------------------------
+
 import * as Util from 'Util';
 import * as Contracts from 'Contracts';
 declare var Config: Contracts.iIndexConfig;

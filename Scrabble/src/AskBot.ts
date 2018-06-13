@@ -9,13 +9,13 @@
 //       _._        | <TODO>                   |   <TODO>                  | <TODO>
 // </copyright>
 //---------------------------------------------------------------------------------------------
+
 import * as axios from 'axios';
+import * as Contracts from 'Contracts';
 import * as GS from 'GameStore';
 import * as GA from 'GameActions';
-import * as C from 'Contracts';
 import * as U from 'Util';
 import * as M from 'Messages';
-import * as Indic from 'Indic';
 import * as WL from 'WordLoader';
 declare var Config: any;
 
@@ -23,13 +23,13 @@ export class AskServer {
 
     static NextMove(): void {
         GS.GameStore.Dispatch({
-            type: C.Actions.BotMove,
+            type: Contracts.Actions.BotMove,
             args: {}
         });
     }
     static Validate(): void {
         GS.GameStore.Dispatch({
-            type: C.Actions.ResolveWords,
+            type: Contracts.Actions.ResolveWords,
             args: {}
         });
     }
@@ -65,7 +65,7 @@ export class AskServer {
         setTimeout(function () {
 
             var st = performance.now();
-            var move: C.ProbableMove = new RegexV2Engine().BestMove(post.Board);
+            var move: Contracts.ProbableMove = new RegexV2Engine().BestMove(post.Board);
             var effort = U.Util.ElapsedTime(performance.now() - st);
 
             var response =
@@ -76,11 +76,11 @@ export class AskServer {
                 };
 
             GS.GameStore.Dispatch({
-                type: C.Actions.ReciveSuggestion,
+                type: Contracts.Actions.ReciveSuggestion,
                 args: response
             });
 
-        }, C.Settings.ServerWait);
+        }, Contracts.Settings.ServerWait);
     }
 
     static BotMoveServer(post: any): void {
@@ -88,7 +88,7 @@ export class AskServer {
             .post("/API.ashx?nextmove", post.Board)
             .then(response => {
                 GS.GameStore.Dispatch({
-                    type: C.Actions.BotMoveResponse,
+                    type: Contracts.Actions.BotMoveResponse,
                     args: response.data
                 });
             })
@@ -100,7 +100,7 @@ export class AskServer {
         setTimeout(function () {
 
             var st2 = performance.now();
-            var move2: C.ProbableMove = new RegexV2Engine().BestMove(post.Board);
+            var move2: Contracts.ProbableMove = new RegexV2Engine().BestMove(post.Board);
             var effort2 = U.Util.ElapsedTime(performance.now() - st2);
 
             var response =
@@ -111,11 +111,11 @@ export class AskServer {
                 };
 
             GS.GameStore.Dispatch({
-                type: C.Actions.BotMoveResponse,
+                type: Contracts.Actions.BotMoveResponse,
                 args: response
             });
 
-        }, C.Settings.ServerWait);
+        }, Contracts.Settings.ServerWait);
     }
 
     static ResolveServer(words: string[]): void {
@@ -138,29 +138,29 @@ export class AskServer {
             GS.GameStore.Dispatch
                 ({
                     type: response.Result.length == 0 ?
-                        C.Actions.Award :
-                        C.Actions.TakeConsent,
+                        Contracts.Actions.Award :
+                        Contracts.Actions.TakeConsent,
                     args: response.Result
                 });
 
-        }, C.Settings.ServerWait);
+        }, Contracts.Settings.ServerWait);
     }
 }
 export class BoardUtil {
-    public static FindNeighbors(index: number, size: number): C.Neighbor {
-        var arr: C.Neighbor = ({ Right: -1, Left: -1, Top: -1, Bottom: -1 } as any) as C.Neighbor;
+    public static FindNeighbors(index: number, size: number): Contracts.Neighbor {
+        var arr: Contracts.Neighbor = ({ Right: -1, Left: -1, Top: -1, Bottom: -1 } as any) as Contracts.Neighbor;
         var pos = BoardUtil.Position(index, size);
         var bottom = BoardUtil.Abs(pos.X + 1, pos.Y, size);
         var top = BoardUtil.Abs(pos.X - 1, pos.Y, size);
         var left = BoardUtil.Abs(pos.X, pos.Y - 1, size);
         var right = BoardUtil.Abs(pos.X, pos.Y + 1, size);
-        arr = ({ Right: right, Left: left, Top: top, Bottom: bottom } as any) as C.Neighbor;
+        arr = ({ Right: right, Left: left, Top: top, Bottom: bottom } as any) as Contracts.Neighbor;
         return arr;
     }
-    public static Position(N: number, size: number): C.Point {
+    public static Position(N: number, size: number): Contracts.Point {
         var X = Math.floor(N / size);
         var Y = (N % size);
-        return ({ X: X, Y: Y } as any) as C.Point;
+        return ({ X: X, Y: Y } as any) as Contracts.Point;
     }
     public static Abs(X: number, Y: number, size: number): number {
         var min = 0;
@@ -172,8 +172,8 @@ export class BoardUtil {
     }
 }
 export class ProbableWordComparer {
-    static Distinct(_Words: C.ProbableWord[]): C.ProbableWord[] {
-        var Words: C.ProbableWord[] = [];
+    static Distinct(_Words: Contracts.ProbableWord[]): Contracts.ProbableWord[] {
+        var Words: Contracts.ProbableWord[] = [];
         for (var indx in _Words) {
             if (ProbableWordComparer.Contains(Words, _Words[indx])) {
                 continue;
@@ -182,7 +182,7 @@ export class ProbableWordComparer {
         }
         return Words;
     }
-    public static Equals(x: C.ProbableWord, y: C.ProbableWord): boolean {
+    public static Equals(x: Contracts.ProbableWord, y: Contracts.ProbableWord): boolean {
         if (x.Cells.length != y.Cells.length) { return false; }
         for (var i: number = 0; i < x.Cells.length; i++) {
             if (x.Cells[i].Index != y.Cells[i].Index) {
@@ -194,7 +194,7 @@ export class ProbableWordComparer {
         }
         return true;
     }
-    public static Contains(Words: C.ProbableWord[], Word: C.ProbableWord): boolean {
+    public static Contains(Words: Contracts.ProbableWord[], Word: Contracts.ProbableWord): boolean {
         for (var indx in Words) {
             if (ProbableWordComparer.Equals(Words[indx], Word)) {
                 return true;
@@ -204,8 +204,8 @@ export class ProbableWordComparer {
     }
 }
 export class EngineBase {
-    static TryHarizontal(Mode: number, Star: number, Cells: string[], size: number, Index: number, offset: number, Pre: string[], Centers: string[], Post: string[]): C.ProbableMove {
-        var Moves: C.Word[] = [] as C.Word[];
+    static TryHarizontal(Mode: number, Star: number, Cells: string[], size: number, Index: number, offset: number, Pre: string[], Centers: string[], Post: string[]): Contracts.ProbableMove {
+        var Moves: Contracts.Word[] = [] as Contracts.Word[];
         var PreCount = Pre.length;
         var PostCount = Post.length;
         var NewCells: string[] = Cells.Clone();
@@ -220,10 +220,10 @@ export class EngineBase {
                     if (Pre[x] == null || Pre[x] == "") {
                         debugger;
                     }
-                    Moves.push({ Tiles: Pre[x], Index: n.Left } as C.Word);
+                    Moves.push({ Tiles: Pre[x], Index: n.Left } as Contracts.Word);
                 }
                 else {
-                    return { Words: [] as C.ProbableWord[], Direction: "H", WordsCount: 0, Moves: [] as C.Word[] } as C.ProbableMove;
+                    return { Words: [] as Contracts.ProbableWord[], Direction: "H", WordsCount: 0, Moves: [] as Contracts.Word[] } as Contracts.ProbableMove;
                 }
             }
         }
@@ -240,7 +240,7 @@ export class EngineBase {
                 if (Centers[c] == null || Centers[c] == "") {
                     debugger;
                 }
-                Moves.push({ Tiles: Centers[c], Index: cellIndex } as C.Word);
+                Moves.push({ Tiles: Centers[c], Index: cellIndex } as Contracts.Word);
             }
         }
 
@@ -253,28 +253,28 @@ export class EngineBase {
                     if (Post[x] == null || Post[x] == "") {
                         debugger;
                     }
-                    Moves.push({ Tiles: Post[x], Index: n.Right } as C.Word);
+                    Moves.push({ Tiles: Post[x], Index: n.Right } as Contracts.Word);
                 }
                 else {
-                    return { Words: [] as C.ProbableWord[], Direction: "H", WordsCount: 0, Moves: [] as C.Word[] } as C.ProbableMove;
+                    return { Words: [] as Contracts.ProbableWord[], Direction: "H", WordsCount: 0, Moves: [] as Contracts.Word[] } as Contracts.ProbableMove;
                 }
             }
         }
 
-        var W = [] as C.ProbableWord[];
+        var W = [] as Contracts.ProbableWord[];
         if (Star < 0 || (Star >= 0 && NewCells[Star] != "")) {
             for (var i in Impacted) {
                 var index = Impacted[i];
                 W = W.concat(EngineBase.WordsAt(NewCells, size, index));
             }
         }
-        return { Mode: Mode, Words: W, Moves: Moves, WordsCount: W.length, Direction: "H" } as C.ProbableMove;
+        return { Mode: Mode, Words: W, Moves: Moves, WordsCount: W.length, Direction: "H" } as Contracts.ProbableMove;
     }
-    static TryVertical(Mode: number, Star: number, Cells: string[], size: number, Index: number, offset: number, Pre: string[], Centers: string[], Post: string[]): C.ProbableMove {
-        var Moves = [] as C.Word[];
+    static TryVertical(Mode: number, Star: number, Cells: string[], size: number, Index: number, offset: number, Pre: string[], Centers: string[], Post: string[]): Contracts.ProbableMove {
+        var Moves = [] as Contracts.Word[];
         var PreCount = Pre.length;
         var PostCount = Post.length;
-        var Pos: C.Point = BoardUtil.Position(Index, size);
+        var Pos: Contracts.Point = BoardUtil.Position(Index, size);
         var NewCells = Cells.Clone();
         var Impacted = [] as number[];
 
@@ -288,10 +288,10 @@ export class EngineBase {
                     if (Pre[x] == null || Pre[x] == "") {
                         debugger;
                     }
-                    Moves.push({ Tiles: Pre[x], Index: n.Top } as C.Word);
+                    Moves.push({ Tiles: Pre[x], Index: n.Top } as Contracts.Word);
                 }
                 else {
-                    return { Words: [] as C.ProbableWord[], Direction: "V", WordsCount: 0, Moves: [] as C.Word[] } as C.ProbableMove;
+                    return { Words: [] as Contracts.ProbableWord[], Direction: "V", WordsCount: 0, Moves: [] as Contracts.Word[] } as Contracts.ProbableMove;
                 }
             }
         }
@@ -307,7 +307,7 @@ export class EngineBase {
                 if (Centers[c] == null || Centers[c] == "") {
                     debugger;
                 }
-                Moves.push({ Tiles: Centers[c], Index: cellIndex } as C.Word);
+                Moves.push({ Tiles: Centers[c], Index: cellIndex } as Contracts.Word);
             }
         }
 
@@ -321,24 +321,24 @@ export class EngineBase {
                     if (Post[x] == null || Post[x] == "") {
                         debugger;
                     }
-                    Moves.push({ Tiles: Post[x], Index: n.Bottom } as C.Word);
+                    Moves.push({ Tiles: Post[x], Index: n.Bottom } as Contracts.Word);
                 }
                 else {
-                    return { Words: [] as C.ProbableWord[], Direction: "V", WordsCount: 0, Moves: [] as C.Word[] } as C.ProbableMove;
+                    return { Words: [] as Contracts.ProbableWord[], Direction: "V", WordsCount: 0, Moves: [] as Contracts.Word[] } as Contracts.ProbableMove;
                 }
             }
         }
 
-        var W: C.ProbableWord[] = [] as C.ProbableWord[];
+        var W: Contracts.ProbableWord[] = [] as Contracts.ProbableWord[];
         if (Star < 0 || (Star >= 0 && NewCells[Star] != "")) {
             for (var i in Impacted) {
                 var index = Impacted[i];
                 W = W.concat(EngineBase.WordsAt(NewCells, size, index));
             }
         }
-        return { Mode: Mode, Words: W, Moves: Moves, WordsCount: W.length, Direction: "V" } as C.ProbableMove;
+        return { Mode: Mode, Words: W, Moves: Moves, WordsCount: W.length, Direction: "V" } as Contracts.ProbableMove;
     }
-    static RefreshScores(Moves: C.ProbableMove[], Weights: number[], tileWeights: any, size: number): void {
+    static RefreshScores(Moves: Contracts.ProbableMove[], Weights: number[], tileWeights: any, size: number): void {
         for (var indx in Moves) {
             var Move = Moves[indx];
             var score: number = 0;
@@ -366,25 +366,25 @@ export class EngineBase {
             }
             Move.Score = score;
         }
-        Moves.sort(function (x: C.ProbableMove, y: C.ProbableMove) { return x.Score - y.Score; });
+        Moves.sort(function (x: Contracts.ProbableMove, y: Contracts.ProbableMove) { return x.Score - y.Score; });
         Moves.reverse();
     }
 
-    static WordsAt(Cells: string[], size: number, index: number): C.ProbableWord[] {
-        var List: C.ProbableWord[] = [] as C.ProbableWord[];
-        var Neighbor: C.Neighbor = BoardUtil.FindNeighbors(index, size);
+    static WordsAt(Cells: string[], size: number, index: number): Contracts.ProbableWord[] {
+        var List: Contracts.ProbableWord[] = [] as Contracts.ProbableWord[];
+        var Neighbor: Contracts.Neighbor = BoardUtil.FindNeighbors(index, size);
 
         var r = Neighbor.Right != -1 ? Cells[Neighbor.Right] : "";
         var l = Neighbor.Left != -1 ? Cells[Neighbor.Left] : "";
         var t = Neighbor.Top != -1 ? Cells[Neighbor.Top] : "";
         var b = Neighbor.Bottom != -1 ? Cells[Neighbor.Bottom] : "";
 
-        var Lefties: C.Word[] = [] as C.Word[];
-        var Righties: C.Word[] = [] as C.Word[];
+        var Lefties: Contracts.Word[] = [] as Contracts.Word[];
+        var Righties: Contracts.Word[] = [] as Contracts.Word[];
 
         if (r != "") {
             //Move Right..
-            Righties.push({ Tiles: r, Index: Neighbor.Right } as C.Word);
+            Righties.push({ Tiles: r, Index: Neighbor.Right } as Contracts.Word);
             var index_: number = Neighbor.Right;
             var flg: boolean = true;
             while (flg) {
@@ -394,34 +394,34 @@ export class EngineBase {
                     flg = false;
                     break;
                 }
-                Righties.push({ Tiles: r_, Index: n.Right } as C.Word);
+                Righties.push({ Tiles: r_, Index: n.Right } as Contracts.Word);
                 index_ = n.Right;
             }
         }
         if (l != "") {
             //Move Left..
-            Lefties.push({ Tiles: l, Index: Neighbor.Left } as C.Word);
+            Lefties.push({ Tiles: l, Index: Neighbor.Left } as Contracts.Word);
 
             var index_ = Neighbor.Left;
             var flg: boolean = true;
             while (flg) {
-                var n: C.Neighbor = BoardUtil.FindNeighbors(index_, size);
+                var n: Contracts.Neighbor = BoardUtil.FindNeighbors(index_, size);
                 var l_ = n.Left != -1 ? Cells[n.Left] : "";
                 if (l_ == "") {
                     flg = false;
                     break;
                 }
-                Lefties.push({ Tiles: l_, Index: n.Left } as C.Word);
+                Lefties.push({ Tiles: l_, Index: n.Left } as Contracts.Word);
                 index_ = n.Left;
             }
         }
 
-        var Topies: C.Word[] = [] as C.Word[];
-        var Downies: C.Word[] = [] as C.Word[];
+        var Topies: Contracts.Word[] = [] as Contracts.Word[];
+        var Downies: Contracts.Word[] = [] as Contracts.Word[];
 
         if (t != "") {
             //Move Top..
-            Topies.push({ Tiles: t, Index: Neighbor.Top } as C.Word);
+            Topies.push({ Tiles: t, Index: Neighbor.Top } as Contracts.Word);
             var index_ = Neighbor.Top;
             var flg = true;
             while (flg) {
@@ -431,14 +431,14 @@ export class EngineBase {
                     flg = false;
                     break;
                 }
-                Topies.push({ Tiles: t_, Index: n.Top } as C.Word);
+                Topies.push({ Tiles: t_, Index: n.Top } as Contracts.Word);
                 index_ = n.Top;
             }
         }
 
         if (b != "") {
             //Move Bottom..
-            Downies.push({ Tiles: b, Index: Neighbor.Bottom } as C.Word);
+            Downies.push({ Tiles: b, Index: Neighbor.Bottom } as Contracts.Word);
             var index_ = Neighbor.Bottom;
             var flg = true;
             while (flg) {
@@ -448,7 +448,7 @@ export class EngineBase {
                     flg = false;
                     break;
                 }
-                Downies.push({ Tiles: d_, Index: n.Bottom } as C.Word);
+                Downies.push({ Tiles: d_, Index: n.Bottom } as Contracts.Word);
                 index_ = n.Bottom;
             }
         }
@@ -457,34 +457,34 @@ export class EngineBase {
         Lefties.reverse();
 
         if (Topies.length + Downies.length > 0) {
-            var Vertical = EngineBase.MakeAWord(Topies, { Tiles: Cells[index], Index: index } as C.Word, Downies);
+            var Vertical = EngineBase.MakeAWord(Topies, { Tiles: Cells[index], Index: index } as Contracts.Word, Downies);
             List.push(Vertical);
         }
         if (Lefties.length + Righties.length > 0) {
-            var Harizontal = EngineBase.MakeAWord(Lefties, { Tiles: Cells[index], Index: index } as C.Word, Righties);
+            var Harizontal = EngineBase.MakeAWord(Lefties, { Tiles: Cells[index], Index: index } as Contracts.Word, Righties);
             List.push(Harizontal);
         }
         return List;
     }
-    static MakeAWord(F1: C.Word[], C: C.Word, F2: C.Word[]): C.ProbableWord {
-        var W = {} as C.ProbableWord;
-        var List: C.TargetCell[] = [] as C.TargetCell[];
+    static MakeAWord(F1: Contracts.Word[], C: Contracts.Word, F2: Contracts.Word[]): Contracts.ProbableWord {
+        var W = {} as Contracts.ProbableWord;
+        var List: Contracts.TargetCell[] = [] as Contracts.TargetCell[];
         var ret: string = "";
         for (var indx in F1) {
             var s = F1[indx];
             ret = ret + s.Tiles.Replace(",", "") + ",";
-            var Cell: C.TargetCell = { Target: s.Tiles, Index: s.Index } as C.TargetCell;
+            var Cell: Contracts.TargetCell = { Target: s.Tiles, Index: s.Index } as Contracts.TargetCell;
             List.push(Cell);
         }
         {
             ret = ret + C.Tiles.Replace(",", "") + ",";
-            var Cell: C.TargetCell = { Target: C.Tiles, Index: C.Index } as C.TargetCell;
+            var Cell: Contracts.TargetCell = { Target: C.Tiles, Index: C.Index } as Contracts.TargetCell;
             List.push(Cell);
         }
         for (var indx in F2) {
             var s = F2[indx];
             ret = ret + s.Tiles.Replace(",", "") + ",";
-            var Cell: C.TargetCell = { Target: s.Tiles, Index: s.Index } as C.TargetCell;
+            var Cell: Contracts.TargetCell = { Target: s.Tiles, Index: s.Index } as Contracts.TargetCell;
             List.push(Cell);
         }
         ret = ret.Trim(',');
@@ -494,7 +494,7 @@ export class EngineBase {
     }
 }
 export class RegexEngineBase extends EngineBase {
-    public BestMove(Board: C.ScrabbleBoard): C.ProbableMove {
+    public BestMove(Board: Contracts.ScrabbleBoard): Contracts.ProbableMove {
         var Moves = this.Probables(Board);
         if (Moves.length == 0) {
             return null;
@@ -502,7 +502,7 @@ export class RegexEngineBase extends EngineBase {
         return Moves[0];
     }
 
-    public Probables(Board: C.ScrabbleBoard): C.ProbableMove[] {
+    public Probables(Board: Contracts.ScrabbleBoard): Contracts.ProbableMove[] {
         return [];
     }
 
@@ -656,9 +656,9 @@ export class RegexEngineBase extends EngineBase {
         return true;
     }
 
-    MatchedWords(words: C.Word[], Pattern: string): C.Word[] {
+    MatchedWords(words: Contracts.Word[], Pattern: string): Contracts.Word[] {
         var r = RegExp(Pattern);
-        var List = words.filter(function (s: C.Word) { return r.test(s.Tiles); });
+        var List = words.filter(function (s: Contracts.Word) { return r.test(s.Tiles); });
         return List;
     }
     static MatchedString(group: any, seperator: string): string {
@@ -676,8 +676,8 @@ export class RegexEngineBase extends EngineBase {
         return ret;
     }
 
-    static GetWordsOnBoard(Cells: string[], size: number, includeDuplicates: boolean): C.Word[] {
-        var Words: C.Word[] = [] as C.Word[];
+    static GetWordsOnBoard(Cells: string[], size: number, includeDuplicates: boolean): Contracts.Word[] {
+        var Words: Contracts.Word[] = [] as Contracts.Word[];
         for (var i = 0; i < size; i++) {
             var R = RegexEngine.GetWords(Cells, "R", i, size, includeDuplicates);
             var C = RegexEngine.GetWords(Cells, "C", i, size, includeDuplicates);
@@ -686,8 +686,8 @@ export class RegexEngineBase extends EngineBase {
         }
         return Words;
     }
-    static GetWords(Cells: string[], option: string, r: number, size: number, includeDuplicates: boolean): C.Word[] {
-        var Words: C.Word[] = [] as C.Word[];
+    static GetWords(Cells: string[], option: string, r: number, size: number, includeDuplicates: boolean): Contracts.Word[] {
+        var Words: Contracts.Word[] = [] as Contracts.Word[];
         var pending = "";
         var cnt = 0;
         for (var i = 0; i < size; i++) {
@@ -711,13 +711,13 @@ export class RegexEngineBase extends EngineBase {
                     var word = pending.TrimEnd('|');
                     if (includeDuplicates) {
                         var startIndex: number = RegexEngine.GetStartIndex(option, r, i, size, cnt);
-                        Words.push({ Tiles: word, Syllables: cnt, Position: option, Index: startIndex } as C.Word);
+                        Words.push({ Tiles: word, Syllables: cnt, Position: option, Index: startIndex } as Contracts.Word);
                     }
                     else {
-                        var X: C.Word[] = Words.filter(x => x.Tiles == word);
+                        var X: Contracts.Word[] = Words.filter(x => x.Tiles == word);
                         if (X == null || X.length == 0) {
                             var startIndex: number = RegexEngine.GetStartIndex(option, r, i, size, cnt);
-                            Words.push({ Tiles: word, Syllables: cnt, Position: option, Index: startIndex } as C.Word);
+                            Words.push({ Tiles: word, Syllables: cnt, Position: option, Index: startIndex } as Contracts.Word);
                         }
                     }
                 }
@@ -730,13 +730,13 @@ export class RegexEngineBase extends EngineBase {
             var word = pending.TrimEnd('|');
             if (includeDuplicates) {
                 var startIndex = RegexEngine.GetStartIndex(option, r, size, size, cnt);
-                Words.push({ Tiles: word, Syllables: cnt, Position: option, Index: startIndex } as C.Word);
+                Words.push({ Tiles: word, Syllables: cnt, Position: option, Index: startIndex } as Contracts.Word);
             }
             else {
-                var X: C.Word[] = Words.filter(x => x.Tiles == word);
+                var X: Contracts.Word[] = Words.filter(x => x.Tiles == word);
                 if (X == null || X.length == 0) {
                     var startIndex = RegexEngine.GetStartIndex(option, r, size, size, cnt);
-                    Words.push({ Tiles: word, Syllables: cnt, Position: option, Index: startIndex } as C.Word);
+                    Words.push({ Tiles: word, Syllables: cnt, Position: option, Index: startIndex } as Contracts.Word);
                 }
             }
         }
@@ -755,8 +755,8 @@ export class RegexEngineBase extends EngineBase {
         return -1;
     }
 
-    static GetSyllableList2(Cells: string[], size: number, filter: boolean, free: boolean): C.Word[] {
-        var List: C.Word[] = [] as C.Word[];
+    static GetSyllableList2(Cells: string[], size: number, filter: boolean, free: boolean): Contracts.Word[] {
+        var List: Contracts.Word[] = [] as Contracts.Word[];
         for (var index: number = 0; index < Cells.length; index++) {
             var cell: string = Cells[index];
             if (cell == "") {
@@ -774,12 +774,12 @@ export class RegexEngineBase extends EngineBase {
                 }
                 else {
                     var x = free ? cell : "(" + cell + ")";
-                    List.push({ Tiles: x, Index: index } as C.Word);
+                    List.push({ Tiles: x, Index: index } as Contracts.Word);
                 }
             }
             else {
                 var x = free ? cell : "(" + cell + ")";
-                List.push({ Tiles: x, Index: index } as C.Word);
+                List.push({ Tiles: x, Index: index } as Contracts.Word);
             }
         }
         return List;
@@ -791,7 +791,7 @@ export class RegexEngineBase extends EngineBase {
             if (cell == "") {
                 continue;
             }
-            var Neighbor: C.Neighbor = BoardUtil.FindNeighbors(index, size);
+            var Neighbor: Contracts.Neighbor = BoardUtil.FindNeighbors(index, size);
 
             var r: string = Neighbor.Right != -1 ? Cells[Neighbor.Right] : "";
             var l: string = Neighbor.Left != -1 ? Cells[Neighbor.Left] : "";
@@ -825,7 +825,7 @@ export class RegexEngineBase extends EngineBase {
         }
         return List;
     }
-    static GetSpecialSyllablePattern2(CharSet: C.CharSet, specialOptions: string): string {
+    static GetSpecialSyllablePattern2(CharSet: Contracts.CharSet, specialOptions: string): string {
         if (U.Util.IsNullOrEmpty(specialOptions)) {
             return "";
         }
@@ -869,7 +869,7 @@ export class RegexEngineBase extends EngineBase {
         }
         return ret;
     }
-    static GetSyllablePattern(CharSet: C.CharSet, syllable: string, consoPatternNoComma: string, sunnaPattern: string, allPatternNoComma: string): string {
+    static GetSyllablePattern(CharSet: Contracts.CharSet, syllable: string, consoPatternNoComma: string, sunnaPattern: string, allPatternNoComma: string): string {
         var temp: string = "";
         var Consos: string[] = [] as string[];
         var Vowels: string[] = [] as string[];
@@ -919,7 +919,7 @@ export class RegexEngineBase extends EngineBase {
         }
         return temp;
     }
-    static GetSyllablePattern2(CharSet: C.CharSet, syllable: string, consoPatternNoComma: string, prePattern: string, PostPattern: string): string {
+    static GetSyllablePattern2(CharSet: Contracts.CharSet, syllable: string, consoPatternNoComma: string, prePattern: string, PostPattern: string): string {
         var temp: string = "";
         var Consos: string[] = [] as string[];
         var Vowels: string[] = [] as string[];
@@ -990,10 +990,10 @@ export class RegexEngineBase extends EngineBase {
         ret = ret.TrimEnd(Seperator);
         return ret;
     }
-    GetFlatList3(List: C.Word[], Seperator: string): string {
+    GetFlatList3(List: Contracts.Word[], Seperator: string): string {
         var ret: string = "";
         for (var indx in List) {
-            var s: C.Word = List[indx];
+            var s: Contracts.Word = List[indx];
             ret = ret + s.Tiles + Seperator;
         }
         ret = ret.TrimEnd(Seperator);
@@ -1051,7 +1051,7 @@ export class RegexEngineBase extends EngineBase {
         return Dict;
     }
 
-    static Classify(CharSet: C.CharSet, syllable: string, Consos: string[], Vowels: string[]): void {
+    static Classify(CharSet: Contracts.CharSet, syllable: string, Consos: string[], Vowels: string[]): void {
         var Sunna = [] as string[];
         var arr = syllable.split(',');
         for (var indx in arr) {
@@ -1073,7 +1073,7 @@ export class RegexEngineBase extends EngineBase {
         }
         Vowels = Vowels.concat(Sunna);
     }
-    static Classify2(CharSet: C.CharSet, syllable: string, Consos: string[], Vowels: string[]): void {
+    static Classify2(CharSet: Contracts.CharSet, syllable: string, Consos: string[], Vowels: string[]): void {
         var Sunna = [] as string[];
         for (var indx = 0; indx < syllable.length; indx++) {
             var c = syllable[indx];
@@ -1095,7 +1095,7 @@ export class RegexEngineBase extends EngineBase {
         Vowels = Vowels.concat(Sunna);
     }
 
-    static GenWordPattern(CharSet: C.CharSet, word: string, consoPatternNoComma: string, sunnaPattern: string, allPatternNoComma: string, prePattern: string, postPattern: string, useSyllableIndex: boolean): string {
+    static GenWordPattern(CharSet: Contracts.CharSet, word: string, consoPatternNoComma: string, sunnaPattern: string, allPatternNoComma: string, prePattern: string, postPattern: string, useSyllableIndex: boolean): string {
         var temp: string = "";
         var arr = word.split('|');
         for (var i = 0; i < arr.length; i++) {
@@ -1123,7 +1123,7 @@ export class RegexEngineBase extends EngineBase {
         return temp;
     }
 
-    GetSpecialDict(CharSet: C.CharSet, SpecialList: string[]): any {
+    GetSpecialDict(CharSet: Contracts.CharSet, SpecialList: string[]): any {
         var SpeicalDict = {} as any;
         for (var indx in SpecialList) {
             var sp = SpecialList[indx];
@@ -1148,17 +1148,17 @@ export class RegexEngineBase extends EngineBase {
     }
 }
 export class RegexEngine extends RegexEngineBase {
-    public Probables(Board: C.ScrabbleBoard): C.ProbableMove[] {
-        var Moves = [] as C.ProbableMove[];
+    public Probables(Board: Contracts.ScrabbleBoard): Contracts.ProbableMove[] {
+        var Moves = [] as Contracts.ProbableMove[];
 
         if (Board == null) {
             return;
         }
 
-        var bot: C.Bot = GameConfig.GetBot(Board.Bot);
+        var bot: Contracts.Bot = GameConfig.GetBot(Board.Bot);
 
         //
-        var board: C.KnownBoard = GameConfig.GetBoard(Board.Name);
+        var board: Contracts.KnownBoard = GameConfig.GetBoard(Board.Name);
         if (board == null) {
             return;
         }
@@ -1229,12 +1229,12 @@ export class RegexEngine extends RegexEngineBase {
         return Moves;
     }
 
-    static EmptyExtensions(Cells: string[], size: number, CharSet: C.CharSet, startIndex: number, AllWords: C.Word[], Movables: string[], SpeicalDict: any): C.ProbableMove[] {
+    static EmptyExtensions(Cells: string[], size: number, CharSet: Contracts.CharSet, startIndex: number, AllWords: Contracts.Word[], Movables: string[], SpeicalDict: any): Contracts.ProbableMove[] {
         //var st = performance.now();
-        var Moves = [] as C.ProbableMove[];
+        var Moves = [] as Contracts.ProbableMove[];
         {
             for (var indx in AllWords) {
-                var word: C.Word = AllWords[indx];
+                var word: Contracts.Word = AllWords[indx];
                 var Pre = "";
                 var Center = "";
                 var Post = "";
@@ -1272,9 +1272,9 @@ export class RegexEngine extends RegexEngineBase {
         //if (console) { console.log(U.Util.Format("\tEmpty Extensions: V1: {1} {0}", [U.Util.ElapsedTime(performance.now() - st), AllWords.length])); }
         return Moves;
     }
-    static SyllableExtensions(Cells: string[], size: number, CharSet: C.CharSet, AllWords: C.Word[], Probables: C.Word[], Movables: string[], SpeicalDict: any): C.ProbableMove[] {
+    static SyllableExtensions(Cells: string[], size: number, CharSet: Contracts.CharSet, AllWords: Contracts.Word[], Probables: Contracts.Word[], Movables: string[], SpeicalDict: any): Contracts.ProbableMove[] {
         //var st = performance.now();
-        var Moves = [] as C.ProbableMove[];
+        var Moves = [] as Contracts.ProbableMove[];
         {
             var All = RegexEngine.GetSyllableList2(Cells, size, false, true);
             for (var indx in All) {
@@ -1284,7 +1284,7 @@ export class RegexEngine extends RegexEngineBase {
                 var R = new RegExp(pattern);
                 {
                     for (var indx2 in Probables) {
-                        var probable: C.Word = Probables[indx2];
+                        var probable: Contracts.Word = Probables[indx2];
 
                         if (!R.test(probable.Tiles)) {
                             continue;
@@ -1327,13 +1327,13 @@ export class RegexEngine extends RegexEngineBase {
         //if (console) { console.log(U.Util.Format("\tSyllable Extensions: V1: {0}", [U.Util.ElapsedTime(performance.now() - st)])); }
         return Moves;
     }
-    static WordExtensions(Cells: string[], size: number, CharSet: C.CharSet, AllWords: C.Word[], Movables: string[], SpeicalDict: any): C.ProbableMove[] {
+    static WordExtensions(Cells: string[], size: number, CharSet: Contracts.CharSet, AllWords: Contracts.Word[], Movables: string[], SpeicalDict: any): Contracts.ProbableMove[] {
         //var st = performance.now();
-        var Moves = [] as C.ProbableMove[];
+        var Moves = [] as Contracts.ProbableMove[];
         {
             var WordsOnBoard = RegexEngine.GetWordsOnBoard(Cells, size, false);
             for (var indx in WordsOnBoard) {
-                var wordOnBoard: C.Word = WordsOnBoard[indx];
+                var wordOnBoard: Contracts.Word = WordsOnBoard[indx];
                 var raw = wordOnBoard.Tiles.Replace("(", "").Replace(")", "").Replace(",", "").Replace("|", ",");
                 var len: number = raw.split(',').length;
 
@@ -1342,7 +1342,7 @@ export class RegexEngine extends RegexEngineBase {
                 var R = new RegExp(pattern);
                 {
                     for (var indx2 in AllWords) {
-                        var word: C.Word = AllWords[indx2];
+                        var word: Contracts.Word = AllWords[indx2];
                         if (raw == word.Tiles) {
                             continue;
                         }
@@ -1403,18 +1403,18 @@ export class RegexEngine extends RegexEngineBase {
         return Moves;
     }
 
-    ShortList(Words: C.Word[], NonCornerPattern: string, Dict: any): C.Word[] {
+    ShortList(Words: Contracts.Word[], NonCornerPattern: string, Dict: any): Contracts.Word[] {
         if (U.Util.IsNullOrEmpty(NonCornerPattern)) {
-            return [] as C.Word[];
+            return [] as Contracts.Word[];
         }
 
         //var st = performance.now();
 
         var Matches = this.MatchedWords(Words, NonCornerPattern);
-        var Shortlisted = [] as C.Word[];
+        var Shortlisted = [] as Contracts.Word[];
         {
             for (var indx in Matches) {
-                var word: C.Word = Matches[indx];
+                var word: Contracts.Word = Matches[indx];
                 if (word.Syllables == 1) {
                     continue;
                 }
@@ -1432,7 +1432,7 @@ export class RegexEngine extends RegexEngineBase {
         return Shortlisted;
     }
 
-    static Validate3(WV: C.ProbableMove, AllWords: C.Word[]): boolean {
+    static Validate3(WV: Contracts.ProbableMove, AllWords: Contracts.Word[]): boolean {
         WV.Words = ProbableWordComparer.Distinct(WV.Words);
         WV.WordsCount = WV.Words.length;
         if (WV.Words.length == 0 || WV.Moves.length == 0) {
@@ -1440,10 +1440,10 @@ export class RegexEngine extends RegexEngineBase {
         }
         return RegexEngine.Validate2(WV.Words, AllWords);
     }
-    static Validate2(WV: C.ProbableWord[], AllWords: C.Word[]): boolean {
+    static Validate2(WV: Contracts.ProbableWord[], AllWords: Contracts.Word[]): boolean {
         for (var indx in WV) {
-            var w: C.ProbableWord = WV[indx];
-            var v = AllWords.filter(function (x: C.Word) { return x.Tiles == w.String });
+            var w: Contracts.ProbableWord = WV[indx];
+            var v = AllWords.filter(function (x: Contracts.Word) { return x.Tiles == w.String });
             if (v == null || v.length == 0) {
                 return false;
             }
@@ -1459,18 +1459,18 @@ export class RegexV2Engine extends RegexEngineBase {
     static Threshlod: number = 0.33;//Threshold to use switch Contextual List
     static WS: number = 2;//Skip Memorizing Words with Syllables Length upto.
 
-    public Probables(Board: C.ScrabbleBoard): C.ProbableMove[] {
+    public Probables(Board: Contracts.ScrabbleBoard): Contracts.ProbableMove[] {
         var st = performance.now();
 
-        var Moves = [] as C.ProbableMove[];
+        var Moves = [] as Contracts.ProbableMove[];
 
         if (Board == null) {
             return;
         }
 
-        var bot: C.Bot = GameConfig.GetBot(Board.Bot);
+        var bot: Contracts.Bot = GameConfig.GetBot(Board.Bot);
         //
-        var board: C.KnownBoard = GameConfig.GetBoard(Board.Name);
+        var board: Contracts.KnownBoard = GameConfig.GetBoard(Board.Name);
         if (board == null) {
             return;
         }
@@ -1581,7 +1581,7 @@ export class RegexV2Engine extends RegexEngineBase {
         return Moves;
     }
 
-    ShortList2(Words: C.Word[], Pattern: string, Dict: any): number[] {
+    ShortList2(Words: Contracts.Word[], Pattern: string, Dict: any): number[] {
         if (U.Util.IsNullOrEmpty(Pattern)) {
             return [] as number[];
         }
@@ -1593,7 +1593,7 @@ export class RegexV2Engine extends RegexEngineBase {
         var Shortlisted = [] as number[];
         {
             for (var indx in Matches) {
-                var word: C.Word = Matches[indx];
+                var word: Contracts.Word = Matches[indx];
                 if (word.Syllables == 1) {
                     continue;
                 }
@@ -1610,7 +1610,7 @@ export class RegexV2Engine extends RegexEngineBase {
         if (console) { console.log(U.Util.Format("\tContextual: V2: {1} {0}", [U.Util.ElapsedTime(performance.now() - st), Shortlisted.length])); }
         return Shortlisted;
     }
-    ShortList3(Words: C.Word[], Probables: number[], NonCornerPattern: string, Dict: any): number[] {
+    ShortList3(Words: Contracts.Word[], Probables: number[], NonCornerPattern: string, Dict: any): number[] {
         if (U.Util.IsNullOrEmpty(NonCornerPattern)) {
             return [] as number[];
         }
@@ -1621,7 +1621,7 @@ export class RegexV2Engine extends RegexEngineBase {
         {
             for (var indx in Probables) {
                 var wordIndx: number = Probables[indx];
-                var word: C.Word = Words[wordIndx];
+                var word: Contracts.Word = Words[wordIndx];
                 if (word.Syllables == 1) {
                     continue;
                 }
@@ -1643,9 +1643,9 @@ export class RegexV2Engine extends RegexEngineBase {
         return Shortlisted;
     }
 
-    static ShortList4(r: RegExp, words: C.Word[]): number[] {
+    static ShortList4(r: RegExp, words: Contracts.Word[]): number[] {
         //var st = performance.now();
-        var List = words.filter(function (s: C.Word) { return r.test(s.Tiles); });
+        var List = words.filter(function (s: Contracts.Word) { return r.test(s.Tiles); });
         var Probables: number[] = [] as number[];
         for (var indx in List) {
             Probables.push(List[indx].Index);
@@ -1658,7 +1658,7 @@ export class RegexV2Engine extends RegexEngineBase {
         //}
         return Probables;
     }
-    static ShortList5(block: string, key: string, R: RegExp, AllWords: C.Word[], Probables: number[]): number[] {
+    static ShortList5(block: string, key: string, R: RegExp, AllWords: Contracts.Word[], Probables: number[]): number[] {
         //Cache Mechanism:
         //	Word Extension: WW1
         //		CachedList: Cache all Possible Extesnsion Indexes
@@ -1677,7 +1677,7 @@ export class RegexV2Engine extends RegexEngineBase {
         //if (console) { console.log(U.Util.Format("\t\t\tShortlist: {0} ", [U.Util.ElapsedTime(performance.now() - st)])); }
         return ShortListed;
     }
-    static ShortList6(r: RegExp, words: C.Word[], Probables: number[]): number[] {
+    static ShortList6(r: RegExp, words: Contracts.Word[], Probables: number[]): number[] {
         //var st = performance.now();
         var List = Probables.filter(function (s: number) { return r.test(words[s].Tiles); });
         //if (console) { console.log(U.Util.Format("\t\t\tShortlist: {0} ", [U.Util.ElapsedTime(performance.now() - st)])); }
@@ -1688,13 +1688,13 @@ export class RegexV2Engine extends RegexEngineBase {
         return t1 < t2;
     }
 
-    static EmptyExtensions2(Cells: string[], size: number, CharSet: C.CharSet, startIndex: number, AllWords: C.Word[], Probables: number[], Movables: string[], SpeicalDict: any): C.ProbableMove[] {
+    static EmptyExtensions2(Cells: string[], size: number, CharSet: Contracts.CharSet, startIndex: number, AllWords: Contracts.Word[], Probables: number[], Movables: string[], SpeicalDict: any): Contracts.ProbableMove[] {
         //var st = performance.now();
-        var Moves = [] as C.ProbableMove[];
+        var Moves = [] as Contracts.ProbableMove[];
         {
             for (var indx in Probables) {
                 var wordIndx: number = Probables[indx];
-                var word: C.Word = AllWords[wordIndx];
+                var word: Contracts.Word = AllWords[wordIndx];
                 var Pre = "";
                 var Center = "";
                 var Post = "";
@@ -1733,9 +1733,9 @@ export class RegexV2Engine extends RegexEngineBase {
         //if (console) { console.log(U.Util.Format("\tEmpty Extensions: V1: {1} {0}", [U.Util.ElapsedTime(performance.now() - st), Probables.length])); }
         return Moves;
     }
-    static SyllableExtensions2(Cells: string[], size: number, CharSet: C.CharSet, botId: string, AllWords: C.Word[], Probables: number[], Movables: string[], SpeicalDict: any): C.ProbableMove[] {
+    static SyllableExtensions2(Cells: string[], size: number, CharSet: Contracts.CharSet, botId: string, AllWords: Contracts.Word[], Probables: number[], Movables: string[], SpeicalDict: any): Contracts.ProbableMove[] {
         var st = performance.now();
-        var Moves = [] as C.ProbableMove[];
+        var Moves = [] as Contracts.ProbableMove[];
         {
             var All = RegexEngine.GetSyllableList2(Cells, size, true, true);
             if (RegexV2Engine.SM) { EngineMemory.RefreshCache(botId + ":S", All); }
@@ -1755,7 +1755,7 @@ export class RegexV2Engine extends RegexEngineBase {
                     }
                     for (var indx2 in Probables2) {
                         var probableIndx: number = Probables2[indx2];
-                        var probable: C.Word = AllWords[probableIndx];
+                        var probable: Contracts.Word = AllWords[probableIndx];
                         if (!R.test(probable.Tiles)) {
                             continue;
                         }
@@ -1798,9 +1798,9 @@ export class RegexV2Engine extends RegexEngineBase {
         if (console) { console.log(U.Util.Format("\tSyllable Extensions: V2: {0}", [U.Util.ElapsedTime(performance.now() - st)])); }
         return Moves;
     }
-    static WordExtensions2(Cells: string[], size: number, CharSet: C.CharSet, botId: string, AllWords: C.Word[], Probables: number[], Movables: string[], SpeicalDict: any): C.ProbableMove[] {
+    static WordExtensions2(Cells: string[], size: number, CharSet: Contracts.CharSet, botId: string, AllWords: Contracts.Word[], Probables: number[], Movables: string[], SpeicalDict: any): Contracts.ProbableMove[] {
         var st = performance.now();
-        var Moves = [] as C.ProbableMove[];
+        var Moves = [] as Contracts.ProbableMove[];
         {
             var WordsOnBoard = RegexEngineBase.GetWordsOnBoard(Cells, size, false);
             if (RegexV2Engine.WM) { EngineMemory.RefreshCache(botId + ":W", WordsOnBoard); }
@@ -1808,7 +1808,7 @@ export class RegexV2Engine extends RegexEngineBase {
             for (var indx in WordsOnBoard) {
                 var st2 = performance.now();
 
-                var wordOnBoard: C.Word = WordsOnBoard[indx];
+                var wordOnBoard: Contracts.Word = WordsOnBoard[indx];
                 var raw = wordOnBoard.Tiles.Replace("(", "").Replace(")", "").Replace(",", "").Replace("|", ",");
                 var len: number = raw.split(',').length;
 
@@ -1825,7 +1825,7 @@ export class RegexV2Engine extends RegexEngineBase {
                     }
                     for (var indx2 in Probables2) {
                         var wordIndx: number = Probables2[indx2];
-                        var word: C.Word = AllWords[wordIndx];
+                        var word: Contracts.Word = AllWords[wordIndx];
                         if (raw == word.Tiles) {
                             continue;
                         }
@@ -1886,7 +1886,7 @@ export class RegexV2Engine extends RegexEngineBase {
         return Moves;
     }
 
-    static Validate4(WV: C.ProbableMove, AllWords: C.Word[], Probables: number[]): boolean {
+    static Validate4(WV: Contracts.ProbableMove, AllWords: Contracts.Word[], Probables: number[]): boolean {
         WV.Words = ProbableWordComparer.Distinct(WV.Words);
         WV.WordsCount = WV.Words.length;
         if (WV.Words.length == 0 || WV.Moves.length == 0) {
@@ -1894,9 +1894,9 @@ export class RegexV2Engine extends RegexEngineBase {
         }
         return RegexV2Engine.Validate5(WV.Words, AllWords, Probables);
     }
-    static Validate5(WV: C.ProbableWord[], AllWords: C.Word[], Probables: number[]): boolean {
+    static Validate5(WV: Contracts.ProbableWord[], AllWords: Contracts.Word[], Probables: number[]): boolean {
         for (var indx in WV) {
-            var w: C.ProbableWord = WV[indx];
+            var w: Contracts.ProbableWord = WV[indx];
             var v = Probables.filter(function (x: number) { return AllWords[x].Tiles == w.String });
             if (v == null || v.length == 0) {
                 return false;
@@ -1907,8 +1907,8 @@ export class RegexV2Engine extends RegexEngineBase {
 }
 export class EngineMemory {
     static Cache: any = {};
-    static Memorize(Block: string, Key: string, r: RegExp, Words: C.Word[],
-        Callback: (r: RegExp, Words: C.Word[]) => number[],
+    static Memorize(Block: string, Key: string, r: RegExp, Words: Contracts.Word[],
+        Callback: (r: RegExp, Words: Contracts.Word[]) => number[],
         CanCache: (t1: number, t2: number) => boolean): number[] {
         var Dict = EngineMemory.Cache[Block];
         if (Dict == null) {
@@ -1933,7 +1933,7 @@ export class EngineMemory {
         return Val;
     }
 
-    static RefreshCache(block: string, Items: C.Word[]): void {
+    static RefreshCache(block: string, Items: Contracts.Word[]): void {
         var Dict = EngineMemory.Retrieve(block);
         if (Dict == null) { return; }
         var RemoveList: string[] = [];
@@ -1960,37 +1960,37 @@ export class EngineMemory {
     }
 }
 export class GameConfig {
-    static GetBot(bot: string): C.Bot {
-        var players: C.iPlayer[] = Config.Players;
+    static GetBot(bot: string): Contracts.Bot {
+        var players: Contracts.iPlayer[] = Config.Players;
         for (var i = 0; i < players.length; i++) {
-            var player: C.iPlayer = players[i];
+            var player: Contracts.iPlayer = players[i];
             var isBot: boolean = player.Bot != null;
             if (!isBot) {
                 continue;
             }
             if (player.Bot.Id == bot) {
-                return (player.Bot as any) as C.Bot;
+                return (player.Bot as any) as Contracts.Bot;
             }
         }
         return null;
     }
-    static GetBoard(name: string): C.KnownBoard {
+    static GetBoard(name: string): Contracts.KnownBoard {
         if (Config.Board.TileWeights == null) {
-            Config.Board.TileWeights = GameConfig.GetTileWeights(Config.Board.Trays as C.GameTray[]);
+            Config.Board.TileWeights = GameConfig.GetTileWeights(Config.Board.Trays as Contracts.GameTray[]);
         }
         return Config.Board;
     }
-    static GetCharSet(lang: string): C.CharSet {
+    static GetCharSet(lang: string): Contracts.CharSet {
         return Config.CharSet;
     }
-    static GetTileWeights(trays: C.GameTray[]): any {
+    static GetTileWeights(trays: Contracts.GameTray[]): any {
         var Weights: any = {};
         for (var indx in trays) {
             var tray = trays[indx];
             for (var indx2 in tray.Set) {
                 var tiles = tray.Set[indx2];
                 for (var indx3 in tiles) {
-                    var tile: C.WC = tiles[indx3];
+                    var tile: Contracts.WC = tiles[indx3];
                     Weights[indx3] = tile.W;
                 }
             }

@@ -10,9 +10,7 @@
 // </copyright>
 //---------------------------------------------------------------------------------------------
 
-import * as React from "react";
-import * as ReactDOM from "react-dom";
-import * as Redux from 'redux';
+import * as React from 'react';
 import * as Contracts from 'Contracts';
 import * as Cabinet from 'Cabinet';
 import * as Board from 'Board';

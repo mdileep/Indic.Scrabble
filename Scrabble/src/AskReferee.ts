@@ -10,7 +10,7 @@
 // </copyright>
 //---------------------------------------------------------------------------------------------
 
-import * as C from 'Contracts';
+import * as Contracts from 'Contracts';
 import * as M from 'Messages';
 import * as U from 'Util';
 import * as AskServer  from "AskBot";
@@ -18,7 +18,7 @@ import * as Indic from 'Indic';
 import * as GA from 'GameActions';
 
 export class AskReferee {
-    static Validate(state: C.iGameState, args: C.iArgs): void {
+    static Validate(state: Contracts.iGameState, args: Contracts.iArgs): void {
         var errorCode: number = AskReferee.ValidateMove(state.Board);
         if (errorCode > 0) {
             AskReferee.Announce(state, (errorCode == 1) ? M.Messages.CrossCells : M.Messages.NoGap);
@@ -42,28 +42,28 @@ export class AskReferee {
                 return;
             }
         }
-        var player: C.iPlayer = state.Players.Players[state.Players.Current];
+        var player: Contracts.iPlayer = state.Players.Players[state.Players.Current];
         state.GameTable.Message = U.Util.Format(M.Messages.LookupDict, [player.Name]);
         state.ReadOnly = true;
-        setTimeout(AskServer.AskServer.Validate, C.Settings.RefreeWait);
+        setTimeout(AskServer.AskServer.Validate, Contracts.Settings.RefreeWait);
     }
-    static HasMoves(state: C.iGameState): boolean {
-        var Board: C.iBoardProps = state.Board;
+    static HasMoves(state: Contracts.iGameState): boolean {
+        var Board: Contracts.iBoardProps = state.Board;
         var first = AskReferee.FirstNonEmpty(Board.Cells, [], Board.Size);
         return (first != -1);
     }
-    static IsStarCovered(state: C.iGameState): boolean {
+    static IsStarCovered(state: Contracts.iGameState): boolean {
         var C = state.Board.Cells[state.Board.Star];
         return (C.Waiting.length + C.Confirmed.length != 0);
     }
-    static Announce(state: C.iGameState, message: string) {
+    static Announce(state: Contracts.iGameState, message: string) {
         state.InfoBar.Messages.push(M.Messages.HasIslands);
         state.Dialog.Title = M.Messages.Name;
         state.Dialog.Message = message;
         state.Dialog.Show = true;
     }
-    static ValidateMove(Board: C.iBoardProps): number {
-        var Cells: C.iCellProps[] = Board.Cells;
+    static ValidateMove(Board: Contracts.iBoardProps): number {
+        var Cells: Contracts.iCellProps[] = Board.Cells;
         var size: number = Board.Size;
         var Waiting: number[] = [];
         for (var i = 0; i < size * size; i++) {
@@ -76,8 +76,8 @@ export class AskReferee {
         if (Waiting.length == 0) {
             return 0;
         }
-        var First: C.iPosition = U.Util.Position(Waiting[0], size);
-        var Last: C.iPosition = {} as C.iPosition;
+        var First: Contracts.iPosition = U.Util.Position(Waiting[0], size);
+        var Last: Contracts.iPosition = {} as Contracts.iPosition;
         var rows = 0; var columns = 0;
         for (var indx in Waiting) {
             var Current = U.Util.Position(Waiting[indx], size);
@@ -103,20 +103,20 @@ export class AskReferee {
         }
         return 0;
     }
-    static HasOrphans(state: C.iGameState): boolean {
+    static HasOrphans(state: Contracts.iGameState): boolean {
         var orphans: number[] = AskReferee.OrphanCells(state.Board);
         for (var i = 0; i < orphans.length; i++) {
             var orphan: number = orphans[i];
-            var P: C.iPosition = U.Util.Position(orphan, state.Board.Size);
-            var N: C.iCellProps = state.Board.Cells[orphan];
+            var P: Contracts.iPosition = U.Util.Position(orphan, state.Board.Size);
+            var N: Contracts.iCellProps = state.Board.Cells[orphan];
             state.InfoBar.Messages.push(U.Util.Format(M.Messages.OrphanCell, [(P.X + 1), (P.Y + 1), N.Current]));
         }
         return orphans.length > 0;
     }
-    static OrphanCells(Board: C.iBoardProps): number[] {
+    static OrphanCells(Board: Contracts.iBoardProps): number[] {
         var oraphans: number[] = [];
         for (var i = 0; i < Board.Cells.length; i++) {
-            var Cell: C.iCellProps = Board.Cells[i];
+            var Cell: Contracts.iCellProps = Board.Cells[i];
             if (Cell.Waiting.length + Cell.Confirmed.length == 0) {
                 continue;
             }
@@ -124,7 +124,7 @@ export class AskReferee {
             var valid: boolean = false;
             for (var j = 0; j < neighors.length; j++) {
                 var neighbor: number = neighors[j];
-                var N: C.iCellProps = Board.Cells[neighbor];
+                var N: Contracts.iCellProps = Board.Cells[neighbor];
                 if (N.Waiting.length + N.Confirmed.length != 0) {
                     valid = true;
                 }
@@ -138,8 +138,8 @@ export class AskReferee {
         }
         return oraphans;
     }
-    static HasClusters(state: C.iGameState): boolean {
-        var Board: C.iBoardProps = state.Board;
+    static HasClusters(state: Contracts.iGameState): boolean {
+        var Board: Contracts.iBoardProps = state.Board;
         var Clustered: number[] = [];
         var clusters = 0;
         while (true) {
@@ -154,12 +154,12 @@ export class AskReferee {
         //if (console) { console.log("Clusters found: " + clusters); }
         return (clusters > 1);
     }
-    static ClusterCells(Cells: C.iCellProps[], first: number, size: number): number[] {
+    static ClusterCells(Cells: Contracts.iCellProps[], first: number, size: number): number[] {
         var List: number[] = [];
         List.push(first);
         {
-            var P: C.iPosition = U.Util.Position(first, size);
-            var C: C.iCellProps = Cells[first];
+            var P: Contracts.iPosition = U.Util.Position(first, size);
+            var C: Contracts.iCellProps = Cells[first];
         }
         var curr = 0;
         while (curr < List.length) {
@@ -181,7 +181,7 @@ export class AskReferee {
         }
         return List;
     }
-    static FirstNonEmpty(Cells: C.iCellProps[], Clustered: number[], size: number): number {
+    static FirstNonEmpty(Cells: Contracts.iCellProps[], Clustered: number[], size: number): number {
         var first: number = -1;
         for (var i = 0; i < size * size; i++) {
             if (Clustered.indexOf(i) >= 0) {
@@ -195,7 +195,7 @@ export class AskReferee {
         }
         return first;
     }
-    static ExtractWords(board: C.iBoardProps): string[] {
+    static ExtractWords(board: Contracts.iBoardProps): string[] {
         var Words = GA.GameActions.WordsOnBoard(board, true, true);
         var sWords: string[] = [];
         for (var indx in Words) {

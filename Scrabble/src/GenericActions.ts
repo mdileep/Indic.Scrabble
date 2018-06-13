@@ -9,8 +9,9 @@
 //       _._        | <TODO>                   |   <TODO>                  | <TODO>
 // </copyright>
 //---------------------------------------------------------------------------------------------
-import * as Contracts from 'Contracts';
+
 import * as GameLoader from 'GameLoader';
+import * as Contracts from 'Contracts';
 import * as GS from 'GameStore';
 
 export class GenericActions {

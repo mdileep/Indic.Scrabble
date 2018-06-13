@@ -10,11 +10,9 @@
 // </copyright>
 //---------------------------------------------------------------------------------------------
 
-import * as React from "react";
-import * as ReactDOM from "react-dom";
+import * as React from 'react';
 import * as Contracts from 'Contracts';
 import * as GameLoader from 'GameLoader';
-import * as Indic from 'Indic';
 import * as M from  'Messages';
 
 class GamePlayer extends React.Component<Contracts.iPlayerView, Contracts.iPlayerView> {

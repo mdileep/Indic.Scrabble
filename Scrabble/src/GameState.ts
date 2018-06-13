@@ -13,9 +13,8 @@ import * as Contracts from 'Contracts';
 import * as Parser from 'Parser';
 import * as GameActions from "GameActions";
 import * as GenericActions from "GenericActions";
-import * as Redux from 'redux';
 
-export default (state: Contracts.iGameState = Parser.Parser.Parse(), action: Contracts.iActionArgs) => {
+export default (state: Contracts.iGameState = Parser.Parser.Parse(), action: Contracts.iActionArgs): Contracts.iGameState => {
     var args = action.args;
     switch (action.type) {
 

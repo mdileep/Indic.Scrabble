@@ -10,10 +10,8 @@
 // </copyright>
 //---------------------------------------------------------------------------------------------
 
-import * as React from "react";
-import * as ReactDOM from "react-dom";
+import * as React from 'react';
 import * as Contracts from 'Contracts';
-
 
 class _OverlayDialog<P extends Contracts.iOverlayDialog, S extends Contracts.iOverlayDialog> extends React.Component<P, S> {
 

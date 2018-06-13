@@ -10,7 +10,7 @@
 // </copyright>
 //---------------------------------------------------------------------------------------------
 
-import * as C from 'Contracts';
+import * as Contracts from 'Contracts';
 import * as axios from 'axios';
 import * as GA from 'GameActions';
 import * as GS from 'GameStore';
@@ -21,9 +21,9 @@ export class WordLoader {
     static Custom: string = "Custom";
     static Lists: any = {};
     //
-    static LoadWords(file: string, askOpponent: boolean): C.Word[] {
+    static LoadWords(file: string, askOpponent: boolean): Contracts.Word[] {
         if (WordLoader.Lists == null) {
-            return [] as C.Word[];
+            return [] as Contracts.Word[];
         }
 
         if (WordLoader.Lists[file] != null) {
@@ -31,7 +31,7 @@ export class WordLoader {
         }
 
         if (!askOpponent) {
-            return [] as C.Word[];
+            return [] as Contracts.Word[];
         }
 
         //Pick First Non-Custom
@@ -41,7 +41,7 @@ export class WordLoader {
             }
             return WordLoader.Lists[key];
         }
-        return [] as C.Word[];
+        return [] as Contracts.Word[];
     }
     static AddWord(word: string): void {
         var cnt = WordLoader.Lists[WordLoader.Custom].length;
@@ -49,11 +49,11 @@ export class WordLoader {
             Tiles: word,
             Index: cnt++,
             Syllables: word.split(',').length,
-        } as C.Word);
+        } as Contracts.Word);
     }
     static Load(file: string, rawResponse: string): void {
         var words: string[] = rawResponse.split('\n');
-        var List = [] as C.Word[];
+        var List = [] as Contracts.Word[];
         var cnt = 0;
         for (var indx in words) {
             var line = words[indx];
@@ -62,7 +62,7 @@ export class WordLoader {
                     Tiles: line,
                     Index: cnt++,
                     Syllables: line.split(',').length,
-                } as C.Word);
+                } as Contracts.Word);
         }
         WordLoader.Lists[file] = List;
         WordLoader.Loaded++;
@@ -104,9 +104,9 @@ export class WordLoader {
     static IsValid(word: string): boolean {
         var res = false;
         for (var indx in WordLoader.Lists) {
-            var List: C.Word[] = WordLoader.Lists[indx];
+            var List: Contracts.Word[] = WordLoader.Lists[indx];
             for (var indx2 in List) {
-                var Word: C.Word = List[indx2];
+                var Word: Contracts.Word = List[indx2];
                 if (word == Word.Tiles) {
                     if (console) { console.log(Word.Tiles); }
                     return true;
@@ -137,7 +137,7 @@ export class WordLoader {
     static LoadComplete() {
         WordLoader.Lists[WordLoader.Custom] = [];
         GS.GameStore.Dispatch({
-            type: C.Actions.Init,
+            type: Contracts.Actions.Init,
             args: {
             }
         });

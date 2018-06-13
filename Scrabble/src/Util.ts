@@ -9,6 +9,7 @@
 //       _._        | <TODO>                   |   <TODO>                  | <TODO>
 // </copyright>
 //---------------------------------------------------------------------------------------------
+
 import * as Contracts from 'Contracts';
 
 export class Util {

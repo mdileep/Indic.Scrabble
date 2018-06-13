@@ -9,12 +9,10 @@
 //       _._        | <TODO>                   |   <TODO>                  | <TODO>
 // </copyright>
 //---------------------------------------------------------------------------------------------
-import * as React from "react";
-import * as ReactDOM from "react-dom";
+
+import * as React from 'react';
 import * as Contracts from 'Contracts';
 import * as GamePlayer from 'GamePlayer';
-import * as GameLoader from 'GameLoader';
-import * as Indic from 'Indic';
 import * as Util from 'Util';
 import * as M from 'Messages';
 

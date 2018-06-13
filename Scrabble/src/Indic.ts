@@ -9,7 +9,19 @@
 //       _._        | <TODO>                   |   <TODO>                  | <TODO>
 // </copyright>
 //---------------------------------------------------------------------------------------------
-import * as AS from 'AksharaSets';
+
+export class AksharaSets {
+    public static FullSpecialSet: string[] = [];
+    public static SpecialSet: string[] = [];
+    public static SunnaSet: string[] = [];
+    public static Vowels: string[] = [];
+    public static Consonents: string[] = [];
+    public static Virama: string = "";
+    public static Synonyms: any = {};
+    public static SyllableTiles: any = {};
+    public static SyllableChars: any = {};
+    public static SyllableSynonym: any = {};
+}
 
 export class Indic {
     public static ToWord(Cells: string[]): string {
@@ -140,7 +152,7 @@ export class Indic {
             }
             var isCurrConso: boolean = Indic.IsConsonent(arr[i]);
             if (isConso && isCurrConso) {
-                res = res + AS.AksharaSets.Virama + arr[i];
+                res = res + AksharaSets.Virama + arr[i];
             }
             else {
                 res = res + arr[i];
@@ -155,46 +167,46 @@ export class Indic {
         return index >= 0;
     }
     public static IsVowel(char: string): boolean {
-        return Indic.Contains(AS.AksharaSets.Vowels, char);
+        return Indic.Contains(AksharaSets.Vowels, char);
     }
     public static IsConsonent(char: string): boolean {
-        return Indic.Contains(AS.AksharaSets.Consonents, char);
+        return Indic.Contains(AksharaSets.Consonents, char);
     }
     public static IsSpecialSet(char: string): boolean {
-        return Indic.Contains(AS.AksharaSets.SpecialSet, char);
+        return Indic.Contains(AksharaSets.SpecialSet, char);
     }
     public static IsZWNJ(char: string): boolean {
         return char == String.fromCharCode(0x200C);
     }
     public static IsVirama(char: string): boolean {
-        return char == AS.AksharaSets.Virama;
+        return char == AksharaSets.Virama;
     }
     public static IsFullSpecialSet(char: string): boolean {
-        return Indic.Contains(AS.AksharaSets.FullSpecialSet, char);
+        return Indic.Contains(AksharaSets.FullSpecialSet, char);
     }
     public static IsSunnaSet(char: string): boolean {
-        return Indic.Contains(AS.AksharaSets.SunnaSet, char);
+        return Indic.Contains(AksharaSets.SunnaSet, char);
     }
     public static IsSpecialSyllable(char: string): boolean {
-        return AS.AksharaSets.SyllableChars[char] != null;
+        return AksharaSets.SyllableChars[char] != null;
     }
     public static GetSyllableChars(char: string): string[] {
-        return AS.AksharaSets.SyllableChars[char];
+        return AksharaSets.SyllableChars[char];
     }
     public static GetSyllableTiles(char: string): string[] {
-        return AS.AksharaSets.SyllableTiles[char];
+        return AksharaSets.SyllableTiles[char];
     }
     public static GetSyllableSynonym(char: string): string {
-        return AS.AksharaSets.SyllableSynonym[char];
+        return AksharaSets.SyllableSynonym[char];
     }
     public static HasSyllableSynonym(char: string): boolean {
-        return AS.AksharaSets.SyllableSynonym[char] != null;
+        return AksharaSets.SyllableSynonym[char] != null;
     }
     public static GetSynonym(akshara: string): string {
-        return AS.AksharaSets.Synonyms[akshara];
+        return AksharaSets.Synonyms[akshara];
     }
     public static GetSynonyms(): any {
-        return AS.AksharaSets.Synonyms;
+        return AksharaSets.Synonyms;
     }
     public static ToChars(original: string[]): string[] {
         var arr: string[] = [];
@@ -210,3 +222,4 @@ export class Indic {
         return arr;
     }
 }
+

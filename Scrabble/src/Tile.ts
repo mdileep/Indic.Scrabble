@@ -9,10 +9,8 @@
 //       _._        | <TODO>                   |   <TODO>                  | <TODO>
 // </copyright>
 //---------------------------------------------------------------------------------------------
-import * as React from "react";
-import * as ReactDOM from "react-dom";
+import * as React from 'react';
 import * as Contracts from 'Contracts';
-import * as GameLoader from 'GameLoader';
 
 class Tile extends React.Component<Contracts.iTileProps, Contracts.iTileProps> {
     constructor(props: Contracts.iTileProps) {
