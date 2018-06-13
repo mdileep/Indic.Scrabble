@@ -12,6 +12,7 @@
 
 import * as axios from 'axios';
 import * as Contracts from 'Contracts';
+import * as Indic from "Indic";
 import * as GS from 'GameStore';
 import * as GA from 'GameActions';
 import * as U from 'Util';
@@ -352,7 +353,7 @@ export class EngineBase {
                     var tiles = cell.Target.split(',');
                     for (var indx4 in tiles) {
                         var tile = tiles[indx4];
-                        if (tileWeights[tile] == null) {
+                        if (tile == "" || tileWeights[tile] == null) {
                             debugger;//Shouldn't reach here..
                             continue;
                         }
@@ -1992,6 +1993,14 @@ export class GameConfig {
                 for (var indx3 in tiles) {
                     var tile: Contracts.WC = tiles[indx3];
                     Weights[indx3] = tile.W;
+                    if (indx3.length > 1 && Indic.Indic.GetSyllableTiles(indx3) != null) {
+                        Weights[Indic.Indic.GetSyllableTiles(indx3).join('')] = tile.W;
+                        continue;
+                    }
+                    var sym = Indic.Indic.GetSynonym(indx3);
+                    if (sym != null) {
+                        Weights[sym] = tile.W;
+                    }
                 }
             }
         }

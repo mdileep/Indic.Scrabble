@@ -258,6 +258,10 @@ export class Parser {
                 for (var indx3 in tiles) {
                     var tile: Contracts.WC = tiles[indx3];
                     Weights[indx3] = tile.W;
+                    if (indx3.length > 1 && Indic.Indic.GetSyllableTiles(indx3) != null) {
+                        Weights[Indic.Indic.GetSyllableTiles(indx3).join('')] = tile.W;
+                        continue;
+                    }
                     var sym = Indic.Indic.GetSynonym(indx3);
                     if (sym != null) {
                         Weights[sym] = tile.W;

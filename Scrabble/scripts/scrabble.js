@@ -8,6 +8,54 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+define("Contracts", ["require", "exports"], function (require, exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var Events = (function () {
+        function Events() {
+        }
+        Events.GameOver = 0;
+        return Events;
+    }());
+    exports.Events = Events;
+    var Actions = (function () {
+        function Actions() {
+        }
+        Actions.Init = 0;
+        Actions.ReRender = 1;
+        Actions.ToBoard = 20;
+        Actions.ToTray = 21;
+        Actions.OpenOrClose = 22;
+        Actions.Pass = 40;
+        Actions.ReDraw = 41;
+        Actions.RequestSuggestion = 42;
+        Actions.ReciveSuggestion = 43;
+        Actions.DismissSuggestion = 44;
+        Actions.PunchAndPick = 45;
+        Actions.BotMove = 50;
+        Actions.BotMoveResponse = 51;
+        Actions.Award = 60;
+        Actions.ResolveWords = 61;
+        Actions.TakeConsent = 62;
+        Actions.WordResolved = 63;
+        Actions.WordRejected = 64;
+        Actions.DismissDialog = 90;
+        Actions.AskHelp = 91;
+        return Actions;
+    }());
+    exports.Actions = Actions;
+    var Settings = (function () {
+        function Settings() {
+        }
+        Settings.NoWords = 5;
+        Settings.BotWait = 300;
+        Settings.PinchWait = 300;
+        Settings.RefreeWait = 100;
+        Settings.ServerWait = 100;
+        return Settings;
+    }());
+    exports.Settings = Settings;
+});
 define("Messages", ["require", "exports"], function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -70,54 +118,6 @@ define("Messages", ["require", "exports"], function (require, exports) {
         return Messages;
     }());
     exports.Messages = Messages;
-});
-define("Contracts", ["require", "exports"], function (require, exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    var Events = (function () {
-        function Events() {
-        }
-        Events.GameOver = 0;
-        return Events;
-    }());
-    exports.Events = Events;
-    var Actions = (function () {
-        function Actions() {
-        }
-        Actions.Init = 0;
-        Actions.ReRender = 1;
-        Actions.ToBoard = 20;
-        Actions.ToTray = 21;
-        Actions.OpenOrClose = 22;
-        Actions.Pass = 40;
-        Actions.ReDraw = 41;
-        Actions.RequestSuggestion = 42;
-        Actions.ReciveSuggestion = 43;
-        Actions.DismissSuggestion = 44;
-        Actions.PunchAndPick = 45;
-        Actions.BotMove = 50;
-        Actions.BotMoveResponse = 51;
-        Actions.Award = 60;
-        Actions.ResolveWords = 61;
-        Actions.TakeConsent = 62;
-        Actions.WordResolved = 63;
-        Actions.WordRejected = 64;
-        Actions.DismissDialog = 90;
-        Actions.AskHelp = 91;
-        return Actions;
-    }());
-    exports.Actions = Actions;
-    var Settings = (function () {
-        function Settings() {
-        }
-        Settings.NoWords = 5;
-        Settings.BotWait = 300;
-        Settings.PinchWait = 300;
-        Settings.RefreeWait = 100;
-        Settings.ServerWait = 100;
-        return Settings;
-    }());
-    exports.Settings = Settings;
 });
 define("_OverlayDialog", ["require", "exports", "react"], function (require, exports, React) {
     "use strict";
@@ -842,7 +842,7 @@ define("WordLoader", ["require", "exports", "Contracts", "axios", "GameStore"], 
     }());
     exports.WordLoader = WordLoader;
 });
-define("AskBot", ["require", "exports", "axios", "Contracts", "GameStore", "Util", "WordLoader"], function (require, exports, axios, Contracts, GS, U, WL) {
+define("AskBot", ["require", "exports", "axios", "Contracts", "Indic", "GameStore", "Util", "WordLoader"], function (require, exports, axios, Contracts, Indic, GS, U, WL) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var AskServer = (function () {
@@ -1155,7 +1155,7 @@ define("AskBot", ["require", "exports", "axios", "Contracts", "GameStore", "Util
                         var tiles = cell.Target.split(',');
                         for (var indx4 in tiles) {
                             var tile = tiles[indx4];
-                            if (tileWeights[tile] == null) {
+                            if (tile == "" || tileWeights[tile] == null) {
                                 debugger;
                                 continue;
                             }
@@ -2628,6 +2628,14 @@ define("AskBot", ["require", "exports", "axios", "Contracts", "GameStore", "Util
                     for (var indx3 in tiles) {
                         var tile = tiles[indx3];
                         Weights[indx3] = tile.W;
+                        if (indx3.length > 1 && Indic.Indic.GetSyllableTiles(indx3) != null) {
+                            Weights[Indic.Indic.GetSyllableTiles(indx3).join('')] = tile.W;
+                            continue;
+                        }
+                        var sym = Indic.Indic.GetSynonym(indx3);
+                        if (sym != null) {
+                            Weights[sym] = tile.W;
+                        }
                     }
                 }
             }
@@ -5252,6 +5260,10 @@ define("Parser", ["require", "exports", "GameActions", "Indic"], function (requi
                     for (var indx3 in tiles) {
                         var tile = tiles[indx3];
                         Weights[indx3] = tile.W;
+                        if (indx3.length > 1 && Indic.Indic.GetSyllableTiles(indx3) != null) {
+                            Weights[Indic.Indic.GetSyllableTiles(indx3).join('')] = tile.W;
+                            continue;
+                        }
                         var sym = Indic.Indic.GetSynonym(indx3);
                         if (sym != null) {
                             Weights[sym] = tile.W;
