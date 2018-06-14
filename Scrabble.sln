@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.27428.2002
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scrabble", "Scrabble\Scrabble.csproj", "{7E7047E6-51CB-4D07-BA22-EA6B4193FA89}"
 EndProject
@@ -16,6 +16,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Words", "Words", "{4D21702C
 		Scrabble\words\kn.udayavani.words = Scrabble\words\kn.udayavani.words
 		Scrabble\words\kn.vijaykarnataka.com.words = Scrabble\words\kn.vijaykarnataka.com.words
 		Scrabble\words\kn.words = Scrabble\words\kn.words
+		Scrabble\words\si.bbc.words = Scrabble\words\si.bbc.words
+		Scrabble\words\si.tharunaya.words = Scrabble\words\si.tharunaya.words
 		Scrabble\words\te.ab.words = Scrabble\words\te.ab.words
 		Scrabble\words\te.andhrajyothy.words = Scrabble\words\te.andhrajyothy.words
 		Scrabble\words\te.bbc.words = Scrabble\words\te.bbc.words
@@ -47,7 +49,7 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		LessCompiler = 7e7047e6-51cb-4d07-ba22-ea6b4193fa89
 		SolutionGuid = {0EFE05FF-8ECC-42CB-8C32-692E1201251F}
+		LessCompiler = 7e7047e6-51cb-4d07-ba22-ea6b4193fa89
 	EndGlobalSection
 EndGlobal
